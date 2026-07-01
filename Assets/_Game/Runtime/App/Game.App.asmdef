@@ -6,7 +6,9 @@
         "Game.Data",
         "Game.Gameplay",
         "Game.UI",
-        "Game.Infrastructure"
+        "Game.Infrastructure",
+        "UnityEngine.UI",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -4,7 +4,7 @@ Feature:
 : Перший data-driven шар арен для `BattleScene`.
 
 Example signals:
-: У `Examples/Wormix` карти винесені в окрему групу даних/assets, а не змішані з UI чи економікою. У `Examples/Warlings` також видно окрему категорію `assets/maps` разом із суміжними gameplay/environment групами.
+: У другому reference package карти винесені в окрему групу даних/assets, а не змішані з UI чи економікою. У першому reference package також видно окрему категорію `assets/maps` разом із суміжними gameplay/environment групами.
 
 Useful principles:
 : Арена має бути окремою content/data сутністю: spawn points, camera framing, background/terrain blocks і collision. Battle scene повинна збирати арену з визначення, а не тримати всі координати всередині одного scene controller.

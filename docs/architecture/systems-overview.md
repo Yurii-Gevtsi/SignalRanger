@@ -157,6 +157,21 @@ Save data:
 
 Коли schema змінюється, потрібні migrations.
 
+Поточний MVP-шар:
+
+- `SaveData` з версією схеми й секціями profile/campaign/inventory/economy/settings/tutorial;
+- `SaveDataSerializer` для JSON roundtrip;
+- `ISaveService` і `JsonFileSaveService` для локального файлу;
+- bootstrap створює або завантажує профіль;
+- menu показує мінімальний стан профілю, місії та soft currency.
+
+Ще не зроблено:
+
+- migrations між версіями;
+- autosave після реального завершення місії;
+- одноразове застосування rewards;
+- повний settings UI.
+
 ## SDK And Platform Services
 
 З першого дня використовувати інтерфейси з no-op/local реалізаціями:
@@ -183,4 +198,3 @@ Milestone 1 має довести feel:
 - Local restart.
 
 Тільки після цього додавати progression, economy, shop, ads, IAP або notifications.
-

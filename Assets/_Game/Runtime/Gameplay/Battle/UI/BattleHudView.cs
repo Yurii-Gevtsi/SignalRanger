@@ -8,7 +8,7 @@ namespace Game.Gameplay.Battle.UI
 {
     /// <summary>
     /// Runtime-built uGUI battle HUD: top status/turn bar, per-team health bars,
-    /// a power meter, and large touch-friendly Fire / Cancel / Weapon / Restart buttons.
+    /// a power meter, and large touch-friendly action buttons.
     /// Anchored to screen corners so panels never overlap across mobile aspect ratios.
     /// </summary>
     public sealed class BattleHudView : MonoBehaviour, IBattleHud
@@ -39,11 +39,22 @@ namespace Game.Gameplay.Battle.UI
         private Image _powerFill;
         private Button _fireButton;
         private Text _fireButtonLabel;
+        private GameObject _resultRoot;
+        private Text _resultTitleText;
+        private Text _resultSubtitleText;
+        private Text _resultOutcomeText;
+        private Text _resultRewardText;
+        private Text _resultUnlockText;
+        private Text _resultContinueNoteText;
+        private Button _resultContinueButton;
+        private Text _resultRetryLabel;
+        private Text _resultContinueLabel;
 
         public event Action FireRequested;
         public event Action CancelRequested;
         public event Action NextWeaponRequested;
         public event Action RestartRequested;
+        public event Action ContinueRequested;
 
         private void Awake()
         {
@@ -66,19 +77,21 @@ namespace Game.Gameplay.Battle.UI
             }
 
             _statusText.text = state.Status;
-            _turnText.text = $"Turn {state.TurnNumber} — {state.ActiveTeam}";
+            _turnText.text = $"Хід {state.TurnNumber} — {state.ActiveTeam}";
 
-            _playerHealthText.text = $"Player {state.PlayerHealth}/{state.PlayerMaxHealth}";
-            _opponentHealthText.text = $"Enemy {state.OpponentHealth}/{state.OpponentMaxHealth}";
+            _playerHealthText.text = $"Гравець {state.PlayerHealth}/{state.PlayerMaxHealth}";
+            _opponentHealthText.text = $"Суперник {state.OpponentHealth}/{state.OpponentMaxHealth}";
             _playerHealthFill.fillAmount = state.PlayerHealthFraction;
             _opponentHealthFill.fillAmount = state.OpponentHealthFraction;
 
             _weaponText.text = $"{state.WeaponLabel}\n{state.AmmoLabel}";
-            _powerText.text = $"Power {state.Power:0.0}";
+            _powerText.text = $"Сила {state.Power:0.0}";
             _powerFill.fillAmount = state.PowerFraction;
 
             _fireButton.interactable = state.CanFire;
             _fireButtonLabel.color = state.CanFire ? Color.white : new Color(1f, 1f, 1f, 0.4f);
+
+            RenderResult(state);
         }
 
         private static void EnsureEventSystem()
@@ -116,6 +129,7 @@ namespace Game.Gameplay.Battle.UI
             BuildHealthBars(root);
             BuildPowerMeter(root);
             BuildActionButtons(root);
+            BuildResultOverlay(root);
         }
 
         private void BuildTopBar(Transform root)
@@ -129,7 +143,7 @@ namespace Game.Gameplay.Battle.UI
                 new Vector2(-40f, -12f), new Vector2(20f, 6f), 30, TextAnchor.LowerLeft);
 
             var restart = CreateButton("Restart", bar, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(180f, 72f), new Vector2(-16f, -16f), NeutralButtonColor, "Restart", 28,
+                new Vector2(180f, 72f), new Vector2(-16f, -16f), NeutralButtonColor, "Рестарт", 24,
                 () => RestartRequested?.Invoke());
             _ = restart;
         }
@@ -163,19 +177,79 @@ namespace Game.Gameplay.Battle.UI
         private void BuildActionButtons(Transform root)
         {
             var weapon = CreateButton("Weapon", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
-                new Vector2(320f, ButtonHeight), new Vector2(Margin, Margin), NeutralButtonColor, "Weapon", 30,
+                new Vector2(320f, ButtonHeight), new Vector2(Margin, Margin), NeutralButtonColor, "Зброя", 30,
                 () => NextWeaponRequested?.Invoke());
             _weaponText = weapon.GetComponentInChildren<Text>();
 
             var cancel = CreateButton("Cancel", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(240f, ButtonHeight), new Vector2(-(Margin + 320f + 20f), Margin), NeutralButtonColor, "Cancel", 32,
+                new Vector2(240f, ButtonHeight), new Vector2(-(Margin + 320f + 20f), Margin), NeutralButtonColor, "Скинути", 28,
                 () => CancelRequested?.Invoke());
             _ = cancel;
 
             _fireButton = CreateButton("Fire", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(320f, ButtonHeight), new Vector2(-Margin, Margin), FireColor, "FIRE", 44,
+                new Vector2(320f, ButtonHeight), new Vector2(-Margin, Margin), FireColor, "ВОГОНЬ", 40,
                 () => FireRequested?.Invoke());
             _fireButtonLabel = _fireButton.GetComponentInChildren<Text>();
+        }
+
+        private void BuildResultOverlay(Transform root)
+        {
+            var blocker = CreatePanel("Result Overlay", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.42f));
+            _resultRoot = blocker.gameObject;
+
+            var panel = CreateAnchoredPanel("Result Panel", blocker.transform, new Vector2(0.5f, 0.5f),
+                Vector2.zero, new Vector2(680f, 440f), new Color(0.08f, 0.11f, 0.16f, 0.92f));
+
+            _resultTitleText = CreateText("Result Title", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(-56f, 64f), new Vector2(0f, -30f), 46, TextAnchor.MiddleCenter);
+            _resultSubtitleText = CreateText("Result Subtitle", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(-56f, 48f), new Vector2(0f, -102f), 28, TextAnchor.MiddleCenter);
+            _resultOutcomeText = CreateText("Result Outcome", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(-56f, 42f), new Vector2(0f, -158f), 26, TextAnchor.MiddleCenter);
+            _resultRewardText = CreateText("Result Reward", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(-56f, 42f), new Vector2(0f, -204f), 26, TextAnchor.MiddleCenter);
+            _resultUnlockText = CreateText("Result Unlock", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(-56f, 42f), new Vector2(0f, -250f), 24, TextAnchor.MiddleCenter);
+            _resultContinueNoteText = CreateText("Result Continue Note", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(-56f, 36f), new Vector2(0f, -292f), 20, TextAnchor.MiddleCenter);
+
+            var retry = CreateButton("Result Retry", panel.transform, new Vector2(0f, 0f), new Vector2(0f, 0f),
+                new Vector2(280f, 74f), new Vector2(36f, 34f), NeutralButtonColor, "Повторити", 30,
+                () => RestartRequested?.Invoke());
+            _resultRetryLabel = retry.GetComponentInChildren<Text>();
+
+            _resultContinueButton = CreateButton("Result Continue", panel.transform, new Vector2(1f, 0f), new Vector2(1f, 0f),
+                new Vector2(280f, 74f), new Vector2(-36f, 34f), FireColor, "Далі", 32,
+                () => ContinueRequested?.Invoke());
+            _resultContinueLabel = _resultContinueButton.GetComponentInChildren<Text>();
+
+            _resultRoot.SetActive(false);
+        }
+
+        private void RenderResult(in BattleHudState state)
+        {
+            if (_resultRoot == null)
+            {
+                return;
+            }
+
+            _resultRoot.SetActive(state.ShowResult);
+            if (!state.ShowResult)
+            {
+                return;
+            }
+
+            _resultTitleText.text = state.ResultTitle;
+            _resultSubtitleText.text = state.ResultSubtitle;
+            _resultOutcomeText.text = state.ResultOutcome;
+            _resultRewardText.text = state.ResultReward;
+            _resultUnlockText.text = state.ResultUnlock;
+            _resultContinueNoteText.text = state.CanContinue ? "Наступна арена готова." : "Спробуй ще раз і покращ результат.";
+            _resultRetryLabel.text = state.RetryLabel;
+            _resultContinueLabel.text = state.ContinueLabel;
+            _resultContinueButton.interactable = state.CanContinue;
+            _resultContinueLabel.color = state.CanContinue ? Color.white : new Color(1f, 1f, 1f, 0.4f);
         }
 
         private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
@@ -232,8 +306,9 @@ namespace Game.Gameplay.Battle.UI
             button.targetGraphic = image;
             button.onClick.AddListener(() => onClick?.Invoke());
 
-            CreateText($"{name} Label", image.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+            var text = CreateText($"{name} Label", image.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, fontSize, TextAnchor.MiddleCenter);
+            text.text = label;
             return button;
         }
 

@@ -10,7 +10,7 @@
 
 ## Example A: XAPK-style split package
 
-Спостереження з `Examples/Warlings`:
+Спостереження з першого reference package:
 
 - Package представлений як base APK плюс split APK для мов і screen densities.
 - Manifest metadata показує modern Android target і billing/ad-related permissions.
@@ -28,7 +28,7 @@
 
 ## Example B: unpacked Adobe AIR/Flash-style package
 
-Спостереження з `Examples/Wormix`:
+Спостереження з другого reference package:
 
 - Package має AIR/Flash indicators, SWF content і AIR extension folders.
 - Native libraries присутні в `lib/arm64-v8a`.
@@ -42,13 +42,13 @@
 - Live game може накопичити багато services, але MVP не має від них залежати.
 - Починати offline-first із local saves і small economy.
 - Analytics, remote config, ads, IAP, notifications додавати як adapters після стабілізації core gameplay.
-- Wormix корисний як приклад масштабу й пасток live-service growth.
+- Другий reference package корисний як приклад масштабу й пасток live-service growth.
 
 ## Як використовувати приклади перед фічею
 
 Перед новою системою агент має:
 
-1. Знайти відповідники у `Examples/Warlings` і `Examples/Wormix`.
+1. Знайти відповідники у двох reference packages в `Examples/`.
 2. Виписати system role, visible UX pattern, SDK/data/assets implications.
 3. Виписати ризики: overload, fairness, trust, monetization pressure, UI clutter.
 4. Спроєктувати власну простішу версію.
@@ -77,4 +77,3 @@
 - Не повторювати exact file structure.
 - Не копіювати names for classes, weapons, items, maps, modes, configs або events.
 - Дозволено аналізувати, порівнювати, вчитися і формувати власні рішення.
-

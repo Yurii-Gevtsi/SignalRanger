@@ -8,7 +8,7 @@ Feature:
 : Folder skeleton and assembly definitions.
 
 Example signals:
-: `Examples/Wormix` має виразні asset/data категорії `maps`, `ui`, `sounds`, `particles`, `layouts`, `learning`. `Examples/Warlings` у base APK показує категорії на кшталт `game_menu`, `maps`, `weapons`, `rewards`, `shop`, `particles`, `environment`.
+: Другий reference package має виразні asset/data категорії `maps`, `ui`, `sounds`, `particles`, `layouts`, `learning`. Перший reference package у base APK показує категорії на кшталт `game_menu`, `maps`, `weapons`, `rewards`, `shop`, `particles`, `environment`.
 
 Useful principles:
 : Великі мобільні tactical games швидко накопичують окремі шари для battle, UI, maps, weapons, rewards, shop, sounds, particles і SDK. Їх треба розділяти рано, щоб системи не злиплись.
@@ -144,7 +144,7 @@ Feature:
 : Перший data-driven шар арен для `BattleScene`.
 
 Example signals:
-: У прикладах карти винесені в окремі content/data групи, а не змішані з UI, shop або SDK. У Warlings APK видно окремі `assets/maps/...`, у Wormix є `assets/data/maps`.
+: У прикладах карти винесені в окремі content/data групи, а не змішані з UI, shop або SDK. У першому reference package видно окремі `assets/maps/...`, у другому reference package є `assets/data/maps`.
 
 Useful principles:
 : Арена має бути окремою сутністю з camera framing, spawn points і terrain/collision blocks. Battle scene повинна збирати її з визначення, а не тримати всі координати в одному методі.
@@ -161,7 +161,7 @@ Feature:
 : Перший data-driven шар зброї для `BattleScene`.
 
 Example signals:
-: У Warlings APK видно окремі battle HUD/weapon-related assets у `assets/game_menu`, включно з weapon UI/count/modifier елементами. Відгуки гравців також підкреслюють важливість різної зброї з чіткими tactical roles.
+: У першому reference package видно окремі battle HUD/weapon-related assets у `assets/game_menu`, включно з weapon UI/count/modifier елементами. Відгуки гравців також підкреслюють важливість різної зброї з чіткими tactical roles.
 
 Useful principles:
 : Зброя має бути окремою data/content сутністю: stable ID, role, damage/radius, projectile behavior, power range, ammo/tutorial metadata. Battle scene не повинна напряму знати всі числа конкретної зброї.
@@ -171,3 +171,71 @@ Risks to avoid:
 
 Our original implementation plan:
 : Додано `WeaponRole`, `WeaponDefinition`, `PrototypeWeaponLibrary` і 3 оригінальні runtime weapons. `BattleSceneController` перемикає їх через `Tab`/`Next Weapon` і бере projectile/damage/radius/power range з активної `WeaponDefinition`.
+
+## Phase 4.2: Result Overlay
+
+Feature:
+: Runtime battle result overlay for win/loss/draw, retry, continue and reward preview.
+
+Example signals:
+: У референсах battle completion не лишається непомітним debug state: результат бою, нагорода і наступна дія мають бути окремим UI-шаром. Для нашого MVP це треба зробити простіше: один modal overlay без магазину, реклами або складної економіки.
+
+Useful principles:
+: Result UI має блокувати подальший aim input, швидко пояснювати outcome і давати тільки дві дії: повторити або рухатись далі. Preview нагороди має бути view-model, а не пряме застосування save/economy.
+
+Risks to avoid:
+: Не копіювати чужі result screens, texts, reward values, economy tables, layout, art або progression logic. Не змішувати battle completion із майбутнім save/economy шаром.
+
+Our original implementation plan:
+: Додано `BattleResultScreenState`, `BattleRewardPreview`, `BattleResultScreenFactory`, `IBattleHud.ContinueRequested` і runtime overlay у `BattleHudView`. `Повторити` перезапускає поточну арену; `Далі` тимчасово переходить до наступної runtime arena до появи Phase 5 scene flow.
+
+## Phase 4: Aim Confirmation
+
+Feature:
+: Виправлення battle input, щоб шлях курсора до кнопки пострілу не змінював зафіксований приціл.
+
+Example signals:
+: У reference packages battle controls і підтвердження пострілу винесені в окремі видимі affordances. Корисний принцип: наведення і підтвердження мають бути розділені, щоб touch/UI не створювали випадкових пострілів.
+
+Useful principles:
+: Приціл має оновлюватися лише від навмисного drag/touch у зоні бою. Після відпускання input приціл лишається зафіксованим до пострілу, скидання або зміни зброї.
+
+Risks to avoid:
+: Не копіювати layout, controls, labels, art або tuning. Не дозволяти hover movement змінювати постріл. Не активувати `ВОГОНЬ`, доки немає валідного прицілу.
+
+Our original implementation plan:
+: Mouse aim оновлюється тільки при затиснутій лівій кнопці миші, touch aim - тільки при активному touch не поверх UI. `BattleHudView` показує українські видимі labels, а `BattleSceneController` вимикає fire до появи `AimState.HasInput`.
+
+## Phase 5: App Flow
+
+Feature:
+: Boot, menu and battle scene flow for MVP.
+
+Example signals:
+: У reference packages головний вхід швидко обростає battle, missions, shop, rewards, settings і live/social шарами. Для MVP корисний не scope, а принцип: app flow має бути окремим від battle logic, а перший екран має швидко вести в бій.
+
+Useful principles:
+: Boot має зібрати сервіси й перейти в меню. Menu має давати одну очевидну дію для старту бою. Назви сцен мають бути централізовані, а future buttons не повинні заважати core loop.
+
+Risks to avoid:
+: Не копіювати layout, тексти, economy hooks, shop flow або структуру сцен. Не стартувати з перевантаженого meta menu. Не прив'язувати gameplay напряму до ads, billing, backend або live services.
+
+Our original implementation plan:
+: Додано `GameSceneNames`, `ISceneLoadingService`, `UnitySceneLoadingService`, `AppServices`, `GameSessionService`, `GameBootstrapper`, `MenuSceneController`, `BootScene` і `MenuScene`. Build settings тепер ведуть через `BootScene -> MenuScene -> BattleScene`.
+
+## Phase 6: Local Save
+
+Feature:
+: Local profile/save data for MVP progress, inventory placeholders, currency, settings and tutorial state.
+
+Example signals:
+: У reference packages profile/save пов'язаний із unlocks, currencies, rewards, missions, settings, localization і online services. Для MVP корисний принцип versioned ownership, а не складність.
+
+Useful principles:
+: Save має бути явним versioned data snapshot із безпечними defaults. Missing/corrupt save не повинен блокувати вхід у гру. Boot/app composition читає save один раз, а menu/session беруть з нього тільки потрібний мінімум.
+
+Risks to avoid:
+: Не копіювати profile fields, serialized command names, economy values, unlock tables, server contracts або структуру save. Не прив'язувати MVP save до backend, ads, billing або live services.
+
+Our original implementation plan:
+: Додано `SaveData`, nested save sections, `SaveDataSerializer`, `ISaveService`, `JsonFileSaveService`, save tests і підключення в `AppServices`/`GameSessionService`/`MenuSceneController`. Migrations і реальне застосування rewards залишені для наступних фаз.

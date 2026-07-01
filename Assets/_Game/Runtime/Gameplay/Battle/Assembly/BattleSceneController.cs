@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Core;
 using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Projectiles;
+using Game.Gameplay.Battle.Results;
 using Game.Gameplay.Battle.Runtime;
 using Game.Gameplay.Battle.UI;
 using Game.Gameplay.Battle.Weapons;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
@@ -17,11 +20,16 @@ namespace Game.Gameplay.Battle.Assembly
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void CreateBattleController()
         {
-            if (SceneManager.GetActiveScene().name != "BattleScene")
+            if (SceneManager.GetActiveScene().name != GameSceneNames.Battle)
             {
                 return;
             }
 
+            EnsureCreated();
+        }
+
+        public static void EnsureCreated()
+        {
             if (Object.FindAnyObjectByType<BattleSceneController>() != null)
             {
                 return;
@@ -57,6 +65,7 @@ namespace Game.Gameplay.Battle.Assembly
         private LineRenderer _trajectoryLine;
         private bool _projectileInFlight;
         private BattleResult _battleResult;
+        private BattleResultScreenState _resultScreenState;
         private string _status;
         private BattleHudView _hud;
 
@@ -85,6 +94,7 @@ namespace Game.Gameplay.Battle.Assembly
             _hud.CancelRequested += CancelAim;
             _hud.NextWeaponRequested += () => SelectWeapon(_inventory.SelectedIndex + 1);
             _hud.RestartRequested += RestartScene;
+            _hud.ContinueRequested += ContinueFromResult;
         }
 
         private void Update()
@@ -99,6 +109,11 @@ namespace Game.Gameplay.Battle.Assembly
             if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
             {
                 RestartScene();
+                return;
+            }
+
+            if (_battleResult.IsFinished)
+            {
                 return;
             }
 
@@ -126,7 +141,7 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (_battleResult.IsFinished || _projectileInFlight)
+            if (_projectileInFlight)
             {
                 return;
             }
@@ -173,8 +188,9 @@ namespace Game.Gameplay.Battle.Assembly
             _turnService.StartFirstTurn(_battleState, BattleTeamId.Player);
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _battleResult = BattleResult.InProgress;
+            _resultScreenState = default;
             _projectileInFlight = false;
-            _status = $"{_currentArena.DisplayName}. Aim, then Fire.";
+            _status = $"{DescribeArena(_currentArena)}. Наведи постріл перетягуванням, потім натисни Вогонь.";
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
             RefreshUnitViews();
@@ -192,8 +208,8 @@ namespace Game.Gameplay.Battle.Assembly
             _aimSettings = weapon.CreateAimSettings(_baseAimSettings);
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _status = _currentArena != null
-                ? $"{weapon.WeaponId} selected."
-                : "Weapon selected.";
+                ? $"Обрано зброю: {DescribeWeapon(weapon)}."
+                : "Зброю обрано.";
         }
 
         private void ApplyArenaCamera(ArenaDefinition arena)
@@ -255,6 +271,7 @@ namespace Game.Gameplay.Battle.Assembly
             _arenaObjects.Clear();
             _battleState = null;
             _battleResult = BattleResult.InProgress;
+            _resultScreenState = default;
             _projectileInFlight = false;
         }
 
@@ -304,12 +321,27 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
             {
+                if (IsPointerOverUi((int)Touchscreen.current.primaryTouch.touchId.ReadValue()))
+                {
+                    return false;
+                }
+
                 pointerWorld = _camera.ScreenToWorldPoint(Touchscreen.current.primaryTouch.position.ReadValue());
                 return true;
             }
 
             if (Mouse.current != null)
             {
+                if (!Mouse.current.leftButton.isPressed)
+                {
+                    return false;
+                }
+
+                if (IsPointerOverUi())
+                {
+                    return false;
+                }
+
                 pointerWorld = _camera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
                 return true;
             }
@@ -330,6 +362,12 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            if (!_aimState.HasInput)
+            {
+                _status = "Спочатку наведи постріл перетягуванням у зоні бою.";
+                return;
+            }
+
             var weapon = _inventory.Selected;
             var context = new WeaponFireContext(
                 weapon,
@@ -344,15 +382,15 @@ namespace Game.Gameplay.Battle.Assembly
             if (result != WeaponFireResult.Fired)
             {
                 _status = result == WeaponFireResult.OutOfAmmo
-                    ? $"{weapon.WeaponId} out of ammo. Tab to switch weapon."
-                    : "No weapon selected.";
+                    ? $"Боєприпаси для {DescribeWeapon(weapon)} закінчилися. Перемкни зброю."
+                    : "Зброю не обрано.";
                 return;
             }
 
             _activeShotWeapon = weapon;
             _projectileInFlight = true;
             _turnService.SpendAction(_battleState);
-            _status = $"{activePresenter.State.UnitId} fired {weapon.WeaponId}.";
+            _status = $"{DescribeTeam(activePresenter.State.TeamId)} стріляє: {DescribeWeapon(weapon)}.";
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
         }
@@ -395,12 +433,16 @@ namespace Game.Gameplay.Battle.Assembly
             _battleResult = BattleResultEvaluator.Evaluate(_battleState);
             if (_battleResult.IsFinished)
             {
-                _status = $"{_battleResult.Outcome}. Press Restart or R.";
+                _resultScreenState = BattleResultScreenFactory.Create(_battleResult, _battleState.Turn.TurnNumber);
+                _status = $"{_resultScreenState.Title}. Обери Повторити або Далі.";
                 return;
             }
 
             _turnService.AdvanceTurn(_battleState);
-            _status = $"{_battleState.Turn.ActiveTeam} turn.";
+            _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
+            _aimLine.enabled = false;
+            _trajectoryLine.enabled = false;
+            _status = $"Хід: {DescribeTeam(_battleState.Turn.ActiveTeam)}.";
             RefreshUnitViews();
         }
 
@@ -419,6 +461,12 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void DrawAim()
         {
+            if (!_aimState.HasInput)
+            {
+                _aimLine.enabled = false;
+                return;
+            }
+
             var activePresenter = GetActivePresenter();
             if (activePresenter == null)
             {
@@ -435,6 +483,12 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void DrawTrajectoryPreview()
         {
+            if (!_aimState.HasInput)
+            {
+                _trajectoryLine.enabled = false;
+                return;
+            }
+
             var activePresenter = GetActivePresenter();
             if (activePresenter == null)
             {
@@ -546,6 +600,16 @@ namespace Game.Gameplay.Battle.Assembly
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
+        private void ContinueFromResult()
+        {
+            if (!IsBattleReady() || !_battleResult.IsFinished || !_resultScreenState.CanContinue)
+            {
+                return;
+            }
+
+            SceneManager.LoadScene(GameSceneNames.Menu);
+        }
+
         private void CancelAim()
         {
             if (!IsBattleReady() || _battleResult.IsFinished || _projectileInFlight)
@@ -556,7 +620,7 @@ namespace Game.Gameplay.Battle.Assembly
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
-            _status = "Aim reset.";
+            _status = "Приціл скинуто.";
         }
 
         private void RenderHud()
@@ -567,32 +631,100 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var weapon = _inventory.Selected;
-            var canFire = !_battleResult.IsFinished && !_projectileInFlight && _inventory.CanFireSelected;
+            var canFire = !_battleResult.IsFinished && !_projectileInFlight && _inventory.CanFireSelected && _aimState.HasInput;
 
             var state = new BattleHudState(
                 _status,
                 _battleState.Turn.TurnNumber,
-                _battleState.Turn.ActiveTeam.ToString(),
+                DescribeTeam(_battleState.Turn.ActiveTeam),
                 GetTeamHealth(BattleTeamId.Player),
                 GetTeamMaxHealth(BattleTeamId.Player),
                 GetTeamHealth(BattleTeamId.Opponent),
                 GetTeamMaxHealth(BattleTeamId.Opponent),
-                $"{weapon.WeaponId} ({_inventory.SelectedIndex + 1}/{_inventory.Count})",
+                $"{DescribeWeapon(weapon)} ({_inventory.SelectedIndex + 1}/{_inventory.Count})",
                 DescribeAmmo(_inventory),
                 _aimState.Power,
                 _aimSettings.MinPower,
                 _aimSettings.MaxPower,
-                canFire);
+                canFire,
+                _battleResult.IsFinished,
+                _resultScreenState.Title,
+                _resultScreenState.Subtitle,
+                _battleResult.IsFinished ? DescribeOutcome(_resultScreenState.Result.Outcome) : string.Empty,
+                _battleResult.IsFinished ? $"Нагорода: {_resultScreenState.RewardPreview.SoftCurrency} монет" : string.Empty,
+                _battleResult.IsFinished && _resultScreenState.RewardPreview.HasUnlock ? _resultScreenState.RewardPreview.UnlockText : "Нових відкриттів немає",
+                _battleResult.IsFinished && _resultScreenState.CanContinue,
+                _battleResult.IsFinished ? _resultScreenState.RetryLabel : "Повторити",
+                _battleResult.IsFinished ? _resultScreenState.ContinueLabel : "Далі");
 
             _hud.Render(state);
+        }
+
+        private static bool IsPointerOverUi()
+        {
+            return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        }
+
+        private static bool IsPointerOverUi(int pointerId)
+        {
+            return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(pointerId);
         }
 
         private static string DescribeAmmo(WeaponInventoryRuntime inventory)
         {
             var weapon = inventory.Selected;
             return weapon != null && weapon.HasLimitedAmmo
-                ? $"Ammo {inventory.GetSelectedRemainingAmmo()}"
-                : "Ammo ∞";
+                ? $"Боєприпаси: {inventory.GetSelectedRemainingAmmo()}"
+                : "Боєприпаси: безліміт";
+        }
+
+        private static string DescribeOutcome(BattleOutcome outcome)
+        {
+            return outcome switch
+            {
+                BattleOutcome.PlayerWon => "Ти переміг у бою.",
+                BattleOutcome.OpponentWon => "Команда суперника перемогла.",
+                BattleOutcome.Draw => "Обидві команди вибули.",
+                _ => string.Empty
+            };
+        }
+
+        private static string DescribeTeam(BattleTeamId teamId)
+        {
+            return teamId switch
+            {
+                BattleTeamId.Player => "Гравець",
+                BattleTeamId.Opponent => "Суперник",
+                _ => "Немає"
+            };
+        }
+
+        private static string DescribeArena(ArenaDefinition arena)
+        {
+            return arena == null
+                ? "Арена"
+                : arena.ArenaId switch
+                {
+                    "arena.training-meadow" => "Тренувальна галявина",
+                    "arena.split-ridge" => "Розділений хребет",
+                    "arena.central-cover" => "Центральне укриття",
+                    _ => arena.DisplayName
+                };
+        }
+
+        private static string DescribeWeapon(WeaponDefinition weapon)
+        {
+            return weapon == null
+                ? "невідома зброя"
+                : weapon.WeaponId switch
+                {
+                    "weapon.steady-orb" => "Рівна сфера",
+                    "weapon.pulse-shell" => "Імпульсний снаряд",
+                    "weapon.close-pop" => "Ближній хлопок",
+                    "weapon.long-lance" => "Довгий спис",
+                    "weapon.scatter-arc" => "Розсипна дуга",
+                    _ => "Зброя"
+                };
         }
 
         private int GetTeamHealth(BattleTeamId teamId)

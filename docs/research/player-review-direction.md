@@ -1,15 +1,15 @@
 # Напрям з аналізу відгуків гравців
 
-Цей документ підсумовує продуктовий напрям із аналізу відгуків про Wormix і Warlings 2. Це не джерело для копіювання content, names, balance, UI, economy або proprietary systems. Це високорівнева інтерпретація player needs, frustrations і opportunities для оригінальної гри.
+Цей документ підсумовує продуктовий напрям із аналізу відгуків про два reference-проєкти. Це не джерело для копіювання content, names, balance, UI, economy або proprietary systems. Це високорівнева інтерпретація player needs, frustrations і opportunities для оригінальної гри.
 
 ## Стратегічна формула
 
 Найкращий напрям для проєкту:
 
 ```text
-читабельність і чистота бойового ядра Warlings 2
-+ відчуття довгострокової прогресії Wormix
-- перевантаження економікою/підсистемами Wormix
+читабельність і чистота компактної battle-first моделі
++ відчуття довгострокової прогресії progression-heavy моделі
+- перевантаження економікою/підсистемами progression-heavy моделі
 - несправедливий PvP, агресивна реклама, account trust problems
 ```
 
@@ -47,7 +47,7 @@
 
 У цьому жанрі trust є primary feature. Гравець має вірити controls, physics, match result, saves, purchases і ranking.
 
-## Уроки з Wormix
+## Уроки з progression-heavy reference
 
 Корисні ідеї:
 
@@ -66,9 +66,9 @@
 - перевантаження новачка до real fun;
 - permanent systems on top of permanent systems.
 
-Wormix корисний як warning про system weight. Зберегти tactical battles і progression, не complexity mass.
+Progression-heavy reference корисний як warning про system weight. Зберегти tactical battles і progression, не complexity mass.
 
-## Уроки з Warlings 2
+## Уроки з battle-first reference
 
 Корисні ідеї:
 
@@ -87,7 +87,7 @@ Wormix корисний як warning про system weight. Зберегти tact
 - weapons або animations, які waste too much match time;
 - відкладати anti-cheat і competitive integrity надто пізно.
 
-Warlings 2 ближчий до product shape, який нам потрібен: battle first, meta second.
+Battle-first reference ближчий до product shape, який нам потрібен: battle first, meta second.
 
 ## Product Pillars
 
@@ -207,4 +207,3 @@ Small but complete first public version:
 Я отримав прогрес.
 Я хочу ще один матч.
 ```
-

@@ -12,6 +12,7 @@ namespace Game.Gameplay.Battle.UI
         event Action CancelRequested;
         event Action NextWeaponRequested;
         event Action RestartRequested;
+        event Action ContinueRequested;
 
         void Render(in BattleHudState state);
     }

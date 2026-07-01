@@ -19,7 +19,16 @@ namespace Game.Gameplay.Battle.UI
             float power,
             float minPower,
             float maxPower,
-            bool canFire)
+            bool canFire,
+            bool showResult,
+            string resultTitle,
+            string resultSubtitle,
+            string resultOutcome,
+            string resultReward,
+            string resultUnlock,
+            bool canContinue,
+            string retryLabel,
+            string continueLabel)
         {
             Status = status;
             TurnNumber = turnNumber;
@@ -34,6 +43,15 @@ namespace Game.Gameplay.Battle.UI
             MinPower = minPower;
             MaxPower = maxPower;
             CanFire = canFire;
+            ShowResult = showResult;
+            ResultTitle = resultTitle ?? string.Empty;
+            ResultSubtitle = resultSubtitle ?? string.Empty;
+            ResultOutcome = resultOutcome ?? string.Empty;
+            ResultReward = resultReward ?? string.Empty;
+            ResultUnlock = resultUnlock ?? string.Empty;
+            CanContinue = canContinue;
+            RetryLabel = retryLabel ?? "Повторити";
+            ContinueLabel = continueLabel ?? "Далі";
         }
 
         public string Status { get; }
@@ -49,6 +67,15 @@ namespace Game.Gameplay.Battle.UI
         public float MinPower { get; }
         public float MaxPower { get; }
         public bool CanFire { get; }
+        public bool ShowResult { get; }
+        public string ResultTitle { get; }
+        public string ResultSubtitle { get; }
+        public string ResultOutcome { get; }
+        public string ResultReward { get; }
+        public string ResultUnlock { get; }
+        public bool CanContinue { get; }
+        public string RetryLabel { get; }
+        public string ContinueLabel { get; }
 
         public float PlayerHealthFraction => Fraction(PlayerHealth, PlayerMaxHealth);
         public float OpponentHealthFraction => Fraction(OpponentHealth, OpponentMaxHealth);

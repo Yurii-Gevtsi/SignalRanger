@@ -197,7 +197,7 @@ Gameplay не залежить напряму від ads, purchases, Firebase, A
 
 Для кожної суттєвої системи:
 
-1. Знайти аналоги або сигнали в `Examples/Warlings` і `Examples/Wormix`.
+1. Знайти аналоги або сигнали у двох reference packages в `Examples/`.
 2. Подивитися APK/XAPK structure, assets categories, layouts/configs/classes, якщо релевантно.
 3. Виписати 3-7 високорівневих уроків: що взяти як принцип, що спростити, чого уникати.
 4. Не переносити names, values, files, layouts або logic 1:1.
@@ -210,4 +210,3 @@ Gameplay не залежить напряму від ads, purchases, Firebase, A
 - Чи додавати dependency injection framework або лишити легкий власний composition root.
 - Який terrain approach обрати: Unity 2D colliders, tilemaps, generated meshes, destructible mask.
 - Який multiplayer path: offline/local first, async later або real-time later.
-

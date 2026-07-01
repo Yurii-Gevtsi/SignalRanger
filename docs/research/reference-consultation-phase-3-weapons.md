@@ -4,7 +4,7 @@ Feature:
 : Перший data-driven шар зброї для `BattleScene`.
 
 Example signals:
-: У `Examples/Warlings/com.warlings5.apk` видно окремі battle HUD та weapon-related assets у `assets/game_menu`, зокрема елементи для weapon UI/count/modifiers. У `Examples/Wormix` є окремі gameplay data/assets категорії, а відгуки гравців окремо підкреслюють важливість різної зброї з читабельними tactical roles.
+: У першому reference package видно окремі battle HUD та weapon-related assets у `assets/game_menu`, зокрема елементи для weapon UI/count/modifiers. У другому reference package є окремі gameplay data/assets категорії, а відгуки гравців окремо підкреслюють важливість різної зброї з читабельними tactical roles.
 
 Useful principles:
 : Зброя має бути окремою data/content сутністю: stable ID, роль, damage/radius, projectile behavior, power range, ammo/tutorial metadata. Battle scene не повинна знати конкретні числа кожної зброї напряму.

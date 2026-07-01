@@ -8,7 +8,7 @@
 
 1. Прочитати `AGENTS.md` та\або 'CLAUDE.md''.
 2. Прочитати релевантні docs у `docs/architecture/`, `docs/design/`, `docs/research/`.
-3. Подивитися відповідники в `Examples/Warlings` і `Examples/Wormix`.
+3. Подивитися відповідники у двох reference packages в `Examples/`.
 4. Виписати короткий research note у task/PR/commit message або окремий doc, якщо зміна велика:
 
 ```text
@@ -97,6 +97,10 @@ Acceptance criteria:
 - Unity opens without compile errors;
 - folders visible in Project window.
 
+Status:
+
+- Completed: `Assets/_Game/` skeleton, runtime module folders, content folders, scene folders, editor/tests folders and Unity `.meta` files exist.
+
 ### Step 0.2. Assembly Definitions
 
 Додати asmdefs для core modules:
@@ -125,6 +129,12 @@ Acceptance criteria:
 - gameplay не залежить від infrastructure;
 - tests можуть бачити Core/Gameplay/Data.
 
+Status:
+
+- Completed first pass: core asmdefs exist for App/Core/Data/Gameplay/UI/Infrastructure and edit-mode tests.
+- `Game.App` currently references concrete modules for MVP composition.
+- `Game.Gameplay` remains free from SDK/infrastructure dependencies.
+
 ### Step 0.3. Prototype Isolation
 
 Поточний `FairShotPrototype` лишити як reference slice, але ізолювати:
@@ -137,6 +147,10 @@ Acceptance criteria:
 
 - prototype still runs;
 - production folders готові для нової реалізації.
+
+Status:
+
+- Completed: prototype is isolated under `Game.Prototype`; production battle logic lives under `Game.Gameplay.Battle`.
 
 ## Phase 1. Battle Core
 
@@ -170,6 +184,10 @@ Acceptance criteria:
 - edit-mode tests можуть створити battle state без scene;
 - можна перевірити win/loss чистою функцією.
 
+Status:
+
+- Completed: production battle domain models and win/loss evaluator exist with edit-mode coverage.
+
 ### Step 1.2. Turn System
 
 Створити:
@@ -186,6 +204,10 @@ Acceptance criteria:
 - tests: blue starts, after shot red turn, defeated unit skipped;
 - no UI dependency.
 
+Status:
+
+- Completed: `TurnService` handles start, action spend and turn advance without UI dependency; covered by edit-mode tests.
+
 ### Step 1.3. Unit Runtime Controller
 
 Створити runtime layer:
@@ -201,6 +223,10 @@ Acceptance criteria:
 - scene can spawn two units from config/prefab;
 - active unit visually obvious;
 - damage updates view.
+
+Status:
+
+- Completed first pass: runtime battle scene spawns player/opponent presenters, active indicators and health visuals update during damage.
 
 ### Step 1.4. Aiming And Shot Input
 
@@ -219,6 +245,11 @@ Acceptance criteria:
 - power clamped;
 - works in editor with mouse.
 
+Status:
+
+- Completed first pass: aim state, power clamp, trajectory preview, cancel and explicit fire confirmation work with editor mouse input.
+- Pointer-over-UI and locked aim behavior prevent the fire button from changing aim.
+
 ### Step 1.5. Projectile Simulation
 
 Створити:
@@ -236,6 +267,10 @@ Acceptance criteria:
 - owner collision ignored briefly or safely;
 - projectile timeout handled.
 
+Status:
+
+- Completed first pass: projectile runtime uses gravity, collision, impact events and timeout cleanup.
+
 ### Step 1.6. Damage Resolver
 
 Створити:
@@ -250,6 +285,10 @@ Acceptance criteria:
 - tests: damage decreases with distance;
 - defeated units trigger battle result;
 - no hidden random values in MVP.
+
+Status:
+
+- Completed: radial damage resolver and battle-result evaluation are covered by edit-mode tests.
 
 ### Step 1.7. Battle Scene Assembly
 
@@ -272,6 +311,10 @@ Acceptance criteria:
 - Play starts battle scene directly;
 - aim/fire/damage/turn/win/loss works;
 - no prototype script required for production scene.
+
+Status:
+
+- Completed first pass: `BattleScene` runs production battle assembly without the prototype script and supports aim/fire/damage/turn/result loop.
 
 ## Phase 2. Terrain And Arena
 
@@ -297,6 +340,10 @@ Acceptance criteria:
 - battle scene can load selected arena definition;
 - spawn points safe and visible.
 
+Status:
+
+- Completed first pass: runtime `ArenaDefinition` and arena library drive camera, spawn points and terrain blocks.
+
 ### Step 2.2. Placeholder Arena Set
 
 Створити 2-3 власні placeholder arenas:
@@ -309,6 +356,10 @@ Acceptance criteria:
 
 - no first-turn cheap death;
 - each arena readable on 16:9 and tall mobile aspect.
+
+Status:
+
+- Completed first pass: three original placeholder arenas are available and selectable by runtime flow.
 
 ### Step 2.3. Terrain Interaction V1
 
@@ -326,6 +377,10 @@ Acceptance criteria:
 
 - explosion feedback visible;
 - terrain collision reliable.
+
+Status:
+
+- Completed first pass: terrain blocks are collidable and impacts create readable explosion feedback; real destructible terrain is deferred.
 
 ## Phase 3. Weapons
 
@@ -357,6 +412,10 @@ Acceptance criteria:
 - weapon can be changed without code;
 - tests or editor validation catch missing ID/display key.
 
+Status:
+
+- Completed first pass: `WeaponDefinition`, weapon roles and runtime prototype library exist with edit-mode validation.
+
 ### Step 3.2. Weapon Runtime
 
 Створити:
@@ -371,6 +430,10 @@ Acceptance criteria:
 - active unit can select weapon;
 - selected weapon fires with its own definition;
 - ammo decreases if ammo enabled.
+
+Status:
+
+- Completed: `WeaponInventoryRuntime` and `WeaponExecutor` select/fire weapons and handle limited ammo through a projectile spawner abstraction.
 
 ### Step 3.3. MVP Weapon Set
 
@@ -388,6 +451,11 @@ Acceptance criteria:
 - кожна зброя має власну tactical purpose;
 - no weapon creates unavoidable first-turn cheap loss;
 - animations/effects короткі.
+
+Status:
+
+- Completed first pass: five original projectile-role weapons exist with distinct damage/radius/power/ammo profiles.
+- Cover/defensive/movement archetypes are intentionally deferred until arena/domain mutation is ready.
 
 ## Phase 4. UI And UX
 
@@ -416,6 +484,12 @@ Acceptance criteria:
 - no overlap on common mobile aspect ratios;
 - fire confirmation explicit.
 
+Status:
+
+- Completed first pass: runtime `BattleHudView` shows health, turn/status, weapon/ammo, power and fire/cancel/restart controls.
+- Fire confirmation is explicit, aim does not change when clicking UI, and visible text is Ukrainian for the MVP slice.
+- Known gap: HUD currently lives in `Game.Gameplay`; moving it to `Game.UI` and replacing legacy `Text` with TMP/localization is deferred.
+
 ### Step 4.2. Result Screen
 
 Створити:
@@ -423,6 +497,12 @@ Acceptance criteria:
 - win/loss;
 - mission reward placeholder;
 - continue/retry.
+
+Status:
+
+- Completed as runtime battle HUD overlay.
+- `Retry` reloads the current runtime arena.
+- `Continue` returns from battle result overlay to `MenuScene`; separate Result scene is deferred.
 
 Acceptance criteria:
 
@@ -444,6 +524,12 @@ Acceptance criteria:
 - first screen is usable, not landing page;
 - player can enter next mission quickly.
 
+Status:
+
+- Completed as runtime-built `MenuSceneController` in `MenuScene`.
+- Main CTA starts the next battle.
+- Loadout/settings buttons are present as MVP placeholders with Ukrainian status feedback.
+
 ## Phase 5. App Flow And Scenes
 
 Ціль: повний Boot -> Menu -> Battle -> Result loop.
@@ -463,6 +549,12 @@ Acceptance criteria:
 - boot scene is first in build settings;
 - missing save creates new profile.
 
+Status:
+
+- Completed for MVP flow: `BootScene` is first in build settings.
+- `GameBootstrapper` initializes app services and routes to `MenuScene`.
+- Save/profile creation is deferred to Phase 6.
+
 ### Step 5.2. Scene Loading Service
 
 Створити:
@@ -475,6 +567,12 @@ Acceptance criteria:
 
 - scene names centralized;
 - no direct scattered `SceneManager.LoadScene` in UI.
+
+Status:
+
+- Completed first pass: `GameSceneNames` centralizes scene names and paths.
+- `ISceneLoadingService` + `UnitySceneLoadingService` load scenes for App/UI flow.
+- Legacy direct scene reload remains inside battle runtime for local restart; full cleanup can happen when battle exits through App composition.
 
 ### Step 5.3. Game Session Service
 
@@ -489,6 +587,12 @@ Acceptance criteria:
 
 - result screen knows battle outcome;
 - menu knows next mission.
+
+Status:
+
+- Completed first pass: `GameSessionService` stores selected mission index.
+- Menu can select/start the next mission.
+- Battle result payload and real reward payload are deferred until separate Result/Save/Economy layers.
 
 ## Phase 6. Data And Save
 
@@ -513,6 +617,12 @@ Acceptance criteria:
 - save serializes/deserializes JSON;
 - missing fields handled by defaults.
 
+Status:
+
+- Completed first pass: `SaveData` stores schema version, profile, campaign, inventory, economy, settings and tutorial sections.
+- `SaveDataSerializer` serializes/deserializes JSON and fills defaults for missing sections.
+- Edit-mode tests cover default creation, JSON roundtrip and missing-field defaults.
+
 ### Step 6.2. Save Service
 
 Створити:
@@ -526,6 +636,14 @@ Acceptance criteria:
 
 - progress persists after editor play restart;
 - corrupted save fallback safe with backup.
+
+Status:
+
+- Completed first pass: `ISaveService` + `JsonFileSaveService` read/write local JSON at `Application.persistentDataPath`.
+- Missing save creates a new profile during app bootstrap.
+- Corrupt save creates a backup copy and recovers with a new default profile.
+- Menu shows a minimal profile/currency/mission summary from loaded save.
+- Autosave on mission rewards/settings changes is deferred until Phase 7/9/11 add those real mutations.
 
 ### Step 6.3. Save Migration
 
@@ -639,7 +757,7 @@ Acceptance criteria:
 
 ## Phase 9. Inventory, Loadout, Economy, Rewards
 
-Ціль: легка meta-progression без Wormix-like overload.
+Ціль: легка meta-progression без overload із progression-heavy reference.
 
 ### Step 9.1. Inventory Model
 
@@ -902,10 +1020,9 @@ Recommended next step:
 2. Phase 1.1-1.7: production battle core.
 3. Phase 2.1-2.2: arena definitions and placeholders.
 4. Phase 3.1-3.3: data-driven weapons.
-5. Phase 4.1: proper battle HUD.
-6. Phase 5: boot/menu/battle/result flow.
+5. Phase 4.1-4.2: proper battle HUD and result overlay.
+6. Phase 5: boot/menu/battle app flow.
 7. Phase 6: save.
 8. Phase 7-8: missions/tutorial.
 9. Phase 9-10: rewards/loadout/AI.
 10. Phase 11-14: feel, interfaces, tests, Android build.
-
