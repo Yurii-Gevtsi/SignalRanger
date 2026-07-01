@@ -47,7 +47,39 @@ namespace Game.Gameplay.Battle.Weapons
                     13f,
                     -1,
                     "weapon.close_pop.hint",
-                    new[] { "starter", "short-range", "burst" })
+                    new[] { "starter", "short-range", "burst" }),
+                // Precision niche: flat, fast, small blast, high single-target damage.
+                // Rewards accurate aim; small radius keeps it from being a cheap AoE finisher.
+                WeaponDefinition.CreateRuntime(
+                    "weapon.long-lance",
+                    "weapon.long_lance.name",
+                    WeaponRole.DirectProjectile,
+                    46,
+                    0.75f,
+                    0.09f,
+                    0.35f,
+                    8f,
+                    16f,
+                    30f,
+                    -1,
+                    "weapon.long_lance.hint",
+                    new[] { "precision", "direct", "long-range" }),
+                // Area niche: high lob, wide but soft blast to flush units out of cover.
+                // Low damage per hit so it pressures position rather than deleting full-HP units.
+                WeaponDefinition.CreateRuntime(
+                    "weapon.scatter-arc",
+                    "weapon.scatter_arc.name",
+                    WeaponRole.ArcingExplosive,
+                    24,
+                    2.35f,
+                    0.14f,
+                    1.35f,
+                    9f,
+                    9f,
+                    19f,
+                    -1,
+                    "weapon.scatter_arc.hint",
+                    new[] { "area", "arc", "flush" })
             };
         }
     }

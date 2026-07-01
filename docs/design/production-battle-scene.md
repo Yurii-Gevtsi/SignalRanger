@@ -77,6 +77,22 @@ Battle scene більше не використовує один hardcoded proje
 
 `BattleSceneController` реалізує `IProjectileSpawner`; `Fire()` делегує постріл `WeaponExecutor`, а створення снаряда живе в `Spawn`. Боєзапас `-1` — нескінченний; обмежена зброя декрементиться і блокує постріл на нулі (HUD показує `Ammo N` / `Ammo ∞`).
 
+## Phase 3.3: MVP Weapon Set (projectile-роль)
+
+`PrototypeWeaponLibrary` розширено до 5 зброй з різними tactical niches у межах наявного `ProjectileWeaponEffect`:
+
+| ID | Роль | Ніша |
+|---|---|---|
+| `weapon.steady-orb` | DirectProjectile | стартова, низька дуга, збалансована |
+| `weapon.long-lance` | DirectProjectile | precision: пласка/швидка, малий радіус, високий одиночний damage |
+| `weapon.pulse-shell` | ArcingExplosive | стартова навісна, збалансований радіус/damage |
+| `weapon.scatter-arc` | ArcingExplosive | area: висока дуга, широкий м'який blast, тиск на позицію |
+| `weapon.close-pop` | ShortRangeBurst | ближній burst, коротка дальність |
+
+Баланс: жодна зброя не завдає ≥100 damage (юніт стартує зі 100 HP), тож немає one-shot із повного HP на першому ході (покрито тестом `PrototypeWeapons_CannotOneShotFullHealthUnit`).
+
+Ще не реалізовані архетипи-інструменти (cover/defensive/movement) винесені в окрему пропозицію архітектури — вони потребують нових core-абстракцій (мутація арени/юнітів), а не лише даних.
+
 ## Що перевірити вручну
 
 - У Console немає червоних compile/runtime errors.
@@ -84,7 +100,7 @@ Battle scene більше не використовує один hardcoded proje
 - На HUD видно назву поточної арени.
 - `N` або `Next Arena` перемикає 3 арени без накопичення старих колайдерів/юнітів.
 - На HUD видно активну зброю.
-- `Tab` або `Next Weapon` перемикає 3 зброї.
+- `Tab` або `Next Weapon` перемикає 5 зброй.
 - На HUD видно боєзапас активної зброї (`Ammo ∞` для стартових).
 - У різної зброї відрізняються power range, damage/radius і вигляд снаряда.
 - Білий active indicator стоїть над активним юнітом.
