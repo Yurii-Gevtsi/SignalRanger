@@ -8,6 +8,7 @@ using Game.Gameplay.Battle.Projectiles;
 using Game.Gameplay.Battle.Results;
 using Game.Gameplay.Battle.Runtime;
 using Game.Gameplay.Battle.UI;
+using Game.Gameplay.Battle.Units;
 using Game.Gameplay.Battle.Weapons;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -71,6 +72,8 @@ namespace Game.Gameplay.Battle.Assembly
         private BattleHudView _hud;
         private SimpleAiShooter _aiShooter;
         private AiDifficulty _aiDifficulty;
+        private CharacterArchetype _playerArchetype;
+        private CharacterArchetype _opponentArchetype;
         private float _aiDecisionTimer;
         private string _coachMessage = string.Empty;
         private float _coachTimer;
@@ -272,12 +275,20 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void BuildBattleState(ArenaDefinition arena)
         {
-            var playerUnit = new BattleUnitState("player.striker.01", BattleTeamId.Player, arena.PlayerSpawn, 100);
-            var opponentUnit = new BattleUnitState("opponent.striker.01", BattleTeamId.Opponent, arena.OpponentSpawn, 100);
+            _playerArchetype = PrototypeArchetypeLibrary.PlayerArchetype;
+            _opponentArchetype = PrototypeArchetypeLibrary.ForDifficulty(_aiDifficulty);
+
+            var playerUnit = new BattleUnitState($"player.{_playerArchetype.Id}.01", BattleTeamId.Player, arena.PlayerSpawn, _playerArchetype.MaxHealth);
+            var opponentUnit = new BattleUnitState($"opponent.{_opponentArchetype.Id}.01", BattleTeamId.Opponent, arena.OpponentSpawn, _opponentArchetype.MaxHealth);
 
             var playerTeam = new BattleTeamState(BattleTeamId.Player, new[] { playerUnit });
             var opponentTeam = new BattleTeamState(BattleTeamId.Opponent, new[] { opponentUnit });
             _battleState = new BattleState(new[] { playerTeam, opponentTeam }, new TurnState(BattleTeamId.None, string.Empty, 0, false));
+        }
+
+        private CharacterArchetype ArchetypeFor(BattleTeamId teamId)
+        {
+            return teamId == BattleTeamId.Player ? _playerArchetype : _opponentArchetype;
         }
 
         private void BuildUnits()
@@ -320,16 +331,17 @@ namespace Game.Gameplay.Battle.Assembly
 
         private BattleUnitView CreateUnitView(BattleUnitState state)
         {
+            var bodyHeight = ArchetypeFor(state.TeamId).BodyHeight;
             var unitObject = new GameObject(state.UnitId);
             unitObject.transform.position = state.Position;
-            unitObject.transform.localScale = new Vector3(0.72f, 0.95f, 1f);
+            unitObject.transform.localScale = new Vector3(0.72f, bodyHeight, 1f);
 
             var renderer = unitObject.AddComponent<SpriteRenderer>();
             renderer.sprite = _circleSprite;
             renderer.sortingOrder = 20;
 
             var collider = unitObject.AddComponent<CapsuleCollider2D>();
-            collider.size = new Vector2(0.72f, 1f);
+            collider.size = new Vector2(0.72f, bodyHeight + 0.05f);
 
             var body = unitObject.AddComponent<Rigidbody2D>();
             body.bodyType = RigidbodyType2D.Kinematic;
