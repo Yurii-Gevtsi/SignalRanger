@@ -4,7 +4,8 @@
     "references": [
         "Game.Core",
         "Game.Data",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

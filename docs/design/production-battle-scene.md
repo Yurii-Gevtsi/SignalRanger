@@ -37,10 +37,11 @@ Assets/_Game/Scenes/Battle/BattleScene.unity
 ## Керування
 
 - Mouse/touch: aim and power.
-- `Fire` або `Space`: постріл.
-- `Restart` або `R`: restart scene.
-- `Next Arena` або `N`: перейти до наступної runtime prototype arena.
-- `Next Weapon` або `Tab`: перейти до наступної runtime prototype weapon.
+- HUD `FIRE` button або `Space`: постріл (явне підтвердження).
+- HUD `Cancel` button або `Esc`: скинути приціл.
+- HUD `Weapon` button або `Tab`: наступна зброя.
+- HUD `Restart` button або `R`: restart scene.
+- `N` (debug, keyboard): наступна runtime prototype arena.
 
 ## Phase 2.1: Runtime Arena Definitions
 
@@ -93,28 +94,40 @@ Battle scene більше не використовує один hardcoded proje
 
 Ще не реалізовані архетипи-інструменти (cover/defensive/movement) винесені в окрему пропозицію архітектури — вони потребують нових core-абстракцій (мутація арени/юнітів), а не лише даних.
 
+## Phase 4.1: Battle HUD
+
+IMGUI debug-панель (`OnGUI`) замінена на справжній mobile uGUI HUD:
+
+- `BattleHudState`: незмінний snapshot стану бою, який сцена штовхає у HUD щокадру (HUD не знає gameplay-типів).
+- `IBattleHud`: контракт HUD (події `FireRequested` / `CancelRequested` / `NextWeaponRequested` / `RestartRequested` + `Render`).
+- `BattleHudView`: runtime-побудований `Canvas` (`ScaleWithScreenSize`, ref 1080×1920) з top status/turn bar, per-team health bars, power meter і великими touch-кнопками `FIRE` / `Cancel` / `Weapon` / `Restart`.
+
+Елементи заякорені по кутах екрана → не перекриваються на різних mobile-співвідношеннях. `FIRE` явно неактивна, коли постріл неможливий (немає боєзапасу, снаряд у польоті, бій завершено). `BattleSceneController` спілкується лише через `IBattleHud`.
+
+Відомий gap: HUD поки живе у збірці `Game.Gameplay` (додано reference `UnityEngine.UI`), а не в `Game.UI` — бо `Game.UI` бачить лише `Game.Core`. Перенесення потребує Core-рівневого view-model і виділення composition root у `Game.App`; заплановано пізніше.
+
 ## Що перевірити вручну
 
 - У Console немає червоних compile/runtime errors.
-- У сцені видно фон, terrain blocks, два юніти й HUD.
-- На HUD видно назву поточної арени.
-- `N` або `Next Arena` перемикає 3 арени без накопичення старих колайдерів/юнітів.
-- На HUD видно активну зброю.
-- `Tab` або `Next Weapon` перемикає 5 зброй.
-- На HUD видно боєзапас активної зброї (`Ammo ∞` для стартових).
+- У сцені видно фон, terrain blocks, два юніти й uGUI HUD.
+- HUD-панелі (status/turn, health, power, кнопки) не перекриваються — перевірити в Game view на 16:9 landscape і tall mobile (напр. 9:19.5).
+- Top bar показує status і `Turn N — Team`.
+- Per-team health bars згори зменшуються після влучань.
+- `N` (keyboard debug) перемикає 3 арени без накопичення старих колайдерів/юнітів.
+- HUD `Weapon` button / `Tab` перемикає 5 зброй; показує назву + боєзапас (`Ammo ∞`).
 - У різної зброї відрізняються power range, damage/radius і вигляд снаряда.
-- Білий active indicator стоїть над активним юнітом.
-- Health bars видно над обома юнітами.
-- Приціл і trajectory preview рухаються за мишкою.
-- Постріл летить дугою.
-- Після impact HP змінюється.
-- Хід переходить до іншої команди.
-- Win/loss показується після знищення юніта.
+- Power meter заповнюється залежно від сили прицілювання.
+- `FIRE` неактивна під час польоту снаряда і після завершення бою.
+- `Cancel` / `Esc` скидає приціл.
+- Приціл і trajectory preview рухаються за мишкою/пальцем.
+- Постріл летить дугою; після impact HP змінюється; хід переходить до іншої команди.
+- Win/loss показується у status після знищення юніта.
 
 ## Поточні обмеження
 
 - Placeholder visuals.
 - Немає AI.
-- Немає production HUD canvas.
-- Є weapon data layer + runtime inventory/executor, але ще немає production weapon UI (тільки debug HUD) і поки один спільний projectile-ефект на всі ролі.
+- HUD-текст поки через legacy uGUI `Text` (без TMP/локалізації); показує raw weapon ID.
+- HUD у збірці `Game.Gameplay`, ще не в `Game.UI`.
+- Є weapon inventory/executor + 5 зброй, але поки один спільний projectile-ефект на всі ролі (без cover/defensive/movement).
 - Terrain collision є, але destructible terrain ще немає.

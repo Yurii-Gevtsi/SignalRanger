@@ -4,6 +4,7 @@ using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Projectiles;
 using Game.Gameplay.Battle.Runtime;
+using Game.Gameplay.Battle.UI;
 using Game.Gameplay.Battle.Weapons;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -57,12 +58,14 @@ namespace Game.Gameplay.Battle.Assembly
         private bool _projectileInFlight;
         private BattleResult _battleResult;
         private string _status;
+        private BattleHudView _hud;
 
         private void Awake()
         {
             BuildSprites();
             BuildCamera();
             BuildAimRenderers();
+            BuildHud();
             _baseAimSettings = AimSettings.Default;
             _aimSettings = _baseAimSettings;
             _arenas = PrototypeArenaLibrary.CreateAll();
@@ -73,6 +76,17 @@ namespace Game.Gameplay.Battle.Assembly
             LoadArena(0);
         }
 
+        private void BuildHud()
+        {
+            var hudObject = new GameObject("Battle HUD");
+            hudObject.transform.SetParent(transform, false);
+            _hud = hudObject.AddComponent<BattleHudView>();
+            _hud.FireRequested += Fire;
+            _hud.CancelRequested += CancelAim;
+            _hud.NextWeaponRequested += () => SelectWeapon(_inventory.SelectedIndex + 1);
+            _hud.RestartRequested += RestartScene;
+        }
+
         private void Update()
         {
             if (!IsBattleReady())
@@ -80,9 +94,17 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            RenderHud();
+
             if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
             {
                 RestartScene();
+                return;
+            }
+
+            if (!_projectileInFlight && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                CancelAim();
                 return;
             }
 
@@ -297,7 +319,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void Fire()
         {
-            if (!IsBattleReady())
+            if (!IsBattleReady() || _battleResult.IsFinished || _projectileInFlight)
             {
                 return;
             }
@@ -522,49 +544,45 @@ namespace Game.Gameplay.Battle.Assembly
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
-        private void OnGUI()
+        private void CancelAim()
         {
-            if (!IsBattleReady())
+            if (!IsBattleReady() || _battleResult.IsFinished || _projectileInFlight)
             {
-                GUI.Box(new Rect(18, 18, 260, 52), "Battle scene loading...");
                 return;
             }
 
-            const int padding = 18;
-            const int panelWidth = 360;
-            GUI.Box(new Rect(padding, padding, panelWidth, 286), "Production Battle Scene");
-            GUI.Label(new Rect(padding + 14, padding + 30, panelWidth - 28, 24), _status);
-            GUI.Label(new Rect(padding + 14, padding + 56, panelWidth - 28, 24), $"Arena: {_currentArena.DisplayName} ({_arenaIndex + 1}/{_arenas.Length})");
-            GUI.Label(new Rect(padding + 14, padding + 82, panelWidth - 28, 24), $"Weapon: {_inventory.Selected.WeaponId} ({_inventory.SelectedIndex + 1}/{_inventory.Count}) {DescribeAmmo(_inventory)}");
-            GUI.Label(new Rect(padding + 14, padding + 108, panelWidth - 28, 24), $"Turn: {_battleState.Turn.TurnNumber} / {_battleState.Turn.ActiveTeam}");
-            GUI.Label(new Rect(padding + 14, padding + 134, panelWidth - 28, 24), $"HP: Player {GetTeamHealth(BattleTeamId.Player)} / Opponent {GetTeamHealth(BattleTeamId.Opponent)}");
-            GUI.Label(new Rect(padding + 14, padding + 158, panelWidth - 28, 24), $"Power: {_aimState.Power:0.0} ({_aimSettings.MinPower:0}-{_aimSettings.MaxPower:0})");
-            GUI.Label(new Rect(padding + 14, padding + 182, panelWidth - 28, 22), "Mouse/touch aim. Fire/Space. N arena. Tab weapon.");
+            _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
+            _aimLine.enabled = false;
+            _trajectoryLine.enabled = false;
+            _status = "Aim reset.";
+        }
 
-            GUI.enabled = !_battleResult.IsFinished && !_projectileInFlight;
-            if (GUI.Button(new Rect(padding + 14, padding + 206, 156, 36), "Fire"))
+        private void RenderHud()
+        {
+            if (_hud == null || !IsBattleReady())
             {
-                Fire();
+                return;
             }
 
-            GUI.enabled = true;
-            if (GUI.Button(new Rect(padding + 184, padding + 206, 156, 36), "Restart"))
-            {
-                RestartScene();
-            }
+            var weapon = _inventory.Selected;
+            var canFire = !_battleResult.IsFinished && !_projectileInFlight && _inventory.CanFireSelected;
 
-            GUI.enabled = !_projectileInFlight;
-            if (GUI.Button(new Rect(padding + 14, padding + 248, 156, 28), "Next Arena"))
-            {
-                LoadArena(_arenaIndex + 1);
-            }
+            var state = new BattleHudState(
+                _status,
+                _battleState.Turn.TurnNumber,
+                _battleState.Turn.ActiveTeam.ToString(),
+                GetTeamHealth(BattleTeamId.Player),
+                GetTeamMaxHealth(BattleTeamId.Player),
+                GetTeamHealth(BattleTeamId.Opponent),
+                GetTeamMaxHealth(BattleTeamId.Opponent),
+                $"{weapon.WeaponId} ({_inventory.SelectedIndex + 1}/{_inventory.Count})",
+                DescribeAmmo(_inventory),
+                _aimState.Power,
+                _aimSettings.MinPower,
+                _aimSettings.MaxPower,
+                canFire);
 
-            if (GUI.Button(new Rect(padding + 184, padding + 248, 156, 28), "Next Weapon"))
-            {
-                SelectWeapon(_inventory.SelectedIndex + 1);
-            }
-
-            GUI.enabled = true;
+            _hud.Render(state);
         }
 
         private static string DescribeAmmo(WeaponInventoryRuntime inventory)
@@ -575,12 +593,14 @@ namespace Game.Gameplay.Battle.Assembly
                 : "Ammo ∞";
         }
 
-        private string GetTeamHealth(BattleTeamId teamId)
+        private int GetTeamHealth(BattleTeamId teamId)
         {
-            var units = _battleState.GetTeam(teamId).Units;
-            var health = units.Sum(unit => unit.Health);
-            var maxHealth = units.Sum(unit => unit.MaxHealth);
-            return $"{health}/{maxHealth}";
+            return _battleState.GetTeam(teamId).Units.Sum(unit => unit.Health);
+        }
+
+        private int GetTeamMaxHealth(BattleTeamId teamId)
+        {
+            return _battleState.GetTeam(teamId).Units.Sum(unit => unit.MaxHealth);
         }
 
         private bool IsBattleReady()
