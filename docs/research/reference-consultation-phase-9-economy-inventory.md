@@ -14,3 +14,17 @@ Risks to avoid:
 
 Our original implementation plan:
 : Add `Game.Economy` with `EconomyService`, `Game.Inventory` with `InventoryService`, app composition wiring and edit-mode tests. Keep shop/loadout UI and reward screen for later passes.
+
+## Update: Loadout screen wired to battle
+
+Feature:
+: Реальний loadout-екран у меню (замість заглушки) + вплив loadout на бій.
+
+Useful principles:
+: Loadout має мати відчутний геймплейний ефект, але не блокувати місію. Джерело правди — save; UI лише редагує вибір і валідує через сервіс. Резолв зброї бою має бути чистою функцією для тестів.
+
+Risks to avoid:
+: Не давати loadout софт-локати місію (несумісний вибір → місія неграбельна). Не дублювати правила валідації в UI — тримати їх у сервісі/резолвері.
+
+Our original implementation:
+: `LoadoutScreenController` (модальний екран з меню) показує всі зброї, дозволяє перемикати відкриті у loadout, зберігає через `InventoryService.TrySetLoadout` + save. Чистий `BattleLoadoutResolver` рахує зброю бою як `loadout ∩ mission-allowed` з безпечним fallback (allowed → всі), покритий edit-mode тестами. Loadout проходить у бій через `GameSessionContext.SelectedLoadoutWeaponIds`.

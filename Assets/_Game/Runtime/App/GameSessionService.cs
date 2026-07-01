@@ -1,3 +1,4 @@
+using System.Linq;
 using Game.Core;
 using Game.Data.Save;
 using Game.Progression.Missions;
@@ -42,6 +43,7 @@ namespace Game.App
                 mission != null ? mission.AllowedWeaponIds : null,
                 mission != null ? mission.Reward.softCurrency : 0,
                 mission != null ? mission.Reward.unlockWeaponId : string.Empty);
+            GameSessionContext.SelectLoadout(_saveData?.inventory?.selectedLoadoutWeaponIds?.ToArray());
         }
     }
 }

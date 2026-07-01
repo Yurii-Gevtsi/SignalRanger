@@ -94,15 +94,21 @@ namespace Game.Gameplay.Battle.Assembly
         private static WeaponDefinition[] CreateMissionWeapons()
         {
             var allWeapons = PrototypeWeaponLibrary.CreateAll();
-            var allowedWeaponIds = GameSessionContext.SelectedAllowedWeaponIds;
-            if (allowedWeaponIds == null || allowedWeaponIds.Length == 0)
-            {
-                return allWeapons;
-            }
+            var byId = allWeapons
+                .Where(weapon => weapon != null)
+                .ToDictionary(weapon => weapon.WeaponId);
 
-            var allowed = new HashSet<string>(allowedWeaponIds);
-            var filtered = allWeapons.Where(weapon => weapon != null && allowed.Contains(weapon.WeaponId)).ToArray();
-            return filtered.Length == 0 ? allWeapons : filtered;
+            var effectiveIds = BattleLoadoutResolver.Resolve(
+                GameSessionContext.SelectedLoadoutWeaponIds,
+                GameSessionContext.SelectedAllowedWeaponIds,
+                allWeapons.Select(weapon => weapon.WeaponId).ToArray());
+
+            var resolved = effectiveIds
+                .Where(byId.ContainsKey)
+                .Select(id => byId[id])
+                .ToArray();
+
+            return resolved.Length == 0 ? allWeapons : resolved;
         }
 
         private void BuildHud()

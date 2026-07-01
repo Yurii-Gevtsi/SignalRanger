@@ -123,8 +123,7 @@ namespace Game.App
             CreateButton("Play Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(620f, 116f), new Vector2(0f, 236f), PrimaryColor, "Грати", 44, StartBattle);
             CreateButton("Loadout Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(620f, 86f), new Vector2(0f, 132f), SecondaryColor, "Спорядження", 30,
-                () => SetStatus("Спорядження з'явиться після базової прогресії."));
+                new Vector2(620f, 86f), new Vector2(0f, 132f), SecondaryColor, "Спорядження", 30, OpenLoadout);
             CreateButton("Settings Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(620f, 86f), new Vector2(0f, 34f), SecondaryColor, "Налаштування", 30,
                 () => SetStatus("Мова зараз: українська. Повна локалізація буде окремим шаром."));
@@ -140,6 +139,11 @@ namespace Game.App
         {
             AppServices.Session.SelectNextMission();
             AppServices.SceneLoader.Load(GameSceneNames.Battle);
+        }
+
+        private void OpenLoadout()
+        {
+            LoadoutScreenController.Open(() => SetStatus("Спорядження оновлено."));
         }
 
         private void SetStatus(string message)
