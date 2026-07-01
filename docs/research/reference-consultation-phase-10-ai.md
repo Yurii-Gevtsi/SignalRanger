@@ -14,3 +14,17 @@ Risks to avoid:
 
 Our original implementation plan:
 : Add a pure `SimpleAiShooter` that estimates direction/power from active unit to target, cover it with edit-mode tests, and let `BattleSceneController` auto-fire on opponent turns after a short delay through the same weapon executor path.
+
+## Update: Difficulty per mission (Phase 10.2)
+
+Feature:
+: Складність AI задається місією й зростає впродовж кампанії.
+
+Useful principles:
+: Складність — це властивість контенту (місії), а не хардкод бою. Ескалація має бути монотонною, щоб навчання не відкочувалось. Дані складності не мають тягнути gameplay-типи в progression-шар.
+
+Risks to avoid:
+: Не копіювати чужі криві складності. Не давати складнішому AI недоступну зброю чи обхід turn-lock.
+
+Our original implementation:
+: `MissionDefinition` отримав `int Difficulty` (0/1/2), розкладений по 8 місіях (1-3 easy, 4-6 normal, 7-8 hard). Значення йде через `GameSessionContext.SelectedAiDifficulty`, а `BattleSceneController` мапить його в `AiDifficulty` для `SimpleAiShooter` (більший aim-error на легших рівнях). Покрито edit-mode тестом монотонної ескалації.

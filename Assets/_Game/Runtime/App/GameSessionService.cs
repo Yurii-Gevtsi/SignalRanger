@@ -42,7 +42,8 @@ namespace Game.App
                 mission != null ? mission.MissionId : string.Empty,
                 mission != null ? mission.AllowedWeaponIds : null,
                 mission != null ? mission.Reward.softCurrency : 0,
-                mission != null ? mission.Reward.unlockWeaponId : string.Empty);
+                mission != null ? mission.Reward.unlockWeaponId : string.Empty,
+                mission != null ? mission.Difficulty : 0);
             GameSessionContext.SelectLoadout(_saveData?.inventory?.selectedLoadoutWeaponIds?.ToArray());
         }
     }

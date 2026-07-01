@@ -9,6 +9,7 @@ namespace Game.Core
         public static string[] SelectedLoadoutWeaponIds { get; private set; } = System.Array.Empty<string>();
         public static int SelectedMissionRewardSoftCurrency { get; private set; }
         public static string SelectedMissionRewardUnlockWeaponId { get; private set; } = string.Empty;
+        public static int SelectedAiDifficulty { get; private set; }
         public static bool HasPendingMissionCompletion { get; private set; }
         public static int PendingCompletedMissionIndex { get; private set; }
 
@@ -18,7 +19,8 @@ namespace Game.Core
             string missionId,
             string[] allowedWeaponIds,
             int rewardSoftCurrency,
-            string rewardUnlockWeaponId)
+            string rewardUnlockWeaponId,
+            int aiDifficulty)
         {
             SelectedMissionIndex = missionIndex < 0 ? 0 : missionIndex;
             SelectedArenaIndex = arenaIndex < 0 ? 0 : arenaIndex;
@@ -26,6 +28,7 @@ namespace Game.Core
             SelectedAllowedWeaponIds = allowedWeaponIds ?? System.Array.Empty<string>();
             SelectedMissionRewardSoftCurrency = rewardSoftCurrency < 0 ? 0 : rewardSoftCurrency;
             SelectedMissionRewardUnlockWeaponId = rewardUnlockWeaponId ?? string.Empty;
+            SelectedAiDifficulty = aiDifficulty < 0 ? 0 : aiDifficulty > 2 ? 2 : aiDifficulty;
         }
 
         public static void SelectLoadout(string[] loadoutWeaponIds)

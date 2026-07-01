@@ -87,7 +87,7 @@ namespace Game.Gameplay.Battle.Assembly
             _arenas = PrototypeArenaLibrary.CreateAll();
             _weaponExecutor = new WeaponExecutor();
             _aiShooter = new SimpleAiShooter();
-            _aiDifficulty = AiDifficulty.Easy;
+            _aiDifficulty = MapDifficulty(GameSessionContext.SelectedAiDifficulty);
             _inventory = new WeaponInventoryRuntime(CreateMissionWeapons(), 1);
             SelectWeapon(_inventory.SelectedIndex);
 
@@ -358,6 +358,16 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _aimHadInput = _aimState.HasInput;
+        }
+
+        private static AiDifficulty MapDifficulty(int tier)
+        {
+            return tier switch
+            {
+                >= 2 => AiDifficulty.Hard,
+                1 => AiDifficulty.Normal,
+                _ => AiDifficulty.Easy
+            };
         }
 
         private void ReportTutorial(string triggerKey)

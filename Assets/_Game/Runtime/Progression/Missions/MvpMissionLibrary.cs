@@ -39,7 +39,8 @@ namespace Game.Progression.Missions
                     new[] { "weapon.close-pop", "weapon.steady-orb" },
                     new[] { "tutorial.close-range" },
                     40,
-                    "weapon.close-pop"),
+                    "weapon.close-pop",
+                    1),
                 Mission(
                     "mission.training.05",
                     "Вибір інструмента",
@@ -48,7 +49,8 @@ namespace Game.Progression.Missions
                     new[] { "weapon.steady-orb", "weapon.pulse-shell", "weapon.long-lance" },
                     new[] { "tutorial.weapon-switch" },
                     45,
-                    "weapon.long-lance"),
+                    "weapon.long-lance",
+                    1),
                 Mission(
                     "mission.training.06",
                     "Розсипний кут",
@@ -56,7 +58,8 @@ namespace Game.Progression.Missions
                     2,
                     new[] { "weapon.scatter-arc", "weapon.pulse-shell" },
                     new[] { "tutorial.area-choice" },
-                    50),
+                    50,
+                    difficulty: 1),
                 Mission(
                     "mission.training.07",
                     "Точний спис",
@@ -64,7 +67,8 @@ namespace Game.Progression.Missions
                     1,
                     new[] { "weapon.long-lance", "weapon.steady-orb" },
                     new[] { "tutorial.precision" },
-                    55),
+                    55,
+                    difficulty: 2),
                 Mission(
                     "mission.training.08",
                     "Контрольний бій",
@@ -72,7 +76,8 @@ namespace Game.Progression.Missions
                     2,
                     new[] { "weapon.steady-orb", "weapon.pulse-shell", "weapon.scatter-arc", "weapon.long-lance" },
                     new[] { "tutorial.review" },
-                    70)
+                    70,
+                    difficulty: 2)
             };
         }
 
@@ -84,7 +89,8 @@ namespace Game.Progression.Missions
             string[] allowedWeaponIds,
             string[] tutorialStepIds,
             int softCurrency,
-            string unlockWeaponId = "")
+            string unlockWeaponId = "",
+            int difficulty = 0)
         {
             return MissionDefinition.CreateRuntime(
                 missionId,
@@ -93,7 +99,8 @@ namespace Game.Progression.Missions
                 arenaIndex,
                 allowedWeaponIds,
                 tutorialStepIds,
-                new MissionRewardDefinition(softCurrency, unlockWeaponId));
+                new MissionRewardDefinition(softCurrency, unlockWeaponId),
+                difficulty);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Game.Progression.Missions
         [SerializeField] private string[] _allowedWeaponIds;
         [SerializeField] private string[] _tutorialStepIds;
         [SerializeField] private MissionRewardDefinition _reward;
+        [SerializeField] private int _difficulty;
 
         public string MissionId => _missionId;
         public string Title => _title;
@@ -22,6 +23,9 @@ namespace Game.Progression.Missions
         public string[] TutorialStepIds => _tutorialStepIds ?? Array.Empty<string>();
         public MissionRewardDefinition Reward => _reward ?? new MissionRewardDefinition(0);
 
+        /// <summary>AI difficulty tier for this mission: 0 = easy, 1 = normal, 2 = hard.</summary>
+        public int Difficulty => Mathf.Clamp(_difficulty, 0, 2);
+
         public static MissionDefinition CreateRuntime(
             string missionId,
             string title,
@@ -29,7 +33,8 @@ namespace Game.Progression.Missions
             int arenaIndex,
             string[] allowedWeaponIds,
             string[] tutorialStepIds,
-            MissionRewardDefinition reward)
+            MissionRewardDefinition reward,
+            int difficulty = 0)
         {
             var definition = CreateInstance<MissionDefinition>();
             definition._missionId = missionId ?? string.Empty;
@@ -39,6 +44,7 @@ namespace Game.Progression.Missions
             definition._allowedWeaponIds = allowedWeaponIds ?? Array.Empty<string>();
             definition._tutorialStepIds = tutorialStepIds ?? Array.Empty<string>();
             definition._reward = reward ?? new MissionRewardDefinition(0);
+            definition._difficulty = Mathf.Clamp(difficulty, 0, 2);
             return definition;
         }
 
