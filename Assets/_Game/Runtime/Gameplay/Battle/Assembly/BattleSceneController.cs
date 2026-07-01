@@ -72,6 +72,9 @@ namespace Game.Gameplay.Battle.Assembly
         private SimpleAiShooter _aiShooter;
         private AiDifficulty _aiDifficulty;
         private float _aiDecisionTimer;
+        private string _coachMessage = string.Empty;
+        private float _coachTimer;
+        private bool _aimHadInput;
 
         private void Awake()
         {
@@ -128,6 +131,11 @@ namespace Game.Gameplay.Battle.Assembly
             if (!IsBattleReady())
             {
                 return;
+            }
+
+            if (_coachTimer > 0f)
+            {
+                _coachTimer -= Time.deltaTime;
             }
 
             RenderHud();
@@ -226,7 +234,9 @@ namespace Game.Gameplay.Battle.Assembly
             _status = $"{DescribeArena(_currentArena)}. Наведи постріл перетягуванням, потім натисни Вогонь.";
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
+            _aimHadInput = false;
             RefreshUnitViews();
+            ReportTutorial(BattleTutorialBridge.MissionStart);
         }
 
         private void SelectWeapon(int weaponIndex)
@@ -342,6 +352,22 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _aimState = AimCalculator.Calculate(activePresenter.View.FirePoint.position, pointerWorld, _aimSettings);
+            if (_aimState.HasInput && !_aimHadInput)
+            {
+                ReportTutorial(BattleTutorialBridge.AimStarted);
+            }
+
+            _aimHadInput = _aimState.HasInput;
+        }
+
+        private void ReportTutorial(string triggerKey)
+        {
+            var message = BattleTutorialBridge.Report(triggerKey);
+            if (!string.IsNullOrEmpty(message))
+            {
+                _coachMessage = message;
+                _coachTimer = 4.5f;
+            }
         }
 
         private bool TryGetPointerWorldPosition(out Vector2 pointerWorld)
@@ -426,6 +452,11 @@ namespace Game.Gameplay.Battle.Assembly
             _status = $"{DescribeTeam(activePresenter.State.TeamId)} стріляє: {DescribeWeapon(weapon)}.";
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
+
+            if (activePresenter.State.TeamId == BattleTeamId.Player)
+            {
+                ReportTutorial(BattleTutorialBridge.ShotFired);
+            }
         }
 
         void IProjectileSpawner.Spawn(in ProjectileSpawnRequest request)
@@ -462,12 +493,18 @@ namespace Game.Gameplay.Battle.Assembly
             var settings = new RadialDamageSettings(damageWeapon.Damage, damageWeapon.ImpactRadius, 0.65f);
             DamageResolver.ResolveRadialDamage(allUnits, impact.Point, impact.OwnerUnitId, impact.ProjectileId, settings);
             RefreshUnitViews();
+            ReportTutorial(BattleTutorialBridge.ProjectileImpact);
 
             _battleResult = BattleResultEvaluator.Evaluate(_battleState);
             if (_battleResult.IsFinished)
             {
                 _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
                 _status = $"{_resultScreenState.Title}. Обери Повторити або Далі.";
+                if (_battleResult.Outcome == BattleOutcome.PlayerWon)
+                {
+                    ReportTutorial(BattleTutorialBridge.BattleWon);
+                }
+
                 return;
             }
 
@@ -723,9 +760,10 @@ namespace Game.Gameplay.Battle.Assembly
 
             var weapon = _inventory.Selected;
             var canFire = !_battleResult.IsFinished && !_projectileInFlight && _inventory.CanFireSelected && _aimState.HasInput;
+            var status = _coachTimer > 0f && !string.IsNullOrEmpty(_coachMessage) ? _coachMessage : _status;
 
             var state = new BattleHudState(
-                _status,
+                status,
                 _battleState.Turn.TurnNumber,
                 DescribeTeam(_battleState.Turn.ActiveTeam),
                 GetTeamHealth(BattleTeamId.Player),

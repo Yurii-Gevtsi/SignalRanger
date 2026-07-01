@@ -50,6 +50,7 @@ namespace Game.App
             Missions = MvpMissionLibrary.CreateAll();
             Campaign = new CampaignProgressionService(SaveService.Current, Missions);
             Tutorial = new TutorialService(SaveService.Current, TutorialStepLibrary.CreateFirstBattleSteps());
+            Game.Core.BattleTutorialBridge.Feed = new AppBattleTutorialFeed(Tutorial, SaveService);
             Session = new GameSessionService(SaveService.Current, Campaign);
             LastMissionCompletionResult = default;
             IsInitialized = true;
