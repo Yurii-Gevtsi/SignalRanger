@@ -125,8 +125,7 @@ namespace Game.App
             CreateButton("Loadout Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(620f, 86f), new Vector2(0f, 132f), SecondaryColor, "Спорядження", 30, OpenLoadout);
             CreateButton("Settings Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(620f, 86f), new Vector2(0f, 34f), SecondaryColor, "Налаштування", 30,
-                () => SetStatus("Мова зараз: українська. Повна локалізація буде окремим шаром."));
+                new Vector2(620f, 86f), new Vector2(0f, 34f), SecondaryColor, "Налаштування", 30, OpenSettings);
             CreateButton("Debug Battle Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(620f, 74f), new Vector2(0f, -60f), DisabledColor, "Debug: відкрити бій", 26, StartBattle);
 
@@ -144,6 +143,11 @@ namespace Game.App
         private void OpenLoadout()
         {
             LoadoutScreenController.Open(() => SetStatus("Спорядження оновлено."));
+        }
+
+        private void OpenSettings()
+        {
+            SettingsScreenController.Open(() => SetStatus("Налаштування збережено."));
         }
 
         private void SetStatus(string message)
