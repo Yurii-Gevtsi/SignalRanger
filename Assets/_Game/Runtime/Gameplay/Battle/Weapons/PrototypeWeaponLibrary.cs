@@ -49,7 +49,8 @@ namespace Game.Gameplay.Battle.Weapons
                     "weapon.close_pop.hint",
                     new[] { "starter", "short-range", "burst" }),
                 // Precision niche: flat, fast, small blast, high single-target damage.
-                // Rewards accurate aim; small radius keeps it from being a cheap AoE finisher.
+                // Flatness comes from the low gravityScale, not from extreme power, so the
+                // power range stays close to the other weapons for a consistent aim feel.
                 WeaponDefinition.CreateRuntime(
                     "weapon.long-lance",
                     "weapon.long_lance.name",
@@ -59,8 +60,8 @@ namespace Game.Gameplay.Battle.Weapons
                     0.09f,
                     0.35f,
                     8f,
-                    16f,
-                    30f,
+                    9f,
+                    24f,
                     -1,
                     "weapon.long_lance.hint",
                     new[] { "precision", "direct", "long-range" }),

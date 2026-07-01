@@ -449,11 +449,13 @@ namespace Game.Gameplay.Battle.Assembly
 
             var start = (Vector2)activePresenter.View.FirePoint.position + (_aimState.Direction * 0.45f);
             var velocity = _aimState.Direction * _aimState.Power;
+            // Match the actual projectile: Rigidbody2D scales global gravity by the weapon's gravityScale.
+            var gravity = Physics2D.gravity * _inventory.Selected.GravityScale;
 
             for (var i = 0; i < steps; i++)
             {
                 var t = i * stepTime;
-                var position = start + velocity * t + 0.5f * Physics2D.gravity * (t * t);
+                var position = start + velocity * t + 0.5f * gravity * (t * t);
                 _trajectoryLine.SetPosition(i, position);
             }
         }
