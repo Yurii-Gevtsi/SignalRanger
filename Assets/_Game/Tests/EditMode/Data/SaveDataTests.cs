@@ -45,9 +45,55 @@ namespace Game.Tests.EditMode.Data
         {
             var restored = SaveDataSerializer.FromJson("{}");
 
+            Assert.That(restored.schemaVersion, Is.EqualTo(SaveData.CurrentSchemaVersion));
             Assert.That(restored.profile.profileId, Is.Not.Empty);
             Assert.That(restored.inventory.selectedLoadoutWeaponIds, Is.Not.Empty);
             Assert.That(restored.settings.languageCode, Is.EqualTo("uk"));
+        }
+
+        [Test]
+        public void Serializer_MigratesVersionOneSaveToCurrent()
+        {
+            var json = @"{
+                ""schemaVersion"": 1,
+                ""profile"": {
+                    ""profileId"": ""legacy-profile"",
+                    ""playerName"": ""Старий профіль"",
+                    ""createdUtcTicks"": 42
+                },
+                ""campaign"": {
+                    ""highestUnlockedMissionIndex"": 3
+                },
+                ""economy"": {
+                    ""softCurrency"": 25
+                },
+                ""settings"": {
+                    ""languageCode"": ""uk""
+                }
+            }";
+
+            var restored = SaveDataSerializer.FromJson(json);
+
+            Assert.That(restored.schemaVersion, Is.EqualTo(SaveData.CurrentSchemaVersion));
+            Assert.That(restored.profile.profileId, Is.EqualTo("legacy-profile"));
+            Assert.That(restored.profile.playerName, Is.EqualTo("Старий профіль"));
+            Assert.That(restored.campaign.highestUnlockedMissionIndex, Is.EqualTo(3));
+            Assert.That(restored.economy.softCurrency, Is.EqualTo(25));
+            Assert.That(restored.settings.hasVolumeSettings, Is.True);
+            Assert.That(restored.settings.musicVolume, Is.EqualTo(0.8f));
+            Assert.That(restored.settings.sfxVolume, Is.EqualTo(1f));
+        }
+
+        [Test]
+        public void MigrationService_RejectsNewerSchema()
+        {
+            var saveData = SaveData.CreateNew();
+            saveData.schemaVersion = SaveData.CurrentSchemaVersion + 1;
+            var migrationService = new SaveMigrationService();
+
+            Assert.That(
+                () => migrationService.MigrateToCurrent(saveData),
+                Throws.InvalidOperationException);
         }
     }
 

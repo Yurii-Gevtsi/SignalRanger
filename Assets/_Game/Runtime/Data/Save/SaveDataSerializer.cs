@@ -29,7 +29,7 @@ namespace Game.Data.Save
                 throw new InvalidOperationException("Save JSON could not be parsed.");
             }
 
-            data.EnsureDefaults();
+            new SaveMigrationService().MigrateToCurrent(data);
             return data;
         }
     }

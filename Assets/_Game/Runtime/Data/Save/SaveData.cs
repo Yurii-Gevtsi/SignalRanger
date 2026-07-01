@@ -6,7 +6,7 @@ namespace Game.Data.Save
     [Serializable]
     public sealed class SaveData
     {
-        public const int CurrentSchemaVersion = 1;
+        public const int CurrentSchemaVersion = 2;
 
         public int schemaVersion;
         public SaveProfileData profile;

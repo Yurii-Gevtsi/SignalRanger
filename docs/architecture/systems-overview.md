@@ -84,6 +84,21 @@ Battle system спочатку має бути маленьким і читаб�
 
 Ранній MVP має уникати важких level gates і багатьох ресурсів. Progression має вести до бою, а не ховати бій за меню.
 
+Поточний MVP-шар:
+
+- `MissionDefinition` описує місію, арену, дозволену зброю, tutorial step IDs і reward preview;
+- `MvpMissionLibrary` дає 8 власних runtime місій для першого campaign pass;
+- `CampaignProgressionService` відкриває наступну місію, застосовує reward один раз і додає unlock IDs;
+- `GameSessionContext` передає вибрану місію в battle без залежності gameplay від app/progression;
+- `MenuSceneController` показує next mission CTA.
+
+Ще не зроблено:
+
+- повний mission select screen;
+- authored ScriptableObject assets замість runtime library;
+- різні enemy setups per mission;
+- окремий reward screen із once-only application receipt.
+
 ## Economy
 
 Початкова економіка максимально проста:
@@ -94,6 +109,20 @@ Battle system спочатку має бути маленьким і читаб�
 - premium currency лише після окремого monetization design.
 
 Economy data створюється у власних configs і налаштовується через playtests. Не переносити economy values або pricing logic з прикладів.
+
+Поточний MVP-шар:
+
+- `EconomyService` працює поверх `SaveData.economy`;
+- `Grant` додає soft currency з reason;
+- `TrySpend` блокує витрату, якщо балансу недостатньо;
+- одна soft currency без premium economy.
+
+Ще не зроблено:
+
+- shop prices;
+- reward receipt/idempotency object;
+- UI для витрат;
+- аналітика economy events.
 
 ## Inventory And Loadout
 
@@ -112,6 +141,20 @@ Initial version:
 - event items;
 - rarity лише якщо вона додає clarity і retention без clutter.
 
+Поточний MVP-шар:
+
+- `InventoryService` працює поверх `SaveData.inventory`;
+- weapon unlock idempotent;
+- loadout приймає лише unlocked weapons;
+- дублікати у loadout прибираються.
+
+Ще не зроблено:
+
+- loadout screen;
+- slot limits per mission;
+- item categories beyond weapons;
+- validation against authored mission content.
+
 ## Tutorial
 
 Tutorial має бути step-based і коротким:
@@ -125,6 +168,21 @@ Tutorial має бути step-based і коротким:
 - return to next mission.
 
 Tutorial system посилається на abstract triggers і UI targets, а не hard-coded screen logic.
+
+## Audio
+
+Поточний MVP-шар:
+
+- `IAudioService` описує SFX/music API;
+- `NoOpAudioService` зберігає music/SFX volume у save settings;
+- реальне програвання звуку поки відкладено до assets/feel pass.
+
+Ще не зроблено:
+
+- audio mixer;
+- SFX/music asset library;
+- gameplay feedback calls;
+- settings screen для гучності.
 
 ## UI Navigation
 
@@ -184,6 +242,22 @@ Save data:
 - backend API.
 
 Gameplay і UI викликають наші interfaces. Real SDK adapters додаються пізніше в `Infrastructure`.
+
+Поточний MVP-шар:
+
+- `IAnalyticsService` + `NoOpAnalyticsService`;
+- `IAdsService` + `NoOpAdsService`;
+- `IPurchaseService` + `NoOpPurchaseService`;
+- `IRemoteConfigService` + `NoOpRemoteConfigService`;
+- `INotificationService` + `NoOpNotificationService`;
+- `AppServices` створює no-op реалізації без SDK packages.
+
+Ще не зроблено:
+
+- real SDK adapters;
+- Android permissions review for SDK features;
+- placements/products/config schema;
+- analytics event taxonomy.
 
 ## Recommended First Milestone
 

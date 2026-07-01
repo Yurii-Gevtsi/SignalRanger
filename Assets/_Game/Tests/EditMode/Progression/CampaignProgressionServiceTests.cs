@@ -1,0 +1,64 @@
+using Game.Data.Save;
+using Game.Progression.Missions;
+using NUnit.Framework;
+
+namespace Game.Tests.EditMode.Progression
+{
+    public sealed class CampaignProgressionServiceTests
+    {
+        [Test]
+        public void CompleteMission_AppliesRewardAndUnlocksNextMission()
+        {
+            var saveData = SaveData.CreateNew();
+            var service = new CampaignProgressionService(saveData, MvpMissionLibrary.CreateAll());
+
+            var result = service.CompleteMission(0);
+
+            Assert.That(result.Applied, Is.True);
+            Assert.That(saveData.campaign.completedMissionIds, Contains.Item("mission.training.01"));
+            Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.EqualTo(1));
+            Assert.That(saveData.economy.softCurrency, Is.EqualTo(25));
+        }
+
+        [Test]
+        public void CompleteMission_DoesNotApplyRewardTwice()
+        {
+            var saveData = SaveData.CreateNew();
+            var service = new CampaignProgressionService(saveData, MvpMissionLibrary.CreateAll());
+
+            service.CompleteMission(0);
+            var secondResult = service.CompleteMission(0);
+
+            Assert.That(secondResult.Applied, Is.False);
+            Assert.That(saveData.economy.softCurrency, Is.EqualTo(25));
+            Assert.That(saveData.campaign.completedMissionIds, Has.Count.EqualTo(1));
+        }
+
+        [Test]
+        public void CompleteMission_AppliesWeaponUnlockOnce()
+        {
+            var saveData = SaveData.CreateNew();
+            var service = new CampaignProgressionService(saveData, MvpMissionLibrary.CreateAll());
+
+            var result = service.CompleteMission(2);
+            var secondResult = service.CompleteMission(2);
+
+            Assert.That(result.HasUnlock, Is.True);
+            Assert.That(result.UnlockedWeaponId, Is.EqualTo("weapon.scatter-arc"));
+            Assert.That(secondResult.HasUnlock, Is.False);
+            Assert.That(saveData.inventory.unlockedWeaponIds, Contains.Item("weapon.scatter-arc"));
+        }
+
+        [Test]
+        public void GetNextMission_UsesHighestUnlockedMissionIndex()
+        {
+            var saveData = SaveData.CreateNew();
+            saveData.campaign.highestUnlockedMissionIndex = 3;
+            var service = new CampaignProgressionService(saveData, MvpMissionLibrary.CreateAll());
+
+            var mission = service.GetNextMission();
+
+            Assert.That(mission.MissionId, Is.EqualTo("mission.training.04"));
+        }
+    }
+}

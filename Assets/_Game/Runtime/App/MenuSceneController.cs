@@ -1,6 +1,7 @@
 using System;
 using Game.Core;
 using Game.Data.Save;
+using Game.Progression.Missions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -84,6 +85,7 @@ namespace Game.App
         private void BuildMenu()
         {
             var saveData = AppServices.SaveService.Current;
+            var nextMission = AppServices.Campaign.GetNextMission();
             var canvasObject = new GameObject("Menu Canvas");
             var canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -111,12 +113,12 @@ namespace Game.App
             CreateText("Mission Label", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-88f, 68f), new Vector2(0f, -54f), 34, TextAnchor.MiddleLeft, "Наступна місія");
             CreateText("Mission Name", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-88f, 84f), new Vector2(0f, -132f), 46, TextAnchor.MiddleLeft, "Тренувальна галявина");
+                new Vector2(-88f, 84f), new Vector2(0f, -132f), 46, TextAnchor.MiddleLeft, DescribeMissionTitle(nextMission));
             CreateText("Mission Details", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-88f, 112f), new Vector2(0f, -232f), 26, TextAnchor.UpperLeft,
-                "Наведи постріл перетягуванням, зафіксуй приціл і підтвердь постріл кнопкою.");
+                DescribeMissionDetails(nextMission));
             CreateText("Profile Summary", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-88f, 64f), new Vector2(0f, -344f), 24, TextAnchor.UpperLeft, DescribeProfile(saveData));
+                new Vector2(-88f, 82f), new Vector2(0f, -352f), 24, TextAnchor.UpperLeft, DescribeProfile(saveData, nextMission));
 
             CreateButton("Play Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(620f, 116f), new Vector2(0f, 236f), PrimaryColor, "Грати", 44, StartBattle);
@@ -131,7 +133,7 @@ namespace Game.App
 
             _statusText = CreateText("Status", root, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(-96f, 74f), new Vector2(0f, 48f), 26, TextAnchor.MiddleLeft,
-                DescribeLoadStatus(AppServices.LastSaveLoadResult));
+                DescribeMenuStatus(AppServices.LastSaveLoadResult, AppServices.LastMissionCompletionResult));
         }
 
         private void StartBattle()
@@ -148,14 +150,27 @@ namespace Game.App
             }
         }
 
-        private static string DescribeProfile(SaveData saveData)
+        private static string DescribeProfile(SaveData saveData, MissionDefinition mission)
         {
             if (saveData == null)
             {
                 return "Профіль: локальні дані ще не готові.";
             }
 
-            return $"Профіль: {saveData.profile.playerName}\nМісія: {saveData.campaign.highestUnlockedMissionIndex + 1}\nМонети: {saveData.economy.softCurrency}";
+            var reward = mission != null ? mission.Reward.softCurrency : 0;
+            return $"Профіль: {saveData.profile.playerName}\nМісія: {saveData.campaign.highestUnlockedMissionIndex + 1}\nМонети: {saveData.economy.softCurrency}\nНагорода: {reward} монет";
+        }
+
+        private static string DescribeMissionTitle(MissionDefinition mission)
+        {
+            return mission != null ? mission.Title : "Тренувальна місія";
+        }
+
+        private static string DescribeMissionDetails(MissionDefinition mission)
+        {
+            return mission != null
+                ? mission.Description
+                : "Наведи постріл перетягуванням, зафіксуй приціл і підтвердь постріл кнопкою.";
         }
 
         private static string DescribeLoadStatus(SaveLoadResult result)
@@ -166,6 +181,17 @@ namespace Game.App
                 SaveLoadStatus.RecoveredFromCorrupt => "Save було відновлено з резервною копією. Можна грати далі.",
                 _ => "Локальний профіль завантажено. Натисни «Грати», щоб перейти до бою."
             };
+        }
+
+        private static string DescribeMenuStatus(SaveLoadResult loadResult, MissionCompletionResult completionResult)
+        {
+            if (completionResult.Applied)
+            {
+                var unlock = completionResult.HasUnlock ? " Нове спорядження відкрито." : string.Empty;
+                return $"Місію завершено. +{completionResult.GrantedSoftCurrency} монет.{unlock}";
+            }
+
+            return DescribeLoadStatus(loadResult);
         }
 
         private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,

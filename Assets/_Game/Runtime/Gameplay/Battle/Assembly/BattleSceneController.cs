@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Core;
 using Game.Gameplay.Battle.Arenas;
+using Game.Gameplay.Battle.AI;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Projectiles;
 using Game.Gameplay.Battle.Results;
@@ -68,6 +69,9 @@ namespace Game.Gameplay.Battle.Assembly
         private BattleResultScreenState _resultScreenState;
         private string _status;
         private BattleHudView _hud;
+        private SimpleAiShooter _aiShooter;
+        private AiDifficulty _aiDifficulty;
+        private float _aiDecisionTimer;
 
         private void Awake()
         {
@@ -79,10 +83,26 @@ namespace Game.Gameplay.Battle.Assembly
             _aimSettings = _baseAimSettings;
             _arenas = PrototypeArenaLibrary.CreateAll();
             _weaponExecutor = new WeaponExecutor();
-            _inventory = new WeaponInventoryRuntime(PrototypeWeaponLibrary.CreateAll(), 1);
+            _aiShooter = new SimpleAiShooter();
+            _aiDifficulty = AiDifficulty.Easy;
+            _inventory = new WeaponInventoryRuntime(CreateMissionWeapons(), 1);
             SelectWeapon(_inventory.SelectedIndex);
 
-            LoadArena(0);
+            LoadArena(GameSessionContext.SelectedArenaIndex);
+        }
+
+        private static WeaponDefinition[] CreateMissionWeapons()
+        {
+            var allWeapons = PrototypeWeaponLibrary.CreateAll();
+            var allowedWeaponIds = GameSessionContext.SelectedAllowedWeaponIds;
+            if (allowedWeaponIds == null || allowedWeaponIds.Length == 0)
+            {
+                return allWeapons;
+            }
+
+            var allowed = new HashSet<string>(allowedWeaponIds);
+            var filtered = allWeapons.Where(weapon => weapon != null && allowed.Contains(weapon.WeaponId)).ToArray();
+            return filtered.Length == 0 ? allWeapons : filtered;
         }
 
         private void BuildHud()
@@ -114,6 +134,12 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (_battleResult.IsFinished)
             {
+                return;
+            }
+
+            if (_battleState.Turn.ActiveTeam == BattleTeamId.Opponent)
+            {
+                UpdateOpponentAi();
                 return;
             }
 
@@ -190,6 +216,7 @@ namespace Game.Gameplay.Battle.Assembly
             _battleResult = BattleResult.InProgress;
             _resultScreenState = default;
             _projectileInFlight = false;
+            _aiDecisionTimer = 0f;
             _status = $"{DescribeArena(_currentArena)}. Наведи постріл перетягуванням, потім натисни Вогонь.";
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
@@ -433,13 +460,14 @@ namespace Game.Gameplay.Battle.Assembly
             _battleResult = BattleResultEvaluator.Evaluate(_battleState);
             if (_battleResult.IsFinished)
             {
-                _resultScreenState = BattleResultScreenFactory.Create(_battleResult, _battleState.Turn.TurnNumber);
+                _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
                 _status = $"{_resultScreenState.Title}. Обери Повторити або Далі.";
                 return;
             }
 
             _turnService.AdvanceTurn(_battleState);
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
+            _aiDecisionTimer = 0f;
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
             _status = $"Хід: {DescribeTeam(_battleState.Turn.ActiveTeam)}.";
@@ -452,6 +480,58 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 presenter.Refresh(presenter.State.UnitId == _battleState.Turn.ActiveUnitId);
             }
+        }
+
+        private void UpdateOpponentAi()
+        {
+            if (_projectileInFlight)
+            {
+                return;
+            }
+
+            _aiDecisionTimer += Time.deltaTime;
+            if (_aiDecisionTimer < 0.55f)
+            {
+                _status = "Суперник прицілюється.";
+                return;
+            }
+
+            var activePresenter = GetActivePresenter();
+            var targetPresenter = _unitPresenters.FirstOrDefault(presenter =>
+                presenter.State.TeamId == BattleTeamId.Player && !presenter.State.IsDefeated);
+            if (activePresenter == null || targetPresenter == null)
+            {
+                return;
+            }
+
+            var origin = (Vector2)activePresenter.View.FirePoint.position;
+            var target = (Vector2)targetPresenter.View.transform.position;
+            var plan = _aiShooter.CreateShot(origin, target, _aimSettings, _aiDifficulty, _battleState.Turn.TurnNumber);
+            _aimState = new AimState(origin, plan.Direction, plan.Power, true);
+            _status = "Суперник стріляє.";
+            Fire();
+            _aiDecisionTimer = 0f;
+        }
+
+        private static BattleResultScreenState CreateResultScreenState(BattleResult result, int turnNumber)
+        {
+            var state = BattleResultScreenFactory.Create(result, turnNumber);
+            if (result.Outcome != BattleOutcome.PlayerWon)
+            {
+                return state;
+            }
+
+            var unlockText = string.IsNullOrWhiteSpace(GameSessionContext.SelectedMissionRewardUnlockWeaponId)
+                ? string.Empty
+                : "Нове спорядження відкрито після бою";
+
+            return new BattleResultScreenState(
+                result,
+                state.Title,
+                state.Subtitle,
+                new BattleRewardPreview(GameSessionContext.SelectedMissionRewardSoftCurrency, unlockText),
+                state.RetryLabel,
+                state.ContinueLabel);
         }
 
         private BattleUnitPresenter GetActivePresenter()
@@ -605,6 +685,11 @@ namespace Game.Gameplay.Battle.Assembly
             if (!IsBattleReady() || !_battleResult.IsFinished || !_resultScreenState.CanContinue)
             {
                 return;
+            }
+
+            if (_battleResult.Outcome == BattleOutcome.PlayerWon)
+            {
+                GameSessionContext.ReportMissionCompleted();
             }
 
             SceneManager.LoadScene(GameSceneNames.Menu);

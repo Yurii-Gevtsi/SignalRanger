@@ -658,6 +658,12 @@ Acceptance criteria:
 - old save can load;
 - migration failures logged, not silently ignored.
 
+Status:
+
+- Completed first pass: `ISaveMigration`, `SaveMigrationService`, v0->v1 and v1->v2 migrations exist.
+- `SaveDataSerializer` migrates loaded JSON to `SaveData.CurrentSchemaVersion`.
+- Tests cover v1 migration and rejection of newer unsupported schemas.
+
 ## Phase 7. Progression And Missions
 
 Ціль: 8-12 handcrafted missions з поступовим навчанням.
@@ -686,6 +692,13 @@ Acceptance criteria:
 - mission can launch battle with selected config;
 - mission completion saved.
 
+Status:
+
+- Completed first pass: `Game.Progression` contains `MissionDefinition`, reward data and an 8-mission MVP runtime library.
+- Menu reads the next mission title/description/reward from campaign data.
+- Battle receives selected arena and allowed weapon IDs through `GameSessionContext`.
+- Known gap: authored ScriptableObject assets and editor validation are deferred; runtime definitions drive the MVP slice.
+
 ### Step 7.2. Campaign Path
 
 Створити:
@@ -699,6 +712,12 @@ Acceptance criteria:
 
 - after win mission 1 unlocks mission 2;
 - loss allows retry.
+
+Status:
+
+- Completed first pass: `CampaignProgressionService` unlocks the next mission, applies rewards once and persists via local save when returning from a successful battle.
+- Loss still supports retry without applying progress.
+- Tests cover reward application, idempotency, weapon unlock and next mission lookup.
 
 ### Step 7.3. MVP Mission Set
 
@@ -738,6 +757,13 @@ Acceptance criteria:
 - tutorial can wait for aim/fire/hit/win;
 - completed steps persist.
 
+Status:
+
+- Completed first pass: `Game.Tutorial` contains step definitions, trigger/completion enums, first-battle runtime step library and `TutorialService`.
+- Tutorial completion persists through `SaveData.tutorial.completedStepIds`.
+- Tests cover trigger lookup, prerequisite gating and idempotent completion.
+- Visual tutorial overlay and battle event wiring are deferred to Phase 8.2.
+
 ### Step 8.2. First Battle Tutorial
 
 Покрити:
@@ -773,6 +799,12 @@ Acceptance criteria:
 - loadout persists;
 - locked weapons unavailable.
 
+Status:
+
+- Completed first pass: `Game.Inventory` contains `InventoryService` for weapon unlocks and loadout validation over `SaveData`.
+- Tests cover idempotent unlock, locked weapon rejection and duplicate removal.
+- Loadout UI is deferred.
+
 ### Step 9.2. Economy Service
 
 Створити:
@@ -787,6 +819,13 @@ Acceptance criteria:
 - mission rewards grant currency;
 - spend cannot go negative.
 
+Status:
+
+- Completed first pass: `Game.Economy` contains `EconomyService` with grant/spend validation for one soft currency.
+- App composition creates the service over loaded local save.
+- Tests cover grant, successful spend and insufficient-balance rejection.
+- Mission rewards currently apply through campaign service over save data; routing all reward grants through economy service is a later cleanup.
+
 ### Step 9.3. Rewards Screen
 
 Створити:
@@ -799,6 +838,13 @@ Acceptance criteria:
 
 - reward result comes from mission config;
 - reward applied once.
+
+Status:
+
+- Completed first pass: battle result preview uses selected mission reward data from `GameSessionContext`.
+- Successful `Continue` applies mission completion through campaign progression and local save.
+- Menu shows a short applied reward status after return.
+- Full standalone reward screen and receipt model are deferred.
 
 ## Phase 10. AI
 
@@ -824,6 +870,13 @@ Acceptance criteria:
 - player can play against AI;
 - easy AI misses sometimes;
 - AI turn not too slow.
+
+Status:
+
+- Completed first pass: `SimpleAiShooter` estimates direction/power toward a living player unit and opponent turns auto-fire after a short delay.
+- AI uses the existing battle fire path, turn locks and weapon executor.
+- Tests cover aim direction and power bounds.
+- Difficulty miss/error tuning is deferred to Phase 10.2.
 
 ### Step 10.2. AI Difficulty
 
@@ -873,6 +926,12 @@ Acceptance criteria:
 - settings persist;
 - gameplay can request SFX through service/interface.
 
+Status:
+
+- Completed first pass: `Game.Audio` contains `IAudioService` and `NoOpAudioService`.
+- Audio volume settings persist through `SaveData.settings`.
+- Real audio playback, mixer routing and gameplay SFX calls are deferred until assets/feel pass.
+
 ## Phase 12. Infrastructure Interfaces
 
 Ціль: підготувати місце для SDK без додавання SDK.
@@ -902,6 +961,12 @@ Acceptance criteria:
 
 - game compiles without SDK packages;
 - UI/gameplay call interfaces only.
+
+Status:
+
+- Completed first pass: no-op interfaces/implementations exist for analytics, ads, purchases, remote config and notifications.
+- `AppServices` exposes infrastructure abstractions without real SDK packages or permissions.
+- Tests cover no-op remote config, ads and purchase behavior.
 
 ## Phase 13. Testing And Verification
 

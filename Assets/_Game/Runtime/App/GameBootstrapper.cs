@@ -46,6 +46,7 @@ namespace Game.App
 
             if (scene.name == GameSceneNames.Menu)
             {
+                ApplyPendingMissionCompletion();
                 MenuSceneController.EnsureCreated();
                 return;
             }
@@ -54,6 +55,24 @@ namespace Game.App
             {
                 Game.Gameplay.Battle.Assembly.BattleSceneBootstrap.EnsureCreated();
             }
+        }
+
+        private static void ApplyPendingMissionCompletion()
+        {
+            if (!GameSessionContext.HasPendingMissionCompletion)
+            {
+                return;
+            }
+
+            var missionIndex = GameSessionContext.ConsumePendingMissionCompletion();
+            var result = AppServices.Campaign.CompleteMission(missionIndex);
+            AppServices.LastMissionCompletionResult = result;
+            if (result.Applied)
+            {
+                AppServices.SaveService.Save(AppServices.SaveService.Current);
+            }
+
+            AppServices.Session.SelectNextMission();
         }
     }
 }

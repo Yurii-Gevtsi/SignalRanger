@@ -239,3 +239,88 @@ Risks to avoid:
 
 Our original implementation plan:
 : Додано `SaveData`, nested save sections, `SaveDataSerializer`, `ISaveService`, `JsonFileSaveService`, save tests і підключення в `AppServices`/`GameSessionService`/`MenuSceneController`. Migrations і реальне застосування rewards залишені для наступних фаз.
+
+## Phase 7: Missions And Campaign Path
+
+Feature:
+: Linear MVP campaign missions, next mission CTA, mission rewards and unlock progression.
+
+Example signals:
+: Reference packages мають окремі mission/progression content-групи, tutorial/learning місії, map selection signals, reward UI та unlock flows. Для MVP корисний принцип поступового навчання, а не конкретні місії чи rewards.
+
+Useful principles:
+: Ранні місії мають вчити одну дію за раз і швидко вести в бій. Mission data має бути окремою від battle runtime. Completion має застосовувати reward один раз, відкривати наступну місію й зберігати прогрес локально.
+
+Risks to avoid:
+: Не копіювати mission names, tutorial text, map layouts, unlock costs, reward tables, difficulty curves або UI composition. Не додавати важку meta-progression до стабільного battle loop.
+
+Our original implementation plan:
+: Додано `Game.Progression`, `MissionDefinition`, `MissionRewardDefinition`, `MvpMissionLibrary`, `CampaignProgressionService`, campaign tests і `GameSessionContext` для передачі arena/allowed weapons у battle без залежності gameplay від app/progression. Successful result continue застосовує mission completion, save і повертає в menu.
+
+## Phase 8: Tutorial Step System
+
+Feature:
+: Lightweight tutorial step system for first battle guidance.
+
+Example signals:
+: Reference packages мають explicit learning/tutorial content groups і step-like instructional text навколо movement, aiming, weapon use та objective completion. Для MVP корисний staged teaching із triggers, а не конкретні тексти чи порядок.
+
+Useful principles:
+: Tutorial state має зберігатися окремо від UI. Кроки потребують stable IDs, trigger conditions, prerequisites і completion rules. Перший implementation не має блокувати battle flow важкими modal UI.
+
+Risks to avoid:
+: Не копіювати tutorial text, target coordinates, mission layouts, UI art, timing або exact lesson sequence. Не змушувати гравця довго чекати до першого пострілу.
+
+Our original implementation plan:
+: Додано `Game.Tutorial`, `TutorialStepDefinition`, trigger/completion enums, first-battle runtime step library, `TutorialService` і edit-mode tests. Visual tutorial overlay відкладено до окремого безпечного UI pass.
+
+## Phase 9: Economy And Inventory Services
+
+Feature:
+: Lightweight inventory/loadout ownership and one soft-currency economy service.
+
+Example signals:
+: Reference packages показують, що зрілі ігри швидко накопичують currencies, unlocks, shop gates, reward sources і item categories. Для MVP корисний service ownership і validation, а не конкретні prices/tables/shop flows.
+
+Useful principles:
+: Economy має давати grant/spend validation через service. Inventory має знати owned IDs і перевіряти loadout до бою. До стабільного battle/progression достатньо однієї soft currency.
+
+Risks to avoid:
+: Не копіювати economy values, prices, item IDs, rarity systems, unlock tables, shop layouts або monetization logic. Не вводити premium advantage чи кілька currencies у MVP slice.
+
+Our original implementation plan:
+: Додано `Game.Economy` з `EconomyService`, `Game.Inventory` з `InventoryService`, app composition wiring і edit-mode tests. Shop/loadout UI та reward screen залишені для наступних passes.
+
+## Phase 10: Simple AI Shooter
+
+Feature:
+: Simple offline AI shooter for MVP battles.
+
+Example signals:
+: Reference packages мають PvE/bot і learning-battle signals, а progression залежить від повторюваних offline encounters. Для MVP корисні readable challenge і pacing, а не конкретні formulas/bot data.
+
+Useful principles:
+: AI має використовувати ті самі battle rules, що й гравець, робити одну зрозумілу дію за хід і не обходити action locks. First pass може бути deterministic, щоб shot feel було легше дебажити.
+
+Risks to avoid:
+: Не копіювати bot algorithms, exact difficulty curves, encounter logic, names, target priorities або balance. Не дозволяти AI використовувати недоступну зброю.
+
+Our original implementation plan:
+: Додано pure `SimpleAiShooter`, `AiShotPlan`, edit-mode tests і auto-fire для opponent turn у `BattleSceneController` через існуючий weapon executor path.
+
+## Phase 12: Infrastructure Interfaces
+
+Feature:
+: No-op analytics, ads, purchases, remote config and notification service interfaces.
+
+Example signals:
+: Reference packages показують SDK categories навколо ads, billing, analytics, notifications, config і platform services. Для MVP корисна ізоляція SDK через власні interfaces до додавання real packages.
+
+Useful principles:
+: Gameplay і UI мають викликати project-owned abstractions. No-op implementations тримають editor/early builds deterministic, network-free і permission-free. Real adapters додаються пізніше в infrastructure.
+
+Risks to avoid:
+: Не копіювати SDK keys, package names, placements, product IDs, permissions, billing flows або notification text. Не додавати real SDK dependencies до окремого рішення.
+
+Our original implementation plan:
+: Додано interfaces і no-op implementations для analytics, ads, purchases, remote config і notifications, плюс wiring у `AppServices`.
