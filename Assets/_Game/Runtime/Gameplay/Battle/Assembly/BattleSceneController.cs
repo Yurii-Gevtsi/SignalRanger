@@ -4,6 +4,7 @@ using Game.Core;
 using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.AI;
 using Game.Gameplay.Battle.Domain;
+using Game.Gameplay.Battle.Feedback;
 using Game.Gameplay.Battle.Projectiles;
 using Game.Gameplay.Battle.Results;
 using Game.Gameplay.Battle.Runtime;
@@ -367,6 +368,7 @@ namespace Game.Gameplay.Battle.Assembly
             if (_aimState.HasInput && !_aimHadInput)
             {
                 ReportTutorial(BattleTutorialBridge.AimStarted);
+                EmitFeedback(BattleFeedbackEventType.AimStarted);
             }
 
             _aimHadInput = _aimState.HasInput;
@@ -389,6 +391,25 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 _coachMessage = message;
                 _coachTimer = 4.5f;
+            }
+        }
+
+        private static void EmitFeedback(BattleFeedbackEventType type)
+        {
+            var key = type switch
+            {
+                BattleFeedbackEventType.AimStarted => BattleFeedbackBridge.Aim,
+                BattleFeedbackEventType.ShotFired => BattleFeedbackBridge.Shot,
+                BattleFeedbackEventType.ProjectileImpact => BattleFeedbackBridge.Impact,
+                BattleFeedbackEventType.DamageResolved => BattleFeedbackBridge.Damage,
+                BattleFeedbackEventType.UnitDefeated => BattleFeedbackBridge.Defeat,
+                BattleFeedbackEventType.BattleFinished => BattleFeedbackBridge.Finished,
+                _ => string.Empty
+            };
+
+            if (!string.IsNullOrEmpty(key))
+            {
+                BattleFeedbackBridge.Report(key);
             }
         }
 
@@ -474,6 +495,7 @@ namespace Game.Gameplay.Battle.Assembly
             _status = $"{DescribeTeam(activePresenter.State.TeamId)} стріляє: {DescribeWeapon(weapon)}.";
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
+            EmitFeedback(BattleFeedbackEventType.ShotFired);
 
             if (activePresenter.State.TeamId == BattleTeamId.Player)
             {
@@ -516,10 +538,13 @@ namespace Game.Gameplay.Battle.Assembly
             DamageResolver.ResolveRadialDamage(allUnits, impact.Point, impact.OwnerUnitId, impact.ProjectileId, settings);
             RefreshUnitViews();
             ReportTutorial(BattleTutorialBridge.ProjectileImpact);
+            EmitFeedback(BattleFeedbackEventType.ProjectileImpact);
 
             _battleResult = BattleResultEvaluator.Evaluate(_battleState);
             if (_battleResult.IsFinished)
             {
+                EmitFeedback(BattleFeedbackEventType.UnitDefeated);
+                EmitFeedback(BattleFeedbackEventType.BattleFinished);
                 _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
                 _status = $"{_resultScreenState.Title}. Обери Повторити або Далі.";
                 if (_battleResult.Outcome == BattleOutcome.PlayerWon)
