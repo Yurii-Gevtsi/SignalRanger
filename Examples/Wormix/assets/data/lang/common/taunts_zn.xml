@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- comments in the battle-->
+<!-- in all messages %source% - name of active player, %target% damaged player -->
+<taunts>
+    <!-- message at the beginning of the turn -->
+    <onNextTurn>
+        <message>Today is the end of the world!</message>
+        <message>%source% hits the ground running.</message>
+        <message>Witness the wrath of %source%!</message>
+        <message>%source% hatches a plan.</message>
+        <message>%source% smells a rat.</message>
+        <message>Divide and conquer.</message>
+        <message>First come, first serve.</message>
+        <message>Forewarned is forearmed.</message>
+        <message>He who hesitates is lost.</message>
+        <message>Life is but a moment.</message>
+        <message>Sink or swim!</message>
+        <message>Time is money.</message>
+        <message>%source% means business.</message>
+        <message>%source% overlooks the fighting ground.</message>
+        <message>Beware of %source%!</message>
+        <message>Death is near, %source%.</message>
+    </onNextTurn>
+    <!-- player hit the enemy -->
+    <onDamage>
+        <message>It hurts, doesn't it?</message>
+        <message>You're gonna pay for that, %source%.</message>
+        <message>You had no chance, %target%.</message>
+        <message>Keep it up, %source%! Victory is near!</message>
+        <message>%source% handles the situation.</message>
+        <message>The best defence is a good offence.</message>
+        <message>Every bullet has its billet.</message>
+        <message>Before you can say Jack Robinson.</message>
+        <message>Fortune favours the brave.</message>
+        <message>Hard nut to crack.</message>
+        <message>No flying from fate.</message>
+        <message>The ends justify the means.</message>
+        <message>Accept your fate, %target%.</message>
+        <message>You're gonna regret that, %source%.</message>
+        <message>Nice work, %source%!</message>
+        <message>%source% rulezzz!</message>
+        <message>The game is over, %target%!</message>
+        <message>I feel sorry for you, %target%.</message>
+        <message>You can’t hide from me, %target%.</message>
+    </onDamage>
+    <!-- player hit one of his team -->
+    <onSelfDamage>
+        <message>%target% is devastated.</message>
+        <message>Curses, like chickens, come home to roost.</message>
+        <message>This will not be forgotten.</message>
+        <message>Do not try to that at home!</message>
+        <message>You're a lucky fellow, %target%.</message>
+        <message>All is well that ends well.</message>
+        <message>Deeds, not words, %target%.</message>
+        <message>Easy come, easy go.</message>
+        <message>Every day is not Sunday.</message>
+        <message>From bad to worse.</message>
+        <message>Hold all, lose all.</message>
+        <message>Haste makes waste.</message>
+        <message>Learn to creep before you leap.</message>
+        <message>Live and learn.</message>
+        <message>Look before you leap.</message>
+        <message>%target% got it wrong.</message>
+        <message>No comments.</message>
+        <message>Bravo! Encore! Encore!</message>
+    </onSelfDamage>
+</taunts>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <message name="DOWNGRADE_ON_SHIFT.NOTE" value="This weapon has a upgraded/normal mode switch with additional button"/>
+    <message name="EXPLOSION_DELAY.NOTE"
+             value="Explodes after full stop. You may set the timer for 1 second by the alternate weapon button."/>
+    <message name="ROPE.NOTE.U2" value="To shoot a rope towards supply switch on the additional button."/>
+    <message name="SHOCKER.DESCR.U2"
+             value="Close combat weapon based on the direct impact of electric charge on the target. The target is slowed for 2 turns. The charge bounces to nearest enemy in medium radius. The bounce could be turned on/off by the additional button."/>
+    <message name="GRAVITY_GUN.NOTE.U2"
+             value="To switch into the object grabbing mode press the additional weapon button."/>
+    <message name="TELEPORT.DESCR"
+             value="Allows the unit to teleport to any area of the map, even under ground. Does light damage and ends your turn."/>
+    <message name="TELEPORT.DESCR.U1A"
+             value="Allows the unit to shift to any area, and even under the ground. Deals small damage both at initial and target points. Spends a turn."/>
+</dictionary>

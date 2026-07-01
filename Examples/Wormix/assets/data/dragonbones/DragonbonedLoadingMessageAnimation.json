@@ -1,0 +1,3910 @@
+{"armature": [
+    {
+        "skin": [
+            {
+                "name": "default",
+                "slot": [
+                    {
+                        "name": "fireSpark",
+                        "z": 0,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0.05,
+                                    "scY": 1,
+                                    "y": 0.05,
+                                    "pX": 6.2,
+                                    "pY": 6.2,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/hog_spark_star",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "fireSpark"
+                    },
+                    {
+                        "name": "sparks_01",
+                        "z": 1,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0.1,
+                                    "scY": 1,
+                                    "y": 0.15,
+                                    "pX": 2.75,
+                                    "pY": 2.75,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/hog_spark_circle",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "sparks_01"
+                    },
+                    {
+                        "name": "sparks_02",
+                        "z": 2,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0.1,
+                                    "scY": 1,
+                                    "y": 0.15,
+                                    "pX": 2.75,
+                                    "pY": 2.75,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/hog_spark_circle",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "sparks_02"
+                    },
+                    {
+                        "name": "sparks_03",
+                        "z": 3,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0.15,
+                                    "scY": 1,
+                                    "y": 0.15,
+                                    "pX": 2.75,
+                                    "pY": 2.75,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/hog_spark_circle",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "sparks_03"
+                    },
+                    {
+                        "name": "fitil",
+                        "z": 4,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 24.2,
+                                    "scY": 1,
+                                    "y": 15.9,
+                                    "pX": 28.4,
+                                    "pY": 27.25,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/hog_spark_rope",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "fitil"
+                    },
+                    {
+                        "name": "shadow",
+                        "z": 5,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -2.9,
+                                    "pX": 31.9,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/shadow",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "shadow"
+                    },
+                    {
+                        "name": "cab_ear_back",
+                        "z": 6,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -7.2,
+                                    "scY": 1,
+                                    "y": -10.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/cab_ear_back",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "cab_ear_back"
+                    },
+                    {
+                        "name": "hoof_back",
+                        "z": 7,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -5.25,
+                                    "scY": 1,
+                                    "y": -6.7,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/hoof_back",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "hoof_back"
+                    },
+                    {
+                        "name": "hoof_front",
+                        "z": 8,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -3.95,
+                                    "scY": 1,
+                                    "y": -3.2,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/hoof_front",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "hoof_front"
+                    },
+                    {
+                        "name": "cab_body",
+                        "z": 9,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -18.95,
+                                    "scY": 1,
+                                    "y": -43.6,
+                                    "pX": -0.8,
+                                    "pY": -0.55,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/cab_body",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "cab_body"
+                    },
+                    {
+                        "name": "cab_hair",
+                        "z": 10,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -31.3,
+                                    "scY": 1,
+                                    "y": -27.95,
+                                    "pX": 2.75,
+                                    "pY": 1.2,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/cab_hair",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "cab_hair"
+                    },
+                    {
+                        "name": "hoof_back_0",
+                        "z": 11,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -7.3,
+                                    "scY": 1,
+                                    "y": -2.7,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/hoof_back",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "hoof_back_0"
+                    },
+                    {
+                        "name": "hoof_front_0",
+                        "z": 12,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -5.1,
+                                    "scY": 1,
+                                    "y": -3.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/hoof_front",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "hoof_front_0"
+                    },
+                    {
+                        "name": "cab_ear",
+                        "z": 13,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -19.55,
+                                    "scY": 1,
+                                    "y": -9.15,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/ear",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "cab_ear"
+                    },
+                    {
+                        "name": "cheeky",
+                        "z": 14,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -7.15,
+                                    "scY": 1,
+                                    "y": -6.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/cheeky",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "cheeky"
+                    },
+                    {
+                        "name": "eye",
+                        "z": 15,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -6.45,
+                                    "scY": 1,
+                                    "y": -7.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eye_2",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eye"
+                    },
+                    {
+                        "name": "eyelid_bottom_1 copy",
+                        "z": 16,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -0.1,
+                                    "scY": 1,
+                                    "y": -3.65,
+                                    "pX": 6.8,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eyelid_part_1",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eyelid_bottom_1 copy"
+                    },
+                    {
+                        "name": "eyelid_bottom_2 copy",
+                        "z": 17,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -7.5,
+                                    "scY": 1,
+                                    "y": -1.05,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eyelid_part_2",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eyelid_bottom_2 copy"
+                    },
+                    {
+                        "name": "eyelid_top_1 copy",
+                        "z": 18,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -3.6,
+                                    "pX": 6.8,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eyelid_part_1",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eyelid_top_1 copy"
+                    },
+                    {
+                        "name": "eyelid_top_2 copy",
+                        "z": 19,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -7.7,
+                                    "scY": 1,
+                                    "y": -1.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eyelid_part_2",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eyelid_top_2 copy"
+                    },
+                    {
+                        "name": "fang2",
+                        "z": 20,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -1.75,
+                                    "scY": 1,
+                                    "y": -8.7,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/fang",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "fang2"
+                    },
+                    {
+                        "name": "lip",
+                        "z": 21,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -5.15,
+                                    "scY": 1,
+                                    "y": -3.35,
+                                    "pX": -0.8,
+                                    "pY": 3.4,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/lip",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "lip"
+                    },
+                    {
+                        "name": "grass",
+                        "z": 22,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -0.3,
+                                    "scY": 1,
+                                    "y": -0.25,
+                                    "pX": 11.95,
+                                    "pY": 5.2,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/grass",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "grass"
+                    },
+                    {
+                        "name": "eye_0",
+                        "z": 23,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -6.9,
+                                    "scY": 1,
+                                    "y": -7.3,
+                                    "pX": 0.05,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eye_1",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eye_0"
+                    },
+                    {
+                        "name": "eyelid_bottom_1",
+                        "z": 24,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -0.15,
+                                    "scY": 1,
+                                    "y": -3.4,
+                                    "pX": 6.8,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eyelid_part_1",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eyelid_bottom_1"
+                    },
+                    {
+                        "name": "eyelid_bottom_2",
+                        "z": 25,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -7.55,
+                                    "scY": 1,
+                                    "y": -1.2,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eyelid_part_2",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eyelid_bottom_2"
+                    },
+                    {
+                        "name": "eyelid_top_1",
+                        "z": 26,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -0.15,
+                                    "scY": 1,
+                                    "y": -3.45,
+                                    "pX": 6.8,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eyelid_part_1",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eyelid_top_1"
+                    },
+                    {
+                        "name": "eyelid_top_2",
+                        "z": 27,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -7.6,
+                                    "scY": 1,
+                                    "y": -1.15,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/eyelid_part_2",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "eyelid_top_2"
+                    },
+                    {
+                        "name": "brow_2",
+                        "z": 28,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -23.05,
+                                    "scY": 1,
+                                    "y": -18.25,
+                                    "pX": -11.5,
+                                    "pY": -9.1,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/brow",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "brow_2"
+                    },
+                    {
+                        "name": "nose",
+                        "z": 29,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -5.55,
+                                    "scY": 1,
+                                    "y": -4.35,
+                                    "pX": -2.05,
+                                    "pY": 0.4,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/nose",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "nose"
+                    },
+                    {
+                        "name": "fang1",
+                        "z": 30,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -2.5,
+                                    "scY": 1,
+                                    "y": -8.1,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/fang",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "fang1"
+                    },
+                    {
+                        "name": "cheeky_0",
+                        "z": 31,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -7.15,
+                                    "scY": 1,
+                                    "y": -6.55,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/cheeky",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "cheeky_0"
+                    },
+                    {
+                        "name": "brow_1",
+                        "z": 32,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -23.05,
+                                    "scY": 1,
+                                    "y": -18.3,
+                                    "pX": -11.5,
+                                    "pY": -9.1,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "parts/brow",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "brow_1"
+                    }
+                ]
+            }
+        ],
+        "name": "loading_animation",
+        "bone": [
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": -26.9,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": -32.35,
+                    "skY": 0
+                },
+                "name": "fireSpark"
+            },
+            {
+                "transform": {
+                    "scX": 0.44,
+                    "x": -23.55,
+                    "skX": 0,
+                    "scY": 0.44,
+                    "y": -34.95,
+                    "skY": 0
+                },
+                "name": "sparks_01"
+            },
+            {
+                "transform": {
+                    "scX": 0.34,
+                    "x": -29.9,
+                    "skX": 0,
+                    "scY": 0.34,
+                    "y": -32.65,
+                    "skY": 0
+                },
+                "name": "sparks_02"
+            },
+            {
+                "transform": {
+                    "scX": 0.34,
+                    "x": -26.6,
+                    "skX": 0,
+                    "scY": 0.34,
+                    "y": -35.3,
+                    "skY": 0
+                },
+                "name": "sparks_03"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": -22.1,
+                    "skX": -13.95,
+                    "scY": 1,
+                    "y": -22.5,
+                    "skY": -13.95
+                },
+                "name": "fitil"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 1.1,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": 15.35,
+                    "skY": 0
+                },
+                "name": "shadow"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 28.5,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": -32.3,
+                    "skY": 0
+                },
+                "name": "cab_ear_back"
+            },
+            {
+                "transform": {
+                    "scX": 0.97,
+                    "x": -4.45,
+                    "skX": 0,
+                    "scY": 0.95,
+                    "y": 0.95,
+                    "skY": 0
+                },
+                "name": "hoof_back"
+            },
+            {
+                "transform": {
+                    "scX": 0.97,
+                    "x": 17.55,
+                    "skX": 0,
+                    "scY": 0.95,
+                    "y": -0.65,
+                    "skY": 0
+                },
+                "name": "hoof_front"
+            },
+            {
+                "transform": {
+                    "scX": 1.08,
+                    "x": -5.25,
+                    "skX": 0,
+                    "scY": 1.13,
+                    "y": 6.15,
+                    "skY": 0
+                },
+                "name": "cab_body"
+            },
+            {
+                "transform": {
+                    "scX": 0.86,
+                    "x": 20.75,
+                    "skX": 0,
+                    "scY": 1.18,
+                    "y": -27.9,
+                    "skY": 0
+                },
+                "name": "cab_hair"
+            },
+            {
+                "transform": {
+                    "scX": 0.97,
+                    "x": -14.25,
+                    "skX": 0,
+                    "scY": 0.95,
+                    "y": -2.45,
+                    "skY": 0
+                },
+                "name": "hoof_back_0"
+            },
+            {
+                "transform": {
+                    "scX": 0.97,
+                    "x": 4,
+                    "skX": 0,
+                    "scY": 0.95,
+                    "y": 0.8,
+                    "skY": 0
+                },
+                "name": "hoof_front_0"
+            },
+            {
+                "transform": {
+                    "scX": 1.01,
+                    "x": -2.9,
+                    "skX": 18.57,
+                    "scY": 0.99,
+                    "y": -26.45,
+                    "skY": 17.91
+                },
+                "name": "cab_ear"
+            },
+            {
+                "transform": {
+                    "scX": 1.15,
+                    "x": 31.65,
+                    "skX": 0,
+                    "scY": 1.25,
+                    "y": -10.85,
+                    "skY": 0
+                },
+                "name": "cheeky"
+            },
+            {
+                "transform": {
+                    "scX": 1.15,
+                    "x": 29.45,
+                    "skX": 0,
+                    "scY": 1.13,
+                    "y": -20.05,
+                    "skY": 0
+                },
+                "name": "eye"
+            },
+            {
+                "transform": {
+                    "scX": 0.6,
+                    "x": 28.9,
+                    "skX": -176.5,
+                    "scY": 0.32,
+                    "y": -13.9,
+                    "skY": -176.5
+                },
+                "name": "eyelid_bottom_1 copy"
+            },
+            {
+                "transform": {
+                    "scX": 0.91,
+                    "x": 29.15,
+                    "skX": -161.96,
+                    "scY": 1.02,
+                    "y": -14.95,
+                    "skY": -174.22
+                },
+                "name": "eyelid_bottom_2 copy"
+            },
+            {
+                "transform": {
+                    "scX": 0.73,
+                    "x": 28,
+                    "skX": -15.72,
+                    "scY": 0.45,
+                    "y": -25.2,
+                    "skY": -15.72
+                },
+                "name": "eyelid_top_1 copy"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 29,
+                    "skX": 176.26,
+                    "scY": 1.02,
+                    "y": -23.85,
+                    "skY": 164.96
+                },
+                "name": "eyelid_top_2 copy"
+            },
+            {
+                "transform": {
+                    "scX": 1.08,
+                    "x": 28.2,
+                    "skX": 0,
+                    "scY": 0.87,
+                    "y": -6.9,
+                    "skY": 0
+                },
+                "name": "fang2"
+            },
+            {
+                "transform": {
+                    "scX": 1.15,
+                    "x": 10.65,
+                    "skX": 2.93,
+                    "scY": 1.13,
+                    "y": -3.55,
+                    "skY": 2.93
+                },
+                "name": "lip"
+            },
+            {
+                "transform": {
+                    "scX": 1.32,
+                    "x": 22.95,
+                    "skX": -145.41,
+                    "scY": 1.32,
+                    "y": -8,
+                    "skY": -145.41
+                },
+                "name": "grass"
+            },
+            {
+                "transform": {
+                    "scX": 1.15,
+                    "x": 5.75,
+                    "skX": 0,
+                    "scY": 1.13,
+                    "y": -20.05,
+                    "skY": 0
+                },
+                "name": "eye_0"
+            },
+            {
+                "transform": {
+                    "scX": 0.88,
+                    "x": 7.55,
+                    "skX": 176.81,
+                    "scY": 0.43,
+                    "y": -13.85,
+                    "skY": 176.81
+                },
+                "name": "eyelid_bottom_1"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 6.9,
+                    "skX": -8.76,
+                    "scY": 1,
+                    "y": -15.65,
+                    "skY": -8.76
+                },
+                "name": "eyelid_bottom_2"
+            },
+            {
+                "transform": {
+                    "scX": 0.88,
+                    "x": 7.6,
+                    "skX": 8.05,
+                    "scY": 0.43,
+                    "y": -25.4,
+                    "skY": 8.05
+                },
+                "name": "eyelid_top_1"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 6.45,
+                    "skX": 10.19,
+                    "scY": 1,
+                    "y": -24.8,
+                    "skY": 10.19
+                },
+                "name": "eyelid_top_2"
+            },
+            {
+                "transform": {
+                    "scX": -0.53,
+                    "x": 27.45,
+                    "skX": 0,
+                    "scY": 0.58,
+                    "y": -27.95,
+                    "skY": 0
+                },
+                "name": "brow_2"
+            },
+            {
+                "transform": {
+                    "scX": 1.15,
+                    "x": 15.25,
+                    "skX": 0,
+                    "scY": 1.13,
+                    "y": -16.55,
+                    "skY": 0
+                },
+                "name": "nose"
+            },
+            {
+                "transform": {
+                    "scX": 1.2,
+                    "x": 7.25,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": -4,
+                    "skY": 0
+                },
+                "name": "fang1"
+            },
+            {
+                "transform": {
+                    "scX": 1.15,
+                    "x": 4.45,
+                    "skX": 0,
+                    "scY": 1.25,
+                    "y": -6.45,
+                    "skY": 0
+                },
+                "name": "cheeky_0"
+            },
+            {
+                "transform": {
+                    "scX": 0.67,
+                    "x": 8.9,
+                    "skX": 0,
+                    "scY": 0.66,
+                    "y": -27.25,
+                    "skY": 0
+                },
+                "name": "brow_1"
+            }
+        ],
+        "animation": [
+            {
+                "fadeInTime": 0.3,
+                "timeline": [
+                    {
+                        "name": "fireSpark",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": 0,
+                                    "pY": -0.1,
+                                    "skX": 89.99,
+                                    "skY": 90.01
+                                },
+                                "duration": 5,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": -0.1,
+                                    "pY": -0.1,
+                                    "skX": 180,
+                                    "skY": 180
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": -0.1,
+                                    "pY": 0,
+                                    "skX": -90.01,
+                                    "skY": -89.99
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.85,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": -0.1,
+                                    "pY": 0,
+                                    "skX": -15.01,
+                                    "skY": -14.99
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": 0,
+                                    "pY": -0.1,
+                                    "skX": 89.99,
+                                    "skY": 90.01
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": -0.1,
+                                    "pY": -0.1,
+                                    "skX": 180,
+                                    "skY": 180
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": -0.1,
+                                    "pY": 0,
+                                    "skX": -90.01,
+                                    "skY": -89.99
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.85,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": -0.1,
+                                    "pY": 0,
+                                    "skX": -15.01,
+                                    "skY": -14.99
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": 0,
+                                    "pY": -0.1,
+                                    "skX": 89.99,
+                                    "skY": 90.01
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": -0.1,
+                                    "pY": -0.1,
+                                    "skX": 180,
+                                    "skY": 180
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.9,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": -0.1,
+                                    "pY": 0,
+                                    "skX": -90.01,
+                                    "skY": -89.99
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 0,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -26.85,
+                                    "scY": 1,
+                                    "y": -32.35,
+                                    "pX": -0.1,
+                                    "pY": 0,
+                                    "skX": -15.01,
+                                    "skY": -14.99
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "sparks_01",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 1,
+                                "transform": {
+                                    "scX": 0.44,
+                                    "x": -23.55,
+                                    "scY": 0.44,
+                                    "y": -34.95,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 1,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -16.8,
+                                    "scY": 1,
+                                    "y": -39.55,
+                                    "pX": -0.05,
+                                    "pY": -0.1,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 1,
+                                "transform": {
+                                    "scX": 0.61,
+                                    "x": -12.4,
+                                    "scY": 0.61,
+                                    "y": -34.2,
+                                    "pX": -0.05,
+                                    "pY": -0.05,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "duration": 15,
+                                "displayIndex": -1
+                            },
+                            {
+                                "z": 1,
+                                "transform": {
+                                    "scX": 0.44,
+                                    "x": -23.55,
+                                    "scY": 0.44,
+                                    "y": -34.95,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 1,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -16.8,
+                                    "scY": 1,
+                                    "y": -39.55,
+                                    "pX": -0.05,
+                                    "pY": -0.1,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 1,
+                                "transform": {
+                                    "scX": 0.61,
+                                    "x": -12.4,
+                                    "scY": 0.61,
+                                    "y": -34.2,
+                                    "pX": -0.05,
+                                    "pY": -0.05,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "duration": 21,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "sparks_02",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 4,
+                                "displayIndex": -1
+                            },
+                            {
+                                "z": 2,
+                                "transform": {
+                                    "scX": 0.34,
+                                    "x": -29.9,
+                                    "scY": 0.34,
+                                    "y": -32.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 2,
+                                "transform": {
+                                    "scX": 0.76,
+                                    "x": -38.3,
+                                    "scY": 0.76,
+                                    "y": -35.15,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 2,
+                                "transform": {
+                                    "scX": 0.6,
+                                    "x": -41.3,
+                                    "scY": 0.6,
+                                    "y": -29.8,
+                                    "pX": -0.05,
+                                    "pY": -0.1,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "duration": 15,
+                                "displayIndex": -1
+                            },
+                            {
+                                "z": 2,
+                                "transform": {
+                                    "scX": 0.34,
+                                    "x": -29.9,
+                                    "scY": 0.34,
+                                    "y": -32.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 2,
+                                "transform": {
+                                    "scX": 0.76,
+                                    "x": -38.3,
+                                    "scY": 0.76,
+                                    "y": -35.15,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 2,
+                                "transform": {
+                                    "scX": 0.6,
+                                    "x": -41.3,
+                                    "scY": 0.6,
+                                    "y": -29.8,
+                                    "pX": -0.05,
+                                    "pY": -0.1,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "duration": 17,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "sparks_03",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 9,
+                                "displayIndex": -1
+                            },
+                            {
+                                "z": 3,
+                                "transform": {
+                                    "scX": 0.34,
+                                    "x": -26.6,
+                                    "scY": 0.34,
+                                    "y": -35.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 3,
+                                "transform": {
+                                    "scX": 0.7,
+                                    "x": -30.75,
+                                    "scY": 0.7,
+                                    "y": -42.95,
+                                    "pX": -0.1,
+                                    "pY": -0.1,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 3,
+                                "transform": {
+                                    "scX": 0.34,
+                                    "x": -35.55,
+                                    "scY": 0.34,
+                                    "y": -38.8,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "duration": 14,
+                                "displayIndex": -1
+                            },
+                            {
+                                "z": 3,
+                                "transform": {
+                                    "scX": 0.34,
+                                    "x": -26.6,
+                                    "scY": 0.34,
+                                    "y": -35.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 3,
+                                "transform": {
+                                    "scX": 0.7,
+                                    "x": -30.75,
+                                    "scY": 0.7,
+                                    "y": -42.95,
+                                    "pX": -0.1,
+                                    "pY": -0.1,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 3,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 3,
+                                "transform": {
+                                    "scX": 0.34,
+                                    "x": -35.55,
+                                    "scY": 0.34,
+                                    "y": -38.8,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "duration": 13,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "fitil",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -22.1,
+                                    "scY": 1,
+                                    "y": -22.5,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -13.95,
+                                    "skY": -13.95
+                                },
+                                "z": 4,
+                                "duration": 50
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "shadow",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 1.1,
+                                    "scY": 1,
+                                    "y": 15.35,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 5,
+                                "duration": 50
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "cab_ear_back",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 6,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 28.5,
+                                    "scY": 1,
+                                    "y": -32.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 6,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 28.5,
+                                    "scY": 1,
+                                    "y": -32.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 6,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 28.5,
+                                    "scY": 1,
+                                    "y": -32.3,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": 11.48,
+                                    "skY": 11.48
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 6,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 28.5,
+                                    "scY": 1,
+                                    "y": -32.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 6,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 28.5,
+                                    "scY": 1,
+                                    "y": -32.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 25,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 6,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 28.5,
+                                    "scY": 1,
+                                    "y": -32.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "hoof_back",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 0.97,
+                                    "x": -4.45,
+                                    "scY": 0.95,
+                                    "y": 0.95,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 7,
+                                "duration": 50
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "hoof_front",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 0.97,
+                                    "x": 17.55,
+                                    "scY": 0.95,
+                                    "y": -0.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 8,
+                                "duration": 50
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "cab_body",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": -5.25,
+                                    "scY": 1.13,
+                                    "y": 6.15,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 9,
+                                "duration": 50
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "cab_hair",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 10,
+                                "transform": {
+                                    "scX": 0.86,
+                                    "x": 20.75,
+                                    "scY": 1.18,
+                                    "y": -27.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 10,
+                                "transform": {
+                                    "scX": 0.86,
+                                    "x": 20.75,
+                                    "scY": 1.18,
+                                    "y": -27.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 10,
+                                "transform": {
+                                    "scX": 0.86,
+                                    "x": 20.75,
+                                    "scY": 1.18,
+                                    "y": -27.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 10,
+                                "transform": {
+                                    "scX": 0.86,
+                                    "x": 20.75,
+                                    "scY": 1.18,
+                                    "y": -27.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 10,
+                                "transform": {
+                                    "scX": 0.86,
+                                    "x": 20.75,
+                                    "scY": 1.18,
+                                    "y": -27.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 25,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 10,
+                                "transform": {
+                                    "scX": 0.86,
+                                    "x": 20.75,
+                                    "scY": 1.18,
+                                    "y": -27.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "hoof_back_0",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 0.97,
+                                    "x": -14.25,
+                                    "scY": 0.95,
+                                    "y": -2.45,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 11,
+                                "duration": 50
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "hoof_front_0",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 0.97,
+                                    "x": 4,
+                                    "scY": 0.95,
+                                    "y": 0.8,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 12,
+                                "duration": 50
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "cab_ear",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 13,
+                                "transform": {
+                                    "scX": 1.01,
+                                    "x": -2.9,
+                                    "scY": 0.99,
+                                    "y": -26.45,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 18.57,
+                                    "skY": 17.91
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 13,
+                                "transform": {
+                                    "scX": 1.01,
+                                    "x": -2.9,
+                                    "scY": 0.99,
+                                    "y": -26.45,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 18.57,
+                                    "skY": 17.91
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 13,
+                                "transform": {
+                                    "scX": 1.01,
+                                    "x": -2.9,
+                                    "scY": 0.99,
+                                    "y": -26.45,
+                                    "pX": 0,
+                                    "pY": -0.05,
+                                    "skX": 10.12,
+                                    "skY": 9.47
+                                },
+                                "duration": 8,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 13,
+                                "transform": {
+                                    "scX": 1.01,
+                                    "x": -2.9,
+                                    "scY": 0.99,
+                                    "y": -26.45,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 18.57,
+                                    "skY": 17.91
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 13,
+                                "transform": {
+                                    "scX": 1.01,
+                                    "x": -2.9,
+                                    "scY": 0.99,
+                                    "y": -26.45,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 18.57,
+                                    "skY": 17.91
+                                },
+                                "duration": 25,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 13,
+                                "transform": {
+                                    "scX": 1.01,
+                                    "x": -2.9,
+                                    "scY": 0.99,
+                                    "y": -26.45,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 18.57,
+                                    "skY": 17.91
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "cheeky",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 14,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 31.65,
+                                    "scY": 1.25,
+                                    "y": -10.85,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 14,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 33.65,
+                                    "scY": 1.25,
+                                    "y": -12.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 14,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 35.05,
+                                    "scY": 1.25,
+                                    "y": -11.85,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 14,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 33.85,
+                                    "scY": 1.25,
+                                    "y": -10.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 14,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 31.65,
+                                    "scY": 1.25,
+                                    "y": -10.85,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 14,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 33.65,
+                                    "scY": 1.25,
+                                    "y": -12.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 14,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 35.05,
+                                    "scY": 1.25,
+                                    "y": -11.85,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 14,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 33.85,
+                                    "scY": 1.25,
+                                    "y": -10.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 14,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 31.65,
+                                    "scY": 1.25,
+                                    "y": -10.85,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eye",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 29.45,
+                                    "scY": 1.13,
+                                    "y": -20.05,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 15,
+                                "duration": 50
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eyelid_bottom_1 copy",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 6,
+                                "displayIndex": -1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.6,
+                                    "x": 28.9,
+                                    "scY": 0.32,
+                                    "y": -13.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -176.5,
+                                    "skY": -176.5
+                                },
+                                "z": 16,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.8,
+                                    "x": 28.85,
+                                    "scY": 0.51,
+                                    "y": -14.65,
+                                    "pX": -0.05,
+                                    "pY": 0.15,
+                                    "skX": 178.93,
+                                    "skY": -174.75
+                                },
+                                "z": 16,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.93,
+                                    "x": 29.3,
+                                    "scY": 0.9,
+                                    "y": -16.3,
+                                    "pX": 0,
+                                    "pY": -0.05,
+                                    "skX": -178.48,
+                                    "skY": 177.51
+                                },
+                                "z": 16,
+                                "duration": 3
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.8,
+                                    "x": 28.85,
+                                    "scY": 0.51,
+                                    "y": -14.65,
+                                    "pX": -0.05,
+                                    "pY": 0.15,
+                                    "skX": 178.93,
+                                    "skY": -174.75
+                                },
+                                "z": 16,
+                                "duration": 2
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.6,
+                                    "x": 28.9,
+                                    "scY": 0.32,
+                                    "y": -13.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -176.5,
+                                    "skY": -176.5
+                                },
+                                "z": 16,
+                                "duration": 2
+                            },
+                            {
+                                "duration": 35,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eyelid_bottom_2 copy",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 6,
+                                "displayIndex": -1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.91,
+                                    "x": 29.15,
+                                    "scY": 1.02,
+                                    "y": -14.95,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -161.96,
+                                    "skY": -174.22
+                                },
+                                "z": 17,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1.04,
+                                    "x": 28.95,
+                                    "scY": 1.1,
+                                    "y": -16.75,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": -152.55,
+                                    "skY": -176.94
+                                },
+                                "z": 17,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 29.1,
+                                    "scY": 1.01,
+                                    "y": -19.35,
+                                    "pX": -0.25,
+                                    "pY": -0.25,
+                                    "skX": -176.72,
+                                    "skY": 176.26
+                                },
+                                "z": 17,
+                                "duration": 3
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1.04,
+                                    "x": 28.95,
+                                    "scY": 1.1,
+                                    "y": -16.75,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": -152.55,
+                                    "skY": -176.94
+                                },
+                                "z": 17,
+                                "duration": 2
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.91,
+                                    "x": 29.15,
+                                    "scY": 1.02,
+                                    "y": -14.95,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -161.96,
+                                    "skY": -174.22
+                                },
+                                "z": 17,
+                                "duration": 2
+                            },
+                            {
+                                "duration": 35,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eyelid_top_1 copy",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 6,
+                                "displayIndex": -1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.73,
+                                    "x": 28,
+                                    "scY": 0.45,
+                                    "y": -25.2,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -15.72,
+                                    "skY": -15.72
+                                },
+                                "z": 18,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.9,
+                                    "x": 28.25,
+                                    "scY": 0.7,
+                                    "y": -24.5,
+                                    "pX": 0.2,
+                                    "pY": 0.05,
+                                    "skX": -7.78,
+                                    "skY": -15.72
+                                },
+                                "z": 18,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.94,
+                                    "x": 29.15,
+                                    "scY": 1,
+                                    "y": -23.6,
+                                    "pX": -0.15,
+                                    "pY": -0.1,
+                                    "skX": -4.96,
+                                    "skY": -4.96
+                                },
+                                "z": 18,
+                                "duration": 3
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.9,
+                                    "x": 28.25,
+                                    "scY": 0.7,
+                                    "y": -24.5,
+                                    "pX": 0.2,
+                                    "pY": 0.05,
+                                    "skX": -7.78,
+                                    "skY": -15.72
+                                },
+                                "z": 18,
+                                "duration": 2
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.73,
+                                    "x": 28,
+                                    "scY": 0.45,
+                                    "y": -25.2,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -15.72,
+                                    "skY": -15.72
+                                },
+                                "z": 18,
+                                "duration": 2
+                            },
+                            {
+                                "duration": 35,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eyelid_top_2 copy",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 6,
+                                "displayIndex": -1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 29,
+                                    "scY": 1.02,
+                                    "y": -23.85,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 176.26,
+                                    "skY": 164.96
+                                },
+                                "z": 19,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 29.55,
+                                    "scY": 1.02,
+                                    "y": -21.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 176.26,
+                                    "skY": 164.96
+                                },
+                                "z": 19,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 29.1,
+                                    "scY": 1.01,
+                                    "y": -19.35,
+                                    "pX": -0.05,
+                                    "pY": -0.05,
+                                    "skX": -176.72,
+                                    "skY": 176.26
+                                },
+                                "z": 19,
+                                "duration": 3
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 29.55,
+                                    "scY": 1.02,
+                                    "y": -21.6,
+                                    "pX": 0,
+                                    "pY": 0.05,
+                                    "skX": 176.26,
+                                    "skY": 164.96
+                                },
+                                "z": 19,
+                                "duration": 2
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 29,
+                                    "scY": 1.02,
+                                    "y": -23.8,
+                                    "pX": 0,
+                                    "pY": 0.05,
+                                    "skX": 176.26,
+                                    "skY": 164.96
+                                },
+                                "z": 19,
+                                "duration": 2
+                            },
+                            {
+                                "duration": 35,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "fang2",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 20,
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": 28.2,
+                                    "scY": 0.87,
+                                    "y": -6.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 20,
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": 29.1,
+                                    "scY": 0.87,
+                                    "y": -8.6,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 20,
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": 30.5,
+                                    "scY": 0.87,
+                                    "y": -8.05,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 20,
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": 29.3,
+                                    "scY": 0.87,
+                                    "y": -6.5,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 20,
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": 28.2,
+                                    "scY": 0.87,
+                                    "y": -6.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 20,
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": 29.1,
+                                    "scY": 0.87,
+                                    "y": -8.6,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 20,
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": 30.5,
+                                    "scY": 0.87,
+                                    "y": -8.05,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 20,
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": 29.3,
+                                    "scY": 0.87,
+                                    "y": -6.5,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 20,
+                                "transform": {
+                                    "scX": 1.08,
+                                    "x": 28.2,
+                                    "scY": 0.87,
+                                    "y": -6.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "lip",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 21,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 10.65,
+                                    "scY": 1.13,
+                                    "y": -3.55,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 2.93,
+                                    "skY": 2.93
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 21,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 11.2,
+                                    "scY": 1.13,
+                                    "y": -3.95,
+                                    "pX": 0.05,
+                                    "pY": -0.05,
+                                    "skX": -2.5,
+                                    "skY": -2.5
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 21,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 15.55,
+                                    "scY": 1.13,
+                                    "y": -4.55,
+                                    "pX": 0.1,
+                                    "pY": 0,
+                                    "skX": -13.96,
+                                    "skY": -13.96
+                                },
+                                "duration": 5,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 21,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 11.9,
+                                    "scY": 1.13,
+                                    "y": -3.65,
+                                    "pX": 0.05,
+                                    "pY": 0.05,
+                                    "skX": 2.91,
+                                    "skY": 2.91
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 21,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 10.65,
+                                    "scY": 1.13,
+                                    "y": -3.55,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 2.93,
+                                    "skY": 2.93
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 21,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 11.2,
+                                    "scY": 1.13,
+                                    "y": -3.95,
+                                    "pX": 0.05,
+                                    "pY": -0.05,
+                                    "skX": -2.5,
+                                    "skY": -2.5
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 21,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 12.5,
+                                    "scY": 1.13,
+                                    "y": -4.75,
+                                    "pX": 0.1,
+                                    "pY": 0,
+                                    "skX": -5.22,
+                                    "skY": -5.22
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 21,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 11.9,
+                                    "scY": 1.13,
+                                    "y": -3.65,
+                                    "pX": 0.05,
+                                    "pY": 0.05,
+                                    "skX": 0.69,
+                                    "skY": 0.69
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 21,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 10.65,
+                                    "scY": 1.13,
+                                    "y": -3.55,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 2.93,
+                                    "skY": 2.93
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "grass",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 22,
+                                "transform": {
+                                    "scX": 1.32,
+                                    "x": 22.95,
+                                    "scY": 1.32,
+                                    "y": -8,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -145.41,
+                                    "skY": -145.41
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 22,
+                                "transform": {
+                                    "scX": 1.32,
+                                    "x": 23.05,
+                                    "scY": 1.32,
+                                    "y": -8.05,
+                                    "pX": 0.05,
+                                    "pY": 0.1,
+                                    "skX": -143.07,
+                                    "skY": -143.07
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 22,
+                                "transform": {
+                                    "scX": 1.32,
+                                    "x": 23.05,
+                                    "scY": 1.32,
+                                    "y": -8.05,
+                                    "pX": 0.05,
+                                    "pY": 0.1,
+                                    "skX": -143.07,
+                                    "skY": -143.07
+                                },
+                                "duration": 14,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 22,
+                                "transform": {
+                                    "scX": 1.32,
+                                    "x": 24.55,
+                                    "scY": 1.05,
+                                    "y": -7.5,
+                                    "pX": 0.05,
+                                    "pY": 0,
+                                    "skX": -166.31,
+                                    "skY": -166.31
+                                },
+                                "duration": 8,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 22,
+                                "transform": {
+                                    "scX": 1.32,
+                                    "x": 23.35,
+                                    "scY": 1.26,
+                                    "y": -7.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -147.69,
+                                    "skY": -147.69
+                                },
+                                "duration": 2,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 22,
+                                "transform": {
+                                    "scX": 1.32,
+                                    "x": 23.05,
+                                    "scY": 1.32,
+                                    "y": -8.05,
+                                    "pX": 0.05,
+                                    "pY": 0.1,
+                                    "skX": -143.07,
+                                    "skY": -143.07
+                                },
+                                "duration": 15,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 22,
+                                "transform": {
+                                    "scX": 1.32,
+                                    "x": 24.35,
+                                    "scY": 1.16,
+                                    "y": -7.8,
+                                    "pX": 0.05,
+                                    "pY": 0.05,
+                                    "skX": -166.31,
+                                    "skY": -166.31
+                                },
+                                "duration": 8,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 22,
+                                "transform": {
+                                    "scX": 1.32,
+                                    "x": 22.9,
+                                    "scY": 1.32,
+                                    "y": -7.95,
+                                    "pX": 0,
+                                    "pY": 0.05,
+                                    "skX": -147.69,
+                                    "skY": -147.69
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eye_0",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 5.75,
+                                    "scY": 1.13,
+                                    "y": -20.05,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 23,
+                                "duration": 50
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eyelid_bottom_1",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 6,
+                                "displayIndex": -1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.88,
+                                    "x": 7.55,
+                                    "scY": 0.43,
+                                    "y": -13.85,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 176.81,
+                                    "skY": 176.81
+                                },
+                                "z": 24,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.88,
+                                    "x": 6.5,
+                                    "scY": 0.48,
+                                    "y": -14.7,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 168.43,
+                                    "skY": 172.52
+                                },
+                                "z": 24,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1.01,
+                                    "x": 5.75,
+                                    "scY": 1.04,
+                                    "y": -16.1,
+                                    "pX": 0,
+                                    "pY": 0.15,
+                                    "skX": 180,
+                                    "skY": 180
+                                },
+                                "z": 24,
+                                "duration": 3
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.88,
+                                    "x": 6.5,
+                                    "scY": 0.48,
+                                    "y": -14.7,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 168.43,
+                                    "skY": 172.52
+                                },
+                                "z": 24,
+                                "duration": 2
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.88,
+                                    "x": 7.55,
+                                    "scY": 0.43,
+                                    "y": -13.85,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 176.81,
+                                    "skY": 176.81
+                                },
+                                "z": 24,
+                                "duration": 2
+                            },
+                            {
+                                "duration": 35,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eyelid_bottom_2",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 6,
+                                "displayIndex": -1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 6.9,
+                                    "scY": 1,
+                                    "y": -15.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -8.76,
+                                    "skY": -8.76
+                                },
+                                "z": 25,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 6.15,
+                                    "scY": 1.02,
+                                    "y": -17.25,
+                                    "pX": -0.2,
+                                    "pY": 0.05,
+                                    "skX": 6.75,
+                                    "skY": -4.81
+                                },
+                                "z": 25,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 5.5,
+                                    "scY": 1,
+                                    "y": -19.65,
+                                    "pX": -0.05,
+                                    "pY": 0.1,
+                                    "skX": 1.52,
+                                    "skY": 0.9
+                                },
+                                "z": 25,
+                                "duration": 3
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 6.15,
+                                    "scY": 1.02,
+                                    "y": -17.25,
+                                    "pX": -0.2,
+                                    "pY": 0.05,
+                                    "skX": 6.75,
+                                    "skY": -4.81
+                                },
+                                "z": 25,
+                                "duration": 2
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 6.9,
+                                    "scY": 1,
+                                    "y": -15.65,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": -8.76,
+                                    "skY": -8.76
+                                },
+                                "z": 25,
+                                "duration": 2
+                            },
+                            {
+                                "duration": 35,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eyelid_top_1",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 6,
+                                "displayIndex": -1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.88,
+                                    "x": 7.6,
+                                    "scY": 0.43,
+                                    "y": -25.4,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 8.05,
+                                    "skY": 8.05
+                                },
+                                "z": 26,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.97,
+                                    "x": 6.95,
+                                    "scY": 0.83,
+                                    "y": -24.45,
+                                    "pX": -0.15,
+                                    "pY": -0.05,
+                                    "skX": 17.47,
+                                    "skY": 8.05
+                                },
+                                "z": 26,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1.03,
+                                    "x": 6.15,
+                                    "scY": 1.04,
+                                    "y": -23.7,
+                                    "pX": 0,
+                                    "pY": 0.25,
+                                    "skX": 5.46,
+                                    "skY": 4.16
+                                },
+                                "z": 26,
+                                "duration": 3
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.97,
+                                    "x": 6.95,
+                                    "scY": 0.83,
+                                    "y": -24.45,
+                                    "pX": -0.15,
+                                    "pY": -0.05,
+                                    "skX": 17.47,
+                                    "skY": 8.05
+                                },
+                                "z": 26,
+                                "duration": 2
+                            },
+                            {
+                                "transform": {
+                                    "scX": 0.88,
+                                    "x": 7.6,
+                                    "scY": 0.43,
+                                    "y": -25.4,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 8.05,
+                                    "skY": 8.05
+                                },
+                                "z": 26,
+                                "duration": 2
+                            },
+                            {
+                                "duration": 35,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "eyelid_top_2",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "duration": 6,
+                                "displayIndex": -1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 6.45,
+                                    "scY": 1,
+                                    "y": -24.8,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 10.19,
+                                    "skY": 10.19
+                                },
+                                "z": 27,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 6,
+                                    "scY": 1.03,
+                                    "y": -22.35,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": -3.85,
+                                    "skY": 10.19
+                                },
+                                "z": 27,
+                                "duration": 1
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 5.5,
+                                    "scY": 1,
+                                    "y": -19.65,
+                                    "pX": 0,
+                                    "pY": 0.05,
+                                    "skX": 1.52,
+                                    "skY": 0.9
+                                },
+                                "z": 27,
+                                "duration": 3
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 6,
+                                    "scY": 1.03,
+                                    "y": -22.35,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": -3.85,
+                                    "skY": 10.19
+                                },
+                                "z": 27,
+                                "duration": 2
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 6.45,
+                                    "scY": 1,
+                                    "y": -24.75,
+                                    "pX": 0,
+                                    "pY": -0.05,
+                                    "skX": 10.19,
+                                    "skY": 10.19
+                                },
+                                "z": 27,
+                                "duration": 2
+                            },
+                            {
+                                "duration": 35,
+                                "displayIndex": -1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "brow_2",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 28,
+                                "transform": {
+                                    "scX": -0.53,
+                                    "x": 27.45,
+                                    "scY": 0.58,
+                                    "y": -27.95,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 28,
+                                "transform": {
+                                    "scX": -0.53,
+                                    "x": 27.45,
+                                    "scY": 0.58,
+                                    "y": -27.95,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 28,
+                                "transform": {
+                                    "scX": -0.53,
+                                    "x": 26.45,
+                                    "scY": 0.58,
+                                    "y": -26.4,
+                                    "pX": 0,
+                                    "pY": -0.05,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 28,
+                                "transform": {
+                                    "scX": -0.53,
+                                    "x": 27.45,
+                                    "scY": 0.58,
+                                    "y": -27.95,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "transform": {
+                                    "scX": -0.53,
+                                    "x": 27.45,
+                                    "scY": 0.58,
+                                    "y": -27.95,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 28,
+                                "duration": 26
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "nose",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 29,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 15.25,
+                                    "scY": 1.13,
+                                    "y": -16.55,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 29,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 15.25,
+                                    "scY": 1.13,
+                                    "y": -16.55,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 29,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 15.25,
+                                    "scY": 1.13,
+                                    "y": -18.2,
+                                    "pX": 0,
+                                    "pY": -0.05,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 5,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 29,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 15.25,
+                                    "scY": 1.13,
+                                    "y": -16.55,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 29,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 15.25,
+                                    "scY": 1.13,
+                                    "y": -16.55,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 25,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 29,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 15.25,
+                                    "scY": 1.13,
+                                    "y": -16.55,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "fang1",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 30,
+                                "transform": {
+                                    "scX": 1.2,
+                                    "x": 7.25,
+                                    "scY": 1,
+                                    "y": -4,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 30,
+                                "transform": {
+                                    "scX": 1.2,
+                                    "x": 8.8,
+                                    "scY": 1,
+                                    "y": -5.7,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 30,
+                                "transform": {
+                                    "scX": 1.2,
+                                    "x": 10.6,
+                                    "scY": 1,
+                                    "y": -5.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 5,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 30,
+                                "transform": {
+                                    "scX": 1.2,
+                                    "x": 10.05,
+                                    "scY": 1,
+                                    "y": -3.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 30,
+                                "transform": {
+                                    "scX": 1.2,
+                                    "x": 7.25,
+                                    "scY": 1,
+                                    "y": -4,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 30,
+                                "transform": {
+                                    "scX": 1.2,
+                                    "x": 8.8,
+                                    "scY": 1,
+                                    "y": -5.7,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 30,
+                                "transform": {
+                                    "scX": 1.2,
+                                    "x": 10.6,
+                                    "scY": 1,
+                                    "y": -5.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 5,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 30,
+                                "transform": {
+                                    "scX": 1.2,
+                                    "x": 10.05,
+                                    "scY": 1,
+                                    "y": -3.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 30,
+                                "transform": {
+                                    "scX": 1.2,
+                                    "x": 7.25,
+                                    "scY": 1,
+                                    "y": -4,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "cheeky_0",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 31,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 4.45,
+                                    "scY": 1.25,
+                                    "y": -6.45,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 31,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 6.45,
+                                    "scY": 1.25,
+                                    "y": -8.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 31,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 7.85,
+                                    "scY": 1.25,
+                                    "y": -7.45,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 5,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 31,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 6.65,
+                                    "scY": 1.25,
+                                    "y": -5.85,
+                                    "pX": -0.05,
+                                    "pY": 0.05,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 31,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 4.45,
+                                    "scY": 1.25,
+                                    "y": -6.45,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 31,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 6.45,
+                                    "scY": 1.25,
+                                    "y": -8.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 31,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 7.85,
+                                    "scY": 1.25,
+                                    "y": -7.45,
+                                    "pX": -0.05,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 31,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 6.65,
+                                    "scY": 1.25,
+                                    "y": -5.85,
+                                    "pX": -0.05,
+                                    "pY": 0.05,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 31,
+                                "transform": {
+                                    "scX": 1.15,
+                                    "x": 4.45,
+                                    "scY": 1.25,
+                                    "y": -6.45,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "brow_1",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 32,
+                                "transform": {
+                                    "scX": 0.67,
+                                    "x": 8.9,
+                                    "scY": 0.66,
+                                    "y": -27.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 6,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 32,
+                                "transform": {
+                                    "scX": 0.67,
+                                    "x": 8.9,
+                                    "scY": 0.66,
+                                    "y": -27.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 4,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 32,
+                                "transform": {
+                                    "scX": 0.67,
+                                    "x": 9.65,
+                                    "scY": 0.66,
+                                    "y": -26.15,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 32,
+                                "transform": {
+                                    "scX": 0.67,
+                                    "x": 8.9,
+                                    "scY": 0.66,
+                                    "y": -27.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 7,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 32,
+                                "transform": {
+                                    "scX": 0.67,
+                                    "x": 8.9,
+                                    "scY": 0.66,
+                                    "y": -27.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 25,
+                                "tweenEasing": 0
+                            },
+                            {
+                                "z": 32,
+                                "transform": {
+                                    "scX": 0.67,
+                                    "x": 8.9,
+                                    "scY": 0.66,
+                                    "y": -27.25,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1,
+                                "tweenEasing": 0
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 0,
+                "autoTween": 1,
+                "name": "idle",
+                "duration": 50,
+                "tweenEasing": null
+            }
+        ]
+    }
+], "name": "loadingMessageAnimation", "frameRate": 24, "version": 2.3}

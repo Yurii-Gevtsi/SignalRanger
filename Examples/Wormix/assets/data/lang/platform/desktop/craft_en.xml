@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+
+<!-- CRAFTED HATS AND ARTIFACTS -->
+
+<message name="PREFIX.NORMAL" value="Common"/>
+<message name="PREFIX.SUPERIOR" value="Superior"/>
+<message name="PREFIX.AGGRESSIVE" value="Aggressive"/>
+<message name="PREFIX.DEFENSIVE" value="Protective"/>
+<message name="PREFIX.VIOLENT" value="Violent"/>
+<message name="PREFIX.EPIC" value="Epic"/>
+<message name="PREFIX.LEGENDARY" value="Legendary"/>
+
+<message name="BATTERY" value="Battery"/>
+<message name="GEAR" value="Gear"/>
+<message name="WOOD" value="Wood"/>
+<message name="STONE" value="Stone"/>
+<message name="METAL_PLATE" value="Metal plate"/>
+<message name="SAND" value="Sand"/>
+<message name="COAL" value="Coal"/>
+<message name="SCREW_BOLT" value="Bolt"/>
+<message name="SCREW_NUT" value="Bolt Nut"/>
+<message name="PIPE" value="Pipe"/>
+<message name="SPRING" value="Spring"/>
+<message name="UMBRELLA" value="Umbrella"/>
+<message name="ACCUMULATOR" value="Accumulator"/>
+<message name="HAMMER" value="Hammer"/>
+<message name="GUNPOWDER" value="Gunpowder"/>
+<message name="STEEL_BAR" value="Steel bar"/>
+<message name="SCREWDRIVER" value="Screwdriver"/>
+<message name="WRENCH" value="Wrench"/>
+<message name="CRYSTAL" value="Crystal"/>
+<message name="GENERATOR" value="Generator"/>
+<message name="MICROCHIP" value="Microchip"/>
+<message name="SNIPER_SCOPE" value="Sniper scope"/>
+<message name="TITAN_BAR" value="Titan bar"/>
+
+<message name="MILITARY_CARD" value="Military card"/>
+<message name="ILLUSIONIST_COIN" value="Illusionist coin"/>
+<message name="RING_OF_ACOLYTE" value="Ring of acolyte"/>
+<message name="CRYSTAL_BALL" value="Crystal ball"/>
+<message name="PHILOSOPHICAL_AMULET" value="Philosophical amulet"/>
+<message name="PALADIN_BADGE" value="Paladin's badge"/>
+<message name="ARCHIDEMON_STONE_BLUE" value="Blue archidemon's stone"/>
+<message name="ARCHIDEMON_STONE_YELLOW" value="Yellow archidemon's stone"/>
+
+<message name="RECIPE.NAME" value="Recipe"/>
+<message name="CRAFT_CRATE" value="Resources"/>
+
+<message name="SEARCH_ZONE_GRADE_S" value="Can be obtained as a reward for superbosses or exchanged for useless rare reagents."/>
+<message name="GRADE_S_DEMAND" value="Required for hats and artifacts crafting."/>
+<message name="BADGE" value="Bombix badge"/>
+<message name="EQUIP_IS_ON_BOSS" value="This item is a reward for defeating the {bossName}"/>
+<message name="ADDITIONAL_BONUSES" value="Additional bonuses"/>
+
+<message name="CRAFT_COLLECTED_INNER_TITLE" value="Collected resources"/>
+<message name="CRAFT_TAB_TITLE" value="Equipment"/>
+<message name="CRAFT_TITLE" value="Upgrade"/>
+<message name="CRAFT_DISABLE_QTIP" value="The Armory will open when you reach level {level}"/>
+<message name="COLLECT_FOR_REAGENT_BTN" value="Craft"/>
+<message name="COLLECT_FOR_RUBY_BTN" value="Craft with"/>
+<message name="CRAFT_REWARD_TITLE" value="Received items"/>
+
+<message name="CRAFT_COST" value="Price: "/>
+<message name="OR_LABEL" value="or"/>
+<message name="CRAFT_COMPLETE" value="A new item is crafted!"/>
+<message name="CRAFT_COMPLETE_POPUP_BTN" value="Excellent!"/>
+<message name="CRAFTED_ITEM_ADDED" value="The item is delivered to your house"/>
+<message name="CONFIRMATION_COLLECT_FOR_RUBIES_TEXT" value="Are you sure you want to buy this upgrade with rubies?"/>
+<message name="CONFIRMATION_COLLECT_TEXT" value="Are you sure you want to perform this upgrade?"/>
+<message name="REQUIRED_LEVEL_HINT" value="You need to be level {level}  to perform this upgrade"/>
+<message name="DOWNGRADE_TITLE" value="Downgrade"/>
+<message name="DOWNGRADE_BTN2" value="Disassemble"/>
+<message name="CONFIRMATION_DOWNGRADE_TEXT" value="You get 80% of the resources when you disassemble a weapon. Are you sure you want to downgrade?"/>
+<message name="SEARCH_ZONE_GRADE_D" value="The best way to find one is to destroy the ground during missions or to collect crates from low wagers."/>
+<message name="SEARCH_ZONE_GRADE_C" value="Can be found in the ground during missions or drops during battles with wagers. There's good chance to get one as a reward for beating a boss."/>
+<message name="SEARCH_ZONE_GRADE_B" value="Drops from the sky during battles with high bets, also can be got as a reward for a boss. There's a very small chance to get one during a mission or low wager."/>
+<message name="SEARCH_ZONE_GRADE_BOSS_RARE" value="A rare reagent. Can be obtained after boss fight win. Will be changed to Bombix badges if it is useless"/>
+<message name="REAGENT_DEMAND" value="Required for:"/>
+<message name="GRADE_S_DEMAND" value="Required for hats and artifacts crafting."/>
+<message name="CODE" value="TRANSLATION"/>
+
+<message name="GREAT_LUCK" value="Great luck!"/>
+<message name="BEST_EQUIP_ALREADY_EXIST" value="You already have an item of the highest quality!"/>
+<message name="TRY_YOUR_LUCK" value="Test your luck!"/>
+<message name="CRAFT_VARIATION_HINT" value="Craft machine works unpredictably. Item quality depends on pure luck."/>
+<message name="RECRAFT_VARIATION_HINT" value="Reforging an item gives you a chance to increase its quality."/>
+
+<message name="RECRAFT_FAIL_POPUP1" value="You've bashed into the anvil."/>
+<message name="RECRAFT_FAIL_POPUP2" value="You've put too much effort and broke the pincers."/>
+<message name="RECRAFT_FAIL_POPUP3" value="You've hit a finger with a hammer."/>
+<message name="RECRAFT_FAIL_POPUP4" value="You've pinched your ear with a gripe."/>
+<message name="RECRAFT_FAIL_POPUP5" value="Dire rats ate you gunpowder."/>
+<message name="RECRAFT_FAIL_POPUP6" value="All the metal got consumed by vermin."/>
+<message name="RECRAFT_FAIL_POPUP01" value="You failed to reforge."/>
+<message name="RECRAFT_FAIL_POPUP02" value="Try again."/>
+
+<message name="CRAFTED_MAX_QUALITY" value="You've got the best item of this kind!"/>
+<message name="SEARCH_ZONE_GRADE_R" value="This item is given as a reward for getting into a daily top."/>
+
+<message name="NEW_ITEM_CRAFTED_1" value="Great! I've just created {item}!"/>
+<message name="NEW_ITEM_CRAFTED_2" value="What a masterpiece! I've created {item}!"/>
+<message name="NEW_ITEM_CRAFTED_3" value="Hey, take a look at what I've got: {item}!"/>
+
+<message name="CRAFT_BTN" value="Forge"/>
+<message name="REBUILD_BTN" value="Reforge"/>
+</dictionary>

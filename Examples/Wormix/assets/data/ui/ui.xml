@@ -1,0 +1,1754 @@
+<ui>
+    <object name="PhotoUpload">
+        <object name="back" type="9slice" rotation="0" x="0" y="11" width="835.9" height="589.5" alpha="1" scaleX="1"
+                scaleY="1" paddingLeft="14" paddingRight="14" bodyEndWidth="1" paddingTop="14" paddingBottom="14"
+                bodyEndHeight="1" url="photoUpload_back.png"/>
+        <object name="overlay" type="9slice" rotation="0" x="43.75" y="73.6" width="751.5" height="443.9" alpha="1"
+                scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="2" paddingBottom="2"
+                bodyEndHeight="1" url="photoUpload_overlay.png"/>
+        <object name="photo" type="9slice" rotation="0" x="50.6" y="81.2" width="735" height="427" alpha="1" scaleX="1"
+                scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="2" paddingBottom="2"
+                bodyEndHeight="1" url="FullUserHint_worm.png"/>
+        <object name="line" type="3slice" rotation="0" x="197.45" y="61.45" width="468.9" height="2" alpha="1"
+                scaleX="1" scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1" url="title_underline.png"/>
+        <object name="close" type="common" commonSource="CloseButton" x="775" y="5" width="68" height="68"/>
+        <object name="uploadToAlbum" type="button" sound="default" rotation="0" x="311.85" y="525.95" width="218"
+                height="53" alpha="1" scaleX="1" scaleY="1">
+            <object name="instance7" type="upState" rotation="0" x="0" y="0" width="204" height="53" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="204" height="53" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                        url="button_green_up.png"/>
+            </object>
+            <object name="instance11" type="downState" rotation="0" x="0" y="0" width="204" height="53" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="buttonBackgroundPressed" type="3slice" rotation="0" x="0" y="0" width="204" height="53"
+                        alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                        url="button_green_down.png"/>
+            </object>
+        </object>
+        <object name="title" type="text" rotation="0" x="248.65" y="31.45" width="372.8" height="31.75" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="8743764" bold="false" letterSpacing="0"
+                align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        <object name="loading" type="text" rotation="0" x="248.65" y="535.25" width="372.8" height="31.75" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="8743764" bold="false" letterSpacing="0"
+                align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+    </object>
+    <object name="BattleInterface">
+        <object name="photo" type="button" rotation="0" x="887.6" y="163.75" width="56.2" height="45.1" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="instance55" type="upState" rotation="0" x="0" y="0" alpha="1" width="56.2" height="45.1"
+                    scaleX="1" scaleY="1">
+                <object name="instance56" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="56.2"
+                        height="45.1" alpha="0.7" scaleX="1" scaleY="1"
+                        url="BattleInterface_photo_upState_instance55_instance56.png"/>
+            </object>
+            <object name="instance59" type="downState" rotation="0" x="0" y="0" width="56.2" height="45.1" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance56" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="56.2"
+                        height="45.1" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_photo_upState_instance55_instance56.png"/>
+            </object>
+        </object>
+        <object name="zoom" type="feathersLayoutGroup" layout="none" rotation="0" x="887.6" y="330" width="48"
+                height="213" alpha="1" scaleX="1" scaleY="1">
+            <object name="up_arrow" type="object" rotation="0" x="0" y="48" width="48" height="48" alpha="1"
+                    scaleX="0.5" scaleY="0.5">
+                <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="48" height="48" alpha="1"
+                        scaleX="0.88" scaleY="0.88">
+                    <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="110.2" height="110.15" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                    <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="110.2" height="110.15" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                </object>
+                <object name="icon" type="object" rotation="0" x="0" y="0" width="45.45" height="45.45" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance46" type="object" rotation="0" x="26" y="26" pivotX="0" pivotY="0"
+                            width="45.45" height="45.45" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_zoomSlider_down_arrow_icon_instance46.png"/>
+                </object>
+            </object>
+            <object name="down_arrow" type="object" rotation="0" x="0" y="221.75" width="48" height="48" alpha="1"
+                    scaleX="0.5" scaleY="0.5">
+                <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="48" height="48" alpha="1"
+                        scaleX="0.88" scaleY="0.88">
+                    <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="110.2" height="110.15" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                    <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="110.2" height="110.15" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                </object>
+                <object name="icon" type="object" rotation="0" x="0" y="0" width="44" height="13.4" alpha="1" scaleX="1"
+                        scaleY="1">
+                    <object name="instance45" type="object" rotation="0" x="26.8" y="42.3" pivotX="0" pivotY="0"
+                            width="44" height="13.4" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_zoomSlider_up_arrow_icon_instance45.png"/>
+                </object>
+            </object>
+            <object name="scrollArea" type="9slice" rotation="0" x="21.2" y="106.9" width="5.1" height="106" alpha="1"
+                    scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="2"
+                    paddingBottom="2" bodyEndHeight="1" url="BattleInterface_zoomSlider_scrollArea.png"/>
+            <object name="btn" type="button" rotation="-90" x="10" y="163.45" width="34.95" height="53.9" alpha="1"
+                    scaleX="0.5" scaleY="0.5" pivotX="-18" pivotY="0">
+                <object name="instance152" type="upState" rotation="0" x="0" y="0" width="34.95" height="53.9" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance138" type="object" rotation="0" x="0" y="0" width="34.95" height="53.9"
+                            alpha="0.80078125" scaleX="1" scaleY="1">
+                        <object name="instance139" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="34.95" height="53.9" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_zoomSlider_btn_upState_instance152_instance138_instance139.png"/>
+                    </object>
+                    <object name="instance142" type="object" rotation="0" x="6.05" y="4.35" width="7.65" height="7.95"
+                            alpha="1" scaleX="1" scaleY="1">
+                        <object name="instance143" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="7.65" height="7.95" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_zoomSlider_btn_upState_instance152_instance142_instance143.png"/>
+                    </object>
+                </object>
+                <object name="instance154" type="downState" rotation="0" x="0" y="0" width="34.95" height="53.9"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance148" type="object" rotation="0" x="0" y="0" width="34.95" height="53.9"
+                            alpha="1" scaleX="1" scaleY="1">
+                        <object name="instance139" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="34.95" height="53.9" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_zoomSlider_btn_upState_instance152_instance138_instance139.png"/>
+                    </object>
+                    <object name="instance146" type="object" rotation="0" x="6.05" y="4.35" width="7.65" height="7.95"
+                            alpha="1" scaleX="1" scaleY="1">
+                        <object name="instance143" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="7.65" height="7.95" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_zoomSlider_btn_upState_instance152_instance142_instance143.png"/>
+                    </object>
+                </object>
+            </object>
+        </object>
+        <object name="moveModeSwitch" type="toggleButton" rotation="0" x="24.75" y="80.55" width="61.9" height="57.5"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="instance62" type="upState" rotation="0" x="1.3" y="0" pivotX="0" pivotY="0" width="61.9"
+                    height="57.5" alpha="1" scaleX="1" scaleY="1"
+                    url="BattleInterface_moveModeSwitch_upState_instance62.png"/>
+            <object name="instance64" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="55.5"
+                    height="55.7" alpha="1" scaleX="1" scaleY="1"
+                    url="BattleInterface_moveModeSwitch_downState_instance64.png"/>
+        </object>
+        <object name="unitsInfoSwitch" type="button" rotation="0" x="0" y="0" width="97" height="97" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="upState" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97" height="97"
+                    alpha="0.7" scaleX="1" scaleY="1">
+                <object name="back" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97" height="97"
+                        alpha="1" scaleX="0.88" scaleY="0.88"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="full" type="object" rotation="0" x="30" y="26" pivotX="0" pivotY="0" width="58"
+                        height="55" alpha="0.99" scaleX="1" scaleY="1">
+                    <object name="line" type="object" rotation="0" x="0" y="-8" pivotX="0" pivotY="0" width="38"
+                            height="8" alpha="0.5" scaleX="1" scaleY="1"
+                            url="BattleInterface_unitsInfoSwitch_icon_hp.png"/>
+                    <object name="line" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="38"
+                            height="8" alpha="0.5" scaleX="1" scaleY="1"
+                            url="BattleInterface_unitsInfoSwitch_icon_hp.png"/>
+                </object>
+                <object name="hp" type="object" rotation="0" x="30" y="26" pivotX="0" pivotY="0" width="38" height="8"
+                        alpha="0.5" scaleX="1" scaleY="1" url="BattleInterface_unitsInfoSwitch_icon_hp.png"/>
+                <object name="none" type="object" rotation="0" x="43" y="24" pivotX="0" pivotY="0" width="14"
+                        height="12" alpha="0.5" scaleX="1" scaleY="1"
+                        url="BattleInterface_unitsInfoSwitch_icon_none.png"/>
+                <object name="base" type="object" rotation="0" x="21" y="29" pivotX="0" pivotY="0" width="58"
+                        height="55" alpha="0.5" scaleX="1" scaleY="1" url="BattleInterface_unitsInfoSwitch_icon.png"/>
+            </object>
+            <object name="downState" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97"
+                    height="97" alpha="0.99" scaleX="1" scaleY="1">
+                <object name="back" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97" height="97"
+                        alpha="1" scaleX="0.88" scaleY="0.88"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                <object name="full" type="object" rotation="0" x="30" y="26" pivotX="0" pivotY="0" width="58"
+                        height="55" alpha="0.99" scaleX="1" scaleY="1">
+                    <object name="line" type="object" rotation="0" x="0" y="-8" pivotX="0" pivotY="0" width="38"
+                            height="8" alpha="0.7" scaleX="1" scaleY="1"
+                            url="BattleInterface_unitsInfoSwitch_icon_hp.png"/>
+                    <object name="line" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="38"
+                            height="8" alpha="0.7" scaleX="1" scaleY="1"
+                            url="BattleInterface_unitsInfoSwitch_icon_hp.png"/>
+                </object>
+                <object name="hp" type="object" rotation="0" x="30" y="26" pivotX="0" pivotY="0" width="38" height="8"
+                        alpha="0.7" scaleX="1" scaleY="1" url="BattleInterface_unitsInfoSwitch_icon_hp.png"/>
+                <object name="none" type="object" rotation="0" x="43" y="24" pivotX="0" pivotY="0" width="14"
+                        height="12" alpha="0.7" scaleX="1" scaleY="1"
+                        url="BattleInterface_unitsInfoSwitch_icon_none.png"/>
+                <object name="base" type="object" rotation="0" x="21" y="29" pivotX="0" pivotY="0" width="58"
+                        height="55" alpha="0.7" scaleX="1" scaleY="1" url="BattleInterface_unitsInfoSwitch_icon.png"/>
+            </object>
+        </object>
+        <object name="cloudsVisibilitySwitch" type="button" rotation="0" x="0" y="0" width="97" height="97" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="upState" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97" height="97"
+                    alpha="0.7" scaleX="1" scaleY="1">
+                <object name="back" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97" height="97"
+                        alpha="1" scaleX="0.88" scaleY="0.88"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="none" type="object" rotation="0" x="43" y="45" pivotX="0" pivotY="0" width="14"
+                        height="12" alpha="0.5" scaleX="1" scaleY="1"
+                        url="BattleInterface_unitsInfoSwitch_icon_none.png"/>
+                <object name="base" type="object" rotation="0" x="15" y="28" width="68" height="48" alpha="0.5"
+                        scaleX="0.8" scaleY="0.8" url="iCloudButton_label.png"/>
+            </object>
+            <object name="downState" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97"
+                    height="97" alpha="0.99" scaleX="1" scaleY="1">
+                <object name="back" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97" height="97"
+                        alpha="1" scaleX="0.88" scaleY="0.88"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                <object name="none" type="object" rotation="0" x="43" y="45" pivotX="0" pivotY="0" width="14"
+                        height="12" alpha="0.7" scaleX="1" scaleY="1"
+                        url="BattleInterface_unitsInfoSwitch_icon_none.png"/>
+                <object name="base" type="object" rotation="0" x="15" y="28" width="68" height="48" alpha="0.7"
+                        scaleX="0.8" scaleY="0.8" url="iCloudButton_label.png"/>
+            </object>
+        </object>
+        <object name="bagPositionSwitch" type="button" rotation="0" x="0" y="0" width="97" height="97" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="upState" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97" height="97"
+                    alpha="0.7" scaleX="1" scaleY="1">
+                <object name="back" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97" height="97"
+                        alpha="1" scaleX="0.88" scaleY="0.88"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="bagCentering" type="object" rotation="0" x="25" y="25" pivotX="0" pivotY="0" width="48"
+                        height="48" alpha="0.7" scaleX="1" scaleY="1" url="BattleInterface_bagDefault.png">
+                </object>
+                <object name="bagCutout" type="object" rotation="0" x="25" y="25" pivotX="0" pivotY="0" width="48"
+                        height="48" alpha="0.7" scaleX="1" scaleY="1" url="BattleInterface_bagCutout.png"/>
+                <object name="bagDefault" type="object" rotation="0" x="25" y="25" pivotX="0" pivotY="0" width="48"
+                        height="48" alpha="0.7" scaleX="1" scaleY="1" url="BattleInterface_bagCentering.png"/>
+            </object>
+            <object name="downState" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97"
+                    height="97" alpha="0.99" scaleX="1" scaleY="1">
+                <object name="back" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="97" height="97"
+                        alpha="1" scaleX="0.88" scaleY="0.88"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                <object name="bagCentering" type="object" rotation="0" x="25" y="25" pivotX="0" pivotY="0" width="48"
+                        height="48" alpha="0.7" scaleX="1" scaleY="1" url="BattleInterface_bagDefault.png">
+                </object>
+                <object name="bagCutout" type="object" rotation="0" x="25" y="25" pivotX="0" pivotY="0" width="48"
+                        height="48" alpha="0.7" scaleX="1" scaleY="1" url="BattleInterface_bagCutout.png"/>
+                <object name="bagDefault" type="object" rotation="0" x="25" y="25" pivotX="0" pivotY="0" width="48"
+                        height="48" alpha="0.7" scaleX="1" scaleY="1" url="BattleInterface_bagCentering.png"/>
+            </object>
+        </object>
+        <object name="tips" type="toggleButton" rotation="0" x="899.3" y="193.35" width="46" height="46" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="instance66" type="upState" rotation="0" x="0" y="0" width="46" height="46" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance67" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="46"
+                        height="46" alpha="0.4" scaleX="1" scaleY="1" url="BattleInterface_weaponHelp.png"/>
+            </object>
+            <object name="instance70" type="downState" rotation="0" x="0" y="0" width="46" height="46" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance67" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="46"
+                        height="46" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_weaponHelp.png"/>
+            </object>
+        </object>
+        <object name="controlHelp" type="button" rotation="0" x="899.3" y="93.35" width="53" height="53" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="instance66" type="upState" rotation="0" x="0" y="0" width="53" height="53" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance67" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="53"
+                        height="53" alpha="0.4" scaleX="1" scaleY="1" url="BattleInterface_controlsHelp.png"/>
+            </object>
+            <object name="instance70" type="downState" rotation="0" x="0" y="0" width="53" height="53" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance67" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="53"
+                        height="53" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_controlsHelp.png"/>
+            </object>
+        </object>
+        <object name="exit" type="button" rotation="0" x="592.7" y="-19.25" width="73" height="73" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="instance1" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="73"
+                    height="73" alpha="1" scaleX="1" scaleY="1">
+                <object name="enlargeBack" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="90"
+                        height="90" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_hatsPanel_iconContainer.png"/>
+                <object name="back" type="object" rotation="0" x="0" y="0" pivotX="0.5" pivotY="4.3" width="48.25"
+                        height="48.25" alpha="1" scaleX="1.2" scaleY="1.2"
+                        url="BattleInterface_exit_exit_upState_instance119.png"/>
+                <object name="icon" type="object" rotation="0" x="8" y="12" pivotX="0" pivotY="0" width="54.7"
+                        height="57.35" alpha="1" scaleX="0.46" scaleY="0.46" url="Surrender_flag.png"/>
+            </object>
+            <object name="instance2" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="73"
+                    height="73" alpha="1" scaleX="1" scaleY="1">
+                <object name="enlargeBack" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="90"
+                        height="90" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_hatsPanel_iconContainer.png"/>
+                <object name="back" type="object" rotation="0" x="0" y="0" pivotX="0.5" pivotY="4.3" width="48.25"
+                        height="48.25" alpha="1" scaleX="1.2" scaleY="1.2"
+                        url="BattleInterface_exit_exit_downState_instance121.png"/>
+                <object name="icon" type="object" rotation="0" x="8" y="12" pivotX="0" pivotY="0" width="54.7"
+                        height="57.35" alpha="1" scaleX="0.46" scaleY="0.46" url="Surrender_flag.png"/>
+            </object>
+        </object>
+        <object name="windContainer" type="object" rotation="0" x="395" y="2" width="199" height="80" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="enlargeBack" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="199"
+                    height="80" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_hatsPanel_iconContainer.png"/>
+            <object name="wind" type="object" rotation="0" x="86" y="10" width="199" height="23" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="data" type="object" rotation="0" x="1" y="1" width="199" height="21" alpha="1" scaleX="1"
+                        scaleY="1">
+                    <object name="leftWind" type="object" rotation="0" x="0" y="22" width="86" height="21" alpha="1"
+                            scaleX="1" scaleY="1">
+                        <object name="wind" type="9slice" rotation="180" x="0" y="0" width="86" height="21" alpha="1"
+                                scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="1"
+                                paddingBottom="1" bodyEndHeight="19"
+                                url="BattleInterface_windContainer_wind_left_windLeftBack.png"/>
+                    </object>
+                    <object name="rightWind" type="object" rotation="0" x="27" y="0" width="86" height="21" alpha="1"
+                            scaleX="1" scaleY="1">
+                        <object name="wind" type="9slice" rotation="0" x="0" y="1" width="86" height="21" alpha="1"
+                                scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="1"
+                                paddingBottom="1" bodyEndHeight="19"
+                                url="BattleInterface_windContainer_wind_right_windLeftBack.png"/>
+                    </object>
+                </object>
+                <object name="frame" type="object" rotation="0" x="-86" y="0" width="201" height="23" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance11" type="9slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="201"
+                            height="23" alpha="1" scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2"
+                            bodyEndWidth="1" paddingTop="2" paddingBottom="2" bodyEndHeight="19"
+                            url="BattleInterface_windContainer_wind_frame_instance11.png"/>
+                </object>
+            </object>
+            <object name="timer" type="object" rotation="0" x="76.3" y="0" width="48.35" height="51.35" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance12" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="48.35"
+                        height="51.35" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_windContainer_timer_instance12.png"/>
+                <object name="txt" type="text" rotation="0" x="1" y="14" width="46.45" height="32.6" alpha="1"
+                        scaleX="1" scaleY="1" font="GROBOLD_NORMAL" size="21" color="16777215" bold="false"
+                        letterSpacing="0" align="center" fieldType="dynamic" text="30" wordWrap="false"/>
+            </object>
+        </object>
+        <object name="team2" type="object" rotation="0" x="892" y="0" width="259.05" height="62" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="lifeBar" type="object" rotation="0" x="47" y="0" width="172" height="30" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="colorred" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorred.png"/>
+                <object name="coloryellow" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_coloryellow.png"/>
+                <object name="colorgreen" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorgreen.png"/>
+                <object name="colorblue" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorblue.png"/>
+            </object>
+            <object name="hpFrame" type="3slice" rotation="0" x="47" y="0" width="173" height="30" alpha="1" scaleX="1"
+                    scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                    url="BattleInterface_team1_hpFrame.png"/>
+            <object name="avatar" type="object" rotation="0" x="219" y="0" width="62" height="62" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="loading" type="9slice" rotation="0" x="0" y="0" width="62" height="62" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="2"
+                        paddingBottom="2" bodyEndHeight="1" url="BattleInterface_team1_avatar_loading.png"/>
+                <object name="avatarFrame" type="9slice" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1" paddingLeft="14" paddingRight="14" bodyEndWidth="2"
+                        paddingTop="14" paddingBottom="14" bodyEndHeight="2"
+                        url="BattleInterface_team_avatarFrame.png"/>
+            </object>
+            <object name="text" type="text" rotation="0" x="0" y="4" width="215" height="25" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_NORMAL" size="18" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text="70/150" wordWrap="false"/>
+            <object name="group" type="text" rotation="0" x="50" y="11" width="78" height="22" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_NORMAL" size="15" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="2/2" wordWrap="false"/>
+            <object name="arrow" type="object" rotation="180" x="42" y="26" width="12" height="20" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance20" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="12.1"
+                        height="20.4" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_team1_arrow_instance20.png"/>
+            </object>
+        </object>
+        <object name="team0" type="object" rotation="0" x="5" y="0" width="257" height="62" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="lifeBar" type="object" rotation="0" x="63" y="0" width="172" height="30" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="colorred" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorred.png"/>
+                <object name="coloryellow" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_coloryellow.png"/>
+                <object name="colorgreen" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorgreen.png"/>
+                <object name="colorblue" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorblue.png"/>
+            </object>
+            <object name="hpFrame" type="9slice" rotation="0" x="62" y="0" width="173" height="30" alpha="1" scaleX="1"
+                    scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="0" paddingBottom="0"
+                    bodyEndHeight="31" url="BattleInterface_team0_hpFrame.png"/>
+            <object name="avatar" type="object" rotation="0" x="0" y="0" width="62" height="62" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="loading" type="9slice" rotation="0" x="0" y="0" width="62" height="62" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="2"
+                        paddingBottom="2" bodyEndHeight="1" url="BattleInterface_team0_avatar_loading.png"/>
+                <object name="avatarFrame" type="9slice" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1" paddingLeft="14" paddingRight="14" bodyEndWidth="2"
+                        paddingTop="14" paddingBottom="14" bodyEndHeight="2"
+                        url="BattleInterface_team_avatarFrame.png"/>
+            </object>
+            <object name="text" type="text" rotation="0" x="65" y="4" width="215" height="25" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_NORMAL" size="18" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="/111" wordWrap="false"/>
+            <object name="group" type="text" rotation="0" x="153" y="11" width="78" height="22" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_NORMAL" size="15" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text="1/2" wordWrap="false"/>
+            <object name="arrow" type="object" rotation="0" x="240" y="3" width="12" height="20" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance20" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="12.1"
+                        height="20.4" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_team1_arrow_instance20.png"/>
+            </object>
+        </object>
+        <object name="team3" type="object" rotation="0" x="892" y="75" width="259.05" height="62" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="lifeBar" type="object" rotation="0" x="47" y="0" width="172" height="30" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="colorred" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorred.png"/>
+                <object name="coloryellow" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_coloryellow.png"/>
+                <object name="colorgreen" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorgreen.png"/>
+                <object name="colorblue" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorblue.png"/>
+            </object>
+            <object name="hpFrame" type="3slice" rotation="0" x="47" y="0" width="173" height="30" alpha="1" scaleX="1"
+                    scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                    url="BattleInterface_team1_hpFrame.png"/>
+            <object name="avatar" type="object" rotation="0" x="219" y="0" width="62" height="62" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="loading" type="9slice" rotation="0" x="0" y="0" width="62" height="62" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="2"
+                        paddingBottom="2" bodyEndHeight="1" url="BattleInterface_team1_avatar_loading.png"/>
+                <object name="avatarFrame" type="9slice" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1" paddingLeft="14" paddingRight="14" bodyEndWidth="2"
+                        paddingTop="14" paddingBottom="14" bodyEndHeight="2"
+                        url="BattleInterface_team_avatarFrame.png"/>
+            </object>
+            <object name="text" type="text" rotation="0" x="0" y="4" width="215" height="25" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_NORMAL" size="18" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text="70/150" wordWrap="false"/>
+            <object name="group" type="text" rotation="0" x="50" y="11" width="78" height="22" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_NORMAL" size="15" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="2/1" wordWrap="false"/>
+            <object name="arrow" type="object" rotation="180" x="42" y="26" width="12" height="20" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance20" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="12.1"
+                        height="20.4" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_team1_arrow_instance20.png"/>
+            </object>
+        </object>
+        <object name="team1" type="object" rotation="0" x="5.5" y="75" width="257.3" height="62" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="lifeBar" type="object" rotation="0" x="63" y="0" width="172" height="30" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="colorred" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorred.png"/>
+                <object name="coloryellow" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_coloryellow.png"/>
+                <object name="colorgreen" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorgreen.png"/>
+                <object name="colorblue" type="3slice" rotation="0" x="0" y="0" width="172" height="30.25" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                        url="BattleInterface_team1_lifeBar_colorblue.png"/>
+            </object>
+            <object name="hpFrame" type="9slice" rotation="0" x="62" y="0" width="173" height="30" alpha="1" scaleX="1"
+                    scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="0" paddingBottom="0"
+                    bodyEndHeight="31" url="BattleInterface_team0_hpFrame.png"/>
+            <object name="avatar" type="object" rotation="0" x="0" y="0" width="62" height="62" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="loading" type="9slice" rotation="0" x="0" y="0" width="62" height="62" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="2"
+                        paddingBottom="2" bodyEndHeight="1" url="BattleInterface_team0_avatar_loading.png"/>
+                <object name="avatarFrame" type="9slice" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1" paddingLeft="14" paddingRight="2" bodyEndWidth="14"
+                        paddingTop="14" paddingBottom="14" bodyEndHeight="2"
+                        url="BattleInterface_team_avatarFrame.png"/>
+            </object>
+            <object name="text" type="text" rotation="0" x="65" y="4" width="215" height="25" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_NORMAL" size="18" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="/" wordWrap="false"/>
+            <object name="group" type="text" rotation="0" x="153" y="11" width="78" height="22" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_NORMAL" size="15" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text="2/2" wordWrap="false"/>
+            <object name="arrow" type="object" rotation="0" x="240" y="3" width="12" height="20" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance20" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="12.1"
+                        height="20.4" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_team1_arrow_instance20.png"/>
+            </object>
+        </object>
+        <object name="zoomSlider" type="object" rotation="0" x="221.6" y="62.95" width="425.55" height="97.75" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="up_arrow" type="object" rotation="0" x="0" y="0" width="97.8" height="97.75" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="97.8" height="97.75" alpha="1"
+                        scaleX="0.887481689453125" scaleY="0.887420654296875">
+                    <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="110.2" height="110.15" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                    <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="110.2" height="110.15" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                </object>
+                <object name="icon" type="object" rotation="0" x="0" y="0" width="44" height="13.4" alpha="1" scaleX="1"
+                        scaleY="1">
+                    <object name="instance45" type="object" rotation="0" x="26.8" y="42.3" pivotX="0" pivotY="0"
+                            width="44" height="13.4" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_zoomSlider_up_arrow_icon_instance45.png"/>
+                </object>
+            </object>
+            <object name="down_arrow" type="object" rotation="0" x="327.75" y="0" width="97.8" height="97.75" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="97.8" height="97.75" alpha="1"
+                        scaleX="0.887481689453125" scaleY="0.887420654296875">
+                    <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="110.2" height="110.15" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                    <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="110.2" height="110.15" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                </object>
+                <object name="icon" type="object" rotation="0" x="0" y="0" width="45.45" height="45.45" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance46" type="object" rotation="0" x="26" y="26" pivotX="0" pivotY="0"
+                            width="45.45" height="45.45" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_zoomSlider_down_arrow_icon_instance46.png"/>
+                </object>
+            </object>
+            <object name="scrollArea" type="9slice" rotation="0" x="106.9" y="46.2" width="211.95" height="5.1"
+                    alpha="1" scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1" paddingTop="2"
+                    paddingBottom="2" bodyEndHeight="1" url="BattleInterface_zoomSlider_scrollArea.png"/>
+            <object name="btn" type="button" rotation="0" x="188.45" y="22.9" width="34.95" height="53.9" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance152" type="upState" rotation="0" x="0" y="0" width="34.95" height="53.9" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance138" type="object" rotation="0" x="0" y="0" width="34.95" height="53.9"
+                            alpha="0.80078125" scaleX="1" scaleY="1">
+                        <object name="instance139" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="34.95" height="53.9" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_zoomSlider_btn_upState_instance152_instance138_instance139.png"/>
+                    </object>
+                    <object name="instance142" type="object" rotation="0" x="6.05" y="4.35" width="7.65" height="7.95"
+                            alpha="1" scaleX="1" scaleY="1">
+                        <object name="instance143" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="7.65" height="7.95" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_zoomSlider_btn_upState_instance152_instance142_instance143.png"/>
+                    </object>
+                </object>
+                <object name="instance154" type="downState" rotation="0" x="0" y="0" width="34.95" height="53.9"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance148" type="object" rotation="0" x="0" y="0" width="34.95" height="53.9"
+                            alpha="1" scaleX="1" scaleY="1">
+                        <object name="instance139" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="34.95" height="53.9" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_zoomSlider_btn_upState_instance152_instance138_instance139.png"/>
+                    </object>
+                    <object name="instance146" type="object" rotation="0" x="6.05" y="4.35" width="7.65" height="7.95"
+                            alpha="1" scaleX="1" scaleY="1">
+                        <object name="instance143" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="7.65" height="7.95" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_zoomSlider_btn_upState_instance152_instance142_instance143.png"/>
+                    </object>
+                </object>
+            </object>
+        </object>
+        <object name="resetButton" type="object" rotation="0" x="112.55" y="62.95" width="97.8" height="97.75" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="97.8" height="97.75" alpha="1"
+                    scaleX="0.887481689453125" scaleY="0.887420654296875">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="object" rotation="0" x="0" y="0" width="56.15" height="57.3" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance48" type="object" rotation="0" x="21" y="20" pivotX="0" pivotY="0" width="56.15"
+                        height="57.3" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_resetButton_icon_instance48.png"/>
+            </object>
+        </object>
+        <object name="hatsPanel" type="object" rotation="0" x="14.8" y="290.6" width="78.85" height="250.95" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="hats" type="object" rotation="0" x="0" y="0" width="78.85" height="250.95" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="hatIcon" type="object" rotation="0" x="0" y="0" width="78.85" height="78.8" alpha="1"
+                        scaleX="0.7" scaleY="0.7">
+                    <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="78.85" height="78.8"
+                            alpha="1" scaleX="1" scaleY="1">
+                        <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="78.85" height="78.85" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                        <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="78.85" height="78.85" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                    </object>
+                    <object name="selection" type="object" rotation="0" x="0" y="0" width="0" height="0" alpha="1"
+                            scaleX="1" scaleY="1"/>
+                    <object name="icon" type="object" rotation="0" x="4" y="4" width="78" height="78" alpha="1"
+                            scaleX="1" scaleY="1">
+                        <object name="iconContainer" type="9slice" rotation="0" x="0" y="0" width="78" height="78"
+                                alpha="0" scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                                paddingTop="2" paddingBottom="2" bodyEndHeight="1"
+                                url="BattleInterface_hatsPanel_iconContainer.png"/>
+                    </object>
+                </object>
+                <object name="hatIcon" type="object" rotation="0" x="0" y="60" width="78.85" height="78.8" alpha="1"
+                        scaleX="0.7" scaleY="0.7">
+                    <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="78.85" height="78.8"
+                            alpha="1" scaleX="1" scaleY="1">
+                        <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="78.85" height="78.85" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                        <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="78.85" height="78.85" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                    </object>
+                    <object name="selection" type="object" rotation="0" x="0" y="0" width="0" height="0" alpha="1"
+                            scaleX="1" scaleY="1"/>
+                    <object name="icon" type="object" rotation="0" x="4" y="4" width="78" height="78" alpha="1"
+                            scaleX="1" scaleY="1">
+                        <object name="iconContainer" type="9slice" rotation="0" x="0" y="0" width="78" height="78"
+                                alpha="0" scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                                paddingTop="2" paddingBottom="2" bodyEndHeight="1"
+                                url="BattleInterface_hatsPanel_iconContainer.png"/>
+                    </object>
+                </object>
+                <object name="hatIcon" type="object" rotation="0" x="0" y="120" width="78.85" height="78.8" alpha="1"
+                        scaleX="0.7" scaleY="0.7">
+                    <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="78.85" height="78.8"
+                            alpha="1" scaleX="1" scaleY="1">
+                        <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="78.85" height="78.85" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                        <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                                width="78.85" height="78.85" alpha="1" scaleX="1" scaleY="1"
+                                url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+                    </object>
+                    <object name="selection" type="object" rotation="0" x="0" y="0" width="0" height="0" alpha="1"
+                            scaleX="1" scaleY="1"/>
+                    <object name="icon" type="object" rotation="0" x="4" y="4" width="78" height="78" alpha="1"
+                            scaleX="1" scaleY="1">
+                        <object name="iconContainer" type="9slice" rotation="0" x="0" y="0" width="78" height="78"
+                                alpha="0" scaleX="1" scaleY="1" paddingLeft="2" paddingRight="2" bodyEndWidth="1"
+                                paddingTop="2" paddingBottom="2" bodyEndHeight="1"
+                                url="BattleInterface_hatsPanel_iconContainer.png"/>
+                    </object>
+                </object>
+            </object>
+        </object>
+        <object name="left" type="object" rotation="0" x="20.3" y="507.55" width="110.2" height="110.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="110.2" height="110.15" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="object" rotation="0" x="30.15" y="35.9" width="50" height="45" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="icon" type="object" rotation="90" x="50" y="0" width="45" height="50" alpha="1" scaleX="1"
+                        scaleY="1">
+                    <object name="instance3" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="45"
+                            height="50" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_icon_icon_instance3.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="down" type="object" rotation="0" x="145.5" y="507.55" width="110.2" height="110.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="110.2" height="110.15" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="object" rotation="0" x="35.35" y="37" width="45" height="50" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance3" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="45"
+                        height="50" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_left_icon_icon_instance3.png"/>
+            </object>
+        </object>
+        <object name="right" type="object" rotation="0" x="267.1" y="507.55" width="110.2" height="110.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="110.2" height="110.15" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="object" rotation="0" x="37.35" y="35.9" width="50" height="45" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="icon" type="object" rotation="-90" x="0" y="45" width="45" height="50" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance3" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="45"
+                            height="50" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_icon_icon_instance3.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="up" type="object" rotation="0" x="145.5" y="387.25" width="110.2" height="110.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="110.2" height="110.15" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="object" rotation="0" x="35.35" y="31.6" width="45" height="50" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="icon" type="object" rotation="180" x="45" y="50" width="45" height="50" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance3" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="45"
+                            height="50" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_icon_icon_instance3.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="shift" type="object" rotation="0" x="481" y="507" width="110.2" height="110.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="110.2" height="110.15" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="button" rotation="0" x="0" y="0" width="75.55" height="75.9" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance101" type="upState" rotation="0" x="16.85" y="17.55" width="75.55" height="75.9"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance102" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="75.55" height="75.95" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_shift.png"/>
+                </object>
+                <object name="instance105" type="downState" rotation="0" x="11.55" y="12.25" width="86.15" height="86.6"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance102" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="75.55" height="75.95" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_shift.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="jump" type="object" rotation="0" x="605" y="507" width="110.2" height="110.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="110.2" height="110.15" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="object" rotation="0" x="0" y="0" width="58.05" height="33.9" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance7" type="object" rotation="0" x="27" y="38" pivotX="0" pivotY="0" width="58.05"
+                        height="33.9" alpha="1" scaleX="1" scaleY="1" url="BattleInterface_jump_icon_instance7.png"/>
+            </object>
+        </object>
+        <object name="backJump" type="object" rotation="0" x="729" y="507" width="110.2" height="110.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="110.2" height="110.15" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="object" rotation="0" x="0" y="0" width="27.25" height="57.05" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance8" type="object" rotation="0" x="42" y="27.5" pivotX="0" pivotY="0" width="27.25"
+                        height="57.05" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_backJump_icon_instance8.png"/>
+            </object>
+        </object>
+        <object name="alt" type="object" rotation="0" x="705" y="387" width="110.2" height="110.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="toggleButton" rotation="0" x="0" y="0" width="110.2" height="110.15"
+                    alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="upState" type="upState" rotation="0" x="0" y="0" width="110" height="110" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="button" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110"
+                            height="110" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                    <object name="icon" type="object" rotation="0" x="17" y="17" pivotX="0" pivotY="0"
+                            width="75.55" height="75.95" alpha="1" scaleX="1" scaleY="1"
+                            url="AltButtonOff.png"/>
+                </object>
+                <object name="downState" type="downState" rotation="0" x="0" y="0" width="110" height="110" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="button" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110"
+                            height="110" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                    <object name="icon" type="object" rotation="0" x="17" y="17" pivotX="0" pivotY="0"
+                            width="75.55" height="75.95" alpha="1" scaleX="1" scaleY="1"
+                            url="AltButtonOn.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="shoot" type="object" rotation="0" x="829" y="257" width="110.2" height="110.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="0" width="110.2" height="110.15" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="button" rotation="0" x="0" y="0" width="75.55" height="75.9" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance101" type="upState" rotation="0" x="16.85" y="17.55" width="75.55" height="75.9"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance102" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="75.55" height="75.95" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_bag_icon_upState_instance101_instance102.png"/>
+                </object>
+                <object name="instance105" type="downState" rotation="0" x="11.55" y="12.25" width="86.15" height="86.6"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance102" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0"
+                            width="75.55" height="75.95" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_bag_icon_upState_instance101_instance102.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="backpack" type="object" rotation="0" x="829" y="387" width="110.2" height="119.35" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="buttonBase" type="button" rotation="0" x="0" y="4.6" width="110.2" height="110.15" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance73" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_upState_instance73.png"/>
+                <object name="instance75" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="110.2"
+                        height="110.15" alpha="1" scaleX="1" scaleY="1"
+                        url="BattleInterface_left_buttonBase_downState_instance75.png"/>
+            </object>
+            <object name="icon" type="button" rotation="0" x="0" y="0" width="87.9" height="99.9" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance112" type="upState" rotation="0" x="13.3" y="-4.6" width="87.9" height="99.9"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance113" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="87.7"
+                            height="99.65" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_backpack_icon_upState_instance112_instance113.png"/>
+                </object>
+                <object name="instance116" type="downState" rotation="0" x="7.1" y="-11.55" width="100.3" height="114"
+                        alpha="1" scaleX="1.143890380859375" scaleY="1.143890380859375">
+                    <object name="instance113" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="87.7"
+                            height="99.65" alpha="1" scaleX="1" scaleY="1"
+                            url="BattleInterface_backpack_icon_upState_instance112_instance113.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="taunts" type="text" rotation="0" x="250" y="66.95" width="NaN" maxWidth="460" height="NaN"
+                maxHeight="100" alpha="1" scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="22" color="16777215"
+                bold="false" letterSpacing="0" align="center" fieldType="dynamic" text="" wordWrap="true"/>
+        <object name="weaponHintContainer" type="feathersLayoutGroup" layout="vertical" hAlign="center" rotation="0"
+                x="0" y="0" alpha="1" scaleX="1" scaleY="1"/>
+    </object>
+    <object name="OneWindArrow">
+        <object name="instance3" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="12.05"
+                height="19.55" alpha="1" scaleX="1" scaleY="1" url="OneWindArrow_instance3.png"/>
+    </object>
+    <object name="WeaponTipsPanel">
+        <object name="panel" type="feathersLayoutGroup" layout="anchor" gap="0" padding="0" rotation="0" x="0" y="0"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="tip" type="feathersLayoutGroup" layout="vertical" width="620" height="NaN" maxHeight="200"
+                    gap="0" paddingTop="10" paddingBottom="20" rotation="0" x="0" y="0" alpha="1" scaleX="1" scaleY="1">
+                <object name="backgroundSkin" type="9slice" rotation="0" x="0" y="0" width="20" height="20" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="12" paddingRight="12" bodyEndWidth="1" paddingTop="12"
+                        paddingBottom="12" bodyEndHeight="1" url="WeaponTipsPanel_backPanel.png"/>
+                <object name="text" type="text" rotation="0" x="10" y="10" width="NaN" height="NaN" maxWidth="600"
+                        maxHeight="200" alpha="1" scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="17" color="6525129"
+                        bold="false" letterSpacing="0" align="left" fieldType="dynamic"
+                        text="Стрелками вверх/вниз меняйте угол. Зажмите кнопку выстрела для накопления силы выстрела. Не забывайте про ветер!&#xD;"
+                        wordWrap="true"/>
+            </object>
+            <object name="close" type="button" rotation="0" x="0" y="0" width="42.95" height="43" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="instance4" type="upState" rotation="0" x="0" y="0" width="42.95" height="43" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance5" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="42.95"
+                            height="43" alpha="1" scaleX="1" scaleY="1"
+                            url="WeaponTipsPanel_close_upState_instance4_instance5.png"/>
+                </object>
+                <object name="instance8" type="downState" rotation="0" x="-2.05" y="-2.05" width="47.05" height="47.1"
+                        alpha="1" scaleX="1.1" scaleY="1.1">
+                    <object name="instance5" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="42.95"
+                            height="43" alpha="1" scaleX="1" scaleY="1"
+                            url="WeaponTipsPanel_close_upState_instance4_instance5.png"/>
+                </object>
+            </object>
+        </object>
+    </object>
+    <object name="DefaultBattleHint">
+        <object name="panel" type="feathersLayoutGroup" layout="vertical" gap="20" padding="10" rotation="0" x="0" y="0"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="backgroundSkin" type="9slice" rotation="0" x="0" y="0" width="20" height="20" alpha="1"
+                    scaleX="1" scaleY="1" paddingLeft="5" paddingRight="5" bodyEndWidth="1" paddingTop="5"
+                    paddingBottom="5" bodyEndHeight="1" url="WeaponHint_panel.png"/>
+            <object name="msg" type="text" rotation="0" x="0" y="0" width="NaN" height="NaN" maxWidth="230" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="16" color="5391158" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="asdasdasd" ishtml="true" wordWrap="true"/>
+        </object>
+    </object>
+    <object name="PlayerNameBar">
+        <object name="panel" type="feathersLayoutGroup" layout="vertical" gap="1" padding="0" rotation="0" x="0" y="0"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="name" type="text" rotation="0" x="0" y="0" width="200" height="NaN" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="16" color="5746432" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="NAME" wordWrap="false"/>
+            <object name="hp" type="text" rotation="0" x="0" y="0" width="51" height="27" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_NORMAL" size="16" color="5746432" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="999" wordWrap="false"/>
+        </object>
+    </object>
+    <object name="MsgBox">
+        <object name="layout" type="feathersLayoutGroup" layout="vertical" gap="20" padding="20" rotation="0" x="0"
+                y="0" alpha="1" scaleX="1" scaleY="1">
+            <object name="backgroundSkin" type="9slice" rotation="0" x="0" y="0" width="50" height="50" alpha="1"
+                    scaleX="1" scaleY="1" paddingLeft="14" paddingRight="14" bodyEndWidth="1" paddingTop="14"
+                    paddingBottom="14" bodyEndHeight="1" url="photoUpload_back.png"/>
+            <object name="title" type="text" rotation="0" x="0" y="0" width="559.95" height="34.5" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="22" color="8743764" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Требуется подключение к интернету!" wordWrap="false"/>
+            <object name="msg" type="text" rotation="0" x="0" y="0" width="NaN" height="NaN" maxWidth="550" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="19" color="8877929" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic"
+                    text="Игра требует подключения к сети Интернет.&#xD;Пожалуйста, подключитесь, и попробуйте войти снова.&#xD;"
+                    ishtml="true" wordWrap="true"/>
+            <object name="buttonsLayout" type="feathersLayoutGroup" layout="horizontal" gap="20" padding="10"
+                    rotation="0" x="0" y="0" alpha="1" scaleX="1" scaleY="1">
+                <object name="ok" type="common" commonSource="OkButtonSmallLabel" x="0" y="0" width="203" height="53"/>
+                <object name="cancel" type="common" commonSource="CancelButtonSmallLabel" x="0" y="0" width="203"
+                        height="53"/>
+            </object>
+        </object>
+    </object>
+    <object name="Surrender">
+        <object name="back" type="9slice" rotation="0" x="7.15" y="27.75" width="743.6" height="288.65" alpha="1"
+                scaleX="1" scaleY="1" paddingLeft="14" paddingRight="14" bodyEndWidth="1" paddingTop="14"
+                paddingBottom="14" bodyEndHeight="1" url="photoUpload_back.png"/>
+        <object name="shade" type="9slice" rotation="0" x="20" y="230.95" width="719" height="64.55" alpha="1"
+                scaleX="1" scaleY="1" paddingLeft="1" paddingRight="1" bodyEndWidth="1" paddingTop="1" paddingBottom="1"
+                bodyEndHeight="1" url="Surrender_shade.png"/>
+        <object name="line" type="3slice" rotation="0" x="162.15" y="96.65" width="468.9" height="2.1" alpha="1"
+                scaleX="1" scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1" url="title_underline.png"/>
+        <object name="rabbit" type="object" rotation="0" x="0" y="105.8" width="154.5" height="178.85" alpha="1"
+                scaleX="1" scaleY="1" url="Surrender_rabbit.png"/>
+        <object name="boxer" type="object" rotation="0" x="583.55" y="139.2" width="174.1" height="145.3" alpha="1"
+                scaleX="1" scaleY="1" url="Surrender_boxer.png"/>
+        <object name="flag" type="object" rotation="0" x="181.4" y="0" width="101.5" height="105.45" alpha="1"
+                scaleX="1" scaleY="1" url="Surrender_flag.png"/>
+        <object name="ok" type="common" commonSource="OkButtonSmallLabel" x="165.5" y="236.25" width="204" height="53"/>
+        <object name="cancel" type="common" commonSource="CancelButtonSmallLabel" x="383.1" y="236.25" width="198"
+                height="53"/>
+        <object name="msg" type="text" rotation="0" x="145.95" y="149.35" width="459.4" height="59.5" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="8743764" bold="false" letterSpacing="0"
+                align="center" fieldType="dynamic" text="Вы действительно хотите сдаться?" wordWrap="false"/>
+        <object name="title" type="text" rotation="0" x="14.75" y="50.2" width="732.5" height="45.6" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="30" color="8743764" bold="false" letterSpacing="0"
+                align="center" fieldType="dynamic" text="Сдаёшься?" wordWrap="false"/>
+    </object>
+    <object name="CrossHair">
+        <object name="instance3" type="object" rotation="0" x="0" y="0" pivotX="-11.65" pivotY="-11.4" width="23.3"
+                height="23.05" alpha="1" scaleX="1" scaleY="1" url="CrossHair.png"/>
+    </object>
+    <object name="ProgressBarBoss">
+        <object name="container" type="feathersLayoutGroup" layout="none" rotation="0" alpha="1" scaleX="1" scaleY="1">
+            <object name="bottom" type="9slice" rotation="0" x="-1.7" y="-1.7" width="285.65" height="25" alpha="1"
+                    scaleX="1" scaleY="1" paddingLeft="10" paddingRight="10" bodyEndWidth="1" paddingTop="9"
+                    paddingBottom="9" bodyEndHeight="1" url="ProgressBarBoss_bottom.png"/>
+            <object name="bar" type="object" rotation="0" x="3" y="3" width="276" height="15" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="image" type="9slice" rotation="0" x="0" y="0" width="276" height="15" alpha="1" scaleX="1"
+                        scaleY="1" paddingLeft="7" paddingRight="7" bodyEndWidth="1" paddingTop="4" paddingBottom="4"
+                        bodyEndHeight="1" url="ProgressBarBoss_bar.png"/>
+            </object>
+            <object name="top" type="9slice" rotation="0" x="2.8" y="2.05" width="276.6" height="16.6" alpha="1"
+                    scaleX="1" scaleY="1" paddingLeft="45" paddingRight="10" bodyEndWidth="1" paddingTop="6"
+                    paddingBottom="6" bodyEndHeight="1" url="ProgressBarBoss_top.png"/>
+            <object name="title" type="text" rotation="0" x="0" y="0" width="282" height="22" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="14" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" &#xD;" wordWrap="true"/>
+        </object>
+    </object>
+    <object name="IconCooldown">
+        <object name="clockIcon" type="object" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="18" height="18"
+                alpha="1" scaleX="0.6" scaleY="0.6" url="IconCooldown.png"/>
+        <object name="turns" type="text" rotation="0" x="4" y="9" width="15" height="15" alpha="1" scaleX="1" scaleY="1"
+                font="GROBOLD_NORMAL" size="12" color="16777215" bold="false" letterSpacing="0" align="center"
+                fieldType="dynamic" text="3" wordWrap="false"/>
+    </object>
+    <object name="BossGameOverDrawPanel">
+        <object name="draw_title" type="object" rotation="0" x="87.15" y="0" width="525.7" height="247.55" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="instance4" type="object" rotation="0" x="5.15" y="2" width="407.2" height="236.1" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance5" type="object" rotation="0" x="61.65" y="44.25" width="116.2" height="166.25"
+                        alpha="1" scaleX="0.8" scaleY="0.8" url="BossGameOverDrawPanel_sword.png"/>
+                <object name="instance7" type="object" rotation="0" x="468.85" y="44.25" width="116.2" height="166.25"
+                        alpha="1" scaleX="-0.8" scaleY="0.80" url="BossGameOverDrawPanel_sword.png"/>
+                <object name="instance9" type="object" rotation="-30" x="115.5" y="44" width="91.9" height="219.5"
+                        alpha="1" scaleX="1" scaleY="1" url="BossGameOverDrawPanel_goldenSword.png"/>
+                <object name="instance11" type="object" rotation="30" x="412.45" y="43.95" width="91.9" height="219.5"
+                        alpha="1" scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_goldenSword.png"/>
+            </object>
+            <object name="redRibbon" type="object" rotation="0" x="0" y="137" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="527" y="137" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="117.45" y="154.7" width="284.65" height="42.85" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="28" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Ничья!" wordWrap="false"/>
+        </object>
+        <object name="description" type="text" rotation="0" x="92.05" y="269.05" width="519.3" height="60" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                align="center" fieldType="dynamic" text=" &#xD;" wordWrap="true"/>
+        <object name="line" type="3slice" rotation="0" x="54.35" y="343.55" width="592.9" height="4" alpha="1"
+                scaleX="1" scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1"
+                url="BossGameOverDrawPanel_line.png"/>
+        <object name="ok" type="object" rotation="0" x="7" y="365" width="218" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="20" width="146" height="1" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Да" wordWrap="false"/>
+            <object name="subbutton" type="button" sound="default" rotation="0" x="159.7" y="188.3" width="218"
+                    height="53" alpha="1" scaleX="1" scaleY="1">
+                <object name="instance7" type="upState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_orange_up.png"/>
+                </object>
+                <object name="instance11" type="downState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackgroundPressed" type="3slice" rotation="0" x="0" y="0" width="218"
+                            height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_orange_down.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="next" type="common" commonSource="OkButtonNormalLabel" x="489" y="365" width="218" height="53"/>
+        <object name="post" type="common" commonSource="OkButtonNormalLabel" x="248" y="365" width="218" height="53"/>
+    </object>
+    <object name="BossGameOverLosePanel">
+        <object name="titleImage" type="object" rotation="0" x="0" y="0" width="158.75" height="151.8" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="darkSowrd1" type="object" rotation="0" x="36" y="-9.65" width="158.75" height="151.8"
+                    alpha="1" scaleX="0.88" scaleY="0.88" url="BossGameOverLosePanel_darkSowrd.png"/>
+            <object name="darkSword2" type="object" rotation="0" x="497" y="2" width="158.75" height="151.8" alpha="1"
+                    scaleX="-0.88" scaleY="0.88" url="BossGameOverLosePanel_darkSowrd.png"/>
+            <object name="header" type="object" rotation="0" x="-1" y="102.45" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverLosePanel_darkRedRibbon.png"/>
+            <object name="header" type="object" rotation="0" x="526" y="102.45" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverLosePanel_darkRedRibbon.png"/>
+            <object name="description1" type="text" rotation="0" x="13.8" y="226.4" width="489.25" height="87.25"
+                    alpha="1" scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false"
+                    letterSpacing="0" align="center" fieldType="dynamic" text=" &#xD;" wordWrap="true"/>
+            <object name="title1" type="text" rotation="0" x="76.65" y="121.1" width="371.85" height="38.65" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="" wordWrap="false"/>
+            <object name="description2" type="text" rotation="0" x="13.8" y="281.4" width="489.25" height="31.75"
+                    alpha="1" scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false"
+                    letterSpacing="0" align="center" fieldType="dynamic" text=" &#xD;" wordWrap="true"/>
+        </object>
+        <object name="line" type="3slice" rotation="0" x="60" y="331.1" width="592.9" height="4" alpha="1" scaleX="1"
+                scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1" url="BossGameOverDrawPanel_line.png"/>
+        <object name="ok" type="object" rotation="0" x="7" y="352" width="218" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="20" width="146" height="1" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Да" wordWrap="false"/>
+            <object name="subbutton" type="button" sound="default" rotation="0" x="159.7" y="188.3" width="218"
+                    height="53" alpha="1" scaleX="1" scaleY="1">
+                <object name="instance7" type="upState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_orange_up.png"/>
+                </object>
+                <object name="instance11" type="downState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackgroundPressed" type="3slice" rotation="0" x="0" y="0" width="218"
+                            height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_orange_down.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="next" type="common" commonSource="OkButtonNormalLabel" x="489" y="352.15" width="218"
+                height="53"/>
+        <object name="post" type="common" commonSource="OkButtonNormalLabel" x="248" y="352" width="218" height="53"/>
+    </object>
+    <object name="BossGameOverWinPanel">
+        <object name="titleImage" type="object" rotation="0" x="0" y="0" width="218" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="gun12" type="object" rotation="0" x="422.5" y="15.7" width="110.5" height="99.8" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverWinPanel_gun1.png"/>
+            <object name="gun22" type="object" rotation="0" x="425.65" y="49.9" width="135.35" height="76.95" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverWinPanel_gun2.png"/>
+            <object name="gun11" type="object" rotation="0" x="172.55" y="15.25" width="110.5" height="99.8" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverWinPanel_gun1.png"/>
+            <object name="gun21" type="object" rotation="0" x="172.3" y="49.45" width="135.35" height="76.95" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverWinPanel_gun2.png"/>
+            <object name="dynamite2" type="object" rotation="0" x="351.85" y="0" width="129.8" height="141.35" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverWinPanel_dynamite.png"/>
+            <object name="dynamite1" type="object" rotation="0" x="253.25" y="-0.5" width="129.8" height="141.35"
+                    alpha="1" scaleX="-1" scaleY="1" url="BossGameOverWinPanel_dynamite.png"/>
+            <object name="line" type="3slice" rotation="0" x="-2" y="236.45" width="592.9" height="4" alpha="1"
+                    scaleX="1" scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1"
+                    url="BossGameOverDrawPanel_line.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="34" y="82.1" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="560.75" y="82.1" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="fuzy" type="object" rotation="-7.45" x="254.8" y="202.45" width="30.55" height="31.35"
+                    alpha="1" scaleX="0.62" scaleY="0.627" url="icon_fuzy.png"/>
+            <object name="ruby" type="object" rotation="0" x="257" y="199.7" width="32" height="30.9" alpha="1"
+                    scaleX="0.6" scaleY="0.6" url="icon_ruby.png"/>
+            <object name="exp" type="object" rotation="0" x="367.3" y="196.55" width="35.6" height="35.75" alpha="1"
+                    scaleX="0.7" scaleY="0.7" url="ExperienceIcon.png"/>
+            <object name="fuzyReward" type="text" rotation="0" x="148" y="203" width="101.7" height="31.75" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text=" " wordWrap="false"/>
+            <object name="rubyReward" type="text" rotation="0" x="145" y="203" width="105.8" height="31.75" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text=" " wordWrap="false"/>
+            <object name="title1" type="text" rotation="0" x="108.9" y="100.75" width="371.85" height="38.65" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+            <object name="expReward" type="text" rotation="0" x="284" y="203" width="80.55" height="31.75" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="ok" type="object" rotation="0" x="7" y="510" width="218" height="53"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="20" width="146" height="1" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Да" wordWrap="false"/>
+            <object name="subbutton" type="button" sound="default" rotation="0" x="159.7" y="188.3" width="218"
+                    height="53" alpha="1" scaleX="1" scaleY="1">
+                <object name="instance7" type="upState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_orange_up.png"/>
+                </object>
+                <object name="instance11" type="downState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackgroundPressed" type="3slice" rotation="0" x="0" y="0" width="218"
+                            height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_orange_down.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="next" type="common" commonSource="OkButtonNormalLabel" x="489" y="510" width="218" height="53"/>
+        <object name="post" type="common" commonSource="OkButtonNormalLabel" x="248" y="510" width="218" height="53"/>
+        <object name="doubleRewardForAdsBtn" type="object" rotation="0" x="720" y="510" width="218" height="53"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="subbutton" sound="default" type="button" x="720" y="510" width="218" height="53"
+                    alpha="1" scaleX="1" scaleY="1">
+                <object name="label" type="text" rotation="0" x="168" y="20" width="218" height="1" alpha="1" scaleX="1"
+                        scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                        align="center" fieldType="dynamic" text="Икс2" wordWrap="false"/>
+                <object name="upState" type="upState" rotation="0" x="0" y="0" width="218" height="53"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="back" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="12" paddingRight="12" bodyEndWidth="1"
+                            url="button_orange_up.png"/>
+                </object>
+                <object name="downState" type="downState" rotation="0" x="0" y="0" width="218" height="53"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="back" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="12" paddingRight="12" bodyEndWidth="1"
+                            paddingTop="0" paddingBottom="0" bodyEndHeight="1" url="button_orange_down.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="rewardDescription" type="text" rotation="0" x="68" y="248.4" width="489.25" height="31.75"
+                alpha="1" scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false"
+                letterSpacing="0" align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        <object name="bossRewardItemsContainer" type="object" rotation="0" x="38.7" y="301.1" width="632.5" height="75"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="cells" type="object" rotation="0" x="115" y="0" width="510" height="75" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="background" type="9slice" rotation="0" x="0" y="0" width="510" height="75" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="1" paddingRight="1" bodyEndWidth="1" paddingTop="1"
+                        paddingBottom="1" bodyEndHeight="1" url="BattleInterface_hatsPanel_iconContainer.png"/>
+            </object>
+            <object name="prev" type="object" rotation="0" x="61" y="5" width="NaN" height="NaN" alpha="1" scaleX="-1"
+                    scaleY="1" pivotX="0" pivotY="0">
+                <object name="buttonBase" type="button" sound="default" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance20" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_up.png"/>
+                    <object name="instance22" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_down.png"/>
+                </object>
+                <object name="icon" type="button" rotation="0" x="0" y="0" width="28" height="28" alpha="1" scaleX="-1"
+                        scaleY="1">
+                    <object name="instance24" type="upState" rotation="0" x="0" y="0" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                    <object name="instance28" type="downState" rotation="0" x="0" y="2" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                </object>
+            </object>
+            <object name="next" type="object" rotation="0" x="560" y="5" width="62" height="62" alpha="1" scaleX="1"
+                    scaleY="1" pivotX="0" pivotY="0">
+                <object name="buttonBase" type="button" sound="default" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance20" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_up.png"/>
+                    <object name="instance22" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_down.png"/>
+                </object>
+                <object name="icon" type="button" rotation="0" x="0" y="0" width="28" height="28" alpha="1" scaleX="1"
+                        scaleY="1">
+                    <object name="instance24" type="upState" rotation="0" x="0" y="0" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                    <object name="instance28" type="downState" rotation="0" x="0" y="2" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="trophyText" type="text" rotation="0" x="0" y="407.6" width="633.25" height="31.75" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="10461087" bold="false" letterSpacing="0"
+                align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+    </object>
+    <object name="FriendGameOverPanel">
+        <object name="winner_title" type="object" rotation="0" x="84.15" y="0" width="525.7" height="239.25" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="pipes" type="object" rotation="0" x="-0.85" y="-6.3" width="450.2" height="167.75" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="pipe5" type="object" rotation="0" x="324" y="62" width="177.05" height="112.05" alpha="1"
+                        scaleX="1" scaleY="1" url="FriendGameOverPanel_pipe3.png"/>
+                <object name="pipe5" type="object" rotation="0" x="202" y="62" width="177.05" height="112.05" alpha="1"
+                        scaleX="-1" scaleY="1" url="FriendGameOverPanel_pipe3.png"/>
+                <object name="pipe4" type="object" rotation="0" x="272" y="24" width="148.25" height="145.5" alpha="1"
+                        scaleX="1" scaleY="1" url="FriendGameOverPanel_pipe2.png"/>
+                <object name="pipe4" type="object" rotation="0" x="258" y="24" width="148.25" height="145.5" alpha="1"
+                        scaleX="-1" scaleY="1" url="FriendGameOverPanel_pipe2.png"/>
+                <object name="pipe3" type="object" rotation="0" x="216" y="6.45" width="104.4" height="160.2" alpha="1"
+                        scaleX="1" scaleY="1" url="FriendGameOverPanel_pipe1.png"/>
+            </object>
+            <object name="rdRibbonWithRounds" type="object" rotation="0" x="0" y="129" width="264" height="112"
+                    alpha="1" scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="rdRibbonWithRounds" type="object" rotation="0" x="527" y="129" width="264" height="112"
+                    alpha="1" scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="117.45" y="146.4" width="284.65" height="42.85" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="28" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="op_surrender_title" type="object" rotation="0" x="84.15" y="0" width="525.7" height="218"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="flag" type="object" rotation="33.6" x="413" y="3" width="128.8" height="127" alpha="1"
+                    scaleX="1.296" scaleY="1.296" url="Surrender_flag.png"/>
+            <object name="bomb" type="object" rotation="110" x="255.1" y="80" width="129.85" height="156.35" alpha="1"
+                    scaleX="1.57" scaleY="1.57" url="IconHomingBazookaUpg2.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="0" y="130" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="527" y="130" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="81.45" y="153.15" width="360.9" height="35.9" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="23" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="loser_title" type="object" rotation="0" x="84.6" y="0" width="525.85" height="213.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="darkSwords1" type="object" rotation="0" x="34.7" y="15.35" width="158.75" height="151.8"
+                    alpha="1" scaleX="0.877" scaleY="0.877" url="BossGameOverLosePanel_darkSowrd.png"/>
+            <object name="darkSwords2" type="object" rotation="0" x="495.55" y="26.35" width="158.75" height="151.8"
+                    alpha="1" scaleX="-0.877" scaleY="0.877" url="BossGameOverLosePanel_darkSowrd.png"/>
+            <object name="darkRedRibbon" type="object" rotation="0" x="0" y="127" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverLosePanel_darkRedRibbon.png"/>
+            <object name="darkRedRibbon" type="object" rotation="0" x="527" y="127" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverLosePanel_darkRedRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="75.45" y="146.1" width="371.85" height="38.65" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="draw_title" type="object" rotation="0" x="84.15" y="-9.4" width="525.7" height="247.55" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="swords" type="object" rotation="0" x="5.15" y="2" width="407.2" height="236.1" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="sword1" type="object" rotation="0" x="61.65" y="44.25" width="116.2" height="166.25"
+                        alpha="1" scaleX="0.8" scaleY="0.8" url="BossGameOverDrawPanel_sword.png"/>
+                <object name="sword2" type="object" rotation="0" x="468.85" y="44.25" width="116.2" height="166.25"
+                        alpha="1" scaleX="-0.8" scaleY="0.8" url="BossGameOverDrawPanel_sword.png"/>
+                <object name="goldenSword1" type="object" rotation="-30" x="115.5" y="44" width="91.9" height="219.5"
+                        alpha="1" scaleX="1" scaleY="1" url="BossGameOverDrawPanel_goldenSword.png"/>
+                <object name="goldenSword2" type="object" rotation="30" x="412.45" y="43.95" width="91.9" height="219.5"
+                        alpha="1" scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_goldenSword.png"/>
+            </object>
+            <object name="redRibbon" type="object" rotation="0" x="0" y="137" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="527" y="137" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="117.45" y="154.7" width="284.65" height="42.85" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="28" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="drawDescription" type="text" rotation="0" x="72.5" y="244.05" width="550" height="59.5" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                align="center" fieldType="dynamic" text=" &#xD;" wordWrap="true"/>
+        <object name="winDescription" type="text" rotation="0" x="72" y="271.05" width="550" height="30" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        <object name="line" type="3slice" rotation="0" x="51" y="304" width="592.9" height="4" alpha="1" scaleX="1"
+                scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1" url="BossGameOverDrawPanel_line.png"/>
+        <object name="ok" type="object" rotation="0" x="7" y="323.2" width="218" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="20" width="146" height="1" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Да" wordWrap="false"/>
+            <object name="subbutton" type="button" sound="default" rotation="0" x="159.7" y="188.3" width="218"
+                    height="53" alpha="1" scaleX="1" scaleY="1">
+                <object name="instance7" type="upState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_orange_up.png"/>
+                </object>
+                <object name="instance11" type="downState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackgroundPressed" type="3slice" rotation="0" x="0" y="0" width="218"
+                            height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_orange_down.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="status" type="common" commonSource="OkButtonNormalLabel" x="489" y="323.2" width="218"
+                height="53"/>
+        <object name="createNote" type="common" commonSource="OkButtonNormalLabel" x="248" y="323.2" width="218"
+                height="53"/>
+    </object>
+    <object name="GameOverPanel">
+        <object name="awardPanel" type="object" rotation="0" x="151.45" y="244.35" width="594.45" height="95" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="ratingLine" type="3slice" rotation="0" x="0" y="37" width="594" height="4" alpha="1"
+                    scaleX="1" scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1"
+                    url="BossGameOverDrawPanel_line.png"/>
+            <object name="expLine" type="3slice" rotation="0" x="0" y="89" width="594" height="4" alpha="1" scaleX="1"
+                    scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1"
+                    url="BossGameOverDrawPanel_line.png"/>
+            <object name="bonusExpLine" type="3slice" rotation="0" x="0" y="139" width="594" height="4" alpha="1"
+                    scaleX="1" scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1"
+                    url="BossGameOverDrawPanel_line.png"/>
+            <object name="moneyLine" type="3slice" rotation="0" x="0" y="189" width="594" height="4" alpha="1"
+                    scaleX="1" scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1"
+                    url="BossGameOverDrawPanel_line.png"/>
+            <object name="ratingIcon" type="object" rotation="0" x="450.65" y="3.25" width="28" height="31" alpha="1"
+                    scaleX="0.35" scaleY="0.35" url="ratingIcon.png"/>
+            <object name="expIcon" type="object" rotation="0" x="448.55" y="50.35" width="35.6" height="35.75" alpha="1"
+                    scaleX="0.7" scaleY="0.7" url="ExperienceIcon.png"/>
+            <object name="bonusExpIcon" type="object" rotation="0" x="448.55" y="100" width="35.6" height="35.75"
+                    alpha="1" scaleX="0.7" scaleY="0.7" url="bounusExpIcon.png"/>
+            <object name="moneyIcon" type="object" rotation="-7.3" x="450" y="153" width="32.15" height="33" alpha="1"
+                    scaleX="0.625" scaleY="0.625" url="icon_fuzy.png"/>
+            <object name="ratingLabel" type="text" rotation="0" x="96" y="8" width="325.55" height="31.75" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="Получено опыта:" wordWrap="false"/>
+            <object name="rating" type="text" rotation="0" x="355.05" y="8" width="86" height="31.75" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text="10" wordWrap="false"/>
+            <object name="expLabel" type="text" rotation="0" x="96" y="58" width="325.55" height="31.75" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="Получено опыта:" wordWrap="false"/>
+            <object name="exp" type="text" rotation="0" x="355.05" y="58" width="86" height="31.75" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text="11" wordWrap="false"/>
+            <object name="bonusExpLabel" type="text" rotation="0" x="96" y="108" width="325.55" height="31.75" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="Получено опыта:" wordWrap="false"/>
+            <object name="bonusExp" type="text" rotation="0" x="355" y="108" width="86" height="31.75" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text="12" wordWrap="false" normaltextfield="true" ishtml="true"/>
+            <object name="moneyLabel" type="text" rotation="0" x="95" y="158" width="308.05" height="31.75" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="Получено денег:" wordWrap="false"/>
+            <object name="money" type="text" rotation="0" x="355.05" y="158" width="86" height="40" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                    align="right" fieldType="dynamic" text="13" wordWrap="false"/>
+        </object>
+        <object name="winner_title" type="object" rotation="0" x="84.15" y="0" width="525.7" height="239.25" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="pipes" type="object" rotation="0" x="-0.85" y="-6.3" width="450.2" height="167.75" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="pipe5" type="object" rotation="0" x="324" y="62" width="177.05" height="112.05" alpha="1"
+                        scaleX="1" scaleY="1" url="FriendGameOverPanel_pipe3.png"/>
+                <object name="pipe5" type="object" rotation="0" x="202" y="62" width="177.05" height="112.05" alpha="1"
+                        scaleX="-1" scaleY="1" url="FriendGameOverPanel_pipe3.png"/>
+                <object name="pipe4" type="object" rotation="0" x="272" y="24" width="148.25" height="145.5" alpha="1"
+                        scaleX="1" scaleY="1" url="FriendGameOverPanel_pipe2.png"/>
+                <object name="pipe4" type="object" rotation="0" x="258" y="24" width="148.25" height="145.5" alpha="1"
+                        scaleX="-1" scaleY="1" url="FriendGameOverPanel_pipe2.png"/>
+                <object name="pipe3" type="object" rotation="0" x="216" y="6.45" width="104.4" height="160.2" alpha="1"
+                        scaleX="1" scaleY="1" url="FriendGameOverPanel_pipe1.png"/>
+            </object>
+            <object name="rdRibbonWithRounds" type="object" rotation="0" x="0" y="129" width="264" height="112"
+                    alpha="1" scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="rdRibbonWithRounds" type="object" rotation="0" x="527" y="129" width="264" height="112"
+                    alpha="1" scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="117.45" y="146.4" width="284.65" height="42.85" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="28" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="op_surrender_title" type="object" rotation="0" x="84.15" y="0" width="525.7" height="218"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="flag" type="object" rotation="33.6" x="413" y="3" width="128.8" height="127" alpha="1"
+                    scaleX="1.296" scaleY="1.296" url="Surrender_flag.png"/>
+            <object name="bomb" type="object" rotation="110" x="255.1" y="80" width="129.85" height="156.35" alpha="1"
+                    scaleX="1.57" scaleY="1.57" url="IconHomingBazookaUpg2.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="0" y="130" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="527" y="130" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="81.45" y="153.15" width="360.9" height="35.9" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="23" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="loser_title" type="object" rotation="0" x="84.6" y="0" width="525.85" height="213.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="darkSwords1" type="object" rotation="0" x="34.7" y="15.35" width="158.75" height="151.8"
+                    alpha="1" scaleX="0.877" scaleY="0.877" url="BossGameOverLosePanel_darkSowrd.png"/>
+            <object name="darkSwords2" type="object" rotation="0" x="495.55" y="26.35" width="158.75" height="151.8"
+                    alpha="1" scaleX="-0.877" scaleY="0.877" url="BossGameOverLosePanel_darkSowrd.png"/>
+            <object name="darkRedRibbon" type="object" rotation="0" x="0" y="127" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverLosePanel_darkRedRibbon.png"/>
+            <object name="darkRedRibbon" type="object" rotation="0" x="527" y="127" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverLosePanel_darkRedRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="75.45" y="146.1" width="371.85" height="38.65" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="draw_title" type="object" rotation="0" x="84.15" y="-9.4" width="525.7" height="247.55" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="swords" type="object" rotation="0" x="5.15" y="2" width="407.2" height="236.1" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="sword1" type="object" rotation="0" x="61.65" y="44.25" width="116.2" height="166.25"
+                        alpha="1" scaleX="0.8" scaleY="0.8" url="BossGameOverDrawPanel_sword.png"/>
+                <object name="sword2" type="object" rotation="0" x="468.85" y="44.25" width="116.2" height="166.25"
+                        alpha="1" scaleX="-0.8" scaleY="0.8" url="BossGameOverDrawPanel_sword.png"/>
+                <object name="goldenSword1" type="object" rotation="-30" x="115.5" y="44" width="91.9" height="219.5"
+                        alpha="1" scaleX="1" scaleY="1" url="BossGameOverDrawPanel_goldenSword.png"/>
+                <object name="goldenSword2" type="object" rotation="30" x="412.45" y="43.95" width="91.9" height="219.5"
+                        alpha="1" scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_goldenSword.png"/>
+            </object>
+            <object name="redRibbon" type="object" rotation="0" x="0" y="137" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="527" y="137" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="117.45" y="154.7" width="284.65" height="42.85" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="28" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="reagentsPanelTitle" type="text" rotation="0" x="194.15" y="340.55" width="325.15" height="31.75"
+                alpha="1" scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false"
+                letterSpacing="0" align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        <object name="reagentsPanel" type="object" rotation="0" x="30" y="391.75" width="632.5" height="75" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="cells" type="object" rotation="0" x="120.3" y="0" width="387.7" height="75" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="background" type="9slice" rotation="0" x="0" y="0" width="387.7" height="75" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="1" paddingRight="1" bodyEndWidth="1" paddingTop="1"
+                        paddingBottom="1" bodyEndHeight="1" url="BattleInterface_hatsPanel_iconContainer.png"/>
+            </object>
+            <object name="prev" type="object" rotation="0" x="62.25" y="0" width="NaN" height="NaN" alpha="1"
+                    scaleX="-1" scaleY="1" pivotX="0" pivotY="0">
+                <object name="buttonBase" type="button" sound="default" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance20" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_up.png"/>
+                    <object name="instance22" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_down.png"/>
+                </object>
+                <object name="icon" type="button" rotation="0" x="0" y="0" width="28" height="28" alpha="1" scaleX="-1"
+                        scaleY="1">
+                    <object name="instance24" type="upState" rotation="0" x="0" y="0" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                    <object name="instance28" type="downState" rotation="0" x="0" y="2" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                </object>
+            </object>
+            <object name="next" type="object" rotation="0" x="570" y="0" width="62" height="62" alpha="1" scaleX="1"
+                    scaleY="1" pivotX="0" pivotY="0">
+                <object name="buttonBase" type="button" sound="default" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance20" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_up.png"/>
+                    <object name="instance22" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_down.png"/>
+                </object>
+                <object name="icon" type="button" rotation="0" x="0" y="0" width="28" height="28" alpha="1" scaleX="1"
+                        scaleY="1">
+                    <object name="instance24" type="upState" rotation="0" x="0" y="0" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                    <object name="instance28" type="downState" rotation="0" x="0" y="2" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="ok" type="object" rotation="0" x="7" y="510.45" width="218" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="20" width="146" height="1" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Да" wordWrap="false"/>
+            <object name="subbutton" type="button" sound="default" rotation="0" x="159.7" y="188.3" width="218"
+                    height="53" alpha="1" scaleX="1" scaleY="1">
+                <object name="instance7" type="upState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_orange_up.png"/>
+                </object>
+                <object name="instance11" type="downState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackgroundPressed" type="3slice" rotation="0" x="0" y="0" width="218"
+                            height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_orange_down.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="status" type="common" commonSource="OkButtonNormalLabel" x="489" y="510.45" width="218"
+                height="53"/>
+        <object name="createNote" type="common" commonSource="OkButtonNormalLabel" x="248" y="510.45" width="218"
+                height="53"/>
+        <object name="bonusForAdsBtn" type="object" rotation="0" x="720" y="510" width="218" height="53"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="subbutton" sound="default" type="button" x="720" y="510" width="218" height="53"
+                    alpha="1" scaleX="1" scaleY="1">
+                <object name="label" type="text" rotation="0" x="168" y="20" width="218" height="1" alpha="1" scaleX="1"
+                        scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                        align="center" fieldType="dynamic" text="Икс2" wordWrap="false"/>
+                <object name="upState" type="upState" rotation="0" x="0" y="0" width="218" height="53"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="back" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="12" paddingRight="12" bodyEndWidth="1"
+                            url="button_orange_up.png"/>
+                </object>
+                <object name="downState" type="downState" rotation="0" x="0" y="0" width="218" height="53"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="back" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="12" paddingRight="12" bodyEndWidth="1"
+                            paddingTop="0" paddingBottom="0" bodyEndHeight="1" url="button_orange_down.png"/>
+                </object>
+            </object>
+        </object>
+    </object>
+    <object name="PvpGameOverPanel">
+        <object name="winner_title" type="object" rotation="0" x="84.15" y="0" width="525.7" height="239.25" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="pipes" type="object" rotation="0" x="-0.85" y="-6.3" width="450.2" height="167.75" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="pipe5" type="object" rotation="0" x="324" y="62" width="177.05" height="112.05" alpha="1"
+                        scaleX="1" scaleY="1" url="FriendGameOverPanel_pipe3.png"/>
+                <object name="pipe5" type="object" rotation="0" x="202" y="62" width="177.05" height="112.05" alpha="1"
+                        scaleX="-1" scaleY="1" url="FriendGameOverPanel_pipe3.png"/>
+                <object name="pipe4" type="object" rotation="0" x="272" y="24" width="148.25" height="145.5" alpha="1"
+                        scaleX="1" scaleY="1" url="FriendGameOverPanel_pipe2.png"/>
+                <object name="pipe4" type="object" rotation="0" x="258" y="24" width="148.25" height="145.5" alpha="1"
+                        scaleX="-1" scaleY="1" url="FriendGameOverPanel_pipe2.png"/>
+                <object name="pipe3" type="object" rotation="0" x="216" y="6.45" width="104.4" height="160.2" alpha="1"
+                        scaleX="1" scaleY="1" url="FriendGameOverPanel_pipe1.png"/>
+            </object>
+            <object name="rdRibbonWithRounds" type="object" rotation="0" x="0" y="129" width="264" height="112"
+                    alpha="1" scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="rdRibbonWithRounds" type="object" rotation="0" x="527" y="129" width="264" height="112"
+                    alpha="1" scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="117.45" y="146.4" width="284.65" height="42.85" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="28" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="op_surrender_title" type="object" rotation="0" x="84.15" y="0" width="525.7" height="218"
+                alpha="1" scaleX="1" scaleY="1">
+            <object name="flag" type="object" rotation="33.6" x="413" y="3" width="128.8" height="127" alpha="1"
+                    scaleX="1.296" scaleY="1.296" url="Surrender_flag.png"/>
+            <object name="bomb" type="object" rotation="110" x="255.1" y="80" width="129.85" height="156.35" alpha="1"
+                    scaleX="1.57" scaleY="1.57" url="IconHomingBazookaUpg2.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="0" y="130" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="527" y="130" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="81.45" y="153.15" width="360.9" height="35.9" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="23" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="loser_title" type="object" rotation="0" x="84.6" y="0" width="525.85" height="213.15" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="darkSwords1" type="object" rotation="0" x="34.7" y="15.35" width="158.75" height="151.8"
+                    alpha="1" scaleX="0.877" scaleY="0.877" url="BossGameOverLosePanel_darkSowrd.png"/>
+            <object name="darkSwords2" type="object" rotation="0" x="495.55" y="26.35" width="158.75" height="151.8"
+                    alpha="1" scaleX="-0.877" scaleY="0.877" url="BossGameOverLosePanel_darkSowrd.png"/>
+            <object name="darkRedRibbon" type="object" rotation="0" x="0" y="127" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverLosePanel_darkRedRibbon.png"/>
+            <object name="darkRedRibbon" type="object" rotation="0" x="527" y="127" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverLosePanel_darkRedRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="75.45" y="146.1" width="371.85" height="38.65" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="draw_title" type="object" rotation="0" x="84.15" y="-9.4" width="525.7" height="247.55" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="swords" type="object" rotation="0" x="5.15" y="2" width="407.2" height="236.1" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="sword1" type="object" rotation="0" x="61.65" y="44.25" width="116.2" height="166.25"
+                        alpha="1" scaleX="0.8" scaleY="0.8" url="BossGameOverDrawPanel_sword.png"/>
+                <object name="sword2" type="object" rotation="0" x="468.85" y="44.25" width="116.2" height="166.25"
+                        alpha="1" scaleX="-0.8" scaleY="0.8" url="BossGameOverDrawPanel_sword.png"/>
+                <object name="goldenSword1" type="object" rotation="-30" x="115.5" y="44" width="91.9" height="219.5"
+                        alpha="1" scaleX="1" scaleY="1" url="BossGameOverDrawPanel_goldenSword.png"/>
+                <object name="goldenSword2" type="object" rotation="30" x="412.45" y="43.95" width="91.9" height="219.5"
+                        alpha="1" scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_goldenSword.png"/>
+            </object>
+            <object name="redRibbon" type="object" rotation="0" x="0" y="137" width="264" height="112" alpha="1"
+                    scaleX="1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="redRibbon" type="object" rotation="0" x="527" y="137" width="264" height="112" alpha="1"
+                    scaleX="-1" scaleY="1" url="BossGameOverDrawPanel_redRibbon.png"/>
+            <object name="text" type="text" rotation="0" x="117.45" y="154.7" width="284.65" height="42.85" alpha="1"
+                    scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="28" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        </object>
+        <object name="moneyLabel" type="text" rotation="0" x="151.45" y="297.1" width="285.8" height="31.75" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                align="left" fieldType="dynamic" text=" " wordWrap="false"/>
+        <object name="ratingLabel" type="text" rotation="0" x="152.45" y="247.7" width="296.8" height="31.75" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                align="left" fieldType="dynamic" text=" " wordWrap="false"/>
+        <object name="rating" type="text" rotation="0" x="419.25" y="247.7" width="83.8" height="31.75" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                align="right" fieldType="dynamic" text=" " wordWrap="false"/>
+        <object name="money" type="text" rotation="0" x="406.25" y="297.1" width="96.8" height="31.75" alpha="1"
+                scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false" letterSpacing="0"
+                align="right" fieldType="dynamic" text=" " wordWrap="false"/>
+        <object name="reagentsPanelTitle" type="text" rotation="0" x="194.15" y="340.55" width="325.15" height="31.75"
+                alpha="1" scaleX="1" scaleY="1" font="WORMIX_NORMAL" size="20" color="16777215" bold="false"
+                letterSpacing="0" align="center" fieldType="dynamic" text=" " wordWrap="false"/>
+        <object name="line" type="3slice" rotation="0" x="50" y="281" width="594" height="4" alpha="1" scaleX="1"
+                scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1" url="BossGameOverDrawPanel_line.png"/>
+        <object name="line2" type="3slice" rotation="0" x="50" y="333" width="594" height="4" alpha="1" scaleX="1"
+                scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1" url="BossGameOverDrawPanel_line.png"/>
+        <object name="fuzy" type="object" rotation="-7.3" x="504" y="296" width="32.15" height="33" alpha="1"
+                scaleX="0.625" scaleY="0.625" url="icon_fuzy.png"/>
+        <object name="ratingIcon" type="object" rotation="0" x="507" y="248" width="28" height="31" alpha="1"
+                scaleX="0.35" scaleY="0.35" url="ratingIcon.png"/>
+        <object name="reagentsPanel" type="object" rotation="0" x="30" y="391.75" width="632.5" height="75" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="cells" type="object" rotation="0" x="120.3" y="0" width="387.7" height="75" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="background" type="9slice" rotation="0" x="0" y="0" width="387.7" height="75" alpha="1"
+                        scaleX="1" scaleY="1" paddingLeft="1" paddingRight="1" bodyEndWidth="1" paddingTop="1"
+                        paddingBottom="1" bodyEndHeight="1" url="BattleInterface_hatsPanel_iconContainer.png"/>
+            </object>
+            <object name="prev" type="object" rotation="0" x="62.25" y="19" width="NaN" height="NaN" alpha="1"
+                    scaleX="-1" scaleY="1" pivotX="0" pivotY="0">
+                <object name="buttonBase" type="button" sound="default" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance20" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_up.png"/>
+                    <object name="instance22" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_down.png"/>
+                </object>
+                <object name="icon" type="button" rotation="0" x="0" y="0" width="28" height="28" alpha="1" scaleX="-1"
+                        scaleY="1">
+                    <object name="instance24" type="upState" rotation="0" x="0" y="0" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                    <object name="instance28" type="downState" rotation="0" x="0" y="2" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                </object>
+            </object>
+            <object name="next" type="object" rotation="0" x="570" y="19" width="62" height="62" alpha="1" scaleX="1"
+                    scaleY="1" pivotX="0" pivotY="0">
+                <object name="buttonBase" type="button" sound="default" rotation="0" x="0" y="0" width="62" height="62"
+                        alpha="1" scaleX="1" scaleY="1">
+                    <object name="instance20" type="upState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_up.png"/>
+                    <object name="instance22" type="downState" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="62"
+                            height="62" alpha="1" scaleX="1" scaleY="1" url="button_round_yellow_down.png"/>
+                </object>
+                <object name="icon" type="button" rotation="0" x="0" y="0" width="28" height="28" alpha="1" scaleX="1"
+                        scaleY="1">
+                    <object name="instance24" type="upState" rotation="0" x="0" y="0" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                    <object name="instance28" type="downState" rotation="0" x="0" y="2" width="28" height="28" alpha="1"
+                            scaleX="1" scaleY="1" url="nextIcon.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="ok" type="object" rotation="0" x="7" y="510.45" width="218" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="20" width="146" height="1" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Да" wordWrap="false"/>
+            <object name="subbutton" type="button" sound="default" rotation="0" x="159.7" y="188.3" width="218"
+                    height="53" alpha="1" scaleX="1" scaleY="1">
+                <object name="instance7" type="upState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_orange_up.png"/>
+                </object>
+                <object name="instance11" type="downState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackgroundPressed" type="3slice" rotation="0" x="0" y="0" width="218"
+                            height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_orange_down.png"/>
+                </object>
+            </object>
+        </object>
+        <object name="status" type="common" commonSource="OkButtonNormalLabel" x="483" y="510.45" width="218"
+                height="53"/>
+        <object name="createNote" type="common" commonSource="OkButtonNormalLabel" x="245" y="510.45" width="218"
+                height="53"/>
+    </object>
+    <object name="ResetAwardMsg">
+        <object name="background" type="9slice" rotation="0" x="0" y="7.35" width="550" height="250" alpha="1"
+                scaleX="1" scaleY="1" paddingLeft="10" paddingRight="10" bodyEndWidth="1" paddingTop="10"
+                paddingBottom="10" bodyEndHeight="1" url="panel_back_light.png"/>
+        <object name="close" type="common" commonSource="CloseButton" x="487" y="-2" width="68" height="68"/>
+        <object name="ok" type="common" commonSource="RubyButton" x="165" y="175" width="220" height="66"/>
+        <object name="line" type="3slice" rotation="0" x="70" y="74.85" width="402.55" height="2" alpha="1" scaleX="1"
+                scaleY="1" paddingLeft="100" paddingRight="100" bodyEndWidth="1" url="title_underline.png"/>
+        <object name="msg" type="text" rotation="0" x="0" y="102.2" width="542" height="NaN" alpha="1" scaleX="1"
+                scaleY="1" font="WORMIX_NORMAL" size="18" color="8877929" bold="false" letterSpacing="0" align="center"
+                fieldType="dynamic" text=" " ishtml="true" wordWrap="true"/>
+        <object name="title" type="text" rotation="0" x="120" y="37.1" width="304.45" height="33.1" alpha="1" scaleX="1"
+                scaleY="1" font="WORMIX_NORMAL" size="21" color="8743764" bold="false" letterSpacing="0" align="center"
+                fieldType="dynamic" text=" " wordWrap="false"/>
+    </object>
+</ui>

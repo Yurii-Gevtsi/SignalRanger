@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+<message name="HELP_CONTROL_TITLE1" value="移动"/>
+<message name="HELP_CONTROL_DESCR1" value="向左/向右箭头或 A 和 D 键"/>
+<message name="HELP_CONTROL_TITLE2" value="向前跳跃"/>
+<message name="HELP_CONTROL_DESCR2" value="ENTER 键或 F 键"/>
+<message name="HELP_CONTROL_TITLE3" value="向后跳跃"/>
+<message name="HELP_CONTROL_DESCR3" value="退格键或 R 键。后空翻高于常规跳跃。"/>
+<message name="HELP_CONTROL_TITLE4" value="背包"/>
+<message name="HELP_CONTROL_DESCR4" value="按 Q, I 或 Numpad 0 键打开背包"/>
+<message name="HELP_CONTROL_TITLE5" value="射击"/>
+<message name="HELP_CONTROL_DESCR5" value="空格键。按住空格键增加射击力量。"/>
+<message name="HELP_CONTROL_TITLE6" value="瞄准"/>
+<message name="HELP_CONTROL_DESCR6" value="向上/向下键或 W 和 S 键"/>
+<message name="HELP_CONTROL_TITLE7" value="替换武器功能"/>
+<message name="HELP_CONTROL_DESCR7" value="如有替换武器，按住 Shift 键，切换至替换武器功能。"/>
+<message name="HELP_CONTROL_TITLE8" value="拿起一顶帽子"/>
+<message name="HELP_CONTROL_DESCR8" value="按E键从地上拿起一顶帽子。"/>
+<message name="HELP_CONTROL_BUFF_TITLE0" value="中毒"/>
+<message name="HELP_CONTROL_BUFF_TEXT0" value="单位每轮损失生命值。"/>
+<message name="HELP_CONTROL_BUFF_TITLE1" value="冻结"/>
+<message name="HELP_CONTROL_BUFF_TEXT1" value="单位无法移动和跳跃。"/>
+<message name="HELP_CONTROL_BUFF_TITLE2" value="减速"/>
+<message name="HELP_CONTROL_BUFF_TEXT2" value="单位移动速度降低。"/>
+<message name="HELP_CONTROL_BUFF_TITLE3" value="防御力降低"/>
+<message name="HELP_CONTROL_BUFF_TEXT3" value="单位防御力降低。"/>
+<message name="HELP_CONTROL_BUFF_TITLE4" value="抗毒素血清"/>
+<message name="HELP_CONTROL_BUFF_TEXT4" value="每轮保护单位不中毒并进行中毒治疗。"/>
+<message name="HELP_CONTROL_BUFF_TITLE5" value="防冻液"/>
+<message name="HELP_CONTROL_BUFF_TEXT5" value="保护单位免受冻结。"/>
+</dictionary>

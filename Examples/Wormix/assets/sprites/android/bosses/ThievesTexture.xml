@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:ce50616ede5adde34348bb2d77bce4a6:02432569e8d25dbabb1a83f6b80c0460:c37133f7fbb49e6baf4da27e4562cd83$ -->
+<TextureAtlas imagePath="ThievesTexture.png">
+    <SubTexture name="thief/box/IconPlace" x="2" y="228" width="1" height="1" frameX="0" frameY="0" frameWidth="7" frameHeight="6"/>
+    <SubTexture name="thief/box/black/bulgar_box_black" x="58" y="114" width="61" height="48" frameX="0" frameY="0" frameWidth="62" frameHeight="48"/>
+    <SubTexture name="thief/box/blue/bulgar_box_blue" x="171" y="75" width="62" height="49"/>
+    <SubTexture name="thief/box/blue/what_inside_circle" x="171" y="2" rotated="true" width="73" height="71" frameX="0" frameY="0" frameWidth="72" frameHeight="73"/>
+    <SubTexture name="thief/box/blue/whats_inside_arrow" x="121" y="177" rotated="true" width="27" height="33"/>
+    <SubTexture name="thief/box/red/bulgar_box_red" x="121" y="114" rotated="true" width="48" height="61" frameX="0" frameY="0" frameWidth="62" frameHeight="48"/>
+    <SubTexture name="thief/box/silver/bulgar_box_silver" x="58" y="164" width="61" height="48" frameX="0" frameY="0" frameWidth="62" frameHeight="48"/>
+    <SubTexture name="thief/key/black/KeyGlowDark" x="2" y="2" width="54" height="111"/>
+    <SubTexture name="thief/key/black/key_black" x="58" y="214" rotated="true" width="45" height="39"/>
+    <SubTexture name="thief/key/blue/KeyGlowBlue" x="2" y="115" width="54" height="111"/>
+    <SubTexture name="thief/key/blue/key_blue" x="105" y="214" rotated="true" width="45" height="39"/>
+    <SubTexture name="thief/key/red/KeyGlowRed" x="58" y="2" rotated="true" width="111" height="54"/>
+    <SubTexture name="thief/key/red/key_red" x="152" y="177" width="39" height="45"/>
+    <SubTexture name="thief/key/silver/KeyGlowWhite" x="58" y="58" rotated="true" width="111" height="54"/>
+    <SubTexture name="thief/key/silver/key_silver" x="171" y="126" width="39" height="45"/>
+</TextureAtlas>

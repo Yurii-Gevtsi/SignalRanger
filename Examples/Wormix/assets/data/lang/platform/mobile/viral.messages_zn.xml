@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <message name="ACHIEVEMENT_MESSAGE_1" value="我在 Wormix 中获得一项新成就：'{achievementName}'!不敢相信？那就来玩吧！"/>
+    <message name="ACHIEVEMENT_MESSAGE_2" value="恭喜！Wormix 新成就 - '{achievementName}'"/>
+    <message name="ACHIEVEMENT_MESSAGE_3"
+             value="谣传 {userName} 在 Wormix 中获得了 '{achievementName}' 成就。顺便说一下，这些不是遥远，我可是非常危险的！"/>
+    <!-- posts -->
+    <message name="VIRAL_SHARE" value="告诉你的朋友"/>
+    <message name="VIRAL_NEW_RACE_TITLE" value="新种族！"/>
+    <message name="VIRAL_NEW_RACE" value="我已将种族更改为 {race}"/>
+
+    <message name="VIRAL_NEW_HAT_TITLE" value="新帽子！"/>
+    <message name="VIRAL_NEW_HAT" value="我得到了一顶新帽子：{hat}！"/>
+
+    <message name="VIRAL_NEW_WEAPON_TITLE" value="新武器！"/>
+    <message name="VIRAL_NEW_WEAPON" value="好哇！我得到了新武器：{weapon}！"/>
+
+    <message name="VIRAL_NEW_ARTIFACT_TITLE" value="新宝物！"/>
+    <message name="VIRAL_NEW_ARTIFACT" value="我得到了金光闪闪的新宝物：{artifact}！"/>
+
+    <message name="VIRAL_WIN_PVP_WAGER" value="我击败了 {enemyName}，得到了 {rating} 排名。"/>
+    <message name="VIRAL_WIN_PVP_NO_RATING" value="我在 Wormix 中击败了 {enemyName}。"/>
+
+    <message name="VIRAL_FOUND_RUBY" value="我在 Wormix 中找到了 {name} 的家并得到了一颗红宝石。"/>
+    <message name="VIRAL_FOUND_RUBY_TITLE" value="找到了红宝石"/>
+
+    <message name="VIRAL_4DAY_TITLE" value="在 Wormix 已签到 4 天！"/>
+    <message name="VIRAL_4DAY_SEQUENCE" value="我在 Wormix 已连续签到 4 天，得到了 100 F 币！"/>
+    <message name="VIRAL_5DAY_TITLE" value="在 Wormix 已签到 5 天！"/>
+    <message name="VIRAL_5DAY_SEQUENCE" value="我在 Wormix 已连续签到 5 天，得到了 2 颗红宝石！"/>
+
+    <message name="VIRAL_QUESTION_NEW_TEAMMATE" value="告诉您的好友您已将他们加入您的团队？"/>
+    <message name="VIRAL_QUESTION_ENEMY_LOSED" value="发送胜利通知？"/>
+    <message name="VIRAL_QUESTION_CHALLENGE_POST" value="您想挑战他们吗？"/>
+    <message name="VIRAL_QUESTION_PUMP_REACTION_POST" value="请求您的好友提升您的反应速度？"/>
+    <message name="VIRAL_PUMPQUESTION_EMPTYLIST" value="您尚未选择任何人提出反应速度提升请求。"/>
+    <message name="VIRAL_PUMPREACTION" value="提高我的反应能力，我将相应地提高你的反应能力！"/>
+
+    <!-- AWARD MESSAGE  tale weapon-->
+    <message name="AWARD_WEAPON_MESSAGE_1" value="全新的东西。您无法购买它，用红宝石也不行！"/>
+    <message name="AWARD_WEAPON_MESSAGE_2" value="喜欢我的新东西？太好了！我用成就点数买到了它。"/>
+    <message name="AWARD_WEAPON_MESSAGE_3" value="看看，羡慕去吧。只能使用成就点数购买。"/>
+
+    <!-- notifications -->
+    <message name="NOTIFY_QUESTION_KICK_TEAMMATE" value="通知朋友？"/>
+    <message name="NOTIFY_KICK_TEAMMATE" value="你已经不在我的 Wormix 队伍中了！"/>
+    <message name="NOTIFY_NEW_TEAMMATE" value="我已经雇佣你成为我的 Wormix 部队成员之一！"/>
+</dictionary>

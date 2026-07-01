@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <message name="TITLE_EXIT" value="Выйти из Wormix?"/>
+    <message name="DESCRIPTION_EXIT" value="Вы уверены, что хотите выйти?"/>
+    <message name="HOT_SEAT_CARD_TITLE" value="Игра на одном устройстве"/>
+    <message name="TEXT_UPDATE_IS_AVAILABLE" value="Хорошие новости! Доступна новая версия игры."/>
+    <message name="ACTION_FOR_ALT_HINT" value="Нажмите по табличке для просмотра предметов"/>
+</dictionary>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <message name="DAY_PLURALS" value="一天,多天"/>
+    <message name="RUBY_PLURALS" value="红宝石,多枚红宝石"/>
+    <message name="FUZY_PLURALS" value="硬币,多枚硬币"/>
+    <message name="MEDAL_PLURALS" value="奖牌,多枚奖牌"/>
+
+</dictionary>

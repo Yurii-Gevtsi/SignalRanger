@@ -1,0 +1,77 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>com.google.firebase.messaging</id>
+	<versionNumber>25.0.0</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>com.google.firebase.messaging.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.firebase.messaging.MessagingExtension</initializer>
+				<finalizer>com.distriqt.extension.firebase.messaging.MessagingExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>com.google.firebase.messaging.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.firebase.messaging.MessagingExtension</initializer>
+				<finalizer>com.distriqt.extension.firebase.messaging.MessagingExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>com.google.firebase.messaging.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.firebase.messaging.MessagingExtension</initializer>
+				<finalizer>com.distriqt.extension.firebase.messaging.MessagingExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>com.google.firebase.messaging.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.firebase.messaging.MessagingExtension</initializer>
+				<finalizer>com.distriqt.extension.firebase.messaging.MessagingExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="iPhone-ARM">
+			<applicationDeployment>
+				<nativeLibrary>libFirebaseMessaging.a</nativeLibrary>
+				<initializer>FirebaseMessagingExtInitializer</initializer>
+				<finalizer>FirebaseMessagingExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="iPhone-x86">
+			<applicationDeployment>
+				<nativeLibrary>libFirebaseMessaging.a</nativeLibrary>
+				<initializer>FirebaseMessagingExtInitializer</initializer>
+				<finalizer>FirebaseMessagingExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform>
+		<!-- <platform name="appleTV-ARM">
+			<applicationDeployment>
+				<nativeLibrary>libFirebaseMessaging.a</nativeLibrary>
+				<initializer>FirebaseMessagingExtInitializer</initializer>
+				<finalizer>FirebaseMessagingExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform> -->
+
+		<!-- <platform name="Windows-x86">
+			<applicationDeployment>
+				<nativeLibrary>firebasemessaging.dll</nativeLibrary>
+				<initializer>firebasemessagingExtInitializer</initializer>
+				<finalizer>firebasemessagingExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Windows-x86-64">
+			<applicationDeployment>
+				<nativeLibrary>firebasemessaging.dll</nativeLibrary>
+				<initializer>firebasemessagingExtInitializer</initializer>
+				<finalizer>firebasemessagingExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform> -->
+
+		<platform name="default"> 
+			<applicationDeployment /> 
+		</platform>
+		
+	</platforms>
+</extension>

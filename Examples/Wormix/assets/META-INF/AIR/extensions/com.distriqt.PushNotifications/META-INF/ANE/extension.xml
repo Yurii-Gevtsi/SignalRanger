@@ -1,0 +1,70 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>com.distriqt.PushNotifications</id>
+	<versionNumber>16.0.2</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.pushnotifications.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.pushnotifications.PushNotificationsExtension</initializer>
+				<finalizer>com.distriqt.extension.pushnotifications.PushNotificationsExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.pushnotifications.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.pushnotifications.PushNotificationsExtension</initializer>
+				<finalizer>com.distriqt.extension.pushnotifications.PushNotificationsExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.pushnotifications.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.pushnotifications.PushNotificationsExtension</initializer>
+				<finalizer>com.distriqt.extension.pushnotifications.PushNotificationsExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.pushnotifications.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.pushnotifications.PushNotificationsExtension</initializer>
+				<finalizer>com.distriqt.extension.pushnotifications.PushNotificationsExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="iPhone-ARM">
+			<applicationDeployment>
+				<nativeLibrary>libPushNotifications.a</nativeLibrary>
+				<initializer>PushNotificationsExtInitializer</initializer>
+				<finalizer>PushNotificationsExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform>
+		<!-- <platform name="iPhone-x86">
+			<applicationDeployment>
+				<nativeLibrary>libPushNotifications.a</nativeLibrary>
+				<initializer>PushNotificationsExtInitializer</initializer>
+				<finalizer>PushNotificationsExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform> -->
+
+		<platform name="Windows-x86">
+			<applicationDeployment>
+				<nativeLibrary>PushNotifications.dll</nativeLibrary>
+				<initializer>PushNotificationsExtInitializer</initializer>
+				<finalizer>PushNotificationsExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Windows-x86-64">
+			<applicationDeployment>
+				<nativeLibrary>PushNotifications.dll</nativeLibrary>
+				<initializer>PushNotificationsExtInitializer</initializer>
+				<finalizer>PushNotificationsExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="default"> 
+			<applicationDeployment /> 
+		</platform>
+		
+	</platforms>
+</extension>

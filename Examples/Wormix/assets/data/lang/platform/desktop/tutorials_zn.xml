@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+<message name="NEXT_HELP_TEXT_BTN" value="下一步"/>
+<message name="LEARNING_1_TURN_1_TEXT" value="欢迎来到 Bombix——一个残酷而危险的世界！首先，你必须学会如何移动并获得属于自己的武器。看见这个箱子了吗？里面有一支步枪。使用箭头或 A/D 键走近箱子并取得该武器。"/><message name="LEARNING_1_TURN_1_TEXT_2" value="按钮并拿走武器。"/>
+<message name="LEARNING_3_TURN_4_TEXT_2" value="采取火箭筒。"/>
+<message name="LEARNING_1_TURN_2_TEXT" value="太棒了！现在，开始射击。如果你不知道如何射击，那么你将很快丧命。使用箭头或 W/S 键瞄准。直接瞄准此标记。"/>
+<message name="LEARNING_1_TURN_3_TEXT" value="按空格键进行射击。"/>
+<message name="LEARNING_1_TURN_4_TEXT" value="圣羊兽！好枪法！只许胜利，不许失败——再试一次。"/>
+<message name="LEARNING_2_TURN_1_N1_TEXT" value="既然到了这种地方，你就别心慈手软了？跳跃！走到平台的边缘。"/>
+<message name="LEARNING_2_TURN_1_N2_TEXT" value="按 F 或 ENTER 键向前跳跃。"/>
+<message name="LEARNING_2_TURN_2_TEXT" value="如需到达下一个平台，你要学会一个特殊动作：后空翻。背对墙壁，按 R 或退格键。"/>
+<message name="LEARNING_2_TURN_3_TEXT" value="很好。此箱子中有一把霰弹枪，把它拿走吧。"/>
+<message name="LEARNING_2_TURN_4_TEXT" value="现在，让我们来看看你有哪些可以投入战斗的武器吧。跳至另一个平台上，摧毁该目标！"/>
+<message name="LEARNING_3_TURN_1_TEXT" value="风是最强射击威力的关键。风可以是你的盟友，亦可以成为你的敌人，你的技能说了算。"/>
+<message name="LEARNING_3_TURN_2_TEXT" value="在此处你可以看到风力和风向。"/>
+<message name="LEARNING_3_TURN_3_TEXT" value="很多精良的武器都会受到风的影响。例如，火箭炮。"/>
+<message name="LEARNING_3_TURN_4_TEXT" value="点击此图标获取火箭炮。"/>
+<message name="LEARNING_3_TURN_5_N1_TEXT" value="发射火箭炮之前，你还应该调节射击力量。按住空格键增加射击力量。"/>
+<message name="LEARNING_3_TURN_5_N2_TEXT" value="你的目标就在这里！瞄准该记号，全力射击。长按空格键。"/>
+<message name="LEARNING_3_TURN_6_TEXT" value="目标已被消灭。干得漂亮！再来一次！"/>
+<message name="LEARNING_3_TURN_7_TEXT" value="太棒了，我们继续前进吧。并非所有武器都会受到风的影响。看，你的背包里有一枚手榴弹，带上它。"/>
+<message name="LEARNING_3_TURN_8_TEXT" value="手榴弹计时器始终设定为 3 秒钟。"/>
+<message name="LEARNING_3_TURN_9_TEXT" value="现在，该是你大显身手的时候了——瞄准目标，尽全力投掷手榴弹。"/>
+<message name="LEARNING_4_TURN_1_TEXT" value="现在，让我来展示一些工具，它们可以帮助你穿过障碍物。首先，使用钻机拾取箱子。"/>
+<message name="LEARNING_4_TURN_2_TEXT" value="你可以使用钻机直接在下方挖出一条长长的隧道。怎么操作？按空格键！"/>
+<message name="LEARNING_4_TURN_3_TEXT" value="就这么简单。让我们来试试另一种工具：气炬。此箱子中装的就是！"/>
+<message name="LEARNING_4_TURN_4_TEXT" value="气炬用来挖穿大片陆地。走近这堵墙！"/>
+<message name="LEARNING_4_TURN_5_TEXT" value="按空格键开始挖掘！你的任务是拾取下一个箱子。"/>
+<message name="LEARNING_4_TURN_6_TEXT" value="请记住，你可以随时按空格键暂停钻机和气炬。让我们言归正传，完成你的任务，拾取箱子！"/>
+<message name="LEARNING_4_TURN_7_TEXT" value="你已经拿到炸药。它是一种致命武器，尤其是价格不菲。让我来告诉你它的使用方法……"/>
+<message name="LEARNING_4_TURN_8_TEXT" value="将炸药放置在你的单位的脚下。走近目标，按空格键并立即躲开!"/>
+<message name="LEARNING_4_TURN_9_TEXT" value="恭喜，已成功摧毁目标！我们的任务也到此结束了。祝你好运！"/>
+<message name="LEARNING_5_TURN_1_TEXT" value="我想仅仅是摧毁目标是非常无聊的。让我们看看真正的敌人。让我们来试试基本且非常有用的武器——地雷。从你的背包中选择地雷。"/>
+<message name="LEARNING_5_TURN_2_TEXT" value="例如，你可以直接将地雷丢在敌人身边。但这样它的威力仅相当于一种弱杀伤力炸药。"/>
+<message name="LEARNING_5_TURN_3_TEXT" value="我们将换一种使用方式。来到箭头下方，在箭头下方放置地雷（按空格键放置地雷），然后回到起始点！"/>
+<message name="LEARNING_5_TURN_4_TEXT" value="跑回起始点，拾取箱子！"/>
+<message name="LEARNING_5_TURN_5_TEXT" value="击毙一具僵尸！利用射击的威力将他扔至地雷上，造成额外伤害！"/>
+<message name="LEARNING_5_TURN_6_TEXT" value="必要时，使用步枪杀死僵尸。"/>
+<message name="LEARNING_5_TURN_7_TEXT" value="记住这一组合技——如果放置地雷时附近没有单位，则不会浪费一轮机会！"/>
+<message name="LEARNING_5_TURN_8_TEXT" value="第二个僵尸更加强大，但是不用怕，我们将使用地雷把他炸飞！从背包中选择地雷。"/>
+<message name="LEARNING_5_TURN_9_TEXT" value="在此处放置地雷，然后跑到安全的地方！"/>
+<message name="LEARNING_5_TURN_10_TEXT" value="难点在于：你必须引爆地雷，否则将浪费一轮机会。靠近地雷，一旦它开始发出哔哔声响，立即躲开！"/>
+<message name="LEARNING_5_TURN_11_TEXT" value="太棒了！现在你可以拿取装有武器的箱子。"/>
+<message name="LEARNING_5_TURN_12_TEXT" value="好险啊，下次你要反应更快一点。好了，拾取箱子。"/>
+<message name="LEARNING_5_TURN_13_TEXT" value="噢，你在挥舞短棒。我想你知道该怎么做。站在敌人旁边，按空格键。"/>
+<message name="LEARNING_5_TURN_14_TEXT" value="绝妙攻击！我们的学习环节到此结束，尽管在实战中使用你的新技能！"/>
+<message name="LEARNING_MISSION_1_NAME" value="游戏指南：射击"/>
+<message name="LEARNING_MISSION_2_NAME" value="游戏指南：跳跃"/>
+<message name="LEARNING_MISSION_3_NAME" value="游戏指南：导弹"/>
+<message name="LEARNING_MISSION_4_NAME" value="游戏指南：工具"/>
+<message name="LEARNING_MISSION_5_NAME" value="游戏指南：地雷"/>
+<message name="LEARNING_MISSION_1_DESCR" value="-"/>
+<message name="LEARNING_MISSION_2_DESCR" value="学习如何在地图上跳跃。"/>
+<message name="LEARNING_MISSION_3_DESCR" value="学习如何进行精确射击并利用风。"/>
+<message name="LEARNING_MISSION_4_DESCR" value="在这里你将学会使用基本工具扫除障碍物。"/>
+<message name="LEARNING_MISSION_5_DESCR" value="此任务将教会你使用地雷。"/>
+<message name="TEAM_NAME_LEARNING_ZOMBIES" value="僵尸"/>
+</dictionary>

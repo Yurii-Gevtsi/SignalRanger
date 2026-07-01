@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:bd3447aed6dcb2b7e8380ba3925c7b97:9b884d894c6373882f120df3a03ea7f5:4cf88a1e9610f02343c6cd538f6afb76$ -->
+<TextureAtlas imagePath="spriteSheet_base_0.png">
+    <SubTexture name="AltButtonOff" x="1114" y="947" rotated="true" width="105" height="84"/>
+    <SubTexture name="AltButtonOn" x="1221" y="947" rotated="true" width="105" height="84"/>
+    <SubTexture name="AntiFrostShield" x="1870" y="1033" rotated="true" width="65" height="64" frameX="-2" frameY="-3" frameWidth="67" frameHeight="70"/>
+    <SubTexture name="ArmoryShield" x="1870" y="1099" rotated="true" width="65" height="64" frameX="-2" frameY="-3" frameWidth="67" frameHeight="70"/>
+    <SubTexture name="Artifacts/ArchbotTotem_parts/ArchbotTotem_handle" x="352" y="1589" rotated="true" width="88" height="26" frameX="0" frameY="0" frameWidth="27" frameHeight="90"/>
+    <SubTexture name="Artifacts/ArchbotTotem_parts/ArchbotTotem_knife" x="1937" y="838" rotated="true" width="86" height="77" frameX="0" frameY="0" frameWidth="78" frameHeight="87"/>
+    <SubTexture name="Artifacts/ArhiSword" x="571" y="1427" width="141" height="154" frameX="0" frameY="0" frameWidth="144" frameHeight="156"/>
+    <SubTexture name="Artifacts/BrokenSword_parts/BrokenSword_sprite" x="395" y="1232" width="59" height="156" frameX="0" frameY="0" frameWidth="60" frameHeight="156"/>
+    <SubTexture name="Artifacts/ChristmasTree" x="623" y="1036" width="108" height="151" frameX="0" frameY="0" frameWidth="108" frameHeight="153"/>
+    <SubTexture name="Artifacts/DeathTorch_parts/DeathTorch_sprite" x="142" y="1617" width="69" height="171"/>
+    <SubTexture name="Artifacts/EmperorScepter_parts/EmperorScepter_sprite" x="131" y="1232" width="49" height="188" frameX="0" frameY="0" frameWidth="51" frameHeight="189"/>
+    <SubTexture name="Artifacts/FieryDagger_parts/FieryDagger_sprite" x="501" y="1427" width="68" height="155" frameX="0" frameY="0" frameWidth="69" frameHeight="156"/>
+    <SubTexture name="Artifacts/FrostShield" x="1100" y="1427" width="117" height="138"/>
+    <SubTexture name="Artifacts/GravityMasterShield" x="1436" y="699" width="99" height="108"/>
+    <SubTexture name="Artifacts/Icepike_parts/Icepike_sprite" x="465" y="1811" width="57" height="160" frameX="0" frameY="0" frameWidth="57" frameHeight="162"/>
+    <SubTexture name="Artifacts/JarlSpear_parts/JarlSpear_sprite" x="156" y="1036" width="40" height="188" frameX="0" frameY="0" frameWidth="42" frameHeight="189"/>
+    <SubTexture name="Artifacts/JarlStoneHammer_parts/JarlStoneHammer_sprite" x="633" y="1810" width="113" height="157" frameX="0" frameY="0" frameWidth="114" frameHeight="159"/>
+    <SubTexture name="Artifacts/Jawblade" x="859" y="1427" width="114" height="144"/>
+    <SubTexture name="Artifacts/JediSwordRed" x="156" y="520" rotated="true" width="188" height="39" frameX="-1" frameY="0" frameWidth="42" frameHeight="192"/>
+    <SubTexture name="Artifacts/JediSwordRedCross_parts/lighsaber_part_white_cloud" x="332" y="1224" width="20" height="6" frameX="0" frameY="0" frameWidth="21" frameHeight="6"/>
+    <SubTexture name="Artifacts/JediSwordRedCross_parts/lightsaber_part_brightRed" x="18" y="289" width="14" height="230" frameX="0" frameY="0" frameWidth="15" frameHeight="231"/>
+    <SubTexture name="Artifacts/JediSwordRedCross_parts/lightsaber_part_brightRed2" x="2" y="289" width="14" height="270" frameX="0" frameY="0" frameWidth="15" frameHeight="270"/>
+    <SubTexture name="Artifacts/JediSwordRedCross_parts/lightsaber_part_hand" x="1352" y="1798" width="78" height="138"/>
+    <SubTexture name="Artifacts/JediSwordRedCross_parts/lightsaber_part_red_body_glow" x="2" y="561" width="18" height="246"/>
+    <SubTexture name="Artifacts/JediSwordRedCross_parts/lightsaber_part_red_body_glow2" x="2" y="2" width="18" height="285"/>
+    <SubTexture name="Artifacts/JediSwordRedCross_parts/lightsaber_part_white_dot" x="1130" y="418" width="5" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="6"/>
+    <SubTexture name="Artifacts/JediSword_parts/lighsaber_part_white_cloud" x="332" y="1224" width="20" height="6" frameX="0" frameY="0" frameWidth="21" frameHeight="6"/>
+    <SubTexture name="Artifacts/JediSword_parts/lightsaber_part_blue_body_glow" x="714" y="1427" width="10" height="147" frameX="0" frameY="0" frameWidth="12" frameHeight="147"/>
+    <SubTexture name="Artifacts/JediSword_parts/lightsaber_part_bright" x="674" y="289" width="9" height="138"/>
+    <SubTexture name="Artifacts/JediSword_parts/lightsaber_part_hand" x="1256" y="681" rotated="true" width="64" height="16" frameX="0" frameY="0" frameWidth="18" frameHeight="66"/>
+    <SubTexture name="Artifacts/JediSword_parts/lightsaber_part_white_dot" x="1130" y="418" width="5" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="6"/>
+    <SubTexture name="Artifacts/MetalShield" x="1921" y="464" width="100" height="100" frameX="0" frameY="0" frameWidth="102" frameHeight="102"/>
+    <SubTexture name="Artifacts/Morgenshtern_parts/Morgenshtern_sprite" x="464" y="1036" width="99" height="152" frameX="0" frameY="0" frameWidth="99" frameHeight="153"/>
+    <SubTexture name="Artifacts/PaladinSword_parts/PaladinSword_sprite" x="389" y="1974" rotated="true" width="160" height="72" frameX="0" frameY="0" frameWidth="72" frameHeight="162"/>
+    <SubTexture name="Artifacts/PirateHook_parts/PirateHook_base" x="1238" y="1033" rotated="true" width="68" height="136" frameX="0" frameY="0" frameWidth="138" frameHeight="69"/>
+    <SubTexture name="Artifacts/RoboShield" x="1014" y="699" rotated="true" width="105" height="108" frameX="0" frameY="0" frameWidth="108" frameHeight="108"/>
+    <SubTexture name="Artifacts/Saw_parts/Saw_base" x="368" y="991" width="93" height="43" frameX="0" frameY="0" frameWidth="93" frameHeight="45"/>
+    <SubTexture name="Artifacts/Saw_parts/Saw_disk" x="1941" y="976" width="77" height="77" frameX="0" frameY="0" frameWidth="78" frameHeight="78"/>
+    <SubTexture name="Artifacts/ScientistDevice_parts/ScientistDevice_sprite" x="18" y="521" rotated="true" width="136" height="38" frameX="0" frameY="0" frameWidth="39" frameHeight="138"/>
+    <SubTexture name="Artifacts/ShieldArchdemon" x="1923" y="261" width="101" height="101" frameX="0" frameY="0" frameWidth="102" frameHeight="102"/>
+    <SubTexture name="Artifacts/SnakeStaff" x="1272" y="1946" rotated="true" width="126" height="100" frameX="0" frameY="0" frameWidth="102" frameHeight="126"/>
+    <SubTexture name="Artifacts/StaffOfNecromancer_parts/StaffOfNecromancer_sprite" x="232" y="289" width="61" height="202" frameX="0" frameY="0" frameWidth="63" frameHeight="204"/>
+    <SubTexture name="Artifacts/SwordGreenEyed_parts/SwordGreenEyed_sprite" x="213" y="1617" width="73" height="169" frameX="0" frameY="0" frameWidth="75" frameHeight="171"/>
+    <SubTexture name="Artifacts/SwordRedEyed_parts/SwordRedEyed_sprite" x="231" y="1811" width="70" height="164" frameX="0" frameY="0" frameWidth="72" frameHeight="165"/>
+    <SubTexture name="Artifacts/SymbioteSword_parts/SymbioteSword_sprite" x="418" y="2" width="57" height="200" frameX="0" frameY="0" frameWidth="57" frameHeight="201"/>
+    <SubTexture name="Artifacts/Talisman" x="897" y="428" rotated="true" width="116" height="131" frameX="0" frameY="0" frameWidth="132" frameHeight="117"/>
+    <SubTexture name="Artifacts/TotemFire_parts/Totem_back" x="1490" y="926" width="65" height="105" frameX="0" frameY="0" frameWidth="66" frameHeight="105"/>
+    <SubTexture name="Artifacts/TotemFire_parts/Totem_eyes_blick_vertical" x="1023" y="949" width="26" height="11" frameX="0" frameY="0" frameWidth="27" frameHeight="12"/>
+    <SubTexture name="Artifacts/TotemFire_parts/Totem_fire" x="1921" y="566" rotated="true" width="31" height="24" frameX="0" frameY="0" frameWidth="24" frameHeight="33"/>
+    <SubTexture name="Artifacts/TotemFire_parts/Totem_fire_blick" x="955" y="949" width="37" height="11" frameX="0" frameY="0" frameWidth="39" frameHeight="12"/>
+    <SubTexture name="Artifacts/TotemPoison_parts/TotemPoison_back" x="1732" y="923" width="67" height="108" frameX="0" frameY="0" frameWidth="69" frameHeight="108"/>
+    <SubTexture name="Artifacts/TotemPoison_parts/TotemPoison_blick" x="1445" y="126" rotated="true" width="12" height="38" frameX="0" frameY="0" frameWidth="39" frameHeight="12"/>
+    <SubTexture name="Artifacts/TotemPoison_parts/TotemPoison_eyes_blick" x="1415" y="398" width="26" height="11" frameX="0" frameY="0" frameWidth="27" frameHeight="12"/>
+    <SubTexture name="Artifacts/TotemPoison_parts/TotemPoison_fire" x="570" y="1584" width="25" height="31" frameX="0" frameY="0" frameWidth="27" frameHeight="33"/>
+    <SubTexture name="Artifacts/TrainingShield" x="1924" y="157" width="102" height="102"/>
+    <SubTexture name="Artifacts/Whinger_parts/Whinger_sprite" x="429" y="1617" width="72" height="160" frameX="0" frameY="0" frameWidth="72" frameHeight="162"/>
+    <SubTexture name="Artifacts/WoodenShield" x="1623" y="924" width="107" height="107" frameX="0" frameY="0" frameWidth="108" frameHeight="108"/>
+    <SubTexture name="AttackShield" x="1851" y="1165" rotated="true" width="65" height="64" frameX="-2" frameY="-3" frameWidth="67" frameHeight="70"/>
+    <SubTexture name="BatGraphics" x="1322" y="681" rotated="true" width="54" height="16" frameX="0" frameY="0" frameWidth="18" frameHeight="54"/>
+    <SubTexture name="BattleInterface_backJump_icon_instance8" x="1852" y="883" rotated="true" width="62" height="33" frameX="-1" frameY="-1" frameWidth="34" frameHeight="64"/>
+    <SubTexture name="BattleInterface_backpack_icon_upState_instance112_instance113" x="1757" y="707" width="90" height="100"/>
+    <SubTexture name="BattleInterface_bagCentering" x="378" y="1393" rotated="true" width="48" height="32" frameX="-8" frameY="0" frameWidth="48" frameHeight="48"/>
+    <SubTexture name="BattleInterface_bagCutout" x="1029" y="1377" width="48" height="48"/>
+    <SubTexture name="BattleInterface_bagDefault" x="1834" y="655" width="48" height="48"/>
+    <SubTexture name="BattleInterface_bag_icon_upState_instance101_instance102" x="1665" y="1149" width="81" height="81" frameX="-8" frameY="-7" frameWidth="96" frameHeight="96"/>
+    <SubTexture name="BattleInterface_controlsHelp" x="1818" y="108" width="53" height="53"/>
+    <SubTexture name="BattleInterface_exit_exit_downState_instance121" x="1870" y="490" width="49" height="49" frameX="-1" frameY="-1" frameWidth="50" frameHeight="50"/>
+    <SubTexture name="BattleInterface_exit_exit_upState_instance119" x="1870" y="541" width="49" height="49" frameX="-1" frameY="-1" frameWidth="50" frameHeight="50"/>
+    <SubTexture name="BattleInterface_hatsPanel_iconContainer" x="1239" y="538" width="5" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="6"/>
+    <SubTexture name="BattleInterface_jump_icon_instance7" x="1093" y="132" width="64" height="39" frameX="-1" frameY="-1" frameWidth="65" frameHeight="40"/>
+    <SubTexture name="BattleInterface_left_buttonBase_downState_instance75" x="1615" y="1232" width="111" height="111" frameX="-1" frameY="-1" frameWidth="112" frameHeight="112"/>
+    <SubTexture name="BattleInterface_left_buttonBase_upState_instance73" x="1728" y="1232" width="111" height="111" frameX="-1" frameY="-1" frameWidth="112" frameHeight="112"/>
+    <SubTexture name="BattleInterface_left_icon_icon_instance3" x="863" y="1764" rotated="true" width="49" height="44" frameX="-1" frameY="-1" frameWidth="45" frameHeight="50"/>
+    <SubTexture name="BattleInterface_moveModeSwitch_downState_instance64" x="1052" y="1174" width="57" height="56" frameX="0" frameY="-1" frameWidth="57" frameHeight="57"/>
+    <SubTexture name="BattleInterface_moveModeSwitch_upState_instance62" x="230" y="229" width="62" height="58" frameX="-1" frameY="-1" frameWidth="63" frameHeight="59"/>
+    <SubTexture name="BattleInterface_photo_upState_instance55_instance56" x="864" y="1185" width="57" height="45" frameX="-1" frameY="-1" frameWidth="58" frameHeight="47"/>
+    <SubTexture name="BattleInterface_resetButton_icon_instance48" x="294" y="229" width="57" height="58" frameX="-1" frameY="-1" frameWidth="58" frameHeight="59"/>
+    <SubTexture name="BattleInterface_shift" x="1870" y="592" width="69" height="61"/>
+    <SubTexture name="BattleInterface_team0_avatar_loading" x="1246" y="538" width="5" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="6"/>
+    <SubTexture name="BattleInterface_team0_hpFrame" x="240" y="1224" rotated="true" width="31" height="6" frameX="0" frameY="0" frameWidth="6" frameHeight="32"/>
+    <SubTexture name="BattleInterface_team1_arrow_instance20" x="1548" y="1352" rotated="true" width="21" height="12" frameX="-1" frameY="-1" frameWidth="14" frameHeight="22"/>
+    <SubTexture name="BattleInterface_team1_avatar_loading" x="1246" y="538" width="5" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="6"/>
+    <SubTexture name="BattleInterface_team1_hpFrame" x="240" y="1224" rotated="true" width="31" height="6" frameX="0" frameY="0" frameWidth="6" frameHeight="32"/>
+    <SubTexture name="BattleInterface_team1_lifeBar_colorblue" x="742" y="1583" width="5" height="31" frameX="0" frameY="0" frameWidth="6" frameHeight="32"/>
+    <SubTexture name="BattleInterface_team1_lifeBar_colorgreen" x="1367" y="1938" rotated="true" width="31" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="32"/>
+    <SubTexture name="BattleInterface_team1_lifeBar_colorred" x="1439" y="1930" rotated="true" width="31" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="32"/>
+    <SubTexture name="BattleInterface_team1_lifeBar_coloryellow" x="1472" y="1930" rotated="true" width="31" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="32"/>
+    <SubTexture name="BattleInterface_team_avatarFrame" x="385" y="1779" width="30" height="30"/>
+    <SubTexture name="BattleInterface_team_avatarLevel" x="708" y="1583" width="32" height="32"/>
+    <SubTexture name="BattleInterface_tips_upState_instance66_instance67" x="432" y="1195" rotated="true" width="45" height="35" frameX="-1" frameY="-1" frameWidth="36" frameHeight="46"/>
+    <SubTexture name="BattleInterface_unitsInfoSwitch_icon" x="353" y="229" rotated="true" width="50" height="58" frameX="0" frameY="-5" frameWidth="58" frameHeight="55"/>
+    <SubTexture name="BattleInterface_unitsInfoSwitch_icon_hp" x="237" y="1417" width="38" height="8"/>
+    <SubTexture name="BattleInterface_unitsInfoSwitch_icon_none" x="1451" y="1154" width="14" height="12"/>
+    <SubTexture name="BattleInterface_weaponHelp" x="1801" y="844" width="46" height="46"/>
+    <SubTexture name="BattleInterface_windContainer_timer_instance12" x="1575" y="1746" rotated="true" width="52" height="50" frameX="0" frameY="-1" frameWidth="50" frameHeight="53"/>
+    <SubTexture name="BattleInterface_windContainer_wind_frame_instance11" x="61" y="516" rotated="true" width="22" height="3" frameX="-1" frameY="-1" frameWidth="5" frameHeight="23"/>
+    <SubTexture name="BattleInterface_windContainer_wind_left_windLeftBack" x="1505" y="1930" rotated="true" width="21" height="5"/>
+    <SubTexture name="BattleInterface_windContainer_wind_right_windLeftBack" x="1094" y="418" rotated="true" width="21" height="5"/>
+    <SubTexture name="BattleInterface_zoomSlider_btn_upState_instance152_instance138_instance139" x="22" y="772" rotated="true" width="54" height="35" frameX="-1" frameY="-1" frameWidth="36" frameHeight="55"/>
+    <SubTexture name="BattleInterface_zoomSlider_btn_upState_instance152_instance142_instance143" x="1547" y="519" width="8" height="8" frameX="-1" frameY="-1" frameWidth="9" frameHeight="9"/>
+    <SubTexture name="BattleInterface_zoomSlider_down_arrow_icon_instance46" x="1985" y="1185" width="46" height="46" frameX="-1" frameY="-1" frameWidth="47" frameHeight="47"/>
+    <SubTexture name="BattleInterface_zoomSlider_scrollArea" x="1432" y="1930" rotated="true" width="5" height="6" frameX="0" frameY="0" frameWidth="6" frameHeight="6"/>
+    <SubTexture name="BattleInterface_zoomSlider_up_arrow_icon_instance45" x="977" y="1763" rotated="true" width="14" height="44" frameX="-1" frameY="-1" frameWidth="46" frameHeight="15"/>
+    <SubTexture name="ChatPanel_bottomBack" x="112" y="516" rotated="true" width="7" height="3"/>
+    <SubTexture name="ChatPanel_downArrow" x="1395" y="126" rotated="true" width="27" height="38" frameX="-1" frameY="-1" frameWidth="39" frameHeight="28"/>
+    <SubTexture name="ChatPanel_inputBack" x="1757" y="489" rotated="true" width="27" height="28" frameX="0" frameY="0" frameWidth="28" frameHeight="28"/>
+    <SubTexture name="ChatPanel_messageIndicator" x="1578" y="124" width="37" height="37" frameX="-1" frameY="-1" frameWidth="38" frameHeight="38"/>
+    <SubTexture name="ChatPanel_showHideAllButtonUp" x="1270" y="1171" width="103" height="59" frameX="0" frameY="0" frameWidth="103" frameHeight="61"/>
+    <SubTexture name="ChatPanel_showHideButton" x="1399" y="1368" width="130" height="54" frameX="-1" frameY="-1" frameWidth="131" frameHeight="55"/>
+    <SubTexture name="ChatPanel_showHideTeamButtonUp" x="1927" y="96" width="103" height="59" frameX="0" frameY="0" frameWidth="103" frameHeight="61"/>
+    <SubTexture name="ChatPanel_tabDown" x="493" y="1779" rotated="true" width="63" height="29"/>
+    <SubTexture name="ChatPanel_tabUp" x="1629" y="1746" width="29" height="50"/>
+    <SubTexture name="ChatPanel_titleLine" x="128" y="516" width="3" height="3"/>
+    <SubTexture name="ChatPanel_topBack" x="85" y="516" rotated="true" width="12" height="3"/>
+    <SubTexture name="CrossHair" x="1785" y="368" rotated="true" width="23" height="25" frameX="0" frameY="-1" frameWidth="25" frameHeight="25"/>
+    <SubTexture name="GraveZombieSquare" x="133" y="516" width="3" height="3"/>
+    <SubTexture name="HandPos" x="138" y="516" width="3" height="3"/>
+    <SubTexture name="HotShield" x="1918" y="1185" rotated="true" width="65" height="63" frameX="-3" frameY="-4" frameWidth="68" frameHeight="72"/>
+    <SubTexture name="IconCooldown" x="1006" y="1572" width="37" height="43" frameX="-1" frameY="-1" frameWidth="38" frameHeight="45"/>
+    <SubTexture name="IconExplode" x="1576" y="1150" width="87" height="80" frameX="-5" frameY="-7" frameWidth="96" frameHeight="96"/>
+    <SubTexture name="IconPlay" x="1937" y="1055" rotated="true" width="77" height="63" frameX="-17" frameY="-10" frameWidth="96" frameHeight="96"/>
+    <SubTexture name="IconStop" x="1937" y="1120" rotated="true" width="77" height="63" frameX="-17" frameY="-10" frameWidth="96" frameHeight="96"/>
+    <SubTexture name="IconUFOGrab" x="1849" y="785" width="86" height="96"/>
+    <SubTexture name="OneWindArrow_instance3" x="1571" y="1352" rotated="true" width="20" height="12" frameX="-1" frameY="-1" frameWidth="14" frameHeight="21"/>
+    <SubTexture name="PointerArrow_0" x="1631" y="271" rotated="true" width="29" height="16" frameX="-1" frameY="-1" frameWidth="17" frameHeight="30"/>
+    <SubTexture name="PointerArrow_1" x="1662" y="271" rotated="true" width="29" height="16" frameX="-1" frameY="-1" frameWidth="17" frameHeight="30"/>
+    <SubTexture name="PointerArrow_2" x="2023" y="535" width="16" height="29" frameX="-1" frameY="-1" frameWidth="17" frameHeight="30"/>
+    <SubTexture name="PointerArrow_3" x="1816" y="892" width="16" height="29" frameX="-1" frameY="-1" frameWidth="17" frameHeight="30"/>
+    <SubTexture name="PointerArrow_neutral" x="1834" y="892" width="16" height="29" frameX="-1" frameY="-1" frameWidth="17" frameHeight="30"/>
+    <SubTexture name="ProgressBarBoss_bar" x="1630" y="1345" rotated="true" width="11" height="16"/>
+    <SubTexture name="ProgressBarBoss_bottom" x="1533" y="677" width="22" height="19" frameX="0" frameY="0" frameWidth="22" frameHeight="20"/>
+    <SubTexture name="ProgressBarBoss_top" x="1056" y="962" width="56" height="13" frameX="0" frameY="0" frameWidth="57" frameHeight="14"/>
+    <SubTexture name="Surrender_flag" x="1477" y="165" width="102" height="106" frameX="-1" frameY="-1" frameWidth="103" frameHeight="107"/>
+    <SubTexture name="WeaponTipsPanel_backPanel" x="1757" y="368" width="26" height="25" frameX="0" frameY="0" frameWidth="26" frameHeight="26"/>
+    <SubTexture name="WeaponTipsPanel_close_upState_instance4_instance5" x="993" y="1763" width="43" height="43" frameX="-1" frameY="-1" frameWidth="44" frameHeight="45"/>
+    <SubTexture name="characterHats/ArchdemonHat" x="2" y="1036" rotated="true" width="152" height="194" frameX="-12" frameY="-2" frameWidth="219" frameHeight="162"/>
+    <SubTexture name="characterHats/AssassinAceHatBoxer" x="975" y="1427" rotated="true" width="123" height="143" frameX="-1" frameY="-1" frameWidth="147" frameHeight="126"/>
+    <SubTexture name="characterHats/AssassinEliteHatBoxer" x="875" y="1810" rotated="true" width="123" height="143" frameX="-1" frameY="-1" frameWidth="147" frameHeight="126"/>
+    <SubTexture name="characterHats/AssassinMasterHatBoxer" x="868" y="1617" rotated="true" width="124" height="144" frameX="-1" frameY="-1" frameWidth="147" frameHeight="126"/>
+    <SubTexture name="characterHats/AviatorHatBoxer" x="1655" y="2" rotated="true" width="98" height="106" frameX="0" frameY="0" frameWidth="108" frameHeight="99"/>
+    <SubTexture name="characterHats/BlackBandage" x="1523" y="1556" width="119" height="57" frameX="0" frameY="-2" frameWidth="120" frameHeight="60"/>
+    <SubTexture name="characterHats/BlackYetiHatBoxer" x="551" y="2" rotated="true" width="173" height="175" frameX="-2" frameY="-2" frameWidth="180" frameHeight="177"/>
+    <SubTexture name="characterHats/BlueYetiHatBoxer" x="424" y="289" rotated="true" width="174" height="176" frameX="-2" frameY="-2" frameWidth="180" frameHeight="180"/>
+    <SubTexture name="characterHats/BossDarkKnightHatBoxer" x="765" y="428" rotated="true" width="130" height="131" frameX="0" frameY="-2" frameWidth="132" frameHeight="135"/>
+    <SubTexture name="characterHats/BossDeadPirateHatBoxer" x="836" y="1232" rotated="true" width="95" height="146" frameX="0" frameY="-1" frameWidth="147" frameHeight="99"/>
+    <SubTexture name="characterHats/BossEngineerHatBoxer" x="1580" y="397" rotated="true" width="74" height="106" frameX="0" frameY="-1" frameWidth="108" frameHeight="78"/>
+    <SubTexture name="characterHats/BossGhostHatBoxer" x="758" y="179" width="123" height="108" frameX="0" frameY="-1" frameWidth="126" frameHeight="111"/>
+    <SubTexture name="characterHats/BossGuardiansDepthsHatBoxer" x="409" y="809" rotated="true" width="137" height="152" frameX="0" frameY="-1" frameWidth="153" frameHeight="141"/>
+    <SubTexture name="characterHats/BossHackerHatBoxer" x="200" y="993" width="96" height="41" frameX="0" frameY="0" frameWidth="96" frameHeight="42"/>
+    <SubTexture name="characterHats/BossIllusionistHatBoxer" x="1319" y="1232" width="116" height="134" frameX="0" frameY="-1" frameWidth="117" frameHeight="138"/>
+    <SubTexture name="characterHats/BossJulietHatBoxer" x="1761" y="1033" width="107" height="107" frameX="-1" frameY="-1" frameWidth="111" frameHeight="108"/>
+    <SubTexture name="characterHats/BossKingDeadHatBoxer" x="1590" y="1423" width="113" height="130" frameX="0" frameY="-1" frameWidth="117" frameHeight="132"/>
+    <SubTexture name="characterHats/BossLavaJawHatBoxer" x="463" y="963" width="103" height="71" frameX="0" frameY="-1" frameWidth="105" frameHeight="75"/>
+    <SubTexture name="characterHats/BossLavaJawHatRhino" x="784" y="962" width="107" height="72" frameX="0" frameY="0" frameWidth="108" frameHeight="72"/>
+    <SubTexture name="characterHats/BossPaladinHatBoxer" x="685" y="289" rotated="true" width="127" height="137" frameX="0" frameY="-2" frameWidth="138" frameHeight="132"/>
+    <SubTexture name="characterHats/BossPhantomHatBoxer" x="288" y="1617" rotated="true" width="139" height="160" frameX="-2" frameY="0" frameWidth="162" frameHeight="144"/>
+    <SubTexture name="characterHats/BossPirateHatBoxer" x="1195" y="1232" rotated="true" width="122" height="135" frameX="-1" frameY="0" frameWidth="138" frameHeight="123"/>
+    <SubTexture name="characterHats/BossPsiBioticHatBoxer" x="665" y="704" rotated="true" width="116" height="103" frameX="0" frameY="-1" frameWidth="105" frameHeight="120"/>
+    <SubTexture name="characterHats/BossPsiTelepathistHatBoxer" x="1437" y="1232" rotated="true" width="109" height="133" frameX="0" frameY="-1" frameWidth="135" frameHeight="114"/>
+    <SubTexture name="characterHats/BossRomeoHatBoxer" x="287" y="1232" rotated="true" width="106" height="159" frameX="-1" frameY="-1" frameWidth="162" frameHeight="108"/>
+    <SubTexture name="characterHats/BossShamanHatBoxer" x="119" y="1427" width="132" height="188" frameX="-2" frameY="-1" frameWidth="138" frameHeight="192"/>
+    <SubTexture name="characterHats/BossThiefHatBoxer" x="1927" y="2" width="103" height="92" frameX="0" frameY="-1" frameWidth="105" frameHeight="96"/>
+    <SubTexture name="characterHats/BossVikingHatBoxer" x="1127" y="1616" rotated="true" width="86" height="142" frameX="0" frameY="-2" frameWidth="144" frameHeight="90"/>
+    <SubTexture name="characterHats/BossWindMasterHatBoxer" x="93" y="561" rotated="true" width="145" height="206" frameX="0" frameY="-2" frameWidth="207" frameHeight="150"/>
+    <SubTexture name="characterHats/BossYakuza1HatBoxer" x="371" y="743" width="132" height="64" frameX="0" frameY="0" frameWidth="135" frameHeight="66"/>
+    <SubTexture name="characterHats/BossYakuza2HatBoxer" x="1176" y="1567" width="114" height="47" frameX="0" frameY="-1" frameWidth="117" frameHeight="51"/>
+    <SubTexture name="characterHats/BossYakuza3HatBoxer" x="1400" y="1938" width="127" height="108" frameX="-1" frameY="-1" frameWidth="129" frameHeight="111"/>
+    <SubTexture name="characterHats/BoxerAqualung" x="929" y="289" rotated="true" width="119" height="136" frameX="0" frameY="-1" frameWidth="138" frameHeight="123"/>
+    <SubTexture name="characterHats/BoxerArtist" x="451" y="204" width="142" height="83" frameX="0" frameY="-2" frameWidth="144" frameHeight="87"/>
+    <SubTexture name="characterHats/BoxerChieftain" x="2" y="1620" width="138" height="189" frameX="0" frameY="-2" frameWidth="141" frameHeight="192"/>
+    <SubTexture name="characterHats/BoxerCowboy" x="565" y="1036" rotated="true" width="56" height="152" frameX="0" frameY="-1" frameWidth="153" frameHeight="57"/>
+    <SubTexture name="characterHats/BoxerCrown" x="934" y="1377" width="93" height="48" frameX="0" frameY="-1" frameWidth="93" frameHeight="51"/>
+    <SubTexture name="characterHats/BoxerDartvader" x="886" y="561" rotated="true" width="124" height="136" frameX="0" frameY="0" frameWidth="138" frameHeight="126"/>
+    <SubTexture name="characterHats/BoxerFarmer" x="1292" y="1562" width="124" height="52" frameX="0" frameY="-1" frameWidth="126" frameHeight="57"/>
+    <SubTexture name="characterHats/BoxerGentleman" x="1295" y="2" rotated="true" width="79" height="123" frameX="0" frameY="-1" frameWidth="126" frameHeight="84"/>
+    <SubTexture name="characterHats/BoxerGirlberret" x="1239" y="415" width="119" height="121" frameX="-1" frameY="-1" frameWidth="123" frameHeight="123"/>
+    <SubTexture name="characterHats/BoxerGladiatorHelmet" x="999" y="174" rotated="true" width="123" height="113" frameX="0" frameY="-1" frameWidth="114" frameHeight="126"/>
+    <SubTexture name="characterHats/BoxerHalloweenHat1" x="2" y="1232" rotated="true" width="127" height="193" frameX="0" frameY="-2" frameWidth="195" frameHeight="132"/>
+    <SubTexture name="characterHats/BoxerHalloweenHat2" x="2" y="1427" rotated="true" width="115" height="191" frameX="0" frameY="-2" frameWidth="195" frameHeight="120"/>
+    <SubTexture name="characterHats/BoxerHatCrashHelmet" x="1121" y="699" rotated="true" width="105" height="108" frameX="-1" frameY="-1" frameWidth="111" frameHeight="108"/>
+    <SubTexture name="characterHats/BoxerHatDoctorArmband" x="1137" y="418" width="100" height="126" frameX="0" frameY="-1" frameWidth="102" frameHeight="129"/>
+    <SubTexture name="characterHats/BoxerHatElvis" x="726" y="1427" rotated="true" width="131" height="146" frameX="-1" frameY="0" frameWidth="150" frameHeight="132"/>
+    <SubTexture name="characterHats/BoxerHatHeroMask" x="1467" y="1154" width="107" height="76" frameX="0" frameY="-1" frameWidth="108" frameHeight="81"/>
+    <SubTexture name="characterHats/BoxerHatMask" x="1015" y="427" rotated="true" width="120" height="132" frameX="0" frameY="-1" frameWidth="135" frameHeight="123"/>
+    <SubTexture name="characterHats/BoxerHatNeo" x="253" y="1589" width="97" height="26" frameX="0" frameY="0" frameWidth="99" frameHeight="27"/>
+    <SubTexture name="characterHats/BoxerHatNimbus" x="1183" y="2" width="110" height="127" frameX="0" frameY="-1" frameWidth="114" frameHeight="129"/>
+    <SubTexture name="characterHats/BoxerHatNinjaTurtles" x="1380" y="1750" width="126" height="46" frameX="0" frameY="-1" frameWidth="129" frameHeight="48"/>
+    <SubTexture name="characterHats/BoxerHatOfficer" x="1079" y="1372" width="118" height="53" frameX="0" frameY="-1" frameWidth="120" frameHeight="57"/>
+    <SubTexture name="characterHats/BoxerHatRussian" x="22" y="561" rotated="true" width="69" height="209" frameX="0" frameY="-1" frameWidth="210" frameHeight="72"/>
+    <SubTexture name="characterHats/BoxerHatSoviet" x="359" y="1036" rotated="true" width="103" height="157" frameX="0" frameY="-1" frameWidth="159" frameHeight="105"/>
+    <SubTexture name="characterHats/BoxerHatVampire" x="2" y="1811" rotated="true" width="74" height="173" frameX="0" frameY="-1" frameWidth="174" frameHeight="78"/>
+    <SubTexture name="characterHats/BoxerIndian" x="1126" y="1033" rotated="true" width="110" height="136" frameX="0" frameY="-2" frameWidth="138" frameHeight="114"/>
+    <SubTexture name="characterHats/BoxerJason" x="1584" y="809" width="100" height="113" frameX="0" frameY="0" frameWidth="102" frameHeight="114"/>
+    <SubTexture name="characterHats/BoxerLegioner" x="994" y="1617" width="131" height="142" frameX="-2" frameY="0" frameWidth="135" frameHeight="144"/>
+    <SubTexture name="characterHats/BoxerMaster" x="493" y="467" width="158" height="92" frameX="0" frameY="-1" frameWidth="159" frameHeight="96"/>
+    <SubTexture name="characterHats/BoxerNaruto" x="1460" y="2" rotated="true" width="79" height="121" frameX="0" frameY="0" frameWidth="123" frameHeight="81"/>
+    <SubTexture name="characterHats/BoxerNazi" x="1219" y="1426" rotated="true" width="126" height="134" frameX="0" frameY="-1" frameWidth="135" frameHeight="129"/>
+    <SubTexture name="characterHats/BoxerPinkhat" x="974" y="1955" rotated="true" width="74" height="91" frameX="0" frameY="-1" frameWidth="93" frameHeight="78"/>
+    <SubTexture name="characterHats/BoxerPinkhelm" x="1172" y="1949" rotated="true" width="98" height="97" frameX="0" frameY="-1" frameWidth="99" frameHeight="102"/>
+    <SubTexture name="characterHats/BoxerPinklegioner" x="1000" y="1808" width="131" height="142" frameX="-2" frameY="0" frameWidth="135" frameHeight="144"/>
+    <SubTexture name="characterHats/BoxerPirate" x="1376" y="2" rotated="true" width="82" height="122" frameX="0" frameY="0" frameWidth="123" frameHeight="84"/>
+    <SubTexture name="characterHats/BoxerPrincess" x="1066" y="1232" width="127" height="138" frameX="0" frameY="0" frameWidth="129" frameHeight="141"/>
+    <SubTexture name="characterHats/BoxerPumpkinGreenHat" x="747" y="561" width="137" height="139" frameX="0" frameY="-1" frameWidth="141" frameHeight="141"/>
+    <SubTexture name="characterHats/BoxerPumpkinOrangeHat" x="987" y="1034" width="137" height="138" frameX="0" frameY="-1" frameWidth="141" frameHeight="141"/>
+    <SubTexture name="characterHats/BoxerPumpkinRedHat" x="887" y="809" width="138" height="138" frameX="0" frameY="-1" frameWidth="141" frameHeight="141"/>
+    <SubTexture name="characterHats/BoxerPurpleRacingHelmet" x="1656" y="397" rotated="true" width="94" height="104" frameX="0" frameY="0" frameWidth="108" frameHeight="96"/>
+    <SubTexture name="characterHats/BoxerRedRacingHelmet" x="1472" y="411" width="106" height="106" frameX="-1" frameY="-1" frameWidth="108" frameHeight="108"/>
+    <SubTexture name="characterHats/BoxerRedcap" x="1531" y="1367" width="110" height="54" frameX="0" frameY="0" frameWidth="111" frameHeight="54"/>
+    <SubTexture name="characterHats/BoxerSadomazo" x="1600" y="1033" rotated="true" width="83" height="114" frameX="0" frameY="-1" frameWidth="117" frameHeight="87"/>
+    <SubTexture name="characterHats/BoxerScorpion" x="651" y="1617" rotated="true" width="125" height="153" frameX="-1" frameY="-1" frameWidth="156" frameHeight="129"/>
+    <SubTexture name="characterHats/BoxerSimplehelm" x="1801" y="923" rotated="true" width="59" height="97" frameX="0" frameY="-1" frameWidth="99" frameHeight="63"/>
+    <SubTexture name="characterHats/BoxerSombrero" x="477" y="2" rotated="true" width="72" height="176" frameX="0" frameY="-1" frameWidth="177" frameHeight="75"/>
+    <SubTexture name="characterHats/BoxerSubzero" x="748" y="1810" rotated="true" width="125" height="153" frameX="-1" frameY="-1" frameWidth="156" frameHeight="129"/>
+    <SubTexture name="characterHats/BoxerTankhelm" x="1940" y="712" width="99" height="57" frameX="0" frameY="-1" frameWidth="102" frameHeight="60"/>
+    <SubTexture name="characterHats/BoxerThief" x="1747" y="163" rotated="true" width="78" height="104" frameX="0" frameY="-1" frameWidth="105" frameHeight="81"/>
+    <SubTexture name="characterHats/BoxerTribal" x="524" y="1810" width="107" height="159" frameX="-2" frameY="-1" frameWidth="111" frameHeight="162"/>
+    <SubTexture name="characterHats/BoxerViking" x="258" y="1977" width="129" height="69" frameX="0" frameY="-2" frameWidth="132" frameHeight="75"/>
+    <SubTexture name="characterHats/BoxerVoodoo" x="1215" y="1616" width="115" height="138" frameX="-1" frameY="-1" frameWidth="117" frameHeight="141"/>
+    <SubTexture name="characterHats/BoxerWhitehat" x="1669" y="289" rotated="true" width="86" height="104" frameX="0" frameY="-1" frameWidth="105" frameHeight="90"/>
+    <SubTexture name="characterHats/BoxerWizzard" x="1099" y="2" rotated="true" width="82" height="128" frameX="0" frameY="-1" frameWidth="129" frameHeight="84"/>
+    <SubTexture name="characterHats/CasketHatBoxer" x="823" y="1965" width="149" height="81" frameX="0" frameY="0" frameWidth="150" frameHeight="84"/>
+    <SubTexture name="characterHats/ChemistHairHatBoxer" x="1221" y="1803" rotated="true" width="129" height="141" frameX="0" frameY="-1" frameWidth="144" frameHeight="132"/>
+    <SubTexture name="characterHats/ChemistHatBoxer" x="1363" y="167" rotated="true" width="112" height="120" frameX="0" frameY="-1" frameWidth="123" frameHeight="114"/>
+    <SubTexture name="characterHats/ColoredIroquoisHatBoxer" x="1785" y="556" rotated="true" width="83" height="97" frameX="0" frameY="-1" frameWidth="99" frameHeight="87"/>
+    <SubTexture name="characterHats/CosmonautHatBoxer" x="814" y="289" rotated="true" width="113" height="137" frameX="-1" frameY="-1" frameWidth="138" frameHeight="117"/>
+    <SubTexture name="characterHats/DarkCultistBossHatBoxer" x="1543" y="1798" rotated="true" width="115" height="129" frameX="-1" frameY="-1" frameWidth="132" frameHeight="117"/>
+    <SubTexture name="characterHats/DarkCultistHatBoxer" x="1527" y="1615" rotated="true" width="115" height="129" frameX="-1" frameY="-1" frameWidth="132" frameHeight="117"/>
+    <SubTexture name="characterHats/DemonHatBoxer" x="1332" y="1616" rotated="true" width="112" height="132" frameX="0" frameY="-1" frameWidth="135" frameHeight="117"/>
+    <SubTexture name="characterHats/ElderDemonHat" x="699" y="1232" rotated="true" width="135" height="147"/>
+    <SubTexture name="characterHats/EmperorHatBoxer" x="548" y="809" rotated="true" width="103" height="152" frameX="-1" frameY="-1" frameWidth="156" frameHeight="105"/>
+    <SubTexture name="characterHats/FiendHelm" x="1474" y="1424" width="114" height="130" frameX="0" frameY="0" frameWidth="117" frameHeight="132"/>
+    <SubTexture name="characterHats/FireFighterHat" x="1151" y="1171" width="117" height="59" frameX="0" frameY="0" frameWidth="117" frameHeight="60"/>
+    <SubTexture name="characterHats/FireMaskHatBoxer" x="78" y="1811" width="151" height="172" frameX="-1" frameY="-2" frameWidth="156" frameHeight="177"/>
+    <SubTexture name="characterHats/FireSheepHatBoxer" x="198" y="1036" rotated="true" width="159" height="186" frameX="-1" frameY="-2" frameWidth="189" frameHeight="165"/>
+    <SubTexture name="characterHats/GeneralsCap" x="1376" y="809" rotated="true" width="102" height="119" frameX="-1" frameY="0" frameWidth="123" frameHeight="105"/>
+    <SubTexture name="characterHats/GiftBagHat" x="253" y="1427" rotated="true" width="153" height="160" frameX="0" frameY="0" frameWidth="162" frameHeight="153"/>
+    <SubTexture name="characterHats/GiftHatBoxer" x="295" y="289" rotated="true" width="127" height="201" frameX="0" frameY="-1" frameWidth="204" frameHeight="132"/>
+    <SubTexture name="characterHats/GreenIroquoisHatBoxer" x="1699" y="1345" width="106" height="75" frameX="0" frameY="-1" frameWidth="108" frameHeight="78"/>
+    <SubTexture name="characterHats/HellRacerHelm" x="1166" y="289" width="119" height="124" frameX="0" frameY="-1" frameWidth="120" frameHeight="129"/>
+    <SubTexture name="characterHats/HockeyPlayerAceHatBoxer" x="1370" y="560" width="115" height="115" frameX="0" frameY="0" frameWidth="117" frameHeight="117"/>
+    <SubTexture name="characterHats/HockeyPlayerEliteHatBoxer" x="1124" y="173" rotated="true" width="115" height="114" frameX="0" frameY="0" frameWidth="117" frameHeight="117"/>
+    <SubTexture name="characterHats/HockeyPlayerMasterHatBoxer" x="1487" y="560" width="115" height="115" frameX="0" frameY="0" frameWidth="117" frameHeight="117"/>
+    <SubTexture name="characterHats/JarlBaseHat" x="22" y="2" width="196" height="225" frameX="0" frameY="0" frameWidth="198" frameHeight="225"/>
+    <SubTexture name="characterHats/JarlFireHat" x="34" y="289" width="196" height="225" frameX="0" frameY="0" frameWidth="198" frameHeight="228"/>
+    <SubTexture name="characterHats/JarlPoisonHat" x="220" y="2" width="196" height="225" frameX="0" frameY="0" frameWidth="198" frameHeight="225"/>
+    <SubTexture name="characterHats/JarlShockHat" x="2" y="809" width="196" height="225" frameX="0" frameY="0" frameWidth="198" frameHeight="225"/>
+    <SubTexture name="characterHats/KnightAceHatBoxer" x="1537" y="698" width="104" height="109" frameX="-1" frameY="-1" frameWidth="108" frameHeight="114"/>
+    <SubTexture name="characterHats/KnightEliteHatBoxer" x="1398" y="289" width="103" height="107" frameX="-1" frameY="-1" frameWidth="105" frameHeight="111"/>
+    <SubTexture name="characterHats/KnightMasterHatBoxer" x="1228" y="699" width="104" height="108" frameX="-1" frameY="-1" frameWidth="108" frameHeight="111"/>
+    <SubTexture name="characterHats/MegavoltHatBoxer" x="1480" y="809" rotated="true" width="102" height="115" frameX="0" frameY="-1" frameWidth="117" frameHeight="105"/>
+    <SubTexture name="characterHats/MinerHat" x="22" y="229" width="114" height="58" frameX="0" frameY="0" frameWidth="117" frameHeight="60"/>
+    <SubTexture name="characterHats/MinionHatBoxer" x="1050" y="1952" width="120" height="94" frameX="0" frameY="-1" frameWidth="123" frameHeight="96"/>
+    <SubTexture name="characterHats/MonkAceHatBoxer" x="200" y="809" rotated="true" width="103" height="182" frameX="-1" frameY="-1" frameWidth="186" frameHeight="108"/>
+    <SubTexture name="characterHats/MonkEliteHatBoxer" x="182" y="1232" rotated="true" width="103" height="183" frameX="-1" frameY="-2" frameWidth="186" frameHeight="108"/>
+    <SubTexture name="characterHats/MonkHatBoxer" x="240" y="561" rotated="true" width="103" height="182" frameX="0" frameY="0" frameWidth="183" frameHeight="105"/>
+    <SubTexture name="characterHats/MonkMasterHatBoxer" x="305" y="809" rotated="true" width="102" height="180" frameX="-1" frameY="-1" frameWidth="183" frameHeight="108"/>
+    <SubTexture name="characterHats/MooseHelmBoxer" x="474" y="561" rotated="true" width="148" height="178" frameX="-2" frameY="-3" frameWidth="183" frameHeight="153"/>
+    <SubTexture name="characterHats/NightVisionHatRhino" x="1940" y="771" width="97" height="65" frameX="0" frameY="0" frameWidth="99" frameHeight="66"/>
+    <SubTexture name="characterHats/NordicHelmBoxer" x="1133" y="1805" rotated="true" width="86" height="142" frameX="0" frameY="-1" frameWidth="144" frameHeight="90"/>
+    <SubTexture name="characterHats/PsyherHelmHatBoxer" x="1360" y="412" rotated="true" width="110" height="117" frameX="0" frameY="0" frameWidth="120" frameHeight="114"/>
+    <SubTexture name="characterHats/RespiratorHatBoxer" x="1529" y="1930" rotated="true" width="89" height="116" frameX="0" frameY="-1" frameWidth="117" frameHeight="93"/>
+    <SubTexture name="characterHats/RhinoFirelord" x="933" y="1232" rotated="true" width="131" height="143" frameX="0" frameY="0" frameWidth="144" frameHeight="132"/>
+    <SubTexture name="characterHats/RhinoNightHat" x="901" y="2" rotated="true" width="88" height="129" frameX="0" frameY="0" frameWidth="129" frameHeight="90"/>
+    <SubTexture name="characterHats/RobochikenBoxer" x="1012" y="561" width="122" height="136" frameX="0" frameY="0" frameWidth="123" frameHeight="138"/>
+    <SubTexture name="characterHats/SapperHelm" x="1347" y="1426" width="125" height="134" frameX="-3" frameY="-5" frameWidth="132" frameHeight="141"/>
+    <SubTexture name="characterHats/ScientistHatBoxer" x="345" y="561" rotated="true" width="127" height="180" frameX="-1" frameY="-1" frameWidth="183" frameHeight="129"/>
+    <SubTexture name="characterHats/ScreamHatBoxer" x="1241" y="172" rotated="true" width="120" height="115" frameX="0" frameY="-1" frameWidth="117" frameHeight="123"/>
+    <SubTexture name="characterHats/SpecOpsHatBoxer" x="899" y="699" width="113" height="108" frameX="-1" frameY="-1" frameWidth="117" frameHeight="111"/>
+    <SubTexture name="characterHats/SteampunkGlassesBoxer" x="712" y="1381" width="100" height="44" frameX="0" frameY="-1" frameWidth="102" frameHeight="48"/>
+    <SubTexture name="characterHats/VileMaskBoxer" x="595" y="179" rotated="true" width="161" height="108" frameX="-1" frameY="-1" frameWidth="111" frameHeight="165"/>
+    <SubTexture name="characterHats/WhiteYetiHatBoxer" x="726" y="2" rotated="true" width="173" height="175" frameX="-2" frameY="-2" frameWidth="180" frameHeight="177"/>
+    <SubTexture name="characterHats/WinterHatBoxer" x="408" y="1427" rotated="true" width="91" height="158" frameX="0" frameY="-2" frameWidth="162" frameHeight="96"/>
+    <SubTexture name="characterHats/WolfAceHatBoxer" x="1027" y="809" rotated="true" width="118" height="136" frameX="0" frameY="-2" frameWidth="138" frameHeight="120"/>
+    <SubTexture name="characterHats/WolfEliteHatBoxer" x="1136" y="561" rotated="true" width="118" height="136" frameX="0" frameY="-2" frameWidth="138" frameHeight="120"/>
+    <SubTexture name="characterHats/WolfMasterHatBoxer" x="1147" y="809" rotated="true" width="118" height="136" frameX="0" frameY="-2" frameWidth="138" frameHeight="123"/>
+    <SubTexture name="character_bot/03_bot_animations/bot_static_part_01" x="600" y="289" rotated="true" width="72" height="174" frameX="0" frameY="0" frameWidth="177" frameHeight="72"/>
+    <SubTexture name="character_bot/03_bot_animations/bot_static_part_02" x="1199" y="1369" width="87" height="55" frameX="0" frameY="0" frameWidth="87" frameHeight="57"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_body" x="1870" y="421" rotated="true" width="49" height="67" frameX="0" frameY="0" frameWidth="69" frameHeight="51"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_brow1" x="2026" y="278" rotated="true" width="18" height="31" frameX="0" frameY="0" frameWidth="33" frameHeight="18"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_brow2" x="2026" y="311" rotated="true" width="18" height="28" frameX="0" frameY="0" frameWidth="30" frameHeight="18"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_eye" x="2023" y="509" width="23" height="24" frameX="0" frameY="0" frameWidth="24" frameHeight="24"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_light_base_BLUE" x="642" y="1776" width="35" height="32" frameX="0" frameY="0" frameWidth="36" frameHeight="33"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_light_base_GREEN" x="597" y="1583" width="35" height="32" frameX="0" frameY="0" frameWidth="36" frameHeight="33"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_light_base_RED" x="634" y="1583" width="35" height="32" frameX="0" frameY="0" frameWidth="36" frameHeight="33"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_light_base_YELLOW" x="671" y="1583" width="35" height="32" frameX="0" frameY="0" frameWidth="36" frameHeight="33"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_light_frame" x="428" y="1390" width="41" height="35" frameX="0" frameY="0" frameWidth="42" frameHeight="36"/>
+    <SubTexture name="character_bot/animations/parts/alarm_droid_light_highlight" x="994" y="949" rotated="true" width="27" height="11" frameX="0" frameY="0" frameWidth="12" frameHeight="27"/>
+    <SubTexture name="character_bot/animations/parts/objects/jetpack_fire_01" x="2024" y="376" rotated="true" width="22" height="17" frameX="0" frameY="0" frameWidth="18" frameHeight="24"/>
+    <SubTexture name="character_bot/animations/parts/objects/jetpack_fire_red_01" x="2024" y="395" rotated="true" width="22" height="17" frameX="0" frameY="0" frameWidth="18" frameHeight="24"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_brow_back" x="1862" y="1000" width="24" height="31" frameX="0" frameY="0" frameWidth="24" frameHeight="33"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_brow_front" x="1681" y="503" rotated="true" width="33" height="51"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eye_dot_back" x="786" y="1764" rotated="true" width="9" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="9"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eye_dot_front" x="1061" y="418" rotated="true" width="9" height="7" frameX="0" frameY="0" frameWidth="9" frameHeight="9"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_closed_eyelashes" x="908" y="1955" width="64" height="7" frameX="0" frameY="0" frameWidth="66" frameHeight="9"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_eave1" x="740" y="428" rotated="true" width="22" height="35" frameX="0" frameY="0" frameWidth="36" frameHeight="24"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_eave2" x="1920" y="682" width="16" height="16" frameX="0" frameY="0" frameWidth="18" frameHeight="18"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_eave_closed" x="1827" y="216" width="35" height="34" frameX="0" frameY="0" frameWidth="36" frameHeight="36"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_eyelash1" x="1045" y="1572" rotated="true" width="11" height="43" frameX="0" frameY="0" frameWidth="45" frameHeight="12"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_eyelash2" x="354" y="1224" width="20" height="6" frameX="0" frameY="0" frameWidth="21" frameHeight="6"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_happy" x="819" y="1575" width="64" height="40" frameX="0" frameY="0" frameWidth="66" frameHeight="42"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_highlight1" x="1072" y="418" rotated="true" width="9" height="7" frameX="0" frameY="0" frameWidth="9" frameHeight="9"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_highlight2" x="1360" y="1938" width="5" height="6" frameX="0" frameY="0" frameWidth="6" frameHeight="9"/>
+    <SubTexture name="character_bot/bot_eyes_animation/parts/bot_eyes_whites" x="797" y="1764" width="64" height="44" frameX="0" frameY="0" frameWidth="66" frameHeight="45"/>
+    <SubTexture name="character_bot/elements/ap_bot_left_brov_sad" x="1862" y="1000" width="24" height="31" frameX="0" frameY="0" frameWidth="24" frameHeight="33"/>
+    <SubTexture name="character_bot/elements/ap_bot_right_brov_sad" x="1681" y="503" rotated="true" width="33" height="51"/>
+    <SubTexture name="character_bot/elements/botHand" x="1827" y="186" width="36" height="28" frameX="0" frameY="0" frameWidth="36" frameHeight="30"/>
+    <SubTexture name="character_bot/elements/bot_body" x="1827" y="321" width="92" height="98" frameX="0" frameY="0" frameWidth="93" frameHeight="99"/>
+    <SubTexture name="character_bot/elements/bot_ears" x="931" y="1763" width="44" height="44" frameX="0" frameY="0" frameWidth="45" frameHeight="45"/>
+    <SubTexture name="character_bot/elements/bot_foot" x="1280" y="131" rotated="true" width="17" height="39" frameX="0" frameY="0" frameWidth="39" frameHeight="18"/>
+    <SubTexture name="character_bot/elements/bot_hand" x="1827" y="186" width="36" height="28" frameX="0" frameY="0" frameWidth="36" frameHeight="30"/>
+    <SubTexture name="character_bot/elements/bot_mouth_base" x="1557" y="926" rotated="true" width="64" height="105" frameX="0" frameY="0" frameWidth="105" frameHeight="66"/>
+    <SubTexture name="character_bot/elements/bot_mouth_boom" x="1643" y="1345" rotated="true" width="54" height="76" frameX="0" frameY="0" frameWidth="78" frameHeight="54"/>
+    <SubTexture name="character_bot/elements/bot_mouth_happy" x="1941" y="631" width="100" height="79" frameX="0" frameY="0" frameWidth="102" frameHeight="81"/>
+    <SubTexture name="character_bot/elements/bot_mouth_ill" x="1604" y="289" rotated="true" width="63" height="106" frameX="0" frameY="0" frameWidth="108" frameHeight="63"/>
+    <SubTexture name="character_boxer/RoarCircle" x="572" y="1232" width="125" height="150" frameX="-3" frameY="-6" frameWidth="135" frameHeight="165"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_1" x="1254" y="131" rotated="true" width="24" height="39"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_10" x="1593" y="1352" width="17" height="12" frameX="0" frameY="0" frameWidth="18" frameHeight="12"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_11" x="1176" y="546" rotated="true" width="16" height="13" frameX="0" frameY="0" frameWidth="15" frameHeight="18"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_12" x="1229" y="1756" rotated="true" width="33" height="41" frameX="0" frameY="0" frameWidth="42" frameHeight="33"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_13" x="1433" y="531" width="33" height="27" frameX="0" frameY="0" frameWidth="33" frameHeight="30"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_15" x="1488" y="398" rotated="true" width="15" height="11" frameX="0" frameY="0" frameWidth="12" frameHeight="15"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_16" x="1158" y="546" width="16" height="13" frameX="0" frameY="0" frameWidth="18" frameHeight="15"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_17" x="1468" y="531" width="29" height="27" frameX="0" frameY="0" frameWidth="30" frameHeight="27"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_18" x="351" y="1779" width="32" height="30" frameX="0" frameY="0" frameWidth="33" frameHeight="30"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_19" x="1612" y="1352" rotated="true" width="16" height="12" frameX="0" frameY="0" frameWidth="12" frameHeight="18"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_2" x="1490" y="519" rotated="true" width="11" height="10" frameX="0" frameY="0" frameWidth="12" frameHeight="12"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_20" x="1578" y="677" width="15" height="19" frameX="0" frameY="0" frameWidth="15" frameHeight="21"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_3" x="1038" y="962" rotated="true" width="16" height="70" frameX="0" frameY="0" frameWidth="72" frameHeight="18"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_4" x="246" y="1788" width="103" height="21" frameX="0" frameY="0" frameWidth="105" frameHeight="21"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_6" x="2025" y="838" rotated="true" width="21" height="28" frameX="0" frameY="0" frameWidth="30" frameHeight="21"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_7" x="1360" y="127" rotated="true" width="33" height="38" frameX="0" frameY="0" frameWidth="39" frameHeight="33"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_8" x="429" y="282" rotated="true" width="17" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="18"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_part_9" x="418" y="204" width="31" height="23" frameX="0" frameY="0" frameWidth="33" frameHeight="24"/>
+    <SubTexture name="character_boxer/boxer_eyes_animation/parts/boxer_eyes_pupil" x="376" y="1224" rotated="true" width="10" height="6" frameX="0" frameY="0" frameWidth="6" frameHeight="12"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/BoxerMonthSad" x="288" y="1779" width="56" height="7" frameX="0" frameY="0" frameWidth="57" frameHeight="9"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/BoxerMonthSad2" x="787" y="950" width="50" height="10" frameX="0" frameY="0" frameWidth="51" frameHeight="12"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_1" x="2032" y="25" width="14" height="17" frameX="0" frameY="0" frameWidth="15" frameHeight="18"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_15" x="1159" y="132" width="54" height="39"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_16" x="1508" y="1750" width="65" height="46" frameX="0" frameY="0" frameWidth="66" frameHeight="48"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_2" x="1557" y="677" width="19" height="19" frameX="0" frameY="0" frameWidth="21" frameHeight="21"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_3" x="1398" y="398" width="15" height="12"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_4" x="442" y="1779" rotated="true" width="19" height="30" frameX="0" frameY="0" frameWidth="30" frameHeight="21"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_5" x="1117" y="418" width="11" height="5" frameX="0" frameY="0" frameWidth="12" frameHeight="6"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_6" x="1515" y="519" rotated="true" width="17" height="9" frameX="0" frameY="0" frameWidth="9" frameHeight="18"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_7" x="1026" y="1174" width="10" height="7" frameX="0" frameY="0" frameWidth="12" frameHeight="9"/>
+    <SubTexture name="character_boxer/boxer_mouth_animation/parts/boxer_mouth_part_8" x="1786" y="809" width="61" height="33" frameX="0" frameY="0" frameWidth="63" frameHeight="33"/>
+    <SubTexture name="character_boxer/elements/boxer_body" x="1256" y="560" rotated="true" width="112" height="119" frameX="0" frameY="0" frameWidth="120" frameHeight="114"/>
+    <SubTexture name="character_boxer/elements/boxer_foot" x="1693" y="270" width="33" height="17" frameX="0" frameY="0" frameWidth="36" frameHeight="18"/>
+    <SubTexture name="character_boxer/elements/boxer_hand" x="2021" y="917" rotated="true" width="24" height="26" frameX="0" frameY="0" frameWidth="27" frameHeight="24"/>
+    <SubTexture name="character_boxer/elements/boxer_tail" x="440" y="963" rotated="true" width="21" height="26" frameX="0" frameY="0" frameWidth="27" frameHeight="24"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_1" x="1208" y="546" rotated="true" width="8" height="13" frameX="0" frameY="0" frameWidth="15" frameHeight="9"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_10" x="519" y="180" width="36" height="22" frameX="0" frameY="0" frameWidth="36" frameHeight="24"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_11" x="1810" y="368" width="15" height="16" frameX="0" frameY="0" frameWidth="15" frameHeight="18"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_12" x="987" y="1174" width="22" height="7" frameX="0" frameY="0" frameWidth="24" frameHeight="9"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_13" x="93" y="769" width="7" height="1" frameX="0" frameY="0" frameWidth="9" frameHeight="3"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_14" x="410" y="1224" rotated="true" width="8" height="6" frameX="0" frameY="0" frameWidth="6" frameHeight="9"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_15" x="722" y="1772" width="37" height="36" frameX="0" frameY="0" frameWidth="39" frameHeight="36"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_2" x="1470" y="398" width="16" height="11" frameX="0" frameY="0" frameWidth="18" frameHeight="12"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_3" x="1083" y="418" rotated="true" width="9" height="7" frameX="0" frameY="0" frameWidth="9" frameHeight="9"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_4" x="914" y="1763" rotated="true" width="15" height="45"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_5" x="1137" y="546" width="19" height="13" frameX="0" frameY="0" frameWidth="21" frameHeight="15"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_6" x="875" y="1955" width="31" height="8" frameX="0" frameY="0" frameWidth="33" frameHeight="9"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_7" x="143" y="516" width="13" height="2" frameX="0" frameY="0" frameWidth="15" frameHeight="3"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_8" x="1188" y="1760" rotated="true" width="39" height="41" frameX="0" frameY="0" frameWidth="42" frameHeight="39"/>
+    <SubTexture name="character_cat/cat_eyes_animation/parts/cat_eyes_part_9" x="1478" y="677" rotated="true" width="26" height="19" frameX="0" frameY="0" frameWidth="21" frameHeight="27"/>
+    <SubTexture name="character_cat/elements/cat_body" x="1686" y="809" width="98" height="112" frameX="0" frameY="0" frameWidth="99" frameHeight="114"/>
+    <SubTexture name="character_cat/elements/cat_ears" x="505" y="741" width="90" height="66"/>
+    <SubTexture name="character_cat/elements/cat_ears_poisoned" x="1827" y="252" width="94" height="67" frameX="0" frameY="0" frameWidth="96" frameHeight="69"/>
+    <SubTexture name="character_cat/elements/cat_foot" x="1728" y="270" width="33" height="17" frameX="0" frameY="0" frameWidth="33" frameHeight="18"/>
+    <SubTexture name="character_cat/elements/cat_hand" x="409" y="963" width="29" height="26" frameX="0" frameY="0" frameWidth="30" frameHeight="27"/>
+    <SubTexture name="character_cat/elements/cat_mouth" x="1548" y="1232" rotated="true" width="65" height="118" frameX="0" frameY="0" frameWidth="120" frameHeight="66"/>
+    <SubTexture name="character_cat/elements/cat_mouth_boom" x="672" y="1969" width="149" height="77" frameX="0" frameY="0" frameWidth="150" frameHeight="78"/>
+    <SubTexture name="character_cat/elements/cat_mouth_happy" x="659" y="962" width="123" height="72"/>
+    <SubTexture name="character_cat/elements/cat_mouth_poisoned" x="1058" y="1572" width="116" height="42" frameX="0" frameY="0" frameWidth="117" frameHeight="42"/>
+    <SubTexture name="character_cat/elements/cat_tail" x="1136" y="1760" width="50" height="42" frameX="0" frameY="0" frameWidth="51" frameHeight="45"/>
+    <SubTexture name="character_cat/flying_cat_elements/cat_side_body" x="653" y="465" rotated="true" width="110" height="94" frameX="0" frameY="0" frameWidth="96" frameHeight="111"/>
+    <SubTexture name="character_cat/flying_cat_elements/cat_side_ear_back" x="679" y="1772" width="41" height="36" frameX="0" frameY="0" frameWidth="42" frameHeight="36"/>
+    <SubTexture name="character_cat/flying_cat_elements/cat_side_ear_forward" x="1330" y="1756" rotated="true" width="48" height="40" frameX="0" frameY="0" frameWidth="42" frameHeight="51"/>
+    <SubTexture name="character_cat/flying_cat_elements/cat_side_foot" x="1716" y="503" rotated="true" width="33" height="29" frameX="0" frameY="0" frameWidth="30" frameHeight="33"/>
+    <SubTexture name="character_cat/flying_cat_elements/cat_side_foot_" x="1360" y="531" rotated="true" width="35" height="27" frameX="0" frameY="0" frameWidth="27" frameHeight="36"/>
+    <SubTexture name="character_cat/flying_cat_elements/cat_side_hand" x="2020" y="1001" width="26" height="26" frameX="0" frameY="0" frameWidth="27" frameHeight="27"/>
+    <SubTexture name="character_cat/flying_cat_elements/cat_side_mouth" x="893" y="962" width="87" height="72"/>
+    <SubTexture name="character_cat/flying_cat_elements/cat_side_tail" x="1111" y="1174" rotated="true" width="38" height="56" frameX="0" frameY="0" frameWidth="57" frameHeight="39"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_1" x="1425" y="1154" width="24" height="14" frameX="0" frameY="0" frameWidth="24" frameHeight="15"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_10" x="1474" y="1556" width="11" height="4" frameX="0" frameY="0" frameWidth="12" frameHeight="6"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_11" x="482" y="1779" rotated="true" width="9" height="30"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_12" x="400" y="1224" width="8" height="6" frameX="0" frameY="0" frameWidth="9" frameHeight="6"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_13" x="714" y="1576" width="33" height="5" frameX="0" frameY="0" frameWidth="36" frameHeight="6"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_14" x="158" y="516" width="12" height="2" frameX="0" frameY="0" frameWidth="12" frameHeight="3"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_15" x="273" y="1224" width="29" height="6" frameX="0" frameY="0" frameWidth="30" frameHeight="9"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_16" x="99" y="516" width="11" height="3" frameX="0" frameY="0" frameWidth="12" frameHeight="3"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_17" x="420" y="1224" rotated="true" width="7" height="6" frameX="0" frameY="0" frameWidth="6" frameHeight="9"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_18" x="1282" y="538" width="37" height="20" frameX="0" frameY="0" frameWidth="39" frameHeight="21"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_19" x="1194" y="546" width="12" height="13" frameX="0" frameY="0" frameWidth="15" frameHeight="15"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_20" x="1056" y="977" rotated="true" width="39" height="55" frameX="0" frameY="0" frameWidth="57" frameHeight="39"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_21" x="442" y="1587" width="61" height="28" frameX="0" frameY="0" frameWidth="63" frameHeight="30"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_22" x="424" y="467" width="67" height="18" frameX="0" frameY="0" frameWidth="69" frameHeight="18"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_23" x="1541" y="273" width="57" height="14" frameX="0" frameY="0" frameWidth="57" frameHeight="15"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_3" x="2028" y="157" rotated="true" width="18" height="49" frameX="0" frameY="0" frameWidth="51" frameHeight="18"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_4" x="2032" y="2" rotated="true" width="14" height="21" frameX="0" frameY="0" frameWidth="21" frameHeight="15"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_5" x="277" y="1417" width="35" height="8" frameX="0" frameY="0" frameWidth="36" frameHeight="9"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_6" x="270" y="745" rotated="true" width="4" height="16" frameX="0" frameY="0" frameWidth="18" frameHeight="6"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_7" x="477" y="180" width="40" height="22" frameX="0" frameY="0" frameWidth="42" frameHeight="24"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_8" x="1916" y="883" rotated="true" width="16" height="15" frameX="0" frameY="0" frameWidth="15" frameHeight="18"/>
+    <SubTexture name="character_demon/demon_eyes_animation/parts/demon_eyes_part_9" x="1332" y="1750" width="37" height="4" frameX="0" frameY="0" frameWidth="39" frameHeight="6"/>
+    <SubTexture name="character_demon/elements/demon_body" x="1581" y="163" width="98" height="106" frameX="0" frameY="0" frameWidth="99" frameHeight="108"/>
+    <SubTexture name="character_demon/elements/demon_ears" x="1681" y="163" rotated="true" width="64" height="105" frameX="0" frameY="0" frameWidth="105" frameHeight="66"/>
+    <SubTexture name="character_demon/elements/demon_ears_poisoned" x="1860" y="2" rotated="true" width="65" height="104" frameX="0" frameY="0" frameWidth="105" frameHeight="66"/>
+    <SubTexture name="character_demon/elements/demon_foot" x="2026" y="341" rotated="true" width="17" height="33" frameX="0" frameY="0" frameWidth="33" frameHeight="18"/>
+    <SubTexture name="character_demon/elements/demon_hand" x="2021" y="945" rotated="true" width="24" height="26" frameX="0" frameY="0" frameWidth="27" frameHeight="24"/>
+    <SubTexture name="character_demon/elements/demon_mouth" x="1873" y="135" rotated="true" width="49" height="80" frameX="0" frameY="0" frameWidth="81" frameHeight="51"/>
+    <SubTexture name="character_demon/elements/demon_mouth_boom" x="298" y="993" width="68" height="41" frameX="0" frameY="0" frameWidth="69" frameHeight="42"/>
+    <SubTexture name="character_demon/elements/demon_mouth_happy" x="1656" y="110" width="80" height="51" frameX="0" frameY="0" frameWidth="81" frameHeight="54"/>
+    <SubTexture name="character_demon/elements/demon_mouth_poisoned" x="2024" y="414" rotated="true" width="21" height="65" frameX="0" frameY="0" frameWidth="66" frameHeight="21"/>
+    <SubTexture name="character_demon/elements/demon_tail" x="240" y="745" width="28" height="22" frameX="0" frameY="0" frameWidth="30" frameHeight="24"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_contur" x="698" y="1189" width="60" height="41" frameX="0" frameY="0" frameWidth="60" frameHeight="42"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eaves01" x="1827" y="163" width="37" height="21" frameX="0" frameY="0" frameWidth="39" frameHeight="21"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eaves02" x="1215" y="131" rotated="true" width="37" height="39" frameX="0" frameY="0" frameWidth="39" frameHeight="39"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eaves03" x="1920" y="655" width="17" height="25" frameX="0" frameY="0" frameWidth="18" frameHeight="27"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eyebrows" x="1651" y="665" width="51" height="29" frameX="0" frameY="0" frameWidth="54" frameHeight="30"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eyebrows01" x="429" y="229" rotated="true" width="20" height="51" frameX="0" frameY="0" frameWidth="51" frameHeight="21"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eyebrows02" x="1595" y="677" width="54" height="18"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eyebrows03" x="1051" y="947" width="61" height="13" frameX="0" frameY="0" frameWidth="63" frameHeight="15"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eyebrows04" x="1218" y="546" width="62" height="12" frameX="0" frameY="0" frameWidth="63" frameHeight="12"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eyebrows05" x="1477" y="273" width="62" height="14" frameX="0" frameY="0" frameWidth="63" frameHeight="15"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eyebrows06" x="142" y="1790" width="62" height="19" frameX="0" frameY="0" frameWidth="63" frameHeight="21"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_eyelash" x="156" y="1226" width="41" height="4" frameX="0" frameY="0" frameWidth="42" frameHeight="6"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_pupil1" x="1104" y="1026" rotated="true" width="8" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="9"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_pupil2" x="1038" y="1174" rotated="true" width="10" height="7" frameX="0" frameY="0" frameWidth="9" frameHeight="12"/>
+    <SubTexture name="character_dragon/dragon_eyes_animation/parts/dragon_eyes_whites" x="1704" y="642" width="48" height="48"/>
+    <SubTexture name="character_dragon/elements/dragon_FLYWING" x="1446" y="1616" width="79" height="132" frameX="-18" frameY="-26" frameWidth="126" frameHeight="162"/>
+    <SubTexture name="character_dragon/elements/dragon_body" x="624" y="561" width="121" height="141" frameX="0" frameY="0" frameWidth="123" frameHeight="141"/>
+    <SubTexture name="character_dragon/elements/dragon_hand" x="1499" y="531" width="29" height="27" frameX="0" frameY="0" frameWidth="30" frameHeight="27"/>
+    <SubTexture name="character_dragon/elements/dragon_left_foot" x="1321" y="538" width="37" height="20" frameX="0" frameY="0" frameWidth="39" frameHeight="21"/>
+    <SubTexture name="character_dragon/elements/dragon_mouth_happy" x="276" y="745" width="93" height="62" frameX="0" frameY="0" frameWidth="93" frameHeight="63"/>
+    <SubTexture name="character_dragon/elements/dragon_mouth_sad" x="1038" y="1761" width="96" height="42"/>
+    <SubTexture name="character_dragon/elements/dragon_mouth_think" x="1586" y="505" width="93" height="53" frameX="0" frameY="0" frameWidth="93" frameHeight="54"/>
+    <SubTexture name="character_dragon/elements/dragon_right_foot" x="1397" y="531" rotated="true" width="34" height="27" frameX="0" frameY="0" frameWidth="27" frameHeight="36"/>
+    <SubTexture name="character_dragon/elements/dragon_tail" x="1299" y="127" width="59" height="38" frameX="0" frameY="0" frameWidth="60" frameHeight="39"/>
+    <SubTexture name="character_dragon/elements/dragon_wing" x="1738" y="110" width="78" height="51" frameX="0" frameY="0" frameWidth="81" frameHeight="54"/>
+    <SubTexture name="character_dragon/elements/dragon_wings" x="350" y="492" width="141" height="67" frameX="0" frameY="-13" frameWidth="144" frameHeight="81"/>
+    <SubTexture name="character_rabbit/elements/rabbit_body" x="1500" y="1033" width="98" height="115" frameX="0" frameY="0" frameWidth="99" frameHeight="117"/>
+    <SubTexture name="character_rabbit/elements/rabbit_ears" x="1748" y="1145" width="101" height="83" frameX="0" frameY="0" frameWidth="102" frameHeight="84"/>
+    <SubTexture name="character_rabbit/elements/rabbit_hand" x="1899" y="217" rotated="true" width="23" height="29" frameX="0" frameY="0" frameWidth="30" frameHeight="24"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth" x="1418" y="1562" width="80" height="52" frameX="0" frameY="0" frameWidth="81" frameHeight="54"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_boom" x="628" y="1189" width="68" height="41" frameX="0" frameY="0" frameWidth="69" frameHeight="42"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/RabbitMonthLeftCheeck" x="121" y="516" width="5" height="3" frameX="0" frameY="0" frameWidth="6" frameHeight="3"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/RabbitMonthLeftTop" x="1534" y="519" width="11" height="9" frameX="0" frameY="0" frameWidth="12" frameHeight="9"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/RabbitMonthRightCheeck" x="1600" y="271" width="29" height="16" frameX="0" frameY="0" frameWidth="30" frameHeight="18"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/RabbitMonthRightCheekBot" x="1050" y="418" width="9" height="7" frameX="0" frameY="0" frameWidth="9" frameHeight="9"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/RabbitMonthRightTop" x="1530" y="530" width="54" height="28" frameX="0" frameY="0" frameWidth="54" frameHeight="30"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/RabbitMonthSadTop" x="1447" y="677" width="29" height="19" frameX="0" frameY="0" frameWidth="30" frameHeight="21"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/RabbitMonthTeeth" x="1426" y="677" width="19" height="20" frameX="0" frameY="0" frameWidth="21" frameHeight="21"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/demon_ears_poisoned" x="551" y="1971" width="119" height="75" frameX="0" frameY="0" frameWidth="120" frameHeight="75"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/demon_left_foot" x="2028" y="208" rotated="true" width="18" height="33" frameX="0" frameY="0" frameWidth="33" frameHeight="21"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/parts/rabbit_mouth_eating_1" x="557" y="179" width="36" height="20" frameX="-1" frameY="0" frameWidth="39" frameHeight="21"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/parts/rabbit_mouth_eating_2" x="314" y="1393" width="62" height="32" frameX="0" frameY="0" frameWidth="63" frameHeight="33"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/parts/rabbit_mouth_eating_3" x="1264" y="1756" width="64" height="40" frameX="0" frameY="0" frameWidth="66" frameHeight="42"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/parts/rabbit_mouth_eating_4" x="1841" y="1231" width="65" height="47" frameX="0" frameY="0" frameWidth="66" frameHeight="48"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/rabbit_left_hand" x="1899" y="217" rotated="true" width="23" height="29" frameX="0" frameY="0" frameWidth="30" frameHeight="24"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_eating_/rabbit_right_hand" x="417" y="1779" rotated="true" width="23" height="30" frameX="0" frameY="0" frameWidth="30" frameHeight="24"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_happy" x="203" y="769" width="71" height="38" frameX="0" frameY="0" frameWidth="72" frameHeight="39"/>
+    <SubTexture name="character_rabbit/elements/rabbit_mouth_poisoned" x="1888" y="1000" width="46" height="28" frameX="0" frameY="0" frameWidth="48" frameHeight="30"/>
+    <SubTexture name="character_rabbit/elements/rabbit_right_foot" x="2028" y="243" rotated="true" width="18" height="33" frameX="0" frameY="0" frameWidth="33" frameHeight="21"/>
+    <SubTexture name="character_rabbit/elements/rabbit_tail" x="1757" y="519" rotated="true" width="27" height="28" frameX="0" frameY="0" frameWidth="30" frameHeight="27"/>
+    <SubTexture name="character_rabbit/rabbit_eyes_animation/parts/rabbit_eyes_part_1" x="1472" y="519" width="16" height="10" frameX="0" frameY="0" frameWidth="18" frameHeight="12"/>
+    <SubTexture name="character_rabbit/rabbit_eyes_animation/parts/rabbit_eyes_part_2" x="1011" y="1174" width="13" height="7" frameX="0" frameY="0" frameWidth="15" frameHeight="9"/>
+    <SubTexture name="character_rabbit/rabbit_eyes_animation/parts/rabbit_eyes_part_3" x="1617" y="124" width="37" height="37" frameX="0" frameY="0" frameWidth="39" frameHeight="39"/>
+    <SubTexture name="character_rabbit/rabbit_eyes_animation/parts/rabbit_eyes_part_4" x="1864" y="217" width="33" height="33"/>
+    <SubTexture name="character_rabbit/rabbit_eyes_animation/parts/rabbit_eyes_part_5" x="388" y="1224" rotated="true" width="10" height="6" frameX="0" frameY="0" frameWidth="6" frameHeight="12"/>
+    <SubTexture name="character_rabbit/rabbit_eyes_animation/parts/rabbit_eyes_part_6" x="1827" y="421" rotated="true" width="21" height="35" frameX="0" frameY="0" frameWidth="36" frameHeight="24"/>
+    <SubTexture name="character_rabbit/rabbit_eyes_animation/parts/rabbit_eyes_part_7" x="199" y="1224" width="39" height="6"/>
+    <SubTexture name="character_rabbit/rabbit_eyes_animation/parts/rabbit_eyes_part_8" x="182" y="1417" width="53" height="8" frameX="0" frameY="0" frameWidth="54" frameHeight="9"/>
+    <SubTexture name="character_rabbit/rabbit_eyes_animation/parts/rabbit_eyes_part_9" x="1359" y="1368" rotated="true" width="38" height="55" frameX="0" frameY="0" frameWidth="57" frameHeight="39"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhinoEyelashBot" x="34" y="516" width="25" height="3" frameX="0" frameY="0" frameWidth="27" frameHeight="3"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhinoEyelashTop" x="914" y="949" width="39" height="11" frameX="0" frameY="0" frameWidth="39" frameHeight="12"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhinoEyelead" x="231" y="1977" width="25" height="6" frameX="0" frameY="0" frameWidth="27" frameHeight="6"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_body" x="1503" y="289" width="99" height="106" frameX="0" frameY="0" frameWidth="99" frameHeight="108"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_brow_1" x="1884" y="655" rotated="true" width="34" height="47" frameX="0" frameY="0" frameWidth="48" frameHeight="36"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_brow_2" x="1378" y="677" rotated="true" width="24" height="20" frameX="0" frameY="0" frameWidth="21" frameHeight="24"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_eye_bags" x="505" y="1584" width="63" height="31" frameX="0" frameY="0" frameWidth="63" frameHeight="33"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_eye_white" x="405" y="229" rotated="true" width="22" height="58" frameX="0" frameY="0" frameWidth="60" frameHeight="24"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_eyeball_left" x="1371" y="1750" rotated="true" width="7" height="4" frameX="0" frameY="0" frameWidth="6" frameHeight="9"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_eyeball_right" x="1503" y="519" width="10" height="10" frameX="0" frameY="0" frameWidth="12" frameHeight="12"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_eyes_boom_group" x="674" y="429" width="64" height="34" frameX="0" frameY="0" frameWidth="66" frameHeight="36"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_horn" x="359" y="1195" rotated="true" width="71" height="27" frameX="0" frameY="0" frameWidth="27" frameHeight="72"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_left_foot" x="206" y="1790" width="38" height="19" frameX="0" frameY="0" frameWidth="39" frameHeight="21"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_left_hand" x="1757" y="458" width="27" height="29" frameX="0" frameY="0" frameWidth="27" frameHeight="30"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_mouth" x="1941" y="917" width="78" height="57"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_right_foot" x="1424" y="126" rotated="true" width="19" height="38" frameX="0" frameY="0" frameWidth="39" frameHeight="21"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_right_hand" x="1786" y="892" rotated="true" width="28" height="29" frameX="0" frameY="0" frameWidth="30" frameHeight="30"/>
+    <SubTexture name="character_rhino/01_rhino_body/rhino_tail" x="1404" y="677" width="20" height="20" frameX="0" frameY="0" frameWidth="21" frameHeight="21"/>
+    <SubTexture name="character_rhino/02_rhino_emotions/rhinoEyesRed" x="1500" y="1556" rotated="true" width="21" height="58" frameX="0" frameY="0" frameWidth="60" frameHeight="24"/>
+    <SubTexture name="character_rhino/02_rhino_emotions/rhino_mouth_boom" x="1849" y="705" width="89" height="78" frameX="0" frameY="0" frameWidth="90" frameHeight="78"/>
+    <SubTexture name="character_rhino/02_rhino_emotions/rhino_mouth_sad" x="1328" y="947" rotated="true" width="47" height="84" frameX="0" frameY="0" frameWidth="84" frameHeight="48"/>
+    <SubTexture name="character_rhino/04_rhino_body_enrage/wave" x="1375" y="1170" rotated="true" width="90" height="60"/>
+    <SubTexture name="character_zombie/elements/zombie_body" x="1921" y="364" rotated="true" width="101" height="98" frameX="0" frameY="0" frameWidth="99" frameHeight="102"/>
+    <SubTexture name="character_zombie/elements/zombie_ears" x="1459" y="126" width="117" height="37" frameX="0" frameY="0" frameWidth="117" frameHeight="39"/>
+    <SubTexture name="character_zombie/elements/zombie_ears_poisoned" x="479" y="1190" width="147" height="40" frameX="0" frameY="0" frameWidth="147" frameHeight="42"/>
+    <SubTexture name="character_zombie/elements/zombie_foot" x="1850" y="421" rotated="true" width="17" height="33" frameX="0" frameY="0" frameWidth="33" frameHeight="18"/>
+    <SubTexture name="character_zombie/elements/zombie_hand" x="2021" y="973" rotated="true" width="24" height="26" frameX="0" frameY="0" frameWidth="27" frameHeight="24"/>
+    <SubTexture name="character_zombie/elements/zombie_mouth" x="471" y="1389" width="71" height="36" frameX="0" frameY="0" frameWidth="72" frameHeight="39"/>
+    <SubTexture name="character_zombie/elements/zombie_mouth_boom" x="749" y="1575" width="68" height="40" frameX="0" frameY="0" frameWidth="69" frameHeight="42"/>
+    <SubTexture name="character_zombie/elements/zombie_mouth_happy" x="568" y="963" rotated="true" width="44" height="71" frameX="0" frameY="0" frameWidth="72" frameHeight="45"/>
+    <SubTexture name="character_zombie/elements/zombie_tail" x="2023" y="481" rotated="true" width="23" height="26" frameX="0" frameY="0" frameWidth="27" frameHeight="24"/>
+    <SubTexture name="character_zombie/zombie_eyes_animation/parts/zombie_eye_part_1" x="2020" y="1029" width="26" height="24" frameX="0" frameY="0" frameWidth="27" frameHeight="24"/>
+    <SubTexture name="character_zombie/zombie_eyes_animation/parts/zombie_eye_part_10" x="839" y="950" width="38" height="10" frameX="0" frameY="0" frameWidth="39" frameHeight="12"/>
+    <SubTexture name="character_zombie/zombie_eyes_animation/parts/zombie_eye_part_3" x="761" y="1772" rotated="true" width="34" height="36" frameX="0" frameY="0" frameWidth="36" frameHeight="36"/>
+    <SubTexture name="character_zombie/zombie_eyes_animation/parts/zombie_eye_part_4" x="463" y="1779" width="17" height="30" frameX="0" frameY="0" frameWidth="18" frameHeight="30"/>
+    <SubTexture name="character_zombie/zombie_eyes_animation/parts/zombie_eye_part_7" x="1443" y="398" width="25" height="11" frameX="0" frameY="0" frameWidth="27" frameHeight="12"/>
+    <SubTexture name="character_zombie/zombie_eyes_animation/parts/zombie_eye_part_9" x="304" y="1224" width="26" height="6" frameX="0" frameY="0" frameWidth="27" frameHeight="9"/>
+    <SubTexture name="dummies_parts/botDummyBody" x="1377" y="930" width="111" height="101" frameX="0" frameY="0" frameWidth="111" frameHeight="102"/>
+    <SubTexture name="dummies_parts/boxerDummyBody" x="1620" y="1929" width="119" height="117" frameX="0" frameY="0" frameWidth="120" frameHeight="117"/>
+    <SubTexture name="dummies_parts/catDummyBody" x="869" y="1036" rotated="true" width="116" height="145" frameX="0" frameY="0" frameWidth="147" frameHeight="117"/>
+    <SubTexture name="dummies_parts/demonDummyBody" x="1643" y="697" width="112" height="110" frameX="0" frameY="0" frameWidth="114" frameHeight="111"/>
+    <SubTexture name="dummies_parts/dragonDummyBody" x="653" y="809" rotated="true" width="132" height="151" frameX="0" frameY="0" frameWidth="153" frameHeight="132"/>
+    <SubTexture name="dummies_parts/rabbitDummyBody" x="1287" y="289" width="109" height="121" frameX="0" frameY="0" frameWidth="111" frameHeight="123"/>
+    <SubTexture name="dummies_parts/rhinoDymmyBody" x="1334" y="699" width="100" height="108" frameX="0" frameY="0" frameWidth="102" frameHeight="108"/>
+    <SubTexture name="dummies_parts/zombieDummyBody" x="783" y="702" width="114" height="105"/>
+    <SubTexture name="help_icon_backjump" x="597" y="741" width="66" height="66"/>
+    <SubTexture name="help_icon_jump" x="544" y="1389" width="69" height="36"/>
+    <SubTexture name="help_icon_move" x="1757" y="642" rotated="true" width="26" height="63"/>
+    <SubTexture name="objects/cap" x="778" y="1764" width="6" height="6"/>
+    <SubTexture name="objects/carrot" x="614" y="963" width="43" height="71" frameX="0" frameY="0" frameWidth="45" frameHeight="72"/>
+    <SubTexture name="resources/NEW/2015_APRIL/raven mask/RavenMaskBase" x="787" y="809" rotated="true" width="98" height="139" frameX="0" frameY="0" frameWidth="141" frameHeight="99"/>
+    <SubTexture name="resources/NEW/2015_APRIL/raven mask/TentacleNew1" x="1752" y="395" rotated="true" width="73" height="61" frameX="0" frameY="0" frameWidth="63" frameHeight="75"/>
+    <SubTexture name="resources/NEW/KamikadzeBase" x="1050" y="289" rotated="true" width="114" height="127" frameX="0" frameY="0" frameWidth="129" frameHeight="114"/>
+    <SubTexture name="resources/NEW/kamikadze/effects/kamikadze buff/bomb_hat_fire_spark" x="1097" y="1026" width="5" height="6" frameX="0" frameY="0" frameWidth="6" frameHeight="6"/>
+    <SubTexture name="resources/NEW/kamikadze/effects/kamikadze buff/dinamite_fire_spark" x="1862" y="918" width="77" height="80" frameX="0" frameY="0" frameWidth="78" frameHeight="81"/>
+    <SubTexture name="resources/boss/symbiote/Symbiot_gh" x="503" y="1617" rotated="true" width="146" height="157" frameX="0" frameY="0" frameWidth="159" frameHeight="147"/>
+    <SubTexture name="resources/boss/symbiote/SymbioteHat_green_eye" x="287" y="1393" width="25" height="20" frameX="0" frameY="0" frameWidth="27" frameHeight="21"/>
+    <SubTexture name="resources/boss/symbiote/SymbioteHat_red_eye" x="1506" y="677" width="25" height="19" frameX="0" frameY="0" frameWidth="27" frameHeight="21"/>
+    <SubTexture name="resources/hats/champion/ChampionHelmHatPiece" x="1097" y="977" width="15" height="47" frameX="0" frameY="0" frameWidth="15" frameHeight="48"/>
+    <SubTexture name="resources/hats/champion/ChampionHelmSmallerBase" x="303" y="1811" width="160" height="161" frameX="0" frameY="0" frameWidth="162" frameHeight="162"/>
+    <SubTexture name="resources/hats/illusionist/New_glass_illusionist_gr_boxer" x="601" y="1776" rotated="true" width="39" height="32" frameX="0" frameY="0" frameWidth="33" frameHeight="39"/>
+    <SubTexture name="resources/hats/illusionist/New_glass_illusionist_gr_boxer_rino" x="814" y="1381" width="66" height="44" frameX="0" frameY="0" frameWidth="66" frameHeight="45"/>
+    <SubTexture name="resources/hats/night hat/New_night_hat_gr_boxer" x="667" y="1384" rotated="true" width="43" height="41" frameX="0" frameY="0" frameWidth="42" frameHeight="45"/>
+    <SubTexture name="resources/parts/FirelordSide" x="138" y="229" rotated="true" width="90" height="58" frameX="0" frameY="0" frameWidth="60" frameHeight="90"/>
+    <SubTexture name="resources/parts/IllusionistRhinoPart" x="624" y="704" rotated="true" width="39" height="33"/>
+    <SubTexture name="resources/parts/NightVisionPart" x="1785" y="655" rotated="true" width="47" height="49" frameX="0" frameY="0" frameWidth="51" frameHeight="48"/>
+    <SubTexture name="resources/parts/RegenerativeBoxerMask" x="1716" y="549" rotated="true" width="67" height="91" frameX="0" frameY="0" frameWidth="93" frameHeight="69"/>
+    <SubTexture name="resources/parts/RegenerativeHatRhinoMask" x="1954" y="566" width="91" height="63" frameX="0" frameY="0" frameWidth="93" frameHeight="63"/>
+    <SubTexture name="resources/parts/RegenerativeLeafs" x="1541" y="2" rotated="true" width="112" height="120" frameX="0" frameY="0" frameWidth="120" frameHeight="114"/>
+    <SubTexture name="resources/parts/RhinoJasonHorn" x="1012" y="132" rotated="true" width="79" height="39" frameX="0" frameY="0" frameWidth="39" frameHeight="81"/>
+    <SubTexture name="rip_parts/bGrave/dogbone" x="1755" y="2" width="103" height="104" frameX="0" frameY="0" frameWidth="105" frameHeight="105"/>
+    <SubTexture name="rip_parts/btGrave/grave_dirt" x="885" y="1573" width="119" height="42" frameX="0" frameY="0" frameWidth="120" frameHeight="42"/>
+    <SubTexture name="rip_parts/btGrave/robotGravestone" x="883" y="179" width="114" height="108" frameX="0" frameY="0" frameWidth="114" frameHeight="111"/>
+    <SubTexture name="rip_parts/cat grave/cat_stone_3" x="778" y="1617" width="88" height="145" frameX="0" frameY="0" frameWidth="90" frameHeight="147"/>
+    <SubTexture name="rip_parts/character_bot/03_bot_animations/bot_static_part_01" x="600" y="289" rotated="true" width="72" height="174" frameX="0" frameY="0" frameWidth="177" frameHeight="72"/>
+    <SubTexture name="rip_parts/dGrave/DemonGraveBase" x="1425" y="1033" width="73" height="119" frameX="0" frameY="0" frameWidth="75" frameHeight="120"/>
+    <SubTexture name="rip_parts/dGrave/fire_burn" x="558" y="1776" rotated="true" width="41" height="32" frameX="0" frameY="0" frameWidth="33" frameHeight="42"/>
+    <SubTexture name="rip_parts/drGrave/grave_dragon_gr" x="991" y="2" rotated="true" width="106" height="128" frameX="0" frameY="0" frameWidth="129" frameHeight="108"/>
+    <SubTexture name="rip_parts/rGrave/anim" x="733" y="1036" width="134" height="147" frameX="0" frameY="0" frameWidth="135" frameHeight="147"/>
+    <SubTexture name="rip_parts/rhGrave/grave_rhinor_Stone_gr" x="456" y="1232" width="114" height="155" frameX="0" frameY="0" frameWidth="114" frameHeight="156"/>
+    <SubTexture name="rip_parts/zGrave/ZombieGround0" x="1873" y="108" width="51" height="25" frameX="0" frameY="0" frameWidth="51" frameHeight="27"/>
+    <SubTexture name="rip_parts/zGrave/character_zombie/zombie_body_UNGRAVING" x="1604" y="560" width="98" height="103" frameX="0" frameY="0" frameWidth="99" frameHeight="105"/>
+    <SubTexture name="rip_parts/zGrave/character_zombie/zombie_ears_UNGRAVING" x="232" y="493" width="116" height="25" frameX="0" frameY="0" frameWidth="117" frameHeight="27"/>
+    <SubTexture name="rip_parts/zGrave/character_zombie/zombie_eyes_UNGRAVING" x="129" y="769" width="72" height="38" frameX="-3" frameY="-1" frameWidth="78" frameHeight="42"/>
+    <SubTexture name="rip_parts/zGrave/character_zombie/zombie_eyes_UNGRAVING_2" x="78" y="772" width="49" height="35" frameX="0" frameY="0" frameWidth="51" frameHeight="36"/>
+    <SubTexture name="rip_parts/zGrave/character_zombie/zombie_mouth_UNGRAVING" x="1757" y="340" width="68" height="26" frameX="0" frameY="0" frameWidth="69" frameHeight="27"/>
+    <SubTexture name="rip_parts/zGrave/grave_dirt" x="901" y="133" width="109" height="39" frameX="0" frameY="0" frameWidth="111" frameHeight="42"/>
+    <SubTexture name="rip_parts/zGrave/wcross" x="1432" y="1798" rotated="true" width="109" height="130" frameX="0" frameY="0" frameWidth="132" frameHeight="111"/>
+    <SubTexture name="scrollbar_btn_default" x="879" y="950" width="33" height="10" frameX="-1" frameY="-1" frameWidth="34" frameHeight="12"/>
+    <SubTexture name="shields/shield_01_chrome" x="1352" y="1938" width="6" height="6"/>
+    <SubTexture name="weapons/BatMove01" x="882" y="1380" rotated="true" width="50" height="45" frameX="0" frameY="0" frameWidth="45" frameHeight="51"/>
+    <SubTexture name="weapons/BatMove02" x="923" y="1183" width="127" height="47" frameX="0" frameY="0" frameWidth="129" frameHeight="48"/>
+    <SubTexture name="weapons/BatMove03" x="1685" y="1033" width="74" height="110" frameX="0" frameY="0" frameWidth="75" frameHeight="111"/>
+    <SubTexture name="weapons/BatMove04" x="760" y="1185" rotated="true" width="102" height="45"/>
+    <SubTexture name="weapons/HammerMove01" x="137" y="1985" width="119" height="61" frameX="0" frameY="0" frameWidth="120" frameHeight="63"/>
+    <SubTexture name="weapons/HammerMove02" x="1267" y="809" width="107" height="136" frameX="0" frameY="0" frameWidth="108" frameHeight="138"/>
+    <SubTexture name="weapons/HammerMove03" x="1308" y="1033" width="115" height="135" frameX="0" frameY="0" frameWidth="117" frameHeight="135"/>
+    <SubTexture name="weapons/HammerMove04" x="1288" y="1369" rotated="true" width="69" height="55" frameX="0" frameY="0" frameWidth="57" frameHeight="69"/>
+    <SubTexture name="weapons/Jetpack/Jetpack_base" x="1786" y="458" width="82" height="96" frameX="0" frameY="0" frameWidth="84" frameHeight="96"/>
+    <SubTexture name="weapons/Jetpack/Jetpack_fire" x="615" y="1384" rotated="true" width="50" height="41" frameX="0" frameY="0" frameWidth="42" frameHeight="51"/>
+    <SubTexture name="weapons/Jetpack/Jetpack_hand" x="982" y="962" rotated="true" width="54" height="70" frameX="0" frameY="0" frameWidth="72" frameHeight="57"/>
+    <SubTexture name="weapons/hammer" x="1763" y="269" rotated="true" width="62" height="69" frameX="0" frameY="0" frameWidth="72" frameHeight="63"/>
+    <SubTexture name="weapons/rope" x="2" y="1986" width="133" height="60" frameX="0" frameY="0" frameWidth="135" frameHeight="60"/>
+</TextureAtlas>

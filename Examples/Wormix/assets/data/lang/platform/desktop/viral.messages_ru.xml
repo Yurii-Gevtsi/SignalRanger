@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <message name="ACHIEVEMENT_MESSAGE_1"
+             value='А у меня новое достижение в Bombix: "{achievementName}"! Не веришь? Зайди и сыграй!'/>
+    <message name="ACHIEVEMENT_MESSAGE_2" value='Поздравляем! Новое достижение - "{achievementName}" в Bombix'/>
+    <message name="ACHIEVEMENT_MESSAGE_3"
+             value='Ходят слухи, что {userName} получил достижение "{achievementName}" в Bombix. Так вот это не слухи! И, кстати, я очень опасен!'/>
+    <!-- race -->
+
+    <!--- виралка TODO: вынести в отдельный файл-->
+    <!-- wall posts -->
+    <message name="VIRAL_SHARE" value="Расскажи своим друзьям."/>
+    <message name="VIRAL_NEW_RACE_TITLE" value="Новая раса!"/>
+    <message name="VIRAL_NEW_RACE" value="Я выбрал расу {race}"/>
+
+    <message name="VIRAL_NEW_HAT_TITLE" value="Новая шапка!"/>
+    <message name="VIRAL_NEW_HAT" value="Теперь у меня новая шапка: {hat}!"/>
+
+    <message name="VIRAL_NEW_WEAPON_TITLE" value="Новое оружие!"/>
+    <message name="VIRAL_NEW_WEAPON" value="Ура! У меня новое оружие: {weapon}!"/>
+
+    <message name="VIRAL_NEW_ARTIFACT_TITLE" value="Новый артефакт!"/>
+    <message name="VIRAL_NEW_ARTIFACT" value="У меня новый артефакт: {artifact}!"/>
+
+    <message name="VIRAL_NEW_LEVEL" value="Я на {level}-м уровне в Bombix!"/>
+
+    <message name="VIRAL_WIN_PVP_WAGER" value="{enemyName} повержен в игре Bombix, теперь мой рейтинг {rating}."/>
+    <message name="VIRAL_WIN_PVP_NO_RATING" value="Я победил(а) {enemyName} в игре Bombix."/>
+
+    <message name="VIRAL_FOUND_RUBY" value="Хей! Я обнаружил(а) рубин в домике у {name}!"/>
+    <message name="VIRAL_FOUND_RUBY_TITLE" value="Найден рубин"/>
+
+    <message name="VIRAL_4DAY_TITLE" value="4 дня игры в Bombix!"/>
+    <message name="VIRAL_4DAY_SEQUENCE" value="Мне досталось 100 фузов за то, что я 4 дня подряд заходил(а) в Bombix!"/>
+    <message name="VIRAL_5DAY_TITLE" value="5 дней игры в Bombix!"/>
+    <message name="VIRAL_5DAY_SEQUENCE" value="Я заходил(а) в Bombix 5 дней подряд, и мне дали 2 рубина!"/>
+
+    <message name="VIRAL_QUESTION_NEW_TEAMMATE" value="Рассказать другу, что Вы взяли его в команду?"/>
+    <message name="VIRAL_QUESTION_ENEMY_LOSED" value="Оставить напоминание о Вашей победе?"/>
+    <message name="VIRAL_QUESTION_CHALLENGE_POST" value="Отправить приглашение на бой?"/>
+    <message name="VIRAL_QUESTION_PUMP_REACTION_POST" value="Отправить другу просьбу прокачать реакцию в ответ?"/>
+    <message name="VIRAL_PUMPQUESTION_EMPTYLIST" value="Вы никого не выбрали для отправки просьбы прокачать реакцию"/>
+    <message name="VIRAL_PUMPREACTION" value="Качни мне реакцию, отвечу тем же!"/>
+
+    <!-- AWARD MESSAGE  tale weapon-->
+    <message name="AWARD_WEAPON_MESSAGE_1" value="Мое новое оружие. Такое даже за рубины не купишь!"/>
+    <message name="AWARD_WEAPON_MESSAGE_2" value="Как вам такое? Красота! Получил за очки достижений."/>
+    <message name="AWARD_WEAPON_MESSAGE_3"
+             value="Смотрите и завидуйте - мое новое оружие. Даже за рубины не купить. Только очки достижений."/>
+
+    <!-- notifications -->
+    <message name="NOTIFY_QUESTION_KICK_TEAMMATE" value="Оповестить друга?"/>
+    <message name="NOTIFY_KICK_TEAMMATE" value="Ты уволен из моей команды в Bombix!"/>
+    <message name="NOTIFY_NEW_TEAMMATE" value="Теперь ты в моей команде в Bombix!"/>
+
+</dictionary>

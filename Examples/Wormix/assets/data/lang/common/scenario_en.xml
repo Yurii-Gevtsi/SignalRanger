@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+
+    <message name="BOSS_PIRATE_NAME" value="Pirate Gang"/>
+    <message name="BOSS_PIRATE_DESCR"
+             value="The Pirate Captain has sunken so many times, that he is not afraid of water anymore."/>
+    <message name="TEAM_NAME_PIRATE1" value="Captain"/>
+    <message name="TEAM_NAME_PIRATE2" value="Cannon fodder"/>
+    <message name="BOT_NAME_PIRATE1" value="Captain"/>
+    <message name="BOT_NAME_PIRATE2" value="Sailor"/>
+    <message name="BOT_NAME_PIRATE3" value="Fallen sailor"/>
+
+    <message name="BOSS_ILLUSIONIST_NAME" value="The Illusionist"/>
+    <message name="BOSS_ILLUSIONIST_DESCR"
+             value="It's hard to kill the Illusionist, when you don't know which one of them is real."/>
+    <message name="TEAM_NAME_ILLUSIONIST1" value="The Illusionist"/>
+    <message name="BOT_NAME_ILLUSIONIST1" value="Illusionist"/>
+
+    <message name="BOSS_SHAMAN_NAME" value="Voodoo shaman"/>
+    <message name="BOSS_SHAMAN_DESCR"
+             value="Shaman relies on pesky demons, which may teleport anywhere, if you attack them"/>
+    <message name="TEAM_NAME_SHAMAN1" value="Voodoo shaman"/>
+    <message name="TEAM_NAME_SHAMAN2" value="Summoned forces"/>
+    <message name="BOT_NAME_SHAMAN1" value="Voodoo shaman"/>
+    <message name="BOT_NAME_SHAMAN2" value="Lesser demon"/>
+
+    <message name="BOSS_VIKING_NAME" value="Vikings"/>
+    <message name="BOSS_VIKING_DESCR" value="You're fighting against 3 veterans and your time leaks away."/>
+    <message name="TEAM_NAME_VIKING1" value="Baleog"/>
+    <message name="TEAM_NAME_VIKING2" value="Eric"/>
+    <message name="TEAM_NAME_VIKING3" value="Olaf"/>
+    <message name="BOT_NAME_VIKING1" value="Baleog"/>
+    <message name="BOT_NAME_VIKING2" value="Eric"/>
+    <message name="BOT_NAME_VIKING3" value="Olaf"/>
+
+    <message name="BOSS_WIND_MASTER_NAME" value="Wind Master"/>
+    <message name="BOSS_WIND_MASTER_DESCR" value="Wind is not an ally anymore - it serves the Wind Master!"/>
+    <message name="TEAM_NAME_WIND1" value="Wind Master"/>
+    <message name="TEAM_NAME_WIND2" value="Master's Guard"/>
+    <message name="BOT_NAME_WIND1" value="Wind Master"/>
+    <message name="BOT_NAME_WIND2" value="Lieutenant"/>
+    <message name="BOT_NAME_WIND3" value="Accolyte"/>
+
+    <message name="BOSS_SAMURAI_CAT_NAME" value="The Samurai"/>
+    <message name="BOSS_SAMURAI_CAT_DESCR"
+             value="This cat really has 9 lives! This duel's going to be a test of your endurance."/>
+    <message name="TEAM_NAME_SAMURAI_CAT" value="Samurai"/>
+    <message name="BOT_NAME_SAMURAI_CAT" value="Samurai"/>
+
+    <message name="BOSS_MINER_NAME" value="The Miner"/>
+    <message name="BOSS_MINER_DESCR" value="Genius of explosions, which base is well protected by enhanced mines."/>
+    <message name="TEAM_NAME_MINER" value="Miner"/>
+    <message name="BOT_NAME_MINER" value="Miner"/>
+
+    <message name="BOSS_ELDER_DEMONS_NAME" value="Burning zombies"/>
+    <message name="BOSS_ELDER_DEMONS_DESCR"
+             value="This zombies were possesed by some powerful force. Are you prepared to meteor shower?"/>
+    <message name="TEAM_NAME_ELDER_DEMONS" value="Burning zombies"/>
+    <message name="BOT_NAME_DEMON" value="Zombie"/>
+
+    <message name="BOSS_SOUL_NAME" value="Wandering spirit"/>
+    <message name="BOSS_SOUL_DESCR"
+             value="The Spirit heals his carriers while trying to escape you. Don't give him a chance."/>
+    <message name="TEAM_NAME_SOUL_1" value="Carriers"/>
+    <message name="BOT_NAME_SOUL_1" value="Carrier"/>
+
+    <message name="BOSS_GHOST_NAME" value="Ancient ghost"/>
+    <message name="BOSS_GHOST_DESCR"
+             value="Malicious creature, who managed to subdue the energy of lightning. You simply don't have a chance."/>
+    <message name="TEAM_NAME_GHOST_MAIN" value="Ancient ghost"/>
+    <message name="BOT_NAME_GHOST_MAIN" value="Ancient ghost"/>
+    <message name="TEAM_NAME_GHOST_ACOLYTE" value="Servants"/>
+    <message name="BOT_NAME_GHOST_ACOLYTE" value="Servant"/>
+
+    <message name="BOSS_YAKUZA_NAME" value="Yakuza"/>
+    <message name="BOSS_YAKUZA_DESCR"
+             value="The gang members are tightly linked to each other. By killing one of them, you make others stronger."/>
+    <message name="TEAM_NAME_YAKUZA_CAT" value="Tiger"/>
+    <message name="BOT_NAME_YAKUZA_CAT" value="Tiger"/>
+    <message name="TEAM_NAME_YAKUZA_BOXER" value="Steel"/>
+    <message name="BOT_NAME_YAKUZA_BOXER" value="Steel"/>
+    <message name="TEAM_NAME_YAKUZA_RABBIT" value="Storm"/>
+    <message name="BOT_NAME_YAKUZA_RABBIT" value="Storm"/>
+
+    <message name="BOSS_ROMEO_JULIET_NAME" value="Romeo and Juliet"/>
+    <message name="BOSS_ROMEO_JULIET_DESCR"
+             value="One of the best mercenary teams. Noone has unraveled their secret yet."/>
+    <message name="TEAM_NAME_ROMEO" value="Romeo"/>
+    <message name="BOT_NAME_ROMEO" value="Romeo"/>
+    <message name="TEAM_NAME_JULIET" value="Juliet"/>
+    <message name="BOT_NAME_JULIET" value="Juliet"/>
+
+    <message name="BOSS_KING_DEAD_NAME" value="Zombie King"/>
+    <message name="BOSS_KING_DEAD_DESCR" value="You think you can handke the horde of zombies and King's black magic?"/>
+    <message name="TEAM_KING_DEAD_NAME" value="Zombie King"/>
+    <message name="BOT_KING_DEAD_NAME" value="Zombie King"/>
+    <message name="TEAM_KING_DEAD_MINIONS" value="King's guard"/>
+    <message name="BOT_KING_DEAD_SUMMONER" value="Summoner"/>
+    <message name="BOT_KING_DEAD_MINION" value="Minion"/>
+
+    <message name="BOSS_DEAD_PIRATE_NAME" value="Vengeful Captain"/>
+    <message name="BOSS_DEAD_PIRATE_DESCR" value="The Old Pirate has returned with extra powers! Revenge!"/>
+
+    <message name="BOSS_SERGEANT_NAME" value="Sergeant"/>
+    <message name="BOSS_SERGEANT_DESCR"
+             value="Sergeant is protected by the loyal guard and brand new invisible guarding bots!"/>
+    <message name="TEAM_SERGEANT_NAME_1" value="Sergeant"/>
+    <message name="BOT_SERGEANT_NAME_1" value="Sergeant"/>
+    <message name="TEAM_SERGEANT_NAME_2" value="Guard"/>
+    <message name="BOT_SERGEANT_NAME_2" value="Corporal"/>
+
+    <message name="BOSS_FARMER_NAME" value="Farmer"/>
+    <message name="BOSS_FARMER_DESCR"
+             value="It's not known exactly, what is grown by this Farmer, but he must be interrupted."/>
+    <message name="BOT_NAME_FARMER" value="Farmer"/>
+    <message name="ENHANCEMENT_APPLE_NAME" value="Strange apple"/>
+
+    <message name="BOSS_HUNTER_NAME" value="Hunter"/>
+    <message name="BOSS_HUNTER_DESCR"
+             value="The Hunter relies on his laser traps, which are impossible to escape from (as he thinks)."/>
+    <message name="BOT_NAME_HUNTER" value="Hunter"/>
+
+    <message name="BOSS_MANIACS_NAME" value="Maniacs"/>
+    <message name="BOSS_MANIACS_DESCR"
+             value="This creatures are skilled with their dreadful hooks - so keep the distance!"/>
+    <message name="BOT_NAME_MANIAC_1" value="Freddy"/>
+    <message name="BOT_NAME_MANIAC_2" value="Jack"/>
+
+    <message name="BOSS_GUARDIANS_DEPTHS_NAME" value="Guardians of Depths"/>
+    <message name="BOSS_GUARDIANS_DEPTHS_DESCR"
+             value="The Earth itself fights for the Guardians! Don't even try to attack without a strong team!"/>
+    <message name="TEAM_GUARDIANS_DEPTHS_NAME" value="Guardians"/>
+    <message name="BOT_GUARDIANS_DEPTHS" value="Guardian"/>
+    <message name="PROGRESS_BAR_GUARDIANS_DEPTHS" value="earthquake"/>
+
+    <message name="BOSS_DARK_KNIGHT_NAME" value="Dark knight"/>
+    <message name="BOSS_DARK_KNIGHT_DESCR"
+             value="Superior warrior protected by twilight. He creates his own army of acolytes with the only aim to destroy you!"/>
+    <message name="BOSS_DARK_KNIGHT_TEAM_ACOLYTES" value="Dark acolytes"/>
+    <message name="BOSS_DARK_KNIGHT_ACOLYTE" value="Acolyte"/>
+
+    <message name="BOSS_ASSASSIN_NAME" value="Assassin"/>
+    <message name="BOSS_ASSASSIN_DESCR"
+             value="Master of knife combat and stealth movement. You have to find a way to escape his deadly attacks."/>
+
+    <message name="BOSS_ALCHEMIST_NAME" value="Alchemist"/>
+    <message name="BOSS_ALCHEMIST_DESCR"
+             value="Alchemist is extremely dangerous in combat but only if he has some reagents to use."/>
+    <message name="BOSS_ALCHEMIST_ASISSTANT_TEAM" value="Assistants"/>
+    <message name="BOSS_ALCHEMIST_ASISSTANT" value="Assistant"/>
+
+    <message name="BOSS_ARCHBOT_NAME" value="Archbot"/>
+    <message name="BOSS_ARCHBOT_DESCR"
+             value="What can be worse than a robot, who practices magic? Protection from fire and lightning will surely help!"/>
+    <message name="BOSS_ARCHBOT_ASISSTANT_TEAM" value="Golems"/>
+    <message name="BOSS_ARCHBOT_GOLEM" value="Golem"/>
+
+    <message name="BOSS_EMPEROR_NAME" value="Emperor"/>
+    <message name="BOSS_EMPEROR_DESCR"
+             value="All he commands now is a pile of terracotta soldiers. But don't think you can just come and claim his tresures."/>
+    <message name="BOSS_EMPEROR_BOT_NAME_1" value="Emperor"/>
+    <message name="BOSS_EMPEROR_ARCHER" value="Marksman"/>
+    <message name="BOSS_EMPEROR_SPEARMAN" value="Grunt"/>
+    <message name="BOSS_EMPEROR_GENERAL" value="General"/>
+    <message name="BOSS_EMPEROR_DEFENDER" value="Defender"/>
+
+    <message name="BOSS_SCIENTIST_NAME" value="Scientist"/>
+    <message name="BOSS_SCIENTIST_DESCR"
+             value="Pretty soon you'll feel the power of science (and also of lightning and magnetism)!"/>
+    <message name="BOSS_SCIENTIST_BOT_NAME_1" value="Scientist"/>
+
+    <message name="BOSS_SYMBIOTE_NAME" value="Simbiot"/>
+    <message name="BOSS_SYMBIOTE_DESCR"
+             value="Thrash your friends to hurt your foe - that's the only way to overcome this lifeform!"/>
+    <message name="BOSS_SYMBIOTE_BOT_NAME_1" value="Simbiot"/>
+    <message name="BOSS_SYMBIOTE_COCOON" value="Cocon"/>
+
+    <message name="BOSS_ENGINEER_NAME" value="Engineer"/>
+    <message name="BOSS_ENGINEER_DESCR"
+             value="Inventor, who created a vault in ancient tomb. First wrong action will lead to your defeat!"/>
+    <message name="BOT_NAME_ENGINEER_BOSS" value="Engineer"/>
+    <message name="BOT_NAME_ENGINEER_DROID" value="Protective Droid"/>
+    <message name="PROGRESS_BAR_ENGINEER" value="next droid"/>
+
+    <message name="BOSS_PALADIN_NAME" value="Paladin"/>
+    <message name="BOSS_PALADIN_DESCR"
+             value="Warrior of light, wielding powerful magic for both attack and defense. Still you have advantage in numbers."/>
+
+    <message name="BOSS_HACKER_NAME" value="Hacker"/>
+    <message name="BOSS_HACKER_DESCR"
+             value="When engaged in combat, hacker relies on his protective field heavily. Seize control over generators and destroy him!"/>
+    <message name="BOSS_HACKER_TEAM_PUPILS" value="Students"/>
+    <message name="BOSS_HACKER_PUPILS" value="Student"/>
+
+    <message name="BOSS_THIEVES_NAME" value="Master thieves"/>
+    <message name="BOSS_THIEVES_DESCR"
+             value="They'll strip you of your weapons in a nick of time. And then you'll have to fight them with few remaining guns."/>
+    <message name="BOSS_THIEF_BOT_1_NAME" value="Snatcher"/>
+    <message name="BOSS_THIEF_BOT_2_NAME" value="Burglar"/>
+    <message name="BOSS_THIEF_KEY" value="Key"/>
+    <message name="BOSS_THIEF_BOX" value="Stolen item"/>
+
+    <message name="BOSS_PSIONICS_NAME" value="Telepathist"/>
+    <message name="BOSS_PSIONICS_DESCR"
+             value="Telepathist creates black holes, instantly destroying your units. Only ally's reflexes can save you!"/>
+    <message name="BOSS_PSIONICS_BOT_NAME_1" value="Telepathist"/>
+    <message name="BOSS_PSIONICS_TEAM_BOT_2" value="Biotics"/>
+    <message name="BOSS_PSIONICS_BOT_NAME_2" value="Biotic"/>
+
+    <message name="BOSS_PHANTOMS_NAME" value="Phantoms"/>
+    <message name="BOSS_PHANTOMS_DESCR"
+             value="These ghosts cause panic just with their presence! Even if you overcome a fear, what about clones of yourself?"/>
+    <message name="BOSS_PHANTOMS_BOT_NAME" value="Phantom"/>
+
+    <message name="BOSS_ARCHDEMON_NAME" value="Archdemon"/>
+    <message name="BOSS_ARCHDEMON_DESCR"
+             value="Lord of the local hell. Don't surprise, when you find yourself trapped and bound, on this territory he is almighty."/>
+
+
+</dictionary>

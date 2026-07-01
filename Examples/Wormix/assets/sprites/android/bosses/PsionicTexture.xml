@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:fb75a51ea4a621388f9c63687f876cae:1b36f64079f0119473380a00367b6a95:eb22cb5924e09dd8463878255ba45a55$ -->
+<TextureAtlas imagePath="PsionicTexture.png">
+    <SubTexture name="_loop/ClockBase" x="64" y="178" rotated="true" width="42" height="41" frameX="0" frameY="0" frameWidth="41" frameHeight="43"/>
+    <SubTexture name="_loop/ClockCenter" x="240" y="81" width="6" height="6"/>
+    <SubTexture name="_loop/ClockHand" x="240" y="56" rotated="true" width="14" height="4"/>
+    <SubTexture name="_loop/LightBlurred" x="2" y="178" width="60" height="325" frameX="-1" frameY="-32" frameWidth="65" frameHeight="386"/>
+    <SubTexture name="_loop/LightBottom" x="2" y="2" rotated="true" width="134" height="55" frameX="0" frameY="-2" frameWidth="55" frameHeight="136"/>
+    <SubTexture name="_loop/SmallSparkle" x="240" y="62" width="7" height="17" frameX="0" frameY="-1" frameWidth="7" frameHeight="19"/>
+    <SubTexture name="_point/Highlight" x="138" y="56" width="100" height="100"/>
+    <SubTexture name="_point/PointBase" x="121" y="158" width="62" height="62"/>
+    <SubTexture name="_portal/Center" x="249" y="62" width="3" height="3"/>
+    <SubTexture name="_portal/PortalBase" x="2" y="59" width="117" height="117" frameX="-2" frameY="-2" frameWidth="122" frameHeight="122"/>
+    <SubTexture name="_portal/SparkleBase" x="138" y="2" width="113" height="52" frameX="-5" frameY="-4" frameWidth="122" frameHeight="61"/>
+</TextureAtlas>

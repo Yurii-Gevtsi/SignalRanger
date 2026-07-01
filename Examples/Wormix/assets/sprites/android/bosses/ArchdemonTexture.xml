@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:4dfc4b8957b4861518dfcf752eabac5b:89c9690d4bda416a8e6a38a939bd26a0:944c775ea12636e66c2ee31bc8bf15fe$ -->
+<TextureAtlas imagePath="ArchdemonTexture.png">
+    <SubTexture name="_objects/BallGraphics" x="180" y="470" rotated="true" width="15" height="20" frameX="0" frameY="0" frameWidth="21" frameHeight="16"/>
+    <SubTexture name="_objects/Cage" x="114" y="2" rotated="true" width="108" height="103"/>
+    <SubTexture name="_objects/CageErase" x="2" y="2" rotated="true" width="110" height="105"/>
+    <SubTexture name="_objects/ChainClipGraphics" x="65" y="356" rotated="true" width="14" height="18"/>
+    <SubTexture name="_objects/ChainLinkGraphics" x="248" y="2" width="6" height="10"/>
+    <SubTexture name="_objects/Flame01Blur" x="237" y="209" width="14" height="50"/>
+    <SubTexture name="_objects/Flame02Blur" x="224" y="95" width="17" height="56"/>
+    <SubTexture name="_objects/Flame03Blur" x="180" y="208" width="16" height="57"/>
+    <SubTexture name="_objects/Flame04Blur" x="217" y="209" width="18" height="48"/>
+    <SubTexture name="_objects/Flame05BLur" x="223" y="153" width="17" height="54"/>
+    <SubTexture name="_objects/Flame06Blur" x="198" y="208" width="17" height="52"/>
+    <SubTexture name="_objects/Flame07Blur" x="180" y="267" width="14" height="53"/>
+    <SubTexture name="_objects/Head" x="127" y="428" width="51" height="60" frameX="0" frameY="0" frameWidth="52" frameHeight="60"/>
+    <SubTexture name="_objects/Lt01Blur" x="65" y="291" rotated="true" width="16" height="30"/>
+    <SubTexture name="_objects/Lt02Blur" x="65" y="323" rotated="true" width="14" height="31"/>
+    <SubTexture name="_objects/Lt03Blur" x="177" y="322" rotated="true" width="16" height="31"/>
+    <SubTexture name="_objects/Triangle01" x="2" y="208" width="92" height="81" frameX="0" frameY="0" frameWidth="93" frameHeight="82"/>
+    <SubTexture name="_objects/Wave" x="198" y="262" width="47" height="88"/>
+    <SubTexture name="_objects/frameBlur" x="2" y="109" width="107" height="97" frameX="0" frameY="-3" frameWidth="107" frameHeight="100"/>
+    <SubTexture name="_objects/headDis01" x="65" y="409" rotated="true" width="60" height="52"/>
+    <SubTexture name="_objects/headDis02" x="187" y="414" rotated="true" width="60" height="54" frameX="0" frameY="0" frameWidth="55" frameHeight="60"/>
+    <SubTexture name="_objects/headDis03" x="81" y="347" width="60" height="60"/>
+    <SubTexture name="_objects/headDis04" x="195" y="352" width="59" height="60" frameX="0" frameY="0" frameWidth="60" frameHeight="60"/>
+    <SubTexture name="_objects/headDis05" x="2" y="291" width="61" height="60"/>
+    <SubTexture name="_objects/headDis06" x="2" y="353" width="61" height="60"/>
+    <SubTexture name="_objects/headDis07" x="2" y="415" width="60" height="49"/>
+    <SubTexture name="_objects/headDis08" x="143" y="355" rotated="true" width="42" height="71"/>
+    <SubTexture name="anim_copy/Eye" x="248" y="14" rotated="true" width="6" height="8"/>
+    <SubTexture name="anim_copy/Frame01" x="243" y="95" rotated="true" width="7" height="91" frameX="0" frameY="0" frameWidth="92" frameHeight="7"/>
+    <SubTexture name="anim_copy/Frame02" x="224" y="2" rotated="true" width="10" height="91" frameX="0" frameY="0" frameWidth="92" frameHeight="10"/>
+    <SubTexture name="anim_copy/Frame03" x="236" y="2" rotated="true" width="10" height="91" frameX="0" frameY="0" frameWidth="92" frameHeight="10"/>
+    <SubTexture name="anim_copy/FrameGround01" x="96" y="208" width="82" height="69"/>
+    <SubTexture name="anim_copy/FrameGround02" x="96" y="279" width="79" height="66"/>
+    <SubTexture name="anim_copy/FrameTriangle" x="114" y="107" width="107" height="99" frameX="0" frameY="-1" frameWidth="107" frameHeight="100"/>
+</TextureAtlas>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <message name="DOWNGRADE_ON_SHIFT.NOTE" value="这种武器有一个带有附加按钮的升级/普通模式开关。"/>
+    <message name="EXPLOSION_DELAY.NOTE"
+            value="完全停止后爆炸。 您可以通过备用武器按钮将计时器设置为1秒。"/>
+    <message name="ROPE.NOTE.U2" value="在附加按钮上朝向供应开关射绳。"/>
+    <message name="SHOCKER.DESCR.U2"
+            value="基于电荷对目标的直接影响的近战武器。 目标减速2圈。 电荷反弹到中等半径的最近敌人。 可以通过附加按钮打开/关闭弹跳。"/>
+    <message name="GRAVITY_GUN.NOTE.U2"
+            value="要切换到对象抓取模式，请按另外的武器按钮。"/>
+    <message name="TELEPORT.DESCR" value="可将单位传送至地图上的任何地方，甚至是地下。造成轻微伤害，使用者本轮机会结束。"/>
+    <message name="TELEPORT.DESCR.U1A" value="可将单位传送至任何区域，甚至是地下。在起始点和目标点均造成轻微伤害。用掉一轮机会！"/>
+</dictionary>

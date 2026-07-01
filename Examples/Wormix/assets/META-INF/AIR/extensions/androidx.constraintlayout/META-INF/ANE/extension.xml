@@ -1,0 +1,40 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>androidx.constraintlayout</id>
+	<versionNumber>3.0.0</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>androidx.constraintlayout.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.androidx.constraintlayout.ConstraintlayoutExtension</initializer>
+				<finalizer>com.distriqt.extension.androidx.constraintlayout.ConstraintlayoutExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>androidx.constraintlayout.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.androidx.constraintlayout.ConstraintlayoutExtension</initializer>
+				<finalizer>com.distriqt.extension.androidx.constraintlayout.ConstraintlayoutExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>androidx.constraintlayout.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.androidx.constraintlayout.ConstraintlayoutExtension</initializer>
+				<finalizer>com.distriqt.extension.androidx.constraintlayout.ConstraintlayoutExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>androidx.constraintlayout.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.androidx.constraintlayout.ConstraintlayoutExtension</initializer>
+				<finalizer>com.distriqt.extension.androidx.constraintlayout.ConstraintlayoutExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="default"> 
+			<applicationDeployment /> 
+		</platform>
+		
+	</platforms>
+</extension>

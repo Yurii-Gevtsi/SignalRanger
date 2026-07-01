@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+    <message name="ACHIEVEMENTS_TITLE" value="成就"/>
+    <message name="ACHIEV_PROGRESS_LABEL" value="进度"/>
+    <message name="ACHIEV_AWARD_POINTS_LABEL" value="已获得的奖励："/>
+    <message name="ACHIEV_POINTS_LABEL" value="下次奖励点数："/>
+    <message name="AVAILABLE_AWARD" value="可获得的奖励"/>
+    <message name="ACHIEV_GOAL_TITLE" value="达到等级："/>
+    <message name="ACHIEV_LEVELUP_TITLE" value="新成就！"/>
+    <message name="ACHIEV_BATTLE_BUTTON" value="战斗"/>
+    <message name="ACHIEV_GAME_BUTTON" value="游戏"/>
+    <message name="ACHIEV_BOSSES_BUTTON" value="老怪"/>
+    <message name="ACHIEV_STATISTIC_BUTTON" value="统计数据"/>
+    <message name="ACHIEV_AWARD_BUTTON" value="奖励"/>
+    <message name="ACHIEV_SELECT_BUTTON" value="选择"/>
+    <message name="ACHIEV_BURNED_ENEMIES_1LEVEL_TITLE" value="纵火高手"/>
+    <message name="ACHIEV_BURNED_ENEMIES_2LEVEL_TITLE" value="施虐狂"/>
+    <message name="ACHIEV_BURNED_ENEMIES_3LEVEL_TITLE" value="烈焰术士"/>
+    <message name="ACHIEV_DESTROYED_SQUARE_1LEVEL_TITLE" value="爆破专家"/>
+    <message name="ACHIEV_DESTROYED_SQUARE_2LEVEL_TITLE" value="毁灭者"/>
+    <message name="ACHIEV_DESTROYED_SQUARE_3LEVEL_TITLE" value="无坚不摧之力"/>
+    <message name="ACHIEV_DROWNED_OPPONENTS_1LEVEL_TITLE" value="潜水健将"/>
+    <message name="ACHIEV_DROWNED_OPPONENTS_2LEVEL_TITLE" value="水妖"/>
+    <message name="ACHIEV_DROWNED_OPPONENTS_3LEVEL_TITLE" value="海神"/>
+    <message name="ACHIEV_WAGER_WINNER_1LEVEL_TITLE" value="光荣赢家"/>
+    <message name="ACHIEV_WAGER_WINNER_2LEVEL_TITLE" value="冠军"/>
+    <message name="ACHIEV_WAGER_WINNER_3LEVEL_TITLE" value="英雄"/>
+    <message name="ACHIEV_DIPLOMAT_1LEVEL_TITLE" value="谈判专家"/>
+    <message name="ACHIEV_DIPLOMAT_2LEVEL_TITLE" value="外交官"/>
+    <message name="ACHIEV_DIPLOMAT_3LEVEL_TITLE" value="大使"/>
+    <message name="ACHIEV_WIND_KILLS_1LEVEL_TITLE" value="精准无敌"/>
+    <message name="ACHIEV_WIND_KILLS_2LEVEL_TITLE" value="控风大师"/>
+    <message name="ACHIEV_WIND_KILLS_3LEVEL_TITLE" value="萨满"/>
+    <message name="ACHIEV_MASSIVE_DAMAGE_1LEVEL_TITLE" value="刽子手"/>
+    <message name="ACHIEV_MASSIVE_DAMAGE_2LEVEL_TITLE" value="终结者"/>
+    <message name="ACHIEV_MASSIVE_DAMAGE_3LEVEL_TITLE" value="开膛手杰克"/>
+    <message name="ACHIEV_GRAVES_SANK_1LEVEL_TITLE" value="掘墓大师"/>
+    <message name="ACHIEV_GRAVES_SANK_2LEVEL_TITLE" value="吸血鬼巴菲"/>
+    <message name="ACHIEV_GRAVES_SANK_3LEVEL_TITLE" value="狙魔人"/>
+    <message name="ACHIEV_ONE_HP_WIN_1LEVEL_TITLE" value="银之匙"/>
+    <message name="ACHIEV_ONE_HP_WIN_2LEVEL_TITLE" value="幸运儿"/>
+    <message name="ACHIEV_ONE_HP_WIN_3LEVEL_TITLE" value="诈死大师"/>
+    <message name="ACHIEV_IMMOBILE_KILLS_1LEVEL_TITLE" value="稳操胜券"/>
+    <message name="ACHIEV_IMMOBILE_KILLS_2LEVEL_TITLE" value="不可动摇"/>
+    <message name="ACHIEV_IMMOBILE_KILLS_3LEVEL_TITLE" value="稳坐钓鱼台"/>
+    <message name="ACHIEV_FLAWLESS_VICTORIES_1LEVEL_TITLE" value="出神入化"/>
+    <message name="ACHIEV_FLAWLESS_VICTORIES_2LEVEL_TITLE" value="谨慎有加"/>
+    <message name="ACHIEV_FLAWLESS_VICTORIES_3LEVEL_TITLE" value="偏执狂"/>
+    <message name="ACHIEV_FLEW_MILES_1LEVEL_TITLE" value="飞行员"/>
+    <message name="ACHIEV_FLEW_MILES_2LEVEL_TITLE" value="烈焰勇士"/>
+    <message name="ACHIEV_FLEW_MILES_3LEVEL_TITLE" value="宇航员"/>
+    <message name="ACHIEV_DOUBLE_KILLLS_1LEVEL_TITLE" value="快射手"/>
+    <message name="ACHIEV_DOUBLE_KILLLS_2LEVEL_TITLE" value="杀手"/>
+    <message name="ACHIEV_DOUBLE_KILLLS_3LEVEL_TITLE" value="Wormax Payne"/>
+    <message name="ACHIEV_MEDKIT_KILLS_1LEVEL_TITLE" value="药剂师"/>
+    <message name="ACHIEV_MEDKIT_KILLS_2LEVEL_TITLE" value="巫医"/>
+    <message name="ACHIEV_MEDKIT_KILLS_3LEVEL_TITLE" value="Rabbitus博士"/>
+    <message name="ACHIEV_GATHERED_SUPPLIES_1LEVEL_TITLE" value="寻宝猎人"/>
+    <message name="ACHIEV_GATHERED_SUPPLIES_2LEVEL_TITLE" value="掠夺者"/>
+    <message name="ACHIEV_GATHERED_SUPPLIES_3LEVEL_TITLE" value="海豹"/>
+    <message name="ACHIEV_KAMIKAZE_1LEVEL_TITLE" value="神风特攻队员"/>
+    <message name="ACHIEV_KAMIKAZE_2LEVEL_TITLE" value="跟我来"/>
+    <message name="ACHIEV_KAMIKAZE_3LEVEL_TITLE" value="死亡之攫"/>
+    <message name="ACHIEV_ROPED_MILES_1LEVEL_TITLE" value="跳高健将"/>
+    <message name="ACHIEV_ROPED_MILES_2LEVEL_TITLE" value="丛林之王"/>
+    <message name="ACHIEV_ROPED_MILES_3LEVEL_TITLE" value="兔子萨满"/>
+    <message name="ACHIEV_FUZZES_SPENT_1LEVEL_TITLE" value="挥金如土"/>
+    <message name="ACHIEV_FUZZES_SPENT_2LEVEL_TITLE" value="贪污犯"/>
+    <message name="ACHIEV_FUZZES_SPENT_3LEVEL_TITLE" value="最高统治者"/>
+    <message name="ACHIEV_RUBIES_SPENT_1LEVEL_TITLE" value="超级富豪"/>
+    <message name="ACHIEV_RUBIES_SPENT_2LEVEL_TITLE" value="富二代"/>
+    <message name="ACHIEV_RUBIES_SPENT_3LEVEL_TITLE" value="百万富翁"/>
+    <message name="ACHIEV_PUMPED_REACTION_1LEVEL_TITLE" value="风驰电掣"/>
+    <message name="ACHIEV_PUMPED_REACTION_2LEVEL_TITLE" value="极速反应"/>
+    <message name="ACHIEV_PUMPED_REACTION_3LEVEL_TITLE" value="鱼雷袭击"/>
+    <message name="ACHIEV_RUBIES_FOUND_1LEVEL_TITLE" value="洗劫者"/>
+    <message name="ACHIEV_RUBIES_FOUND_2LEVEL_TITLE" value="地雷工兵"/>
+    <message name="ACHIEV_RUBIES_FOUND_3LEVEL_TITLE" value="珠宝商"/>
+    <message name="ACHIEV_MADE_PHOTO_1LEVEL_TITLE" value="摄影大师"/>
+    <message name="ACHIEV_MADE_PHOTO_2LEVEL_TITLE" value="通讯员"/>
+    <message name="ACHIEV_MADE_PHOTO_3LEVEL_TITLE" value="狗仔队"/>
+    <message name="ACHIEV_MADE_VIDEO_1LEVEL_TITLE" value="操作员"/>
+    <message name="ACHIEV_MADE_VIDEO_2LEVEL_TITLE" value="导演"/>
+    <message name="ACHIEV_MADE_VIDEO_3LEVEL_TITLE" value="电影痴迷者"/>
+    <message name="ACHIEV_GAME_VISITS_1LEVEL_TITLE" value="宝石爱好者"/>
+    <message name="ACHIEV_GAME_VISITS_2LEVEL_TITLE" value="玩家"/>
+    <message name="ACHIEV_GAME_VISITS_3LEVEL_TITLE" value="游戏狂热者"/>
+    <message name="ACHIEV_DROP_WATER_1LEVEL_TITLE" value="狂热爱好者"/>
+    <message name="ACHIEV_DROP_WATER_2LEVEL_TITLE" value="名人"/>
+    <message name="ACHIEV_DROP_WATER_3LEVEL_TITLE" value="偶像"/>
+    <message name="ACHIEV_KILL_WALKING_ZOMBIES_1LEVEL_TITLE" value="邪魔屠杀者"/>
+    <message name="ACHIEV_KILL_WALKING_ZOMBIES_2LEVEL_TITLE" value="审判者"/>
+    <message name="ACHIEV_KILL_WALKING_ZOMBIES_3LEVEL_TITLE" value="圣徒"/>
+    <message name="ACHIEV_KILL_WEAR_HATS_1LEVEL_TITLE" value="花花公子"/>
+    <message name="ACHIEV_KILL_WEAR_HATS_2LEVEL_TITLE" value="帽子爱好者"/>
+    <message name="ACHIEV_KILL_WEAR_HATS_3LEVEL_TITLE" value="疯帽匠"/>
+    <message name="ACHIEV_BURNED_ENEMIES_DESCR" value="烧死 {progress} 个敌人"/>
+    <message name="ACHIEV_DESTROYED_SQUARE_DESCR" value="摧毁面积达 {progress} 平方米"/>
+    <message name="ACHIEV_DROWNED_OPPONENTS_DESCR" value="淹死 {progress} 个敌人"/>
+    <message name="ACHIEV_WAGER_WINNER_DESCR" value="下赌注并赢得 {progress} 次战斗"/>
+    <message name="ACHIEV_DIPLOMAT_DESCR" value="在团队生命值少于 20 点的情况下，说服 {progress} 个敌人缴械投降"/>
+    <message name="ACHIEV_WIND_KILLS_DESCR" value="借助风力消灭玩家身后 {progress} 个敌人"/>
+    <message name="ACHIEV_MASSIVE_DAMAGE_DESCR" value="有 {progress} 次在单轮战斗中对敌人造成 300 点以上的生命值伤害"/>
+    <message name="ACHIEV_GRAVES_SANK_DESCR" value="将 {progress} 个墓穴投入水中"/>
+    <message name="ACHIEV_ONE_HP_WIN_DESCR" value="利用仅剩的 1 点生命值获得 {progress} 次胜利"/>
+    <message name="ACHIEV_IMMOBILE_KILLS_DESCR" value="消灭 {progress} 个冻结敌人"/>
+    <message name="ACHIEV_FLAWLESS_VICTORIES" value="与玩家所在团队成员一起在无伤亡的情况下取得 {progress} 次完美的胜利"/>
+    <message name="ACHIEV_FLEW_MILES_DESCR" value="使用超级公羊、直升机、UFO 或飞行背包飞行 {progress} 米"/>
+    <message name="ACHIEV_DOUBLE_KILLLS_DESCR" value="有 {progress} 次在单轮战斗中消灭 2 个或更多敌人"/>
+    <message name="ACHIEV_MEDKIT_KILLS_DESCR" value="使用医药包歼灭 {progress} 个敌人"/>
+    <message name="ACHIEV_GATHERED_SUPPLIES_DESCR" value="收集 {progress} 个医药包、箱子或星星"/>
+    <message name="ACHIEV_KAMIKAZE_DESCR" value="玩家参与消灭 {progress} 个敌人"/>
+    <message name="ACHIEV_ROPED_MILES_DESCR" value="依靠绳索行进 {progress} 米"/>
+    <message name="ACHIEV_FUZZES_SPENT_DESCR" value="花费 {progress} F 币购买"/>
+    <message name="ACHIEV_RUBIES_SPENT_DESCR" value="花费 {progress} 颗红宝石购买"/>
+    <message name="ACHIEV_PUMPED_REACTION_DESCR" value="获得 {progress} 次反应"/>
+    <message name="ACHIEV_RUBIES_FOUND_DESCR" value="在朋友家找到 {progress} 颗红宝石"/>
+    <message name="ACHIEV_MADE_PHOTO_DESCR" value="截图 {progress} 张"/>
+    <message name="ACHIEV_MADE_VIDEO_DESCR" value="拍摄 {progress} 个视频"/>
+    <message name="ACHIEV_GAME_VISITS_DESCR" value="获得 {progress} 颗每日红宝石奖励"/>
+    <message name="ACHIEV_DROP_WATER_DESCR" value="使用短棒或电击枪将 {progress} 个敌人击入水中"/>
+    <message name="ACHIEV_KILL_WALKING_ZOMBIES_DESCR" value="歼灭 {progress} 个复活僵尸"/>
+    <message name="ACHIEV_WEAR_HATS_DESCR" value="佩戴阵亡敌人的 {progress} 顶帽子"/>
+    <message name="ACHIEV_COOP_FRIEND_WINNER_DESCR" value="与一位朋友一起赢得 {progress} 场战斗"/>
+    <message name="ACHIEV_COOP_FRIEND_WINNER_1LEVEL_TITLE" value="最佳拍档！"/>
+    <message name="ACHIEV_COOP_FRIEND_WINNER_2LEVEL_TITLE" value="超级赢家！"/>
+    <message name="ACHIEV_COOP_FRIEND_WINNER_3LEVEL_TITLE" value="威力加倍!"/>
+    <message name="PVP_PLAYED" value="已玩下注游戏场次"/>
+    <message name="PVP_WON" value="下注游戏胜利场次"/>
+    <message name="PVP_DRAWS" value="下注游戏平局场次"/>
+    <message name="MISSIONS_PLAYED" value="已尝试任务次数"/>
+    <message name="MISSIONS_WON" value="已完成任务次数"/>
+    <message name="MISSIONS_EARNED" value="任务中赢得的点数"/>
+    <message name="WAGERS_EARNED" value="赢得的赌注"/>
+    <message name="RUBIES_FOUND" value="已找到红宝石颗数"/>
+    <message name="SOLO_DAMAGE" value="造成的伤害值"/>
+    <message name="TEAM_DAMAGE" value="团队造成的伤害值"/>
+    <message name="SOLO_DAMAGE_TAKEN" value="受到的伤害值"/>
+    <message name="TEAM_DAMAGE_TAKEN" value="团队受到的伤害值"/>
+    <message name="FRIENDLY_FIRE" value="对队友造成的伤害值"/>
+    <message name="SNIPER_SHOTS" value="狙击次数"/>
+    <message name="WIND_SHOTS" value="逆风击中目标次数"/>
+    <message name="KILLED_WORMS" value="杀死蠕虫数量"/>
+    <message name="KILLED_BOXERS" value="杀死拳击手数量"/>
+    <message name="KILLED_DEMONS" value="杀死恶魔数量"/>
+    <message name="KILLED_RABBITS" value="杀死兔子数量"/>
+    <message name="KILLED_ZOMBIES" value="杀死僵尸数量"/>
+    <message name="KILLED_CATS" value="杀死猫数量"/>
+    <message name="KILLED_REVIVED" value="消灭复活僵尸数量"/>
+    <message name="KILLED_DRAGONS" value="杀死神龙数量"/>
+    <message name="KILLED_BOTS" value="杀死机器人数量"/>
+    <message name="KILLED_TOTAL" value="总击杀数量"/>
+    <message name="UNITS_LOST" value="损失队友数量"/>
+    <message name="COLLECTED_MEDKITS" value="收集医药包数量"/>
+    <message name="COLLECTED_CRATES" value="收集箱子数量"/>
+    <message name="COLLECTED_STARS" value="收集星星数量"/>
+    <message name="DESTROYED_SUPPLIES" value="已摧毁物资数量"/>
+    <message name="GRAVES_SANK" value="投掷入水坟墓数量"/>
+    <message name="METERS_FLOWN" value="飞行距离（米）"/>
+    <message name="METERS_WALKED" value="奔跑距离（米）"/>
+    <message name="ACHIEV_PARTISAN_1LEVEL_TITLE" value="地雷工兵"/>
+    <message name="ACHIEV_PARTISAN_2LEVEL_TITLE" value="破坏分子"/>
+    <message name="ACHIEV_PARTISAN_3LEVEL_TITLE" value="游击队员"/>
+    <message name="ACHIEV_COLLECTOR_1LEVEL_TITLE" value="采集师"/>
+    <message name="ACHIEV_COLLECTOR_2LEVEL_TITLE" value="狂热者"/>
+    <message name="ACHIEV_COLLECTOR_3LEVEL_TITLE" value="装备爱好者"/>
+    <message name="ACHIEV_PARTISAN_DESCR" value="在下注战斗中，玩家 {progress} 次利用自己布置的陷阱（地雷、障碍物等）迫使对手丧失一轮机会"/>
+    <message name="ACHIEV_COLLECTOR_DESCR" value="收集 {progress} 份物资"/>
+    <message name="CODE" value="转换"/>
+    <message name="ACHIEV_ADD_IN_MENU_NAME" value="考虑周全"/>
+    <message name="ACHIEV_ADD_IN_MENU" value="将 Bombix 添加到应用程序菜单"/>
+    <message name="ACHIEV_DROP_WATER_FIRST_TURN_DESCR" value="有 {progress} 次在第一轮战斗中将敌人送入水中（或空中）"/>
+    <message name="ACHIEV_DROP_WATER_FIRST_TURN_1LEVEL_TITLE" value="投掷高手!"/>
+    <message name="ACHIEV_DROP_WATER_FIRST_TURN_2LEVEL_TITLE" value="扔到海里！"/>
+    <message name="ACHIEV_DROP_WATER_FIRST_TURN_3LEVEL_TITLE" value="战术大师！"/>
+    <message name="ACHIEV_WEAPONS_UPGRADE_DESCR" value="进行 {progress} 次武器升级"/>
+    <message name="ACHIEV_WEAPONS_UPGRADE_1LEVEL_TITLE" value="能工巧匠"/>
+    <message name="ACHIEV_WEAPONS_UPGRADE_2LEVEL_TITLE" value="组装专属枪支！"/>
+    <message name="ACHIEV_WEAPONS_UPGRADE_3LEVEL_TITLE" value="首席工程师"/>
+    <message name="ACHIEV_CRAFT_LEGENDARY_DESCR" value="锻造 {progress} 项传奇装备"/>
+    <message name="ACHIEV_CRAFT_LEGENDARY_1LEVEL_DESCR" value="锻造一项传奇装备"/>
+    <message name="ACHIEV_CRAFT_LEGENDARY_1LEVEL_TITLE" value="铁匠大师"/>
+    <message name="ACHIEV_CRAFT_LEGENDARY_2LEVEL_TITLE" value="符文铁匠"/>
+    <message name="ACHIEV_CRAFT_LEGENDARY_3LEVEL_TITLE" value="传奇铁匠"/>
+    <message name="ACHIEV_SUPERBOSS_DEFEATED_DESCR" value="击败 {progress} 个超级老怪"/>
+    <message name="ACHIEV_SUPERBOSS_DEFEATED_1LEVEL_TITLE" value="赏金猎人"/>
+    <message name="ACHIEV_SUPERBOSS_DEFEATED_2LEVEL_TITLE" value="双重策略"/>
+    <message name="ACHIEV_SUPERBOSS_DEFEATED_3LEVEL_TITLE" value="怪兽杀手"/>
+    <message name="ACHIEV_OPEN_RACE_DESCR" value="解锁 {progress} 场比赛"/>
+    <message name="ACHIEV_OPEN_RACE_1LEVEL_DESCR" value="解锁 {progress} 场比赛"/>
+    <message name="ACHIEV_OPEN_RACE_1LEVEL_TITLE" value="疯狂三人组！"/>
+    <message name="ACHIEV_OPEN_RACE_2LEVEL_TITLE" value="好斗五重奏！"/>
+    <message name="ACHIEV_OPEN_RACE_3LEVEL_TITLE" value="七大金刚！"/>
+</dictionary>

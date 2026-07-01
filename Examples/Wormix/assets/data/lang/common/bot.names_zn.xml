@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+<message name="COMMON_NAMES" value="游民,牧民,新兵,伪装者,兰迪,沿海航行者"/>
+<message name="NAMES_FOR_HAT_1003" value="旅行者,红脖子,农夫,劳工,奴隶,露营者"/>
+<message name="NAMES_FOR_HAT_1025" value="占星师,天文学家,学者,占卜者,咒术师,行者"/>
+<message name="NAMES_FOR_HAT_1018" value="吉米,格宁,柔道师,柔道家,布鲁斯,合气道师"/>
+<message name="NAMES_FOR_HAT_1006" value="学究,花花公子,乔尼,假绅士,贵族,大礼帽"/>
+<message name="NAMES_FOR_HAT_1022" value="滑雪者,短跑运动员,跳高运动员,保镖,先驱者,运动帽"/>
+<message name="NAMES_FOR_HAT_1004" value="兽人步兵,海军,军犬,刺刀,推弹杆"/>
+<message name="NAMES_FOR_HAT_1009" value="航海长助理,枪手,军士,外国雇佣兵,老兵,战壕"/>
+<message name="NAMES_FOR_HAT_1005" value="访客,黑武士,外星人,类人生物"/>
+<message name="NAMES_FOR_HAT_1023" value="攻击手,神投手,剃刀鲸,猛男,水枪手,管道工"/>
+<message name="NAMES_FOR_HAT_1007" value="北欧海盗,异教徒,红发女郎,战斧,航海家,蛮族人"/>
+<message name="NAMES_FOR_HAT_1021" value="索尼娅,画笔,樱桃"/>
+<message name="NAMES_FOR_HAT_1016" value="软帽,艺术家,工匠,潮人,诗人"/>
+<message name="NAMES_FOR_HAT_1010" value="开膛手杰克,怪人,杰森,弗雷迪,职业杀手,刽子手"/>
+<message name="NAMES_FOR_HAT_1008" value="海盗,海盗船长,雄鸭,黑狗,罗汉肚,西印度海盗,海盗船"/>
+<message name="NAMES_FOR_HAT_1031" value="易洛魁族,切罗基族,阿帕切族,莫希干族,科曼奇族,红杉,奇努克族"/>
+<message name="NAMES_FOR_HAT_1011" value="武士,浪人,武田,阿基拉,武士道,小禄,邪道长"/>
+<message name="NAMES_FOR_HAT_1024" value="黑帮,强盗,盗匪,窥探者,黑鬼,阿飞,拦路盗贼"/>
+<message name="NAMES_FOR_HAT_1012" value="主宰者,施虐狂,危险分子,狂怒者,惩罚者,采花大盗,"/>
+<message name="NAMES_FOR_HAT_1020" value="女武神,布伦希尔德,命运女神"/>
+<message name="NAMES_FOR_HAT_1029" value="大砍刀,墨西哥阔边帽,墨西哥流浪乐队,菲德尔,亡命之徒,路劫强盗"/>
+<message name="NAMES_FOR_HAT_1013" value="剑圣,粉碎者,代目,幕府将军"/>
+<message name="NAMES_FOR_HAT_1030" value="骑兵,邪毒,瓦尔特,化学师,史尼飞"/>
+<message name="NAMES_FOR_HAT_1033" value="酋长,鹰眼,赤云,兔脚,隼眼"/>
+<message name="NAMES_FOR_HAT_1014" value="角斗士,赫克托尔,斯巴达,护民官,使者,百夫长"/>
+<message name="NAMES_FOR_HAT_1026" value="斯巴达克斯,古罗马军团,特罗扬,船长"/>
+<message name="NAMES_FOR_HAT_1047" value="黑社会,神龙,灵蛇,冈崎武士,半藏,Pay May"/>
+<message name="NAMES_FOR_HAT_1015" value="领主,沙皇,男爵,伯爵,大公爵,古威尼斯贵族,普鲁德灵"/>
+<message name="NAMES_FOR_HAT_1017" value="公主,淑女,公爵夫人,女伯爵"/>
+<message name="NAMES_FOR_HAT_1057" value="尼奥,老板,首领,烈焰,王牌,硬汉"/>
+<message name="NAMES_FOR_HAT_1042" value="焊接工,熔炼工,消防员,铁匠,斯默克,军械士"/>
+<message name="NAMES_FOR_HAT_1051" value="伊万诺夫,西多罗夫,朱可夫,鲍里斯,乌拉底米尔"/>
+<message name="NAMES_FOR_HAT_1064" value="诺德,土匪,汪达尔,野蛮人,掠夺者"/>
+<message name="NAMES_FOR_HAT_1002" value="闪光,流星,闪电,大师,高手"/>
+<message name="NAMES_FOR_HAT_1062" value="赛车手,司机,莽夫,迪赛尔"/>
+<message name="NAMES_FOR_HAT_1063" value="飞车族,魔术师,特技演员,哈雷"/>
+<message name="NAMES_FOR_HAT_1000" value="赤焰,烈焰,艺术大师,耀光,火光,火山"/>
+<message name="NAMES_FOR_HAT_1041" value="模仿者,山寨货,仿造者,崇拜者,双胞胎"/>
+<message name="NAMES_FOR_HAT_1032" value="警察,郡长,查克,护林员,工头"/>
+<message name="NAMES_FOR_HAT_1050" value="同志,中士,西伯利亚人,坏脾气,农民"/>
+<message name="NAMES_FOR_HAT_1058" value="忍者,间谍,鬼影,幽灵,破坏分子,渗透者,颠覆者"/>
+<message name="NAMES_FOR_HAT_1027" value="萨满,巫毒牧师,女祭司,潜修者,巫术师,恋物癖"/>
+<message name="NAMES_FOR_HAT_1056" value="药剂师,牙医,兽医,护理人员,外科医生,"/>
+<message name="NAMES_FOR_HAT_1052" value="指挥官,上校,将军,红帽子,少校"/>
+<message name="NAMES_FOR_HAT_1055" value="阿鲁卡多,欧洲伯爵,联防队员,诺斯费拉图,夜之翼,地狱幽灵,"/>
+<message name="NAMES_FOR_HAT_1061" value="黑乌鸦,黑人医生,鸟嘴医生,哲基尔医生,检察官"/>
+<message name="NAMES_FOR_HAT_1028" value="木偶师,巫师,巫毒,巫医,符咒,术士"/>
+<message name="NAMES_FOR_HAT_1034" value="潜水员,蛙人,潜水运动员,跳水者,潜艇兵"/>
+<message name="NAMES_FOR_HAT_1066" value="卫士,复仇者,黑翼,守护者"/>
+<message name="NAMES_FOR_HAT_1065" value="僧侣,伪君子,牧师,圣徒"/>
+<message name="MERC_NAME_1" value="沿海航行者"/>
+<message name="MERC_NAME_2" value="旅行者"/>
+<message name="MERC_NAME_3" value="红脖子"/>
+<message name="MERC_NAME_4" value="兽人步兵"/>
+<message name="MERC_NAME_5" value="斯坦因"/>
+<message name="MERC_NAME_6" value="假绅士"/>
+<message name="MERC_NAME_7" value="流浪者"/>
+<message name="MERC_NAME_8" value="西斯"/>
+<message name="MERC_NAME_9" value="史努比"/>
+<message name="MERC_NAME_10" value="攻击手"/>
+<message name="MERC_NAME_11" value="嬉皮士"/>
+<message name="MERC_NAME_12" value="奇努克"/>
+<message name="MERC_NAME_13" value="摧残者"/>
+<message name="MERC_NAME_14" value="加斯捷洛"/>
+<message name="MERC_NAME_15" value="傻大个"/>
+<message name="MERC_NAME_16" value="黑帮"/>
+<message name="MERC_NAME_17" value="刀片"/>
+<message name="MERC_NAME_18" value="新兵"/>
+<message name="MERC_NAME_19" value="烤面包"/>
+<message name="MERC_NAME_20" value="禽兽"/>
+<message name="MERC_NAME_21" value="菲德尔"/>
+<message name="MERC_NAME_22" value="强盗"/>
+<message name="MERC_NAME_23" value="罗斯提"/>
+<message name="MERC_NAME_24" value="决斗者"/>
+<message name="MERC_NAME_25" value="汪达尔"/>
+<message name="MERC_NAME_26" value="加加林"/>
+<message name="MERC_NAME_27" value="药剂师"/>
+<message name="MERC_NAME_28" value="法兹"/>
+<message name="MERC_NAME_29" value="男爵"/>
+<message name="MERC_NAME_30" value="掠夺者"/>
+<message name="MERC_NAME_31" value="萨满"/>
+<message name="MERC_NAME_32" value="地雷工兵"/>
+<message name="MERC_NAME_33" value="使者"/>
+<message name="MERC_NAME_34" value="拦路盗贼"/>
+<message name="MERC_NAME_35" value="沃尔特"/>
+<message name="MERC_NAME_36" value="毒蛇"/>
+<message name="MERC_NAME_37" value="艺术大师"/>
+<message name="MERC_NAME_38" value="同志"/>
+<message name="MERC_NAME_39" value="终结者"/>
+<message name="MERC_NAME_40" value="熔炼工"/>
+<message name="MERC_NAME_41" value="赤焰"/>
+
+    <message name="MERC_NAME_501" value="烂仔"/>
+    <message name="MERC_NAME_502" value="猫政委"/>
+    <message name="MERC_NAME_503" value="扑翅"/>
+    <message name="MERC_NAME_504" value="飞行员"/>
+    <message name="MERC_NAME_505" value="钢岩"/>
+    <message name="MERC_NAME_506" value="铁蛋"/>
+    <message name="MERC_NAME_507" value="超级猫"/>
+    <message name="MERC_NAME_508" value="死帽灵"/>
+    <message name="MERC_NAME_509" value="医兔"/>
+    <message name="MERC_NAME_510" value="毒骷"/>
+    <message name="MERC_NAME_511" value="吸血鬼"/>
+    <message name="MERC_NAME_512" value="粉碎者"/>
+    <message name="MERC_NAME_513" value="野战厨师"/>
+    <message name="MERC_NAME_514" value="虎子"/>
+    <message name="MERC_NAME_515" value="兰博兔"/>
+    <message name="MERC_NAME_516" value="熵魔"/>
+    <message name="MERC_NAME_517" value="绝地守护者"/>
+    <message name="MERC_NAME_518" value="坚忍"/>
+    <message name="MERC_NAME_519" value="尖牙"/>
+
+</dictionary>

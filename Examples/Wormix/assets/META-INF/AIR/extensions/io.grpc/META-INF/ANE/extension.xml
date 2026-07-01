@@ -1,0 +1,40 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>io.grpc</id>
+	<versionNumber>2.0.0</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>io.grpc.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.grpc.GrpcExtension</initializer>
+				<finalizer>com.distriqt.extension.grpc.GrpcExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>io.grpc.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.grpc.GrpcExtension</initializer>
+				<finalizer>com.distriqt.extension.grpc.GrpcExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>io.grpc.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.grpc.GrpcExtension</initializer>
+				<finalizer>com.distriqt.extension.grpc.GrpcExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>io.grpc.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.grpc.GrpcExtension</initializer>
+				<finalizer>com.distriqt.extension.grpc.GrpcExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="default"> 
+			<applicationDeployment /> 
+		</platform>
+		
+	</platforms>
+</extension>

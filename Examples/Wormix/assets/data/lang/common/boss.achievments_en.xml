@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <!-- common -->
+    <message name="BOSS_ACHIEVE" value="Boss achievements"/>
+    <message name="ACHIEVE" value="Achievent"/>
+    <message name="COMPLETED" value="completed, if you win this battle!"/>
+    <message name="FAILED" value="failed!"/>
+    <message name="CREDITED" value="completed!"/>
+    <message name="PROGRESS" value="progress"/>
+
+    <!-- farmer -->
+    <message name="IRON_FARMER_NAME" value="Iron farmer"/>
+    <message name="IRON_FARMER" value="Defeat Farmer without collecting any apples"/>
+    <message name="PICK_APPLES_FARMER_NAME" value="Apple fan"/>
+    <message name="PICK_APPLES_FARMER" value="Collect 12 apples without missing any"/>
+    <message name="FARMER_MANIPULATOR_NAME" value="Manipulator"/>
+    <message name="FARMER_MANIPULATOR" value="Make Farmer to collect {value} apples"/>
+    <message name="FARMER_TOTAL_NAME" value="Farmer achievements"/>
+    <message name="FARMER_TOTAL" value="Complete all Farmer achievements"/>
+
+    <!-- hunter -->
+    <message name="NOT_DESTROY_GENERATION_HUNTER_NAME" value="Careful"/>
+    <message name="NOT_DESTROY_GENERATION_HUNTER" value="Win the battle without destroying generators"/>
+    <message name="DESTROY_ACTIVATOR_HUNTER_NAME" value="Reckless"/>
+    <message name="DESTROY_ACTIVATOR_HUNTER" value="Destroy {value} generators in one turn"/>
+    <message name="NOT_GET_DAMAGE_HUNTER_NAME" value="Evasive"/>
+    <message name="NOT_GET_DAMAGE_HUNTER" value="Don't take any damage in combat"/>
+    <message name="HUNTER_TOTAL_NAME" value="Hunter achievents"/>
+    <message name="HUNTER_TOTAL" value="Complete all Hunter achievements"/>
+
+    <!-- maniacs -->
+    <message name="DODGE_HOOK_MANIACS_NAME" value="Dexterous"/>
+    <message name="DODGE_HOOK_MANIACS" value="Dodge all hooks"/>
+    <message name="KILL_TOGETHER_MANIACS_NAME" value="Accurate"/>
+    <message name="KILL_TOGETHER_MANIACS" value="Finish both Maniacs at one turn"/>
+    <message name="FLOODING_BOSSES_MANIACS_NAME" value="Overboard"/>
+    <message name="FLOODING_BOSSES_MANIACS" value="Sink both bosses"/>
+    <message name="MANIACS_TOTAL_NAME" value="Maniacs achievements"/>
+    <message name="MANIACS_TOTAL" value="Complete all Maniacs achievements"/>
+
+    <!-- miner -->
+    <message name="DESTROYER_MINER_NAME" value="Deminer"/>
+    <message name="DESTROYER_MINER" value="Destroy {value} mines on a single turn"/>
+    <message name="DODGER_MINER_NAME" value="Wind walk"/>
+    <message name="DODGER_MINER" value="Don't get hit by a mine"/>
+    <message name="SCOUNDREL_MINER_NAME" value="Betrayal"/>
+    <message name="SCOUNDREL_MINER" value="Kill the boss with his own mine"/>
+    <message name="MINER_TOTAL_NAME" value="Miner achievents"/>
+    <message name="MINER_TOTAL" value="Complete all Miner achievements"/>
+
+    <!-- samurai -->
+    <message name="SINK_ALL_SAMURAI_NAME" value="Bath time"/>
+    <message name="SINK_ALL_SAMURAI" value="Sink the Samurai {value} times"/>
+    <message name="FIRE_KILL_SAMURAI_NAME" value="Kill it with fire"/>
+    <message name="FIRE_KILL_SAMURAI" value="Burn down the Samurai {value} times"/>
+    <message name="DODGER_SAMURAI_NAME" value="Shogun"/>
+    <message name="DODGER_SAMURAI" value="Don't get more than {value} damage"/>
+    <message name="SAMURAI_TOTAL_NAME" value="Samurai achievements"/>
+    <message name="SAMURAI_TOTAL" value="Complete all Samurai achievements"/>
+
+    <!-- sergeant -->
+    <message name="KILL_SERGEANT_ON_FIRST_TURN_NAME" value="Gambit"/>
+    <message name="KILL_SERGEANT_ON_FIRST_TURN" value="Kill the Sergeant on a first turn"/>
+    <message name="KILL_SERGEANT_LATEST_NAME" value="Delayed revenge"/>
+    <message name="KILL_SERGEANT_LATEST" value="Destroy subordinates before taking the Sergeant"/>
+    <message name="DODGER_SERGEANT_NAME" value="Long memory"/>
+    <message name="DODGER_SERGEANT" value="Don't get hit by a guarding bot"/>
+    <message name="SERGEANT_TOTAL_NAME" value="Sergeant achievements"/>
+    <message name="SERGEANT_TOTAL" value="Complete all Sergeant achievements"/>
+
+    <!-- zombie -->
+    <message name="DODGER_BURNING_DEAD_NAME" value="Stealthy"/>
+    <message name="DODGER_BURNING_DEAD" value="Don't get hit by a meteor"/>
+    <message name="FAIL_DROP_THREE_METEORS_NAME" value="Not too much"/>
+    <message name="FAIL_DROP_THREE_METEORS" value="Prevent falling of 3 meteors per one turn"/>
+    <message name="METEOR_ON_ZOMBIE_NAME" value="By any means"/>
+    <message name="METEOR_ON_ZOMBIE" value="Hit zombies with their meteors {value} times"/>
+    <message name="BURNING_DEAD_TOTAL_NAME" value="Burning zombies achievements"/>
+    <message name="BURNING_DEAD_TOTAL" value="Complete all Burning zombies achievements"/>
+
+    <!-- wandering soul -->
+    <message name="DONT_LET_REGENERATE_NAME" value="Interruptor"/>
+    <message name="DONT_LET_REGENERATE" value="Don't let enemies regenerate"/>
+    <message name="WIN_WITH_MORE_THAN_HALF_HP_NAME" value="Survivalist"/>
+    <message name="WIN_WITH_MORE_THAN_HALF_HP" value="Win at least 50% health remaining"/>
+    <message name="KILL_FOES_IN_ONE_TURN_NAME" value="Soulbound"/>
+    <message name="KILL_FOES_IN_ONE_TURN" value="Kill all enemies during one turn"/>
+    <message name="WANDERING_SOUL_TOTAL_NAME" value="Wandering Soul achievements"/>
+    <message name="WANDERING_SOUL_TOTAL" value="Complete all Soul achievements"/>
+
+    <!-- voodoo shaman -->
+    <message name="KILL_SUPPORT_AFTER_TELEPORT_NAME" value="Faster than demon"/>
+    <message name="KILL_SUPPORT_AFTER_TELEPORT" value="Kill demon helper after he teleports on the same turn"/>
+    <message name="LAST_BOSS_STANDING_NAME" value="That's for dessert"/>
+    <message name="LAST_BOSS_STANDING" value="Destroy all demons before killing the Shaman"/>
+    <message name="SHAMAN_KILL_IN_TWO_TURNS_NAME" value="Life is a blink"/>
+    <message name="SHAMAN_KILL_IN_TWO_TURNS" value="Kill Shaman in first 2 turns"/>
+    <message name="SHAMAN_TOTAL_NAME" value="Voodoo shaman achievements"/>
+    <message name="SHAMAN_TOTAL" value="Complete all Voodoo shaman achievements"/>
+
+    <!-- illusionist -->
+    <message name="ILLUSIONIST_DROWN_FIVE_TIMES_NAME" value="Underwater tricks"/>
+    <message name="ILLUSIONIST_DROWN_FIVE_TIMES" value="Throw Illusionist into water 5 times"/>
+    <message name="DONT_LET_SPAWN_3_ILLS_NAME" value="Disrupted performance"/>
+    <message name="DONT_LET_SPAWN_3_ILLS" value="Don't let Illusionist make 3 copies"/>
+    <message name="KILL_ALL_CLONES_NAME" value="Clone phobia"/>
+    <message name="KILL_ALL_CLONES" value="Destroy all clones that appear in battle"/>
+    <message name="ILLUSIONIST_TOTAL_NAME" value="Illusionist achievements"/>
+    <message name="ILLUSIONIST_TOTAL" value="Complete all Illusionist achievements"/>
+
+    <!-- vikings -->
+    <message name="VIKINGS_DROWN_ALL_NAME" value="Drakkar forgotten"/>
+    <message name="VIKINGS_DROWN_ALL" value="Drown all vikings"/>
+    <message name="VIKINGS_KILL_TWO_IN_TURN_NAME" value="To Valhalla together"/>
+    <message name="VIKINGS_KILL_TWO_IN_TURN" value="Kill at least 2 vikings in one turn"/>
+    <message name="VIKINGS_WIN_WITH_FULL_HP_NAME" value="Untouchable"/>
+    <message name="VIKINGS_WIN_WITH_FULL_HP" value="Win the battle without taking any damage"/>
+    <message name="VIKINGS_TOTAL_NAME" value="Vikings achievements"/>
+    <message name="VIKINGS_TOTAL" value="Complete all vikings achievements"/>
+
+    <!-- pirate -->
+    <message name="PIRATE_DROWN_SUPPORTS_NAME" value="No more questions"/>
+    <message name="PIRATE_DROWN_SUPPORTS" value="Drown all sailors"/>
+    <message name="PIRATE_KILL_LAST_NAME" value="Last on the ship"/>
+    <message name="PIRATE_KILL_LAST" value="Destroy all sailors before killing the captain"/>
+    <message name="PIRATE_DONT_SINK_NAME" value="Hydrophobia"/>
+    <message name="PIRATE_DONT_SINK" value="Never touch water during the battle"/>
+    <message name="PIRATE_TOTAL_NAME" value="Pirate gang achievements"/>
+    <message name="PIRATE_TOTAL" value="Complete all pirate gang achievements"/>
+
+    <!-- wind master -->
+    <message name="WIND_MASTER_DROWN_GUARDIANS_NAME" value="Nimble"/>
+    <message name="WIND_MASTER_DROWN_GUARDIANS" value="Drown all guardian bots in the first 7 turns without activating them"/>
+    <message name="WIND_MASTER_KILL_LAST_NAME" value="Favorable wind"/>
+    <message name="WIND_MASTER_KILL_LAST" value="Wind master must be the last to kill"/>
+    <message name="WIND_MASTER_DONT_DROWN_ENEMIES_NAME" value="No food for fish"/>
+    <message name="WIND_MASTER_DONT_DROWN_ENEMIES" value="Destroy the enemies without drowning them"/>
+    <message name="WIND_MASTER_TOTAL_NAME" value="Wind master achievements"/>
+    <message name="WIND_MASTER_TOTAL" value="Complete all wind master achievements"/>
+
+    <!-- yakuza -->
+    <message name="YAKUZA_KILL_STEEL_LAST_NAME" value="Iron man"/>
+    <message name="YAKUZA_KILL_STEEL_LAST" value="Steel must be the last to be destroyed"/>
+    <message name="YAKUZA_KILL_TWO_IN_TURN_NAME" value="Menace to the underground"/>
+    <message name="YAKUZA_KILL_TWO_IN_TURN" value="Kill at least 2 enemies on one turn"/>
+    <message name="YAKUZA_DO_MONSTER_THREE_TIMES_NAME" value="Righteous madness"/>
+    <message name="YAKUZA_DO_MONSTER_THREE_TIMES" value="Make MONSTER at least three times"/>
+    <message name="YAKUZA_TOTAL_NAME" value="Yakuza achievements"/>
+    <message name="YAKUZA_TOTAL" value="Complete all yakuza achievements"/>
+
+    <!-- dead pirate -->
+    <message name="PIRATE_REVENGE_DROWN_SUPPORTS_NAME" value="Still no more questions"/>
+    <message name="PIRATE_REVENGE_DROWN_SUPPORTS" value="Drown all sailors... again"/>
+    <message name="PIRATE_REVENGE_AVOID_METEORS_NAME" value="Self-made bunker"/>
+    <message name="PIRATE_REVENGE_AVOID_METEORS" value="Don't get ht by meteors"/>
+    <message name="PIRATE_REVENGE_DROWN_THREE_TIMES_NAME" value="Unsinkable"/>
+    <message name="PIRATE_REVENGE_DROWN_THREE_TIMES" value="Throw the captain into the water 3 times during a battle"/>
+    <message name="PIRATE_REVENGE_TOTAL_NAME" value="Dead pirate achievements"/>
+    <message name="PIRATE_REVENGE_TOTAL" value="Complete all dead pirate achievements"/>
+
+    <!--1.31-->
+    <!-- romeo -->
+    <message name="ROMEO_KILL_WITH_ONE_SHOT_NAME" value="Binding bullet"/>
+    <message name="ROMEO_KILL_WITH_ONE_SHOT" value="Kill both enemies with one shot"/>
+    <message name="ROMEO_DONT_LET_DODGE_NAME" value="Luck in love"/>
+    <message name="ROMEO_DONT_LET_DODGE" value="Don't let Romeo dodge a single time"/>
+    <message name="ROMEO_KILL_AS_ZOMBIES_NAME" value="Passion beyond the grave"/>
+    <message name="ROMEO_KILL_AS_ZOMBIES" value="Kill both enemies in zombie state"/>
+    <message name="ROMEO_TOTAL_NAME" value="Romeo and Juliet achievements"/>
+    <message name="ROMEO_TOTAL" value="Complete all Romeo and Juliet achievements"/>
+
+    <!-- king dead -->
+    <message name="KING_DEAD_LET_SPAWN_10_ZOMBIES_NAME" value="Royal army"/>
+    <message name="KING_DEAD_LET_SPAWN_10_ZOMBIES" value="Wait until there's 10 resurrected zombies"/>
+    <message name="KING_DEAD_DONT_LET_RES_FIVE_TIMES_NAME" value="Better stay underground"/>
+    <message name="KING_DEAD_DONT_LET_RES_FIVE_TIMES" value="No more than 5 zombies must be raised during the battle"/>
+    <message name="KING_DEAD_KILL_IN_ONE_TURN_NAME" value="Joint fail"/>
+    <message name="KING_DEAD_KILL_IN_ONE_TURN" value="Kill King and Summoner on single turn"/>
+    <message name="KING_DEAD_TOTAL_NAME" value="Zombie king achievements"/>
+    <message name="KING_DEAD_TOTAL" value="Complete all Zombie king achievements"/>
+
+    <!-- ancient ghost -->
+    <message name="ANCIENT_GHOST_AVOID_CLOUDS_NAME" value="Under the umbrella"/>
+    <message name="ANCIENT_GHOST_AVOID_CLOUDS" value="No units (incl. enemies) must be damaged by lightning"/>
+    <message name="ANCIENT_GHOST_DONT_MOVE_NAME" value="Bound conductor"/>
+    <message name="ANCIENT_GHOST_DONT_MOVE" value="Defeat the boss without any movement"/>
+    <message name="ANCIENT_GHOST_KILL_WITH_CLOUD_NAME" value="Ghostly charge"/>
+    <message name="ANCIENT_GHOST_KILL_WITH_CLOUD" value="Kill the Ghost with the lightning"/>
+    <message name="ANCIENT_GHOST_TOTAL_NAME" value="Ancient ghost achievements"/>
+    <message name="ANCIENT_GHOST_TOTAL" value="Complete all Ancient ghost achievements"/>
+
+    <!-- engineer -->
+    <message name="ENGINEER_AVOID_LASERS_NAME" value="Laser dodger"/>
+    <message name="ENGINEER_AVOID_LASERS" value="Don't get hit by lasers"/>
+    <message name="ENGINEER_KILL_WITH_ROCKETS_NAME" value="False target"/>
+    <message name="ENGINEER_KILL_WITH_ROCKETS" value="Get rid of Engineer using his own rockets"/>
+    <message name="ENGINEER_DONT_LET_SPAWN_2_DRONES_NAME" value="System failure"/>
+    <message name="ENGINEER_DONT_LET_SPAWN_2_DRONES" value="Don't let Engineer create more than 1 droid"/>
+    <message name="ENGINEER_TOTAL_NAME" value="Engineer achievements"/>
+    <message name="ENGINEER_TOTAL" value="Complete all Engineer achievements"/>
+
+</dictionary>

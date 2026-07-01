@@ -1,0 +1,40 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>com.google.guava</id>
+	<versionNumber>32.0.0</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>com.google.guava.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.guava.GuavaExtension</initializer>
+				<finalizer>com.distriqt.extension.guava.GuavaExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>com.google.guava.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.guava.GuavaExtension</initializer>
+				<finalizer>com.distriqt.extension.guava.GuavaExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>com.google.guava.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.guava.GuavaExtension</initializer>
+				<finalizer>com.distriqt.extension.guava.GuavaExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>com.google.guava.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.guava.GuavaExtension</initializer>
+				<finalizer>com.distriqt.extension.guava.GuavaExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="default"> 
+			<applicationDeployment /> 
+		</platform>
+		
+	</platforms>
+</extension>

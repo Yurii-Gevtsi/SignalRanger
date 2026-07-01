@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:73810b059465e8788b5a79af04002b90:74acd8a1b9cbd126c2a5b60a3bc9b41c:5533b85edcf96802b3edcf51c1daa3a8$ -->
+<TextureAtlas imagePath="armory_room_sprite_sheet.atf">
+    <SubTexture name="ArmoryArrowDesktop" x="754" y="2" rotated="true" width="111" height="55"/>
+    <SubTexture name="Armory_VipTimerBackBesktop" x="953" y="2" width="25" height="25"/>
+    <SubTexture name="Armory_VipTimerIcon" x="867" y="2" rotated="true" width="84" height="68"/>
+    <SubTexture name="Armory_background" x="2" y="2" rotated="true" width="750" height="1430"/>
+    <SubTexture name="TempTimerIcon" x="980" y="2" width="21" height="21"/>
+</TextureAtlas>

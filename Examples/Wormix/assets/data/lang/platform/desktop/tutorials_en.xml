@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+
+    <message name="NEXT_HELP_TEXT_BTN" value="Next"/>
+
+    <!--1 MISSION-->
+    <message name="LEARNING_1_TURN_1_TEXT"
+             value="Welcome to Bombix - a rough and dangerous world! First, you must learn how to move around and get yourself a weapon. See the crate? There's a rifle in it. Come to the crate using "/>
+    <message name="LEARNING_1_TURN_1_TEXT_2"
+             value="buttons and take the weapon."/>
+    <message name="LEARNING_1_TURN_2_TEXT"
+             value="Great! Now, shooting. If you don't know how to shoot, you'll be dead very fast. Aim with the arrow or "/>
+    <message name="LEARNING_1_TURN_2_TEXT"
+             value="buttons. Aim straight at this marker."/>
+    <message name="LEARNING_1_TURN_3_TEXT" value="To shoot press SPACE."/>
+    <message name="LEARNING_1_TURN_4_TEXT" value="Holy sheep! Good shot! Nail down the success - try again."/>
+
+    <!--2 MISSION-->
+    <message name="LEARNING_2_TURN_1_N1_TEXT"
+             value="What are you going to do when you get in such place? Jump! Go to the edge of platform."/>
+    <message name="LEARNING_2_TURN_1_N2_TEXT" value="Press the F or ENTER button to jump forward."/>
+    <message name="LEARNING_2_TURN_2_TEXT"
+             value="To get on the next platform, you should learn a special move: backflip. Turn your back to the wall and press the R or Backspace button."/>
+    <message name="LEARNING_2_TURN_3_TEXT" value="Good. There's a shotgun in this crate, take it."/>
+    <message name="LEARNING_2_TURN_4_TEXT"
+             value="And now let's watch your weapon in action. Jump to the next platform and destroy the target!"/>
+
+    <!--3 MISSION-->
+    <message name="LEARNING_3_TURN_1_TEXT"
+             value="The wind is the key to greatest shots. Depending on your skill, the wind can be your ally, but it also may become your foe."/>
+    <message name="LEARNING_3_TURN_2_TEXT" value="Here you can see the strength of wind and its direction."/>
+    <message name="LEARNING_3_TURN_3_TEXT"
+             value="Lots of good weapons are affected by the wind. For example, bazooka."/>
+    <message name="LEARNING_3_TURN_4_TEXT" value="Tap on this icon or the key"/>
+    <message name="LEARNING_3_TURN_4_TEXT_2" value="to take the bazooka."/>
+    <message name="LEARNING_3_TURN_5_N1_TEXT"
+             value="To shoot the bazooka you should also adjust the power. Power is increasing by holding SPACE button."/>
+    <message name="LEARNING_3_TURN_5_N2_TEXT"
+             value="Here's your target! Take aim at the marker and shoot with maximum force. Press and hold SPACE button."/>
+    <message name="LEARNING_3_TURN_6_TEXT" value="Target dispatched. Great job! Let's try again!"/>
+    <message name="LEARNING_3_TURN_7_TEXT"
+             value="Great, let's go forth. Not all the weapons are affected by the wind. Look, there's a grenade in your backpack, take it."/>
+    <message name="LEARNING_3_TURN_8_TEXT" value="Grenade timer is always set to 3 seconds."/>
+    <message name="LEARNING_3_TURN_9_TEXT"
+             value="Now it's your turn - take aim and throw the grenade with maximum power."/>
+
+    <!--4 MISSION-->
+    <message name="LEARNING_4_TURN_1_TEXT"
+             value="Now I'll show you a couple of tools to make your way through obstructions. First, pick up a crate with the DRILL."/>
+    <message name="LEARNING_4_TURN_2_TEXT"
+             value="The drill allows you to make a long tunnel directly below. How does it work? Press the SPACE button!"/>
+    <message name="LEARNING_4_TURN_3_TEXT"
+             value="So that's how it works. Let's try another tool: AUGER. Look for it in this crate!"/>
+    <message name="LEARNING_4_TURN_4_TEXT"
+             value="The auger is used to dig through any landmass. Come to this wall!"/>
+    <message name="LEARNING_4_TURN_5_TEXT"
+             value="Press SPACE button to start digging! Your task is to pick up the next crate."/>
+    <message name="LEARNING_4_TURN_6_TEXT"
+             value="Remember that both drill and auger can be stopped at any moment by pressing SPACE button. But let's get back to your task, pick up the crate!"/>
+    <message name="LEARNING_4_TURN_7_TEXT"
+             value="You've got the DYNAMITE. It's a killer weapon, especially for its price. Let me advise how to use it..."/>
+    <message name="LEARNING_4_TURN_8_TEXT"
+             value="Dynamite is laid under your unit's feet. Come to the target, press SPACE button, and run away immediately!"/>
+    <message name="LEARNING_4_TURN_9_TEXT"
+             value="Congratulations, target destroyed! And our mission also ends here. Good luck!"/>
+
+    <!--5 MISSION-->
+    <message name="LEARNING_5_TURN_1_TEXT"
+             value="I guess it's quite boring to just destroy targets. Lets take a look at real enemies. We are going to use mines - basic and very useful weapon. Select the mine in your backpack."/>
+    <message name="LEARNING_5_TURN_2_TEXT"
+             value="You can, for example, just drop a mine next to an enemy. But that will merely act like a weaker version of a dynamite."/>
+    <message name="LEARNING_5_TURN_3_TEXT"
+             value="We'll do it another way. Come under the arrow, place a mine there (by pressing SPACE button), and get to initial point!"/>
+    <message name="LEARNING_5_TURN_4_TEXT" value="Run to initial point and grab the crate!"/>
+    <message name="LEARNING_5_TURN_5_TEXT"
+             value="Shoot down a zombie! By the power of a shot he'll be thrown on a mine, which deal additional damage!"/>
+    <message name="LEARNING_5_TURN_6_TEXT" value="Finish zombie with your rifle if necessary!"/>
+    <message name="LEARNING_5_TURN_7_TEXT"
+             value="Remember this combo - if there are no units nearby when you set up a mine, it won't waste a turn!"/>
+    <message name="LEARNING_5_TURN_8_TEXT"
+             value="The second zombie is much stronger but we'll use a mine to send him to the water! Select the mine in the backpack."/>
+    <message name="LEARNING_5_TURN_9_TEXT" value="Place a mine at this point and run away to safety!"/>
+    <message name="LEARNING_5_TURN_10_TEXT"
+             value="Here comes a tricky part: you have to explode the mine without wasting a turn. Approach the mine, and as it starts beeping, get away!"/>
+    <message name="LEARNING_5_TURN_11_TEXT" value="Great! Now you can take the crate with a weapon."/>
+    <message name="LEARNING_5_TURN_12_TEXT"
+             value="That was close, you should react faster next time. Well, pick up the crate."/>
+    <message name="LEARNING_5_TURN_13_TEXT"
+             value="So, you're wielding the BAT. I think you guess what to do. Stand next to the enemy and press SPACE button."/>
+    <message name="LEARNING_5_TURN_14_TEXT"
+             value="Great strike! Our learning session is finished, feel free to use your new skills in real combat!"/>
+
+    <!--name & decription-->
+    <message name="LEARNING_MISSION_1_NAME" value="Tutorial: Shooting"/>
+    <message name="LEARNING_MISSION_2_NAME" value="Tutorial: Jumping"/>
+    <message name="LEARNING_MISSION_3_NAME" value="Tutorial: Missiles"/>
+    <message name="LEARNING_MISSION_4_NAME" value="Tutorial: Instruments"/>
+    <message name="LEARNING_MISSION_5_NAME" value="Tutorial: Landmines"/>
+    <message name="LEARNING_MISSION_1_DESCR" value="-"/>
+    <message name="LEARNING_MISSION_2_DESCR" value="Learn how to jump around the map."/>
+    <message name="LEARNING_MISSION_3_DESCR" value="Learn how to perform precise shots and use the wind."/>
+    <message name="LEARNING_MISSION_4_DESCR" value="Here you'll learn basic tools to overcome obstructions."/>
+    <message name="LEARNING_MISSION_5_DESCR" value="This mission will teach you to use mines."/>
+
+    <message name="TEAM_NAME_LEARNING_ZOMBIES" value="Zombies"/>
+
+</dictionary>

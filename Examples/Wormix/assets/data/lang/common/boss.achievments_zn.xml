@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+<message name="BOSS_ACHIEVE" value="老怪击杀成就"/>
+<message name="ACHIEVE" value="成就"/>
+<message name="COMPLETED" value="玩家赢得战斗，获得成就！"/>
+<message name="FAILED" value="失败！"/>
+<message name="CREDITED" value="已完成！"/>
+<message name="PROGRESS" value="进度"/>
+<message name="IRON_FARMER_NAME" value="刚毅农民"/>
+<message name="IRON_FARMER" value="击败农民，但未采集到苹果"/>
+<message name="PICK_APPLES_FARMER_NAME" value="苹果迷"/>
+<message name="PICK_APPLES_FARMER" value="采集 12 个苹果，毫无遗漏"/>
+<message name="FARMER_MANIPULATOR_NAME" value="操纵高手"/>
+<message name="FARMER_MANIPULATOR" value="指挥农民采集 {value} 个苹果"/>
+<message name="FARMER_TOTAL_NAME" value="农民成就"/>
+<message name="FARMER_TOTAL" value="获得全部农民成就"/>
+<message name="NOT_DESTROY_GENERATION_HUNTER_NAME" value="谨慎有加"/>
+<message name="NOT_DESTROY_GENERATION_HUNTER" value="在不摧毁发电机的情况下赢得战斗"/>
+<message name="DESTROY_ACTIVATOR_HUNTER_NAME" value="豪迈激进"/>
+<message name="DESTROY_ACTIVATOR_HUNTER" value="在一轮中摧毁 {value} 台发电机"/>
+<message name="NOT_GET_DAMAGE_HUNTER_NAME" value="闪避高手"/>
+<message name="NOT_GET_DAMAGE_HUNTER" value="在战斗中未受到任何伤害"/>
+<message name="HUNTER_TOTAL_NAME" value="猎人成就"/>
+<message name="HUNTER_TOTAL" value="获得全部猎人成就"/>
+<message name="DODGE_HOOK_MANIACS_NAME" value="身手敏捷"/>
+<message name="DODGE_HOOK_MANIACS" value="避开所有钩子"/>
+<message name="KILL_TOGETHER_MANIACS_NAME" value="精准无敌"/>
+<message name="KILL_TOGETHER_MANIACS" value="在一轮中消灭两个杀人狂魔"/>
+<message name="FLOODING_BOSSES_MANIACS_NAME" value="全心而战"/>
+<message name="FLOODING_BOSSES_MANIACS" value="致使两只老怪落水"/>
+<message name="MANIACS_TOTAL_NAME" value="杀人狂魔成就"/>
+<message name="MANIACS_TOTAL" value="获得全部杀人狂魔成就"/>
+<message name="DESTROYER_MINER_NAME" value="排雷大师"/>
+<message name="DESTROYER_MINER" value="一轮摧毁 {value} 颗地雷"/>
+<message name="DODGER_MINER_NAME" value="疾风步"/>
+<message name="DODGER_MINER" value="未被地雷击中"/>
+<message name="SCOUNDREL_MINER_NAME" value="绝妙逆袭"/>
+<message name="SCOUNDREL_MINER" value="用老怪的地雷歼灭老怪"/>
+<message name="MINER_TOTAL_NAME" value="地雷工兵成就"/>
+<message name="MINER_TOTAL" value="获得全部地雷工兵成就"/>
+<message name="SINK_ALL_SAMURAI_NAME" value="洗浴时间"/>
+<message name="SINK_ALL_SAMURAI" value="使武士落水 {value} 次"/>
+<message name="FIRE_KILL_SAMURAI_NAME" value="烈焰歼灭"/>
+<message name="FIRE_KILL_SAMURAI" value="使用烈焰袭击武士 {value} 次"/>
+<message name="DODGER_SAMURAI_NAME" value="镇守将军"/>
+<message name="DODGER_SAMURAI" value="所受伤害值未超过  {value}"/>
+<message name="SAMURAI_TOTAL_NAME" value="武士成就"/>
+<message name="SAMURAI_TOTAL" value="获得全部武士成就"/>
+<message name="KILL_SERGEANT_ON_FIRST_TURN_NAME" value="初战告捷"/>
+<message name="KILL_SERGEANT_ON_FIRST_TURN" value="第一轮便杀死中士"/>
+<message name="KILL_SERGEANT_LATEST_NAME" value="一网打尽"/>
+<message name="KILL_SERGEANT_LATEST" value="先消灭部属，再歼灭中士"/>
+<message name="DODGER_SERGEANT_NAME" value="毫发无损"/>
+<message name="DODGER_SERGEANT" value="未被守卫机器人击中"/>
+<message name="SERGEANT_TOTAL_NAME" value="中士成就"/>
+<message name="SERGEANT_TOTAL" value="获得全部中士成就"/>
+<message name="DODGER_BURNING_DEAD_NAME" value="成功隐匿"/>
+<message name="DODGER_BURNING_DEAD" value="未被流星击中"/>
+<message name="FAIL_DROP_THREE_METEORS_NAME" value="恰到好处"/>
+<message name="FAIL_DROP_THREE_METEORS" value="每轮阻止 3 颗流星陨落"/>
+<message name="METEOR_ON_ZOMBIE_NAME" value="不择手段"/>
+<message name="METEOR_ON_ZOMBIE" value="利用流星击中僵尸 {value} 次"/>
+<message name="BURNING_DEAD_TOTAL_NAME" value="烈焰僵尸成就"/>
+<message name="BURNING_DEAD_TOTAL" value="获得全部烈焰僵尸成就"/>
+<message name="DONT_LET_REGENERATE_NAME" value="阻碍大师"/>
+<message name="DONT_LET_REGENERATE" value="未让敌人恢复生命值"/>
+<message name="WIN_WITH_MORE_THAN_HALF_HP_NAME" value="求生专家"/>
+<message name="WIN_WITH_MORE_THAN_HALF_HP" value="获胜时保持至少 50%的生命值"/>
+<message name="KILL_FOES_IN_ONE_TURN_NAME" value="一举歼灭"/>
+<message name="KILL_FOES_IN_ONE_TURN" value="一轮歼灭所有敌人"/>
+<message name="WANDERING_SOUL_TOTAL_NAME" value="游魂成就"/>
+<message name="WANDERING_SOUL_TOTAL" value="获得全部游魂成就"/>
+<message name="KILL_SUPPORT_AFTER_TELEPORT_NAME" value="超越恶魔"/>
+<message name="KILL_SUPPORT_AFTER_TELEPORT" value="在同一轮战斗中，在恶魔瞬移之后杀死恶魔帮凶"/>
+<message name="LAST_BOSS_STANDING_NAME" value="手到擒来"/>
+<message name="LAST_BOSS_STANDING" value="消灭萨满前歼灭所有恶魔"/>
+<message name="SHAMAN_KILL_IN_TWO_TURNS_NAME" value="转瞬即逝"/>
+<message name="SHAMAN_KILL_IN_TWO_TURNS" value="在最初的两轮战斗中消灭萨满"/>
+<message name="SHAMAN_TOTAL_NAME" value="巫毒萨满成就"/>
+<message name="SHAMAN_TOTAL" value="获得全部巫毒萨满成就"/>
+<message name="ILLUSIONIST_DROWN_FIVE_TIMES_NAME" value="高超落水术"/>
+<message name="ILLUSIONIST_DROWN_FIVE_TIMES" value="将幻术师丢入水中 5 次"/>
+<message name="DONT_LET_SPAWN_3_ILLS_NAME" value="卓越阻断"/>
+<message name="DONT_LET_SPAWN_3_ILLS" value="不要让幻术师幻化成 3 个克隆人"/>
+<message name="KILL_ALL_CLONES_NAME" value="克隆恐惧症"/>
+<message name="KILL_ALL_CLONES" value="消灭战斗中出现的全部克隆人"/>
+<message name="ILLUSIONIST_TOTAL_NAME" value="幻术师成就"/>
+<message name="ILLUSIONIST_TOTAL" value="获得全部幻术师成就"/>
+<message name="VIKINGS_DROWN_ALL_NAME" value="遗忘战舰"/>
+<message name="VIKINGS_DROWN_ALL" value="淹死所有北欧海盗"/>
+<message name="VIKINGS_KILL_TWO_IN_TURN_NAME" value="同赴黄泉"/>
+<message name="VIKINGS_KILL_TWO_IN_TURN" value="一轮战斗中至少消灭 2 个海盗"/>
+<message name="VIKINGS_WIN_WITH_FULL_HP_NAME" value="毫发无伤"/>
+<message name="VIKINGS_WIN_WITH_FULL_HP" value="在不受到任何伤害的情况下赢得战斗"/>
+<message name="VIKINGS_TOTAL_NAME" value="北欧海盗成就"/>
+<message name="VIKINGS_TOTAL" value="获得全部北欧海盗成就"/>
+<message name="PIRATE_DROWN_SUPPORTS_NAME" value="易如反掌"/>
+<message name="PIRATE_DROWN_SUPPORTS" value="淹死所有水手"/>
+<message name="PIRATE_KILL_LAST_NAME" value="独孤天下"/>
+<message name="PIRATE_KILL_LAST" value="杀死船长前消灭所有水手"/>
+<message name="PIRATE_DONT_SINK_NAME" value="恐水症"/>
+<message name="PIRATE_DONT_SINK" value="在战斗中从未接触水"/>
+<message name="PIRATE_TOTAL_NAME" value="海盗团成就"/>
+<message name="PIRATE_TOTAL" value="获得全部海盗团伙成就"/>
+<message name="WIND_MASTER_DROWN_GUARDIANS_NAME" value="速战速决"/>
+<message name="WIND_MASTER_DROWN_GUARDIANS" value="在最初的 7 轮战斗中淹没所有守护机器人，而不启动他们"/>
+<message name="WIND_MASTER_KILL_LAST_NAME" value="顺风而战"/>
+<message name="WIND_MASTER_KILL_LAST" value="最后消灭控风大师"/>
+<message name="WIND_MASTER_DONT_DROWN_ENEMIES_NAME" value="硬战到底"/>
+<message name="WIND_MASTER_DONT_DROWN_ENEMIES" value="消灭敌人却不让其落水"/>
+<message name="WIND_MASTER_TOTAL_NAME" value="控风大师成就"/>
+<message name="WIND_MASTER_TOTAL" value="获得全部控风大师成就"/>
+<message name="YAKUZA_KILL_STEEL_LAST_NAME" value="钢铁侠"/>
+<message name="YAKUZA_KILL_STEEL_LAST" value="必须最后摧毁金刚军团"/>
+<message name="YAKUZA_KILL_TWO_IN_TURN_NAME" value="地下危机"/>
+<message name="YAKUZA_KILL_TWO_IN_TURN" value="一轮战斗中至少消灭 2 个敌人"/>
+<message name="YAKUZA_DO_MONSTER_THREE_TIMES_NAME" value="正义疯魔"/>
+<message name="YAKUZA_DO_MONSTER_THREE_TIMES" value="至少制造怪兽三次"/>
+<message name="YAKUZA_TOTAL_NAME" value="黑帮成就"/>
+<message name="YAKUZA_TOTAL" value="获得所有黑帮成就"/>
+<message name="PIRATE_REVENGE_DROWN_SUPPORTS_NAME" value="仍然易如反掌"/>
+<message name="PIRATE_REVENGE_DROWN_SUPPORTS" value="再次……淹死所有水手"/>
+<message name="PIRATE_REVENGE_AVOID_METEORS_NAME" value="自制掩体"/>
+<message name="PIRATE_REVENGE_AVOID_METEORS" value="未被流星击中"/>
+<message name="PIRATE_REVENGE_DROWN_THREE_TIMES_NAME" value="永不沉没"/>
+<message name="PIRATE_REVENGE_DROWN_THREE_TIMES" value="在一次战斗中将船长丢入水中 3 次"/>
+<message name="PIRATE_REVENGE_TOTAL_NAME" value="死亡海盗成就"/>
+<message name="PIRATE_REVENGE_TOTAL" value="获得全部死亡海盗成就"/>
+<message name="ROMEO_KILL_WITH_ONE_SHOT_NAME" value="一箭双雕"/>
+<message name="ROMEO_KILL_WITH_ONE_SHOT" value="一次射击消灭两个敌人"/>
+<message name="ROMEO_DONT_LET_DODGE_NAME" value="爱情好运"/>
+<message name="ROMEO_DONT_LET_DODGE" value="次次均未让罗密欧避开"/>
+<message name="ROMEO_KILL_AS_ZOMBIES_NAME" value="激情杀戮"/>
+<message name="ROMEO_KILL_AS_ZOMBIES" value="在僵尸状态下杀死 2 个敌人"/>
+<message name="ROMEO_TOTAL_NAME" value="罗密欧和朱丽叶成就"/>
+<message name="ROMEO_TOTAL" value="获得全部罗密欧和朱丽叶成就"/>
+<message name="KING_DEAD_LET_SPAWN_10_ZOMBIES_NAME" value="皇家军队"/>
+<message name="KING_DEAD_LET_SPAWN_10_ZOMBIES" value="等到有 10 个复活僵尸再开战"/>
+<message name="KING_DEAD_DONT_LET_RES_FIVE_TIMES_NAME" value="最好待在地下"/>
+<message name="KING_DEAD_DONT_LET_RES_FIVE_TIMES" value="在战斗期间，僵尸不得超过 5 个"/>
+<message name="KING_DEAD_KILL_IN_ONE_TURN_NAME" value="片甲不留"/>
+<message name="KING_DEAD_KILL_IN_ONE_TURN" value="在一轮战斗中消灭僵尸之王和召唤师"/>
+<message name="KING_DEAD_TOTAL_NAME" value="僵尸之王成就"/>
+<message name="KING_DEAD_TOTAL" value="获得全部僵尸之王成就"/>
+<message name="ANCIENT_GHOST_AVOID_CLOUDS_NAME" value="保护伞"/>
+<message name="ANCIENT_GHOST_AVOID_CLOUDS" value="未让闪电击中任何单位（包括敌人）"/>
+<message name="ANCIENT_GHOST_DONT_MOVE_NAME" value="原地作战大师"/>
+<message name="ANCIENT_GHOST_DONT_MOVE" value="原地不动消灭老怪"/>
+<message name="ANCIENT_GHOST_KILL_WITH_CLOUD_NAME" value="幽灵电荷"/>
+<message name="ANCIENT_GHOST_KILL_WITH_CLOUD" value="用闪电消灭幽灵"/>
+<message name="ANCIENT_GHOST_TOTAL_NAME" value="上古幽灵成就"/>
+<message name="ANCIENT_GHOST_TOTAL" value="获得全部上古幽灵成就"/>
+<message name="ENGINEER_AVOID_LASERS_NAME" value="激光躲避高手"/>
+<message name="ENGINEER_AVOID_LASERS" value="未被激光击中"/>
+<message name="ENGINEER_KILL_WITH_ROCKETS_NAME" value="虚假目标"/>
+<message name="ENGINEER_KILL_WITH_ROCKETS" value="利用工程师自己的火箭干掉工程师"/>
+<message name="ENGINEER_DONT_LET_SPAWN_2_DRONES_NAME" value="系统故障"/>
+<message name="ENGINEER_DONT_LET_SPAWN_2_DRONES" value="未让工程师创建的机器人超过 1 个"/>
+<message name="ENGINEER_TOTAL_NAME" value="工程师成就"/>
+<message name="ENGINEER_TOTAL" value="获得全部工程师成就"/>
+</dictionary>

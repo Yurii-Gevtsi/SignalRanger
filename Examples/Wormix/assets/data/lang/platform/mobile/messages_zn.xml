@@ -1,0 +1,1202 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+    <message name="AND" value="和"/>
+    <message name="LOADING" value="正在加载……"/>
+    <message name="UPLOADING" value="正在上传……"/>
+    <message name="SAVING" value="正在保存……"/>
+    <message name="WAITING_DATA" value="等待数据……"/>
+    <message name="SWITCHING_TURN" value="正在切换回合……"/>
+    <message name="CONNECTING" value="正在连接……"/>
+    <message name="TITLE_ERROR" value="错误"/>
+    <message name="TITLE_ATTENTION" value="注意"/>
+    <message name="TITLE_BUY" value="购买"/>
+    <message name="TITLE_SERVER_MSG" value="服务器消息"/>
+    <message name="TITLE_MSG" value="消息"/>
+    <message name="TITLE_BAN" value="禁止"/>
+    <message name="GAME_NAME" value="Wormix"/>
+    <message name="TITLE_UPDATE_IS_AVAILABLE" value="已推出新更新程序！"/>
+    <message name="PERFORMANCE_WARNING" value="此选项可能降低游戏性能！"/>
+    <message name="FACEBOOK_DISCONNECT_WARNING" value="您确定要断开 Facebook 个人资料连接吗？"/>
+    <message name="CHANGE_NAME_ERROR" value="名称太长"/>
+    <message name="UPDATE" value="更新"/>
+    <message name="SERVER_UPDATE" value="抱歉！服务器已关闭，正在进行维护。请稍等几分钟，然后尝试重新连接。"/>
+    <message name="ERROR_SERVER" value="请求被取消。"/>
+    <message name="ERROR_SAVING" value="保存数据出错。交易被取消。"/>
+    <message name="ERROR_SOCIAL" value="访问社交网络 API 出错。"/>
+    <message name="ERROR_SOCIAL_OP" value="访问社交网络 API 出错。{errpr}"/>
+    <message name="ERROR_SCENE_LOAD" value="数据加载错误(id = {id})"/>
+    <message name="ERROR_HACKING_ATTEMPT" value="资金不足。交易被取消。"/>
+    <message name="ERROR_REQUEST_FRIEND_TO_BATTLE" value="您无法邀请此玩家参加战斗。"/>
+    <message name="ERROR_BANK_FAIL" value="可能是由于服务器高负载导致交易失败，请稍后再试。"/>
+    <message name="ERROR_NOT_ENOUGH_MONEY" value="资金不足。"/>
+    <message name="UNSYNCH_ERROR" value="延迟。命令 {received} 不符合 {expected}。"/>
+    <message name="TITLE_ERROR_LOAD_RES" value="资源加载出错。"/>
+    <message name="MSG_ERROR_LOAD_ROOM_RES" value="请重新进入房间。"/>
+    <message name="RECEIPT_VERIFICATION_ERROR_APPLE" value="苹果服务器无法对您的购买进行验证。请稍后再试。"/>
+    <message name="RECEIPT_VERIFICATION_ERROR_GOOGLE" value="Google 服务器无法对您的购买进行验证。请稍后再试。"/>
+    <message name="RECEIPT_VERIFICATION_ERROR_STEAM" value="您的购买取消。"/>
+    <message name="INCORRECT_PROTOCOL_VERSION" value="协议版本错误，请更新客户端。"/>
+    <message name="LEVEL_UP_DIALOG_TITLE" value="您已成功升级！"/>
+    <message name="LEVEL_UP_DIALOG_DESCRIPTION" value="新机会"/>
+    <message name="LEVEL_UP_DIALOG_BONUS_TEXT" value="新等级奖励："/>
+    <message name="LEVEL_UP_DIALOG_THINGS_TEXT" value="商店中可购买的新物品："/>
+    <message name="LEVEL_UP_DIALOG_BUTTON_SHOP" value="前往商店！"/>
+    <message name="LEVEL_UP_DIALOG_LIFE_TIPS" value="生命值"/>
+    <message name="LEVEL_UP_DIALOG_PARAMS_TIPS" value="属性点"/>
+    <message name="LEVEL_UP_DIALOG_COMMAND_TIPS" value="部队阵容"/>
+    <message name="BUY_RUBIES_SUCCESSFULL" value="感谢您的购买。我们任凭您的调遣！"/>
+    <message name="OLD_ADS_TEXT" value="驱动。射击。胜利。"/>
+    <message name="ADS_TEXT" value="就在此刻。"/>
+    <message name="ADS_BUTTON_TEXT" value="战斗不息！"/>
+    <message name="SHOP" value="商店"/>
+    <message name="WEAPON_TAB" value="武器"/>
+    <message name="HAT_TAB" value="帽子"/>
+    <message name="LONG_RANGE_WEAPONS" value="远距离"/>
+    <message name="CLOSE_RANGE_WEAPONS" value="近距离"/>
+    <message name="SPECIAL_WEAPONS" value="特种武器"/>
+    <message name="GADGETS" value="道具"/>
+    <message name="HATS" value="帽子"/>
+    <message name="ARTIFACTS" value="宝物"/>
+    <message name="CATEGORY_PURCHASED" value="已购买！"/>
+    <message name="SALE_TEXT" value="绝版热销！"/>
+    <message name="REMAINING_TEXT" value="剩余："/>
+    <message name="BUY_EXISTING_WEAPON" value="您已拥有该武器"/>
+    <message name="BUY_EXISTING_EQUIP" value="您已购买该物品"/>
+    <message name="BUY_2_HAT" value="您刚买了一顶帽子。您确定要进行更换吗？"/>
+    <message name="BUY_SUCCESSFUL" value="您的物品已购买成功。现在它们在您的武器库中。"/>
+    <message name="SHOP_REQUIRED_LEVEL" value="所需等级"/>
+    <message name="SHOP_REQUIRED_FRIENDS" value="所需好友"/>
+    <message name="SHOP_REQUIRED_RATING" value="所需排名积分"/>
+    <message name="SCENARIO_REQUIREMENT" value="击败 {scenario}"/>
+    <message name="SHOP_SCENARIO_REQUIREMENT" value="击败："/>
+    <message name="SHOP_BUY_FOR_REAL_MONEY" value="或用红宝石购买"/>
+    <message name="SHOP_REQUIRED_FIELD" value="需要 {requirements} 使用 F 币支付"/>
+    <message name="SHOP_REQUIRED_IMPOSSIBLE"><![CDATA[需要<br/>{levelRequirement}]]></message>
+    <message name="FRIENDS_REQUIREMENT" value="{friendsCnt} 好友"/>
+    <message name="LEVEL_REQUIREMENT" value="{level} 等级"/>
+    <message name="RATING_REQUIREMENT" value="{rating} 排名积分"/>
+    <message name="CRAFT_PRICE_LABEL" value="锻造费用："/>
+    <message name="PRICE_LABEL" value="价格："/>
+    <message name="PRICE_FREE" value="免费"/>
+    <message name="PRICE_OR_LABEL" value="或"/>
+    <message name="ALREADY_CRAFTED_LABEL" value="您已成功获得该类中的顶级物品！"/>
+    <message name="CRAFT_EQUIP_NOT_ENOUGH_REGS" value="没有足够的试剂锻造 F 币"/>
+    <message name="DAMAGE" value="伤害值"/>
+    <message name="COUNT_LABEL" value="数量"/>
+    <message name="QUANTITY_INFINITY" value="无穷"/>
+    <message name="QUANTITY_PER_BATTLE" value="每次战斗"/>
+    <message name="BUY_REACTION_RATES" value="您的反应能力增加 {count}"/>
+    <message name="FIRST_SHOT_DELAY" value="可从第 {turn} 轮开始使用。"/>
+    <message name="ARENA" value="竞技场"/>
+    <message name="BATTLES_AVAILABLE" value="可完成的任务："/>
+    <message name="TEAM_HP_LABEL" value="总生命值"/>
+    <message name="TEAM_LABEL" value="团队规模"/>
+    <message name="AWARD_LABEL" value="奖励"/>
+    <message name="MISSION_TAB_NAME" value="任务"/>
+    <message name="PVP_TAB_NAME" value="多人游戏"/>
+    <message name="BOSS_TAB_NAME" value="老怪"/>
+    <message name="BOSS_COOP_TAB_NAME" value="合作型"/>
+    <message name="SUPER_BOSS_TAB_NAME" value="超级老怪"/>
+    <message name="TITLE_HEROIC_BOSSES_PANEL" value="怪物组合每日更新！"/>
+    <message name="PVP_MESSAGE" value="在线战斗。获胜方可赢回赌注并获得奖励。"/>
+    <message name="BOSS_COOP_TITLE" value="伙伴："/>
+    <message name="PVP_DUEL_CARD" value="简单决斗"/>
+    <message name="PVP_SURVIVAL_CARD" value="生存战斗"/>
+    <message name="PVP_DEATH_MATCH_CARD" value="传奇决斗"/>
+    <message name="PVP_TWO_VS_TWO_CARD" value="随机 2х2"/>
+    <message name="PVP_TWO_VS_TWO_WITH_FRIEND_CARD" value="团队 2х2"/>
+    <message name="PVP_TWO_VS_TWO_WITH_FRIEND_CARD_DESC" value="在战斗中选择一位朋友作为战友。"/>
+    <message name="PVP_FIND_ENEMY" value="找到敌人！"/>
+    <message name="PVP_WAGER_LABEL" value="赌注："/>
+    <message name="PVP_BONUS_LABEL" value="排名积分："/>
+    <message name="PVP_PRIZE_LABEL" value="奖励："/>
+    <message name="BONUS_EXPERIENCE" value="经验值加成："/>
+    <message name="PVP_WAGER_AVAILABLE_FOR" value="您的等级至少需达到 {level} 级"/>
+    <message name="PVP_WAGER_AVAILABLE_FOR_TEAM_MIN" value="您需要至少拥有 {team} 支战士队伍"/>
+    <message name="PVP_WAGER_AVAILABLE_FOR_TEAM_MAX" value="您队伍中的士兵数量不得超过 {team}"/>
+    <message name="PVP_WAGER_BTN" value="报名参加战斗！"/>
+    <message name="MISSION_BTN" value="开始！"/>
+    <message name="BOSS_BTN" value="开始！"/>
+    <message name="SEARCH_BTN" value="寻找"/>
+    <message name="FRIENDS_TITLE" value="好友"/>
+    <message name="RANDOM_PARTNER" value="随机队友"/>
+    <message name="CHOOSE_FRIEND_BTN" value="选择好友"/>
+    <message name="FRIEND_EXCEED_BATTLES" value="您的好友退出战斗"/>
+    <message name="FRIEND_MISSION_LOCKED" value="您的好友无法与此老怪战斗"/>
+    <message name="NO_FRIENDS_FOR_COOP_MISSION" value="您没有可以与此老怪战斗的在线好友！"/>
+    <message name="NO_FRIENDS_FOR_COOP_FIGHT" value="您没有可以一起并肩作战的在线好友！"/>
+    <message name="NO_FRIENDS_FOR_INVITE" value="已邀请所有好友！"/>
+    <message name="ARENA_DELAY_MESSAGE" value="您已达到战斗极限。"/>
+    <message name="ARENA_DELAY_DESC" value="您的任务恢复时间："/>
+    <message name="ARENA_DELAY_DONT_WAIT" value="不想等待？渴望战斗？"/>
+    <message name="ARENA_BUY_BATTLE" value="您可以再购买一场战斗"/>
+    <message name="ARENA_BUY_FIVE_BATTLES" value="您可以一次购买 5 场战斗："/>
+    <message name="ARENA_BUY_BTN_NAME" value="购买："/>
+    <message name="ARENA_EXISTS_MONEY" value="您的钱币："/>
+    <message name="ARENA_OR_LABEL" value="或"/>
+    <message name="BOSS_RESOURCES_LOAD" value="正在加载老怪资源"/>
+    <message name="MISSION_FREE_GAME" value="免费游戏"/>
+    <message name="CHOOOSE_FRIEND_BTN_NAME" value="选择一位好友！"/>
+    <message name="HOT_SEAT_CARD_DESC"><![CDATA[与好友在同一设备上游戏！<br/>选择一台设备——然后开始战斗!]]></message>
+    <message name="LEARN_BTN_NAME" value="训练！"/>
+    <message name="UNKNOWN_CARD_NAME" value="未知任务"/>
+    <message name="UNKNOWN_CARD_DESC" value="这个任务太神秘了，现在还不能透露！"/>
+    <message name="PLAY_MISSION_BTN_NAME" value="一显身手！"/>
+    <message name="COMMON_CHAT_TITLE" value="公共聊天窗口"/>
+    <message name="TEAM_CHAT_TITLE" value="队内聊天窗口"/>
+    <message name="BOSS_SINGLE_MODE_BTN" value="孤军奋战"/>
+    <message name="BOSS_COOP_MODE_BTN" value="与好友并肩作战"/>
+    <message name="BOSS_PLAY_BTN" value="战斗不息！"/>
+    <message name="BOSS_AWARD" value="奖励："/>
+    <message name="BOSS_LOCKED" value="因为去往该老怪的道路尚未扫清，所以现在您还不能对他发起攻击！"/>
+    <message name="BOSS_UNAVAILABLE_TITLE" value="您真勇敢！但仅靠勇敢还不够！"/>
+    <message name="BOSS_UNAVAILABLE_DESC" value="您的级别太低，不能参与如此残酷的战斗！"/>
+    <message name="BOSS_UNAVAILABLE_REQUIRED_LEVEL" value="要求："/>
+    <message name="BOSS_UNAVAILABLE_REQUIRED_LEVEL_TEXT" value="级。"/>
+    <message name="UNAVAILABLE_PANEL_TITLE" value="仍有敌人有待发现！尚未击败老怪！"/>
+    <message name="UNAVAILABLE_PANEL_DESCRIPTION_1" value="您现在还不能与这两人开战——您需要先击败两只老怪。"/>
+    <message name="UNAVAILABLE_PANEL_DESCRIPTION_2" value="您必须击败："/>
+    <message name="AVAILABLE_PANEL_DESCRIPTION" value="在每个难度模式，您需要击败两只老怪。难度越高，奖励越高。"/>
+    <message name="REMOVE_FROM_GROUP" value="开除"/>
+    <message name="ADD_IN_GROUP" value="雇佣？"/>
+    <message name="REPLACE_IN_GROUP_CONFIRMATION" value="用此人替换您的队员？"/>
+    <message name="INACTIVE_IN_GROUP" value="处于不活动状态"/>
+    <message name="ACTIVATE_IN_GROUP" value="启用"/>
+    <message name="DEACTIVATE_IN_GROUP" value="停用"/>
+    <message name="USER_PAGE" value="用户页面"/>
+    <message name="CALL_TO_BATTLE" value="迎接战斗挑战"/>
+    <message name="CALL_TO_LOCAL_BATTLE" value="挑大梁"/>
+    <message name="GROUP_ICON_QTIP" value="我的队伍"/>
+    <message name="CAN_NOT_ADD_IN_GROUP" value="您目前的级别无法拥有更多队友。"/>
+    <message name="REMOVE_FROM_GROUP_CONFIRMATION" value="您确定要从队伍中开除您的好友？"/>
+    <message name="ALREADY_IN_TEAM" value="单位已经在队伍中"/>
+    <message name="BUTTON_ADD" value="添加"/>
+    <message name="PARAMS_TITLE" value="数据统计"/>
+    <message name="RESET_PARAMS_NAME" value="重置参数"/>
+    <message name="RESET_PARAMS_DESC"><![CDATA[仅重置攻击力和防御力。<br/>反应速度保持不变。<br/><br/>可重置点数。]]></message>
+    <message name="ALLOCATE_POINTS" value="可用点数："/>
+    <message name="NO_POINTS" value="没有可以提升您的数据统计的点数"/>
+    <message name="ARMOR_DESCRIPTION" value="根据您的防御力情况，对您造成的伤害值会减少"/>
+    <message name="ATTACK_DESCRIPTION" value="根据您的攻击力情况，对您的敌人造成的伤害值会增加"/>
+    <message name="REACTION_DESCRIPTION" value="决斗中获得第一轮的机会增加"/>
+    <message name="POINTS_ICON_QTIP" value="我的数据统计"/>
+    <message name="ARMOR" value="防御力"/>
+    <message name="ATTACK" value="攻击力"/>
+    <message name="ATTACK_POISON" value="中毒伤害"/>
+    <message name="ATTACK_FIRE" value="火焰伤害"/>
+    <message name="REDUCTION_FIRE" value="火焰伤害降低"/>
+    <message name="LEECH" value="吸血鬼"/>
+    <message name="DODGE" value="躲避几率"/>
+    <message name="REGENERATION" value="恢复生命值"/>
+    <message name="REACTION" value="反应速度"/>
+    <message name="HP" value="生命值"/>
+    <message name="TO_HP" value="点生命值"/>
+    <message name="RATING" value="排名"/>
+    <message name="RATING_DESCRIPTION" value="在多人对战中击败对手提高排名"/>
+    <message name="RATING_WARNING" value="请先设置玩家名称以获得访问权限。"/>
+    <message name="RATING_AWARDS_TITLE" value="最强标志！"/>
+    <message name="RATING_AWARDS_TEXT" value="进入每日排行榜并获得至少 {rating} 评分点数，次日即可获得独特帽子！"/>
+    <message name="PRIZE_TWO_MISSION" value="2 项任务"/>
+    <message name="SHOW_FRIEND_HOUSE" value="访问"/>
+    <message name="DUEL_WITH_FRIEND" value="决斗！"/>
+    <message name="LEVEL_NET_ENOUGH_FOR_SEARCH" value="在好友达到二级之后您才能访问其房间"/>
+    <message name="CALL_TO_BATTLE_BY_ID" value="战斗挑战者 ID"/>
+    <message name="REFRESH_FRIENDLIST" value="刷新好友列表"/>
+    <message name="TIPS_ON_OFF" value="开启/关闭提示"/>
+    <message name="CHAR_HINT_ON_OFF" value="开启/关闭名称"/>
+    <message name="RACE" value="比赛"/>
+    <message name="HARDNESS" value="难度"/>
+    <message name="EASY" value="入门级"/>
+    <message name="MEDIUM" value="中级"/>
+    <message name="HARD" value="高级"/>
+    <message name="HEROIC_BOSSES_DIFFICULTY_EASY" value="普通"/>
+    <message name="HEROIC_BOSSES_DIFFICULTY_MEDIUM" value="噩梦"/>
+    <message name="HEROIC_BOSSES_DIFFICULTY_HARD" value="地狱之火"/>
+    <message name="HEROIC_BOSSES_DIFFICULTY_INSANE" value="末日审判"/>
+    <message name="ENEMIES_COUNT_LABEL" value="敌人数量："/>
+    <message name="REACTION_MENU_TITLE" value="您的反应速度已提升"/>
+    <message name="ASK_FRIEND_PUMP_REACTION_TITLE" value="您的好友"/>
+    <message name="REACTION_MENU_BUTTON" value="提升"/>
+    <message name="REACTION_MENU_MSG_NONE_SELECTED" value="尚无人提升您的反应速度"/>
+    <message name="REACTION_MENU_MSG_NONE_PUMPED_3DAYS" value="在过去 3 天，您的反应速度一直未得到提升"/>
+    <message name="ALBUM_TITLE" value="Wormix"/>
+    <message name="ALBUM_DESCRIPTION" value="我在 Wormix 的最佳时光！进来吧，让我们战斗吧：{app_link}"/>
+    <message name="PHOTO_LOAD_COMPLETE" value="上传已完成。"/>
+    <message name="PHOTO_MENU_TITLE" value="发布该照片"/>
+    <message name="VIDEO_TITLE" value="视频"/>
+    <message name="VIDEO_LIMIT_MSG">
+        <![CDATA[<font color="#A20000"><b> 注意！</b></font><br/><font color="#524336"> 视频剪辑限制 <b>15Mb</b>.</font>]]></message>
+    <message name="VIDEO_LIMIT_DESC" value="视频越大，上传时间越长。"/>
+    <message name="VIDEO_SAVE_TITLE" value="保存视频。"/>
+    <message name="VIDEO_SAVE_ATTENTION"><![CDATA[<font color="#A20000"><b> 您有一个未保存视频。</b></font>]]></message>
+    <message name="VIDEO_SAVE_SIZE"><![CDATA[<b> 大小：</b> {value} Mb]]></message>
+    <message name="VIDEO_SAVE_QUESTION" value="上传视频到您的页面？"/>
+    <message name="VIDEO_SAVE_SUCCESS" value="已成功上传至您的页面/!"/>
+    <message name="VIDEO_FILE_NAME" value="Wormix：我是 {name} ({level})"/>
+    <message name="VIDEO_SAVING_TITLE" value="正在保存视频，请稍候……"/>
+    <message name="VIDEO_SAVING_DESC" value="使用 1 mb/s 网络连接上传一个 15 MB 的视频需要大约 2 分钟。"/>
+    <message name="BANK_TITLE" value="银行"/>
+    <message name="BANK_CHOOSE" value="选择货币："/>
+    <message name="BANK_BUY_RUBY" value="红宝石"/>
+    <message name="BANK_BUY_COIN" value="F 币"/>
+    <message name="GO_AT_BANK" value="您可在银行购买 F 币和红宝石。"/>
+    <message name="BUTTON_GO_AT_BANK" value="银行"/>
+    <message name="RUBY_PRICE" value="{count} 颗红宝石价格为 {price}"/>
+    <message name="FUZZES_PRICE" value="{count} F 币价格为 {price}"/>
+    <message name="OK_CURRENCY" value="确定"/>
+    <message name="BANK_BONUS" value="奖励"/>
+    <message name="BANK_VALUE_TITLE" value="您正在购买："/>
+    <message name="BANK_BONUS_INFO" value="奖励！购买越多，奖励越多！"/>
+    <message name="BANK_INCOME_PAYMENT_RUBY" value="已收到应收款项。您的账户新增 {count} 颗红宝石"/>
+    <message name="BANK_INCOME_PAYMENT_COIN" value="已收到应收款项。您的账户新增 {count} F 币"/>
+    <message name="BANK_BTN" value="添加"/>
+    <message name="BANK_BUY_TITLE" value="直接购买"/>
+    <message name="BANK_DEPOSIT_TITLE" value="存款"/>
+    <message name="BANK_DEPOSIT_SINGLE_TITLE" value="存款"/>
+    <message name="BANK_VIP_TITLE" value="VIP 账户"/>
+    <message name="BANK_BUY_DESCR" value="购买红宝石或 F 币"/>
+    <message name="BANK_DEPOSIT_DESCR" value="5 日内收到红宝石或 F 币"/>
+    <message name="BANK_DEPOSIT_FIRST_DAY" value="（今日！）"/>
+    <message name="BANK_VIP_DESCR" value="立即获得所有物品和武器"/>
+    <message name="BANK_DEPOSIT_TIME" value="5 日内"/>
+    <message name="BANK_NO_BONUS" value="无奖励"/>
+    <message name="GET_DEPOSIT" value="收到存款！"/>
+    <message name="BATTLE_OFFER_TITLE" value="决斗挑战！"/>
+    <message name="BATTLE_BOSS_OFFER_TITLE" value="超级老怪挑战！"/>
+    <message name="BATTLE_2X2_OFFER_TITLE" value="团队战斗！"/>
+    <message name="BATTLE_OFFER_ACCEPT" value="接受"/>
+    <message name="BATTLE_WAITE_LABLE" value="您需要等待"/>
+    <message name="TITLE_BATTLE_OFFER_PROFILE_REJECT" value="个人资料匹配错误"/>
+    <message name="BATTLE_OFFER_PROFILE_REJECT" value="此挑战发起期间您的个人资料已发生改变"/>
+    <message name="VIP_LABEL" value="VIP："/>
+    <message name="VIP_WEEK" value="1 周"/>
+    <message name="VIP_WEEK_TIME" value="7 日"/>
+    <message name="VIP_MONTH" value="1 个月"/>
+    <message name="VIP_MONTH_TIME" value="30 日"/>
+    <message name="VIP_WEEK_TITLE" value="“7 日英雄！”"/>
+    <message name="VIP_MONTH_TITLE" value="“街头对战怪物”"/>
+    <message name="VIP_DESCR"
+             value="VIP帐户在使命和打王任务上获得的经验值与金钱翻番。另外，VIP帐户允许您无限制访问波比商店里的所有基本武器，但药物和红宝石武器除外！所有的基本武器等级最高！这是立即开玩最高水平游戏的最佳方法！"/>
+    <message name="WEAPON_GET_ALL" value="MAX级别的常用武器！"/>
+    <message name="STICKERS_GET_ALL" value="访问所有贴纸！"/>
+    <message name="VIP_BOOSTER" value="双倍经验值、双倍钱币奖励！"/>
+    <message name="VIP_RENAME" value="拥有两次免费角色重新命名的机会！"/>
+    <message name="TIME_PERIOD" value="时间段："/>
+    <message name="DEPOSIT_BUY_SUCCESS" value="恭喜！您已开立新的存款账户！首日收入为 {count} {moneyType}。"/>
+    <message name="DEPOSIT_DAYS_TITLE" value="存款收益表："/>
+    <message name="BOSS_BATTLE_OFFER_TITLE" value="邀请您一起对战老怪："/>
+    <message name="SUPER_BOSS_BATTLE_OFFER_TITLE" value="邀请您一起对战超级老怪："/>
+    <message name="SEARCHING_RANDOM_PARTNER" value="服务器正在搜索队友，请稍候"/>
+    <message name="SEARCHING_RANDOM_PARTNER_TITLE" value="寻找队友中……"/>
+    <message name="SEC_LABEL" value="秒"/>
+    <message name="BATTLE_OP_REQUEST_TITLE" value="等待答复，答复人："/>
+    <message name="ENEMY_WAITING_MSG" value="等待敌人……"/>
+    <message name="BATTLE_REQUEST_MSG" value="服务器正在选择对手，请稍候"/>
+    <message name="BATTLE_REQUEST_TITLE" value="发起战斗挑战请求"/>
+    <message name="BATTLE_CANCEL_TITLE" value="取消战斗"/>
+    <message name="BATTLE_REQUEST_BUSY" value="玩家处于战斗中，无法接受您的请求。"/>
+    <message name="BATTLE_LOGIN_TIMEOUT" value="与 pvp 服务器连接超时，战斗已取消。"/>
+    <message name="BATTLE_REQUEST_DECLINE" value="您的好友回绝了该请求。"/>
+    <message name="BATTLE_REQUEST_NOT_ONLINE" value="您的好友未在游戏中。"/>
+    <message name="PVP_SERVER_CONNECTION_ERROR" value="Pvp 服务器不可用。"/>
+    <message name="MAIN_SERVER_CONNECTION_ERROR"
+             value="The server is under construction. Please, try to reconnect later."/>
+    <message name="PVP_SERVER_LOGIN_ERROR" value="连接 PVP 服务器失败。"/>
+    <message name="PVP_SERVER_CONNECTION_CLOSED" value="游戏与 PVP 服务器断开。"/>
+    <message name="PVP_SERVER_INCORRECT_BATTLE_ID" value="无法创建战斗：战斗 ID 错误！"/>
+    <message name="PVP_SERVER_BATTLE_CREATION_ERROR" value="无法创建战斗！"/>
+    <message name="PVP_SERVER_BANNED" value="用户被封禁"/>
+    <message name="RECONNECT_TIMEOUT" value="Pvp 重新连接超时"/>
+    <message name="YOUR_ID" value="您的 ID："/>
+    <message name="ENEMY_ID" value="敌人 ID："/>
+    <message name="ENTER_ID_FRIEND" value="请输入好友 ID"/>
+    <message name="ENTER_INCORRECT_ID_FRIEND" value="输入的 ID 错误"/>
+    <message name="CALL_TO_BATTLE_YOUSELF" value="您不能与自己战斗"/>
+    <message name="ENTER_ID_FRIEND_IS_NOT_FRIEND" value="您输入的用户 ID 并非您的好友"/>
+    <message name="EXCEEDED_MAX_LENGTH" value="ID 过长"/>
+    <message name="TRY_AGAIN_BUTTON" value="再试一次！"/>
+    <message name="LOGIN_ERROR_TITLE" value="需访问互联网！"/>
+    <message name="LOGIN_ERROR_MESSAGE"><![CDATA[Wormix 是一款在线游戏，需访问互联网。<br/>请连接到互联网，然后重试。]]></message>
+    <message name="MAIN_SERVER_CONNECTION_CLOSED"><![CDATA[服务器连接已断开。<br/>尝试重新连接？]]></message>
+    <message name="PVP_SERVER_PROFILACTIC_WORK" value="pvp 服务器正在建设中"/>
+    <message name="ENEMY_TURN_MSG" value="等待敌人完成他们的回合"/>
+    <message name="PVP_BATTLE_STUCK" value="由于对手长时间无活动，服务器已取消战斗"/>
+    <message name="PVP_BATTLE_UNSYNC" value="由于同步错误，战斗已取消"/>
+    <message name="PVP_SERVER_DOWN" value="PvP 服务器将重新加载。将退还所有赌注。"/>
+    <message name="WAITING_FOR_OTHER_PLAYERS" value="等待其他玩家……"/>
+    <message name="CURRENT_USER_ALREADY_IN_BATTLE" value="您已经身处战斗中。请稍后重新发送请求。如果该错误再次出现，请重新加载游戏。"/>
+    <message name="BATTLE_REQUEST_UNDEFINED_RESULT" value="请求过程中出现未定义的错误。"/>
+    <message name="BATTLE_REQUEST_ACCEPTED" value="已接受请求。"/>
+    <message name="BATTLE_REQUEST_BANNED" value="您要请求的好友已被封禁。"/>
+    <message name="BATTLE_REQUEST_TIMEOUT" value="服务器响应超时。"/>
+    <message name="BATTLE_REQUEST_CLIENT_ERROR" value="您的好友无法接受您的请求。"/>
+    <message name="BATTLE_REQUEST_DISCONNECTED" value="请求期间，PvP 服务器连接失败。"/>
+    <message name="BATTLE_REQUEST_FRIEND_LACKS_MONEY" value="您的好友钱币不足，无法加入！"/>
+    <message name="BATTLE_REQUEST_FRIEND_LACKS_LEVEL" value="您的好友级别过低！"/>
+    <message name="BATTLE_REQUEST_EXCEED_BATTLES" value="您的好友无任何有待参与的战斗！"/>
+    <message name="BATTLE_REQUEST_MISSION_LOCKED" value="您的好友无法对战此老怪！"/>
+    <message name="BATTLE_REQUEST_PLAYER_LACKS_MONEY" value="您的钱币不足！"/>
+    <message name="BATTLE_REQUEST_PLAYER_LACKS_LEVEL" value="您的级别太低，无法参与此战斗！"/>
+    <message name="BATTLE_REQUEST_PLAYER_EXCEED_BATTLES" value="您没有有待参与的战斗！"/>
+    <message name="BATTLE_REQUEST_ARENA_IS_LOCKED" value="此战斗模式目前关闭，几小时后将恢复！"/>
+    <message name="BATTLE_REQUEST_TEAM_IS_SMALL" value="您的战斗团队人数太少！"/>
+    <message name="BATTLE_RESULT_SAVING" value="将战斗成果保存至服务器"/>
+    <message name="WINNER_TITLE" value="胜利！"/>
+    <message name="LOOSER_TITLE" value="失败！"/>
+    <message name="DRAW_TITLE" value="平局！"/>
+    <message name="OPPONENT_CHEATER" value="您的敌人作弊"/>
+    <message name="OPPONENT_SURRENDER_TITLE" value="您的对手已投降！"/>
+    <message name="GO_EXP_LABEL" value="已获得经验值"/>
+    <message name="GO_BONUS_EXP_LABEL" value="经验值加成"/>
+    <message name="GO_MONEY_LABEL" value="已获得钱币值"/>
+    <message name="GO_NEW_LEVEL" value="新级别"/>
+    <message name="LEVEL_LABEL" value="等级"/>
+    <message name="BONUS" value="奖励积分"/>
+    <message name="PROTOCOL_CHEATER" value="游戏协议错误。"/>
+    <message name="FPS_CHEATER"><![CDATA[由于表现不佳，该战斗已被取消。<br/>您可能长时间保持游戏最小化。]]></message>
+    <message name="SPEED_HACK_CHEATER"><![CDATA[高延迟造成该战斗被中断。<br/>您可能长时间保持游戏最小化。]]></message>
+    <message name="SERVER_SAID_I_AM_CHEATER"><![CDATA[由于缺少客户端命令，该战斗已被取消。<br/> 战斗记录已保存到服务器。]]></message>
+    <message name="COIN_QTIP" value="F 币"/>
+    <message name="RUBY_QTIP" value="红宝石"/>
+    <message name="PROMO_QTIP" value="优惠活动"/>
+    <message name="AVAILABLE_RUBIES_OFFERS_NAME" value="特别优惠！"/>
+    <message name="AVAILABLE_RUBIES_OFFERS_DESCR" value="获得免费红宝石！"/>
+    <message name="AVAILABLE_FUZIES_OFFERS_NAME" value="特别优惠！"/>
+    <message name="AVAILABLE_FUZIES_OFFERS_DESCR" value="获得免费 F 币！"/>
+    <message name="NO_OFFERS" value="尚无新优惠"/>
+    <message name="WINNER_RATING" value="已获得排名积分"/>
+    <message name="WINNER_MONEY" value="已获得钱币奖励"/>
+    <message name="LOSED_RATING" value="已失去排名积分"/>
+    <message name="LOSED_MONEY" value="已失去钱币"/>
+    <message name="DISABLE_CHAT" value="关闭聊天"/>
+    <message name="CHAT_DISABLED" value="该聊天已关闭"/>
+    <message name="ENABLE_CHAT" value="开启聊天"/>
+    <message name="CHAT_ENABLED" value="该聊天已开启"/>
+    <message name="CHAT_CALL_TO_PVP" value="想邀请您参加战斗！"/>
+    <message name="EXIT_BATTLE" value="投降？"/>
+    <message name="EXIT_BATTLE_MSG" value="您真的要投降吗？"/>
+    <message name="POST_NEWS_TITLE" value="公共消息"/>
+    <message name="EXP_QTIP" value="当前经验值：{cur}/{max}"/>
+    <message name="HOUSE_QTIP" value="家"/>
+    <message name="NEWS_QTIP" value="消息"/>
+    <message name="RATING_QTIP" value="玩家排名"/>
+    <message name="MINIMAL_RATING_QTIP" value="获奖所需的最低等级"/>
+    <message name="BONUS_QTIP" value="您收到一份礼物！"/>
+    <message name="REACTION_QTIP" value="反应速度"/>
+    <message name="REACTION2_QTIP" value="增加好友的反应速度"/>
+    <message name="WIND_QTIP"><![CDATA[风力和风向 <br/>一些武器会受到风的影响]]></message>
+    <message name="CHAT_QTIP" value="聊天"/>
+    <message name="BAG_QTIP" value="武器库"/>
+    <message name="FLAG_QTIP" value="投降"/>
+    <message name="SOUND_ON" value="音效开启"/>
+    <message name="SOUND_OFF" value="音效关闭"/>
+    <message name="SOUND_LABEL" value="Sound"/>
+    <message name="MUSIC_ON" value="音乐开启"/>
+    <message name="MUSIC_OFF" value="音乐关闭"/>
+    <message name="MUSIC_LABEL" value="Music"/>
+    <message name="PVP_IGNORE_MODE_ON" value="所有 PvP 邀请已被拒绝"/>
+    <message name="PVP_IGNORE_MODE_OFF" value="已接受 PvP 邀请"/>
+    <message name="PVP_IGNORE_LABEL" value="PvP invites"/>
+    <message name="STATUS_ON" value="启用"/>
+    <message name="STATUS_OFF" value="禁用"/>
+    <message name="ENTER_FROM_CLOUD_LABEL" value="云同步"/>
+    <message name="FULLSCREEN_ON" value="全屏模式"/>
+    <message name="FULLSCREEN_OFF" value="窗口模式"/>
+    <message name="FULLSCREEN_LABEL" value="Fullscreen"/>
+    <message name="ALLSOUND_QTIP" value="音效和音乐开启/关闭"/>
+    <message name="VOLUME_QTIP" value="主音量 (Ctrl + +/-)"/>
+    <message name="QUALITY_HIGH_QTIP" value="优质"/>
+    <message name="QUALITY_MEDIUM_QTIP" value="中等质量"/>
+    <message name="QUALITY_LOW_QTIP" value="低质量"/>
+    <message name="PHOTO_QTIP" value="照片 (Ctrl + P)"/>
+    <message name="VIDEO_QTIP" value="视频 (Ctrl + P)"/>
+    <message name="SCALE_QTIP" value="放大/缩小 (+/-)"/>
+    <message name="CONTAINS_RANDOM_WEAPON" value="包含随机武器"/>
+    <message name="EXIT_QTIP" value="退出"/>
+    <message name="SHOP_QTIP" value="商店"/>
+    <message name="BANK_QTIP" value="银行"/>
+    <message name="SETTINGS_QTIP" value="设置"/>
+    <message name="VIP_QTIP" value="VIP 账户"/>
+    <message name="DEPOSIT_QTIP" value="您的存款！"/>
+    <message name="LEVEL_QTIP" value="等级"/>
+    <message name="TEAM_TITLE" value="团队"/>
+    <message name="CAN_HIRE_AT_LEVEL" value="达到 {lvl} 级时可以雇佣"/>
+    <message name="ARMORY_QTIP" value="武器库"/>
+    <message name="TEAM_QTIP" value="团队"/>
+    <message name="WARDROBE_QTIP" value="服装衣柜"/>
+    <message name="RACE_QTIP" value="种族选择"/>
+    <message name="ACHIEV_QTIP" value="成就点数"/>
+
+
+    <message name="EQUIP_TAB" value="装备"/>
+    <message name="WARDROBE_REMOVE_ALL" value="清除所有"/>
+    <message name="WARDROBE_ARTIFACTS_TITLE" value="宝物"/>
+    <message name="WARDROBE_HATS_TITLE" value="帽子"/>
+    <message name="TAB_HIRE_FROM_CLAN" value="来自氏族"/>
+    <message name="TAB_HIRE_FRIEND" value="好友"/>
+    <message name="TAB_HIRE_BOT" value="雇佣兵"/>
+    <message name="CLAN_TEAM_MEMBER_DESC" value="你得到了一个配备齐全设备的战队队友。 你可以只有一个战队伙伴加入团队。 如果您或他离开战队，该单位将变为非活动状态。"/>
+    <message name="FRIEND_TEAM_MEMBER_DESC" value="这些队友被增加到小组里，但没有任何装备。"/>
+    <message name="MERCENARY_TEAM_MEMBER_DESC" value="雇佣兵通常拥有精良装备，但其他战士无法穿戴或用于合成。"/>
+    <message name="NO_PROFILES_FOR_ADD_TO_TEAM" value="没有人可以雇用。"/>
+    <message name="MEMBER_SOCLAN_ALREADY_EXIST_LIMIT" value="你有最大数量的氏族伙伴。"/>
+    <message name="PUMP_REACTION_OK" value="您的好友反应速度 +1"/>
+    <message name="PUMP_REACTION_TODAY_ALREADY" value="您每天只能为好友提升反应速度一次。"/>
+    <message name="PUMP_REACTION_ERROR" value="您无法提升自己的反应速度！"/>
+    <message name="PUMP_REACTION_DAY_LIMIT" value="已达到每日反应速度提升极限。"/>
+    <message name="PUMP_REACTION_DAY_LIMIT_ADD" value="您帮助选定列表中的 {count} 位好友提升反应速度。"/>
+    <message name="SEARCH_NO_RESULTS" value="空"/>
+    <message name="BAG_TITLE" value="背包"/>
+    <message name="RATING_TITLE" value="玩家排名"/>
+    <message name="RATING_POS_LABEL" value="名次"/>
+    <message name="RATING_TO_DAY" value="今日"/>
+    <message name="RATING_YESTERDAY" value="昨日"/>
+    <message name="RATING_ALL_TIME" value="有史以来"/>
+    <message name="RATING_BATTLES_ALL" value="全部"/>
+    <message name="RATING_BATTLES_BET_SMALL" value="赌注 15"/>
+    <message name="RATING_BATTLES_BET_MED" value="赌注 50"/>
+    <message name="RATING_BATTLES_BET_BIG" value="赌注 300"/>
+    <message name="RATING_BTN_2х2" value="2х2"/>
+    <message name="RATING_BTN_2х2_FRIEND" value="团队 2х2"/>
+    <message name="LOWER_RATING_LEAGUE" value="新手联盟"/>
+    <message name="VETERAN_RATING_LEAGUE" value="老兵联盟"/>
+    <message name="FIGHTER_RATING_LEAGUE" value="战士联盟"/>
+    <message name="MASTER_RATING_LEAGUE" value="大师联盟"/>
+    <message name="ACE_RATING_LEAGUE" value="烈焰勇士联盟"/>
+    <message name="RUBY_RATING_LEAGUE" value="红宝石联盟"/>
+    <message name="MIN_RATING" value="最低排名："/>
+    <message name="NOT_ENOUGH_RATING_TITLE" value="进入最佳玩家排行榜！"/>
+    <message name="NOT_ENOUGH_RATING_DESCR" value="您必须获得 10 排名积分才能加入新手联盟。"/>
+    <message name="HELP_TITLE" value="控制键"/>
+    <message name="BONUS_EXP" value="经验值"/>
+    <message name="BONUS_FUZY" value="金币 +"/>
+    <message name="BONUS_HOLIDAYS_TITLE" value="假日奖励！"/>
+    <message name="BONUS_HOLIDAYS_DEFAULT_MSG">
+        <![CDATA[<b>恭喜！<br>请在官方群组中了解详情 <font color="#0033FF"><a href="{club_link}" target="_blank">{club_text}</a></font></b>]]></message>
+    <message name="DAILY_BONUS_TITLE" value="每日奖金奖励！"/>
+    <message name="DAILY_BONUS_CONGRATZ" value="恭喜！您的每日奖金："/>
+    <message name="DAILY_BONUS_TEXT" value="每天访问我们连续获得奖金！"/>
+    <message name="DAILY_BONUS_DAY" value="日"/>
+    <message name="DEPOSIT_OVERALL_TITLE" value="5 日小结"/>
+    <message name="DEPOSIT_INCOME_TITLE" value="您的存款！"/>
+    <message name="DEPOSIT_INCOME_MSG" value="每天从存款中获得收益是多么美好的事情啊！"/>
+    <message name="COLLECT" value="收集"/>
+    <message name="NEED_RUBY_TITLE" value="需要红宝石"/>
+    <message name="NEED_RUBY_BUTTON1_TEXT" value="邀请一位好友"/>
+    <message name="NEED_RUBY_BUTTON2_TEXT" value="成为拜访他们家的第一人！"/>
+    <message name="NEED_RUBY_BUTTON3_TEXT" value="获得一颗或多颗红宝石"/>
+    <message name="NEED_RUBY_BUTTON4_TEXT" value="邀请好友"/>
+    <message name="NEED_RUBY_CHECKBOX_TEXT" value="我不需要免费红宝石，请勿再显示该窗口"/>
+    <message name="NO_FIVE_DAY_TITLE" value="搜索"/>
+    <message name="NO_FIVE_DAY_DESCR" value="您的好友已经 2 个多月没有登录该游戏了！很遗憾，您什么都没找到。"/>
+    <message name="RANDOM_MAP" value="随机地图"/>
+    <message name="SELECT_RANDOM_MAP" value="选择随机地图"/>
+    <message name="SELECT_MAP_TITLE" value="地图选择"/>
+    <message name="MAP_TITLE" value="地图："/>
+    <message name="MAP.LIBERTY" value="自由女神像竞技场"/>
+    <message name="MAP.CREAM" value="训练多边形战场"/>
+    <message name="MAP.SAND" value="沙盘之役"/>
+    <message name="MAP.SIGNS" value="标志沙场"/>
+    <message name="MAP.BAMBOO" value="清脆竹林战场"/>
+    <message name="MAP.FRUITS" value="水果圣地"/>
+    <message name="MAP.DINO" value="岛屿之战"/>
+    <message name="MAP.BAMBOO_NEW" value="清脆竹林战场 2"/>
+    <message name="MAP.PIRATE" value="海盗岛之役"/>
+    <message name="MAP.TREES" value="魔法森林竞技场"/>
+    <message name="MAP.CHUDO" value="传奇柔道竞技场"/>
+    <message name="MAP.MOUSE" value="老鼠之家之役"/>
+    <message name="MAP.CHRISTMAS" value="新年战场"/>
+    <message name="MAP.TRAIN" value="训练场"/>
+    <message name="MAP.VILLA" value="度假别墅战场"/>
+    <message name="MAP.CAKE" value="生日快乐战场"/>
+    <message name="MAP.DOSERS" value="疯狂推土机竞技场"/>
+    <message name="MAP.TEA_PARTY" value="茶话会战场"/>
+    <message name="MAP.LAB_PAST" value="实验室战场"/>
+    <message name="MAP.ASTEROID_BATTLE" value="小行星战场"/>
+    <message name="MAP.PUMPKINS" value="南瓜沙场"/>
+    <message name="MAP.HELL" value="地狱之役"/>
+    <message name="MAP.WILDWEST" value="荒野西部战场"/>
+    <message name="MAP.MYSTERIOUS_ISLAND" value="孤岛惊魂战场"/>
+    <message name="MAP.GLADE_NEW" value="草坪竞技场"/>
+    <message name="MAP.DINO_BONES" value="恐龙之骨战场"/>
+    <message name="MAP.COPPER_MOUNTAIN" value="铜山矿场之役"/>
+    <message name="MAP.DRACULA" value="德古拉竞技场"/>
+    <message name="MAP.HOGWARTS" value="霍格华兹战场"/>
+    <message name="MAP.ABORIGINE" value="土著居民战场"/>
+    <message name="MAP.BEACH" value="海滩竞技场"/>
+    <message name="MAP.UNDERWATER" value="水底世界战地"/>
+    <message name="MAP.PARADISE" value="伊甸园之役"/>
+    <message name="MAP.WAR" value="战斗战场"/>
+    <message name="MAP.BASKETBALL" value="篮球战场"/>
+    <message name="MAP.SAWMILL" value="锯木厂之役"/>
+    <message name="MAP.ROCK" value="岩石战地"/>
+    <message name="MAP.ARSENAL" value="军火库竞技场"/>
+    <message name="MAP.ITALY" value="意大利战场"/>
+    <message name="MAP.FASTFOOD" value="快餐竞技场"/>
+    <message name="MAP.JUNGLE" value="丛林战场"/>
+    <message name="MAP.RETRO" value="复古竞技场"/>
+    <message name="MAP.SPONGEBOB" value="海绵宝宝战场"/>
+    <message name="MAP.HELLOWEEN" value="万圣节竞技场"/>
+    <message name="MAP.LONDON" value="伦敦之役"/>
+    <message name="MAP.CASTLE" value="城堡沙场"/>
+    <message name="MAP.FROZEN_DRAGON" value="冰冻蛟龙战场"/>
+    <message name="MAP.GLACIER" value="冰川竞技场"/>
+    <message name="MAP.VIKING" value="北欧海盗战场"/>
+    <message name="MAP.CONGELATION" value="凝结战场"/>
+    <message name="MAP.SIEGE" value="围城沙场"/>
+    <message name="MAP.NAVAL_BATTLE" value="海战竞技场"/>
+    <message name="MAP.SEA_FORT" value="深海城堡战场"/>
+    <message name="MAP.PIRATE_BAY" value="海盗港湾竞技场"/>
+    <message name="MAP.LAGOON" value="环礁湖之役"/>
+    <message name="MAP.KRAKEN" value="北海巨妖战场"/>
+    <message name="MAP.THREE_ISLANDS" value="三岛战场"/>
+    <message name="MAP.CRADLE" value="摇篮战场"/>
+    <message name="MAP.CRASH" value="坠落场所之役"/>
+    <message name="MAP.DUNGEON" value="地牢战场"/>
+    <message name="MAP.ENDLESS_DESERT" value="无尽沙漠竞技场"/>
+    <message name="MAP.FOREST_HUT" value="丛林小屋战地"/>
+    <message name="MAP.MANIAC" value="杀人狂魔竞技场"/>
+    <message name="MAP.VALLEY_MILLS" value="磨坊谷之役"/>
+    <message name="MAP.ROAD_RACES" value="公路竞速战场"/>
+    <message name="MAP.HIGHWAY" value="高速公路竞技场"/>
+    <message name="MAP.GAS_STATION" value="加油站战场"/>
+    <message name="MAP.ABANDONED_MINES" value="废弃矿区沙场"/>
+    <message name="MAP.CITY_MINERS" value="矿工城镇之役"/>
+    <message name="MAP.ESCAPE" value="逃亡疆场"/>
+    <message name="MAP.FISHING_VILLAGE" value="渔村竞技场"/>
+    <message name="MAP.VILLAGE" value="村庄战场"/>
+    <message name="MAP.APOCALYPSE" value="世界末日之战"/>
+    <message name="MAP.CHURCH" value="教堂竞技场"/>
+    <message name="MAP.DARK_KNIGHT" value="黑暗之塔"/>
+    <message name="MAP.PRISON" value="监狱禁地"/>
+    <message name="MAP.ZEON" value="吉翁公国战场"/>
+    <message name="MAP.ESTATE" value="庄园竞技场"/>
+    <message name="MAP.PSIONIC" value="灵能者战场"/>
+    <message name="MAP.DRUID" value="德鲁伊树林战场"/>
+    <message name="MAP.MARS" value="火星竞技场"/>
+    <message name="MAP.MUSHROOMS" value="蘑菇战场"/>
+    <message name="MAP.SATURN" value="土星竞技场"/>
+    <message name="MAP.ASSASIN" value="天神下凡战场"/>
+    <message name="MAP.HALLOWEEN2" value="万圣节竞技场 2"/>
+    <message name="MAP.SNOWOODS" value="Snowoods战场"/>
+    <message name="MAP.ARCHBOT" value="波斯沙场"/>
+    <message name="MAP.JARL" value="度假别墅战场 2"/>
+    <message name="MAP.MINES2" value="矿区战场"/>
+    <message name="MAP.LIANAS" value="藤本植物竞技场"/>
+    <message name="MAP.BARBARIANS" value="巴巴利亚武士沙场"/>
+    <message name="MAP.CASTLES2" value="城堡沙场 2"/>
+    <message name="MAP.OLDLONDON" value="古伦敦疆场"/>
+    <message name="MAP.NEWJUNGLE" value="新丛林之役"/>
+    <message name="MAP.GRAVEYARD" value="墓地竞技场"/>
+    <message name="MAP.PRERIE" value="大草原战场"/>
+    <message name="MAP.TOTEM" value="图腾之役"/>
+    <message name="MAP.RIFT" value="长狭谷战斗场"/>
+    <message name="MAP.JUNGLETOP" value="丛林之顶战场"/>
+    <message name="MAP.FARM" value="农场之役"/>
+    <message name="MAP.BLADES" value="利刃组织之战"/>
+    <message name="MAP.TWINPEAKS" value="双子峰战场"/>
+    <message name="MAP.CAVE" value="深穴之役"/>
+    <message name="MAP.GRASSEDRUINS" value="荒草废墟之役"/>
+    <message name="MAP.CHASM" value="峡谷疆场"/>
+    <message name="MAP.CROSSING" value="十字路口战场"/>
+    <message name="MAP.DAYOFTHEDEAD" value="阿里瓦之役"/>
+    <message name="MAP.MUERTO" value="摩尔拖风竞技场"/>
+    <message name="MAP.FROZEN_ISLAND" value="冰冻岛屿之役"/>
+    <message name="MAP.FROZEN_BAY" value="冰冻海湾之战"/>
+    <message name="MAP.ICE_JUNGLE" value="冰川丛林战场"/>
+    <message name="MAP.SWAMP" value="荒野沼泽战场"/>
+    <message name="MAP.SWAMP_HUT" value="沼泽小屋之役"/>
+    <message name="MAP.DEEPSPACE" value="外太空竞技场"/>
+    <message name="MAP.TRAIN2" value="训练场 2"/>
+    <message name="MAP.MINING" value="挖掘工程战场"/>
+    <message name="MAP.LAUNCH" value="发射场之役"/>
+    <message name="MAP.BIOM" value="Biome"/>
+    <message name="MAP.PROJECTX" value="Project-X"/>
+    <message name="MAP.TUNNELS" value="Tunnels"/>
+    <message name="MAP.NIGHTLANDFILL" value="Night dump"/>
+    <message name="MAP.PROJECTX_RACE" value="Project X base"/>
+    <message name="MAP.PROJECTX_RACE_LAB" value="Project X laboratory"/>
+    <message name="MAP.CASTLES3" value="Castles 3"/>
+    <message name="MAP.YETI" value="Yeti"/>
+    <message name="MAP.ICEBERG" value="Iceberg"/>
+    <message name="MAP.SHARKS" value="Sharks"/>
+    <message name="MAP.BIGSNAKE" value="Big snake"/>
+    <message name="MAP.NIGHTMONSTERS" value="Night monsters"/>
+    <message name="MAP.SHIP_GRAVEYARD" value="Ship graveyard"/>
+    <message name="MAP.DUMP" value="Huge dump"/>
+    <message name="MAP.DRAGON_BATTLE" value="Battle of dragons"/>
+    <message name="RACE_TITLE" value="种族选择"/>
+    <message name="RACE_UNAVAILABLE" value="不允许选择该种族"/>
+    <message name="RACE_BOXER_NAME" value="拳击手"/>
+    <message name="RACE_BOXER_DESCR" value="战士，他的生命值可以在战斗中得到强化。传说他们的头骨无比坚硬"/>
+    <message name="RACE_DEMON_NAME" value="恶魔"/>
+    <message name="RACE_DEMON_DESCR" value="恶魔是冷酷无情的战士，忠于主人，对敌人毫不心慈手软。"/>
+    <message name="RACE_RABBIT_NAME" value="兔子"/>
+    <message name="RACE_RABBIT_DESCR" value="兔子快如闪电。他们对大胡萝卜的信念帮助他们在战场治愈伤痛。"/>
+    <message name="RACE_ZOMBIE_NAME" value="僵尸"/>
+    <message name="RACE_ZOMBIE_DESCR" value="僵尸——受外星人意念控制的活尸体。无情且耐痛，将为您带来全面胜利。"/>
+    <message name="RACE_CAT_NAME" value="猫"/>
+    <message name="RACE_CAT_DESCR" value="猫是狡猾而娴熟的骗术师，他们总是有一些让敌人出其不意的花招。"/>
+    <message name="RACE_DRAGON_NAME" value="龙"/>
+    <message name="RACE_DRAGON_DESCR" value="没有人相信他们真的存在。每个人都以为他们只是一个神话故事。然而他们燃烧烈焰，飞舞而来！真的。腾飞……巨龙！"/>
+    <message name="RACE_ROBOT_NAME" value="机器人"/>
+    <message name="RACE_ROBOT_DESCR" value="一群机器人加入了战斗！他们那钢铁做成的大脑毫无仁慈之心。敌人将落荒而逃。"/>
+    <message name="RACE_NO_WORMS" value="你将不能切换回 {raceName} 种族。你所有的帽子都将可用，无任何限制"/>
+    <message name="ABILITIES_LABEL" value="能力"/>
+    <message name="NO_ABILITIES" value="无"/>
+    <message name="ABILITY_ARMOR_NAME" value="坚硬头骨"/>
+    <message name="ABILITY_ARMOR_DESCR"><![CDATA[角色每升<b>3</b>级获得永久<b>+1</b>点护甲值（最高+10）。]]></message>
+    <message name="ABILITY_HP_NAME" value="强大生命值"/>
+    <message name="ABILITY_HP_DESCR"><![CDATA[永久 <b>{hpPct}% 生命值加成</b>。]]></message>
+    <message name="ABILITY_UNDERWATER_NAME" value="水下呼吸"/>
+    <message name="ABILITY_UNDERWATER_DESCR" value="一个离开陆地便会淹死的角色。"/>
+    <message name="ABILITY_POISON_NAME" value="致命毒药"/>
+    <message name="ABILITY_POISON_DESCR"><![CDATA[毒药造成伤害值增加 <b>{value}%</b>。]]></message>
+    <message name="ABILITY_SPEED_NAME" value="机动性"/>
+    <message name="ABILITY_SPEED_DESCR"><![CDATA[兔子拥有+6速度加成和额外一次跳跃。它们还可以通过同时按下向上箭头键或蜗牛键和跳跃键来进行强力跳跃。]]></message>
+    <message name="ABILITY_REGEN_NAME" value="恢复生命值"/>
+    <message name="ABILITY_REGEN_DESCR" value="当兔子的生命值低于 75% 时，它会开始焦躁地啃胡萝卜，并在其队伍的每个回合结束时恢复生命值。"/>
+    <message name="ABILITY_REVIVAL_NAME" value="复活"/>
+    <message name="ABILITY_REVIVAL_DESCR" value="被僵尸杀死的敌人从坟墓中复活，他们掉转枪口向其原先所属的部队开火！"/>
+    <message name="ABILITY_DMGREDUCTION_NAME" value="所向披靡"/>
+    <message name="ABILITY_DMGREDUCTION_DESCR" value="使用普通子弹杀死僵尸可不是个好主意！对他们造成的所有伤害均减少 {dmgReduction}。"/>
+    <message name="ABILITY_REVENGE_NAME" value="僵尸诅咒"/>
+    <message name="ABILITY_REVENGE_DESCR" value="杀死一个僵尸时，杀戮者身上将被释放了一束消极能量。该能量束造成轻微伤害并释放毒药。"/>
+    <message name="ABILITY_CLIMBING_NAME" value="猫之优雅"/>
+    <message name="ABILITY_CLIMBING_DESCR" value="猫可以攀爬任何墙壁！双击跳跃键进行控制！"/>
+    <message name="ABILITY_PHASING_NAME" value="猫之运气"/>
+    <message name="ABILITY_PHASING_DESCR" value="当猫的生命力较低时，它有几率避免受到几乎所有伤害。"/>
+    <message name="ABILITY_FLYING_NAME" value="飞龙在天"/>
+    <message name="ABILITY_FLYING_DESCR" value="龙能飞入云霄，长距离腾飞。"/>
+    <message name="ABILITY_FIERY_PACE_NAME" value="炽热烈焰"/>
+    <message name="ABILITY_FIERY_PACE_DESCR" value="龙留下一串将在下一轮点燃的烈焰余烬，对任何踩到余烬的敌人造成伤害。使用龙焰解冻被冰冻的盟友！"/>
+    <message name="ABILITY_SHOCK_NAME" value="静电荷"/>
+    <message name="ABILITY_SHOCK_DESCR" value="造成 丢飞敌人，靠近机器人或在近距离战斗中攻击时将失去一轮机会。"/>
+    <message name="ABILITY_MARK_NAME" value="战斗分析"/>
+    <message name="ABILITY_MARK_DESCR" value="最后受到攻击的目标防御力降低 20%。"/>
+    <message name="ABILITY_DROID_NAME" value="防御机器人"/>
+    <message name="ABILITY_DROID_DESCR"
+             value="个人防御机器人，在机器人发起新一轮进攻之初创建并持续到其下一轮进攻。敌人靠近后 3 秒内，机器人将释放电荷，使敌人丧失一轮机会。任何攻击均可摧毁机器人。"/>
+    <message name="BUTTON_OK" value="确定"/>
+    <message name="BUTTON_YES" value="是"/>
+    <message name="BUTTON_CANCEL" value="取消"/>
+    <message name="BUTTON_CLOSE" value="关闭"/>
+    <message name="BUTTON_HIRE" value="雇佣！"/>
+    <message name="BUTTON_BUY" value="购买"/>
+    <message name="BUTTON_RESET" value="重置"/>
+    <message name="BUTTON_SELECT" value="选择"/>
+    <message name="BUTTON_PUBLISH" value="发布"/>
+    <message name="BUTTON_SEND" value="发送"/>
+    <message name="BUTTON_REQUEST" value="邀请！"/>
+    <message name="BUTTON_ARENA" value="前往竞技场"/>
+    <message name="BUTTON_BALLS" value="分配点数"/>
+    <message name="BUTTON_NEW_PROFILE" value="重新开始"/>
+    <message name="BUTTON_ASK_FRIEND" value="邀请好友"/>
+    <message name="BUTTON_ASK_FRIEND2" value="好友帮助"/>
+    <message name="BUTTON_RESTART" value="重新开始"/>
+    <message name="BUTTON_SELECT_MAP" value="选择地图"/>
+    <message name="BUTTON_NEXT_FIGHT" value="下一场战斗"/>
+    <message name="BUTTON_TO_MENU" value="回到菜单"/>
+    <message name="BUTTON_LOAD" value="加载"/>
+    <message name="BUTTON_OVERWRITE" value="覆盖"/>
+    <message name="BUTTON_SOLO_PLAY" value="单人游戏"/>
+    <message name="BUTTON_ON" value="开"/>
+    <message name="BUTTON_OFF" value="关"/>
+    <message name="BUTTON_INFO" value="信息"/>
+    <message name="BUTTON_IMPROVE" value="改进"/>
+    <message name="BUTTON_LEAVE" value="离开"/>
+    <message name="BUTTON_EDIT" value="配置"/>
+    <message name="BUTTON_INCREASE" value="增加"/>
+
+    <message name="BATTLE_INIT" value="正在初始化"/>
+    <message name="BATTLE_INIT_POS" value="安排职位"/>
+    <message name="BATTLE_INIT_MAP" value="等级初始化"/>
+    <message name="BATTLE_LOAD_MAP_CONFIG" value="正在下载等级参数"/>
+    <message name="BATTLE_LOAD_MAP" value="正在下载等级数据"/>
+    <message name="BATTLE_ENEMY_DATA_LOAD" value="正在下载敌人个人资料"/>
+    <message name="BATTLE_PVP_LOGIN" value="正在授权"/>
+    <message name="BATTLE_MISSION_LOAD" value="正在下载任务数据"/>
+    <message name="BATTLE_PVP_CONNECT" value="正在连接到 pvp 服务器"/>
+    <message name="BATTLE_CLEARING" value="正在清除战斗数据"/>
+    <message name="GRENADE_TIMER" value="{counter} 秒后发生爆炸。"/>
+    <message name="CROSSHAIR_TOO_HIGH" value="太高！"/>
+    <message name="GIRDER_IMPOSSIBLE" value="工字钢梁不能放置于地面或其它单位附近"/>
+    <message name="TELEPORT_IMPOSSIBLE" value="单位不能移动到那个位置！"/>
+    <message name="ALREADY_BANDAGED" value="该单位已用绷带包扎！"/>
+    <message name="ALREADY_ANTITOXIN" value="已在该单位身上使用抗毒素血清！"/>
+    <message name="BANDAGE_USELESS" value="此刻，绷带失效！"/>
+    <message name="INVITE_FRIENDS_TEXT" value="试玩 Wormix！"/>
+    <message name="NOTE_TITLE" value="备忘录"/>
+    <message name="NOTE_TITLE_WINNER" value="Wormix-报告。胜利！敌人 {name}"/>
+    <message name="NOTE_TITLE_LOOSER" value="Wormix-报告。失败。敌人 {name}"/>
+    <message name="NOTE_TITLE_DRAW_GAME" value="Wormix-报告。平局。敌人 {name}"/>
+    <message name="NOTE_BODY">
+        <![CDATA[<b>我的团队：</b> {my_team_descr}.<br/> <b>敌人团队：</b> {opponent_team_descr}.]]></message>
+    <message name="NOTE_LEVEL" value="等级"/>
+    <message name="TITLE_ADD_NOTE" value="正在保存备忘录"/>
+    <message name="NOTE_ADD_SUCCESS" value="该备忘录已成功保存，将出现在您的页面上。"/>
+    <message name="NOTE_ADD_ERROR" value="保存备忘录时出错。"/>
+    <message name="CREATE_NOTE_BTN" value="在备忘录中"/>
+    <message name="NOTE_BALLS_ATTENTION" value="您已经获得新的属性点！"/>
+    <message name="VIRAL_NEW_LEVEL" value="我在 Wormix 升级至 {level} 级！"/>
+    <message name="VIRAL_LETSFIGHT" value="我在 Wormix 中的排名：{rating}。我已经做好战斗准备！"/>
+    <message name="WINNER_STATUS" value="我在 Wormix 中击败了 {opponent}！！！"/>
+    <message name="STATUS_TEXT" value="您渴望参加新的战斗吗？从下列职位中进行选择，您的好友将作出响应！"/>
+    <message name="NEWS_SUBTITLE" value="您的“Wormix 时光”"/>
+    <message name="STATUS_CALL_REQUEST_0" value="进入 Wormix。我将战无不胜！"/>
+    <message name="STATUS_CALL_REQUEST_1" value="谁想加入 Wormix 中的战斗？我已经准备好了"/>
+    <message name="STATUS_CALL_REQUEST_2" value="我的火箭炮渴望血战一场！Wormix 世界见！"/>
+    <message name="STATUS_CALL_REQUEST_3" value="我期待着在 Wormix 世界迎接决斗挑战！"/>
+    <message name="NEWS_SUBTITLE" value="Your &quot;Wormix Times&quot;"/>
+    <message name="SYSPVP_OPPONENT_OUT" value="玩家 %1 无法重新连接"/>
+    <message name="SYSPVP_INACTIVITY_DROP" value="玩家 %1 处于非活动状态出现掉线"/>
+    <message name="SYSPVP_UNCONFIRMED_EOT" value="玩家 %1 尚未确认其回合结束"/>
+    <message name="SYSPVP_OPPONENT_SURRENDER" value="玩家 %1 已投降"/>
+    <message name="SYSPVP_OPPONENT_CHEATER" value="玩家 %1 因服务器而掉线"/>
+    <message name="SYSPVP_OPPONENT_LOST_CONNECTION" value="玩家 %1 已断开连接"/>
+    <message name="SYSPVP_OPPONENT_RETURNED" value="玩家 %1 已重新连接"/>
+    <message name="SYSPVP_PLAYER_REPEATED_COMMAND" value="玩家 %1 的重复命令"/>
+    <message name="SYSPVP_PLAYER_SKIPPED_COMMAND" value="玩家 %1 错过了命令"/>
+    <message name="SYSPVP_LONG_TURN" value="很快将超过时间限制！"/>
+    <message name="SYSPVP_UNDEFINED" value="未定义的系统消息"/>
+    <message name="SYSPVP_NEW_TURN" value="战斗 #%1，第 #%2 (%3) 轮"/>
+    <message name="SYSPVP_PLAYER_WIPED" value="玩家 %1 已被摧毁！"/>
+    <message name="RATING_TO_DAY" value="今天"/>
+    <message name="RATING_YESTERDAY" value="昨天"/>
+    <message name="RATING_ALL_TIME" value="整天"/>
+    <message name="DESCR_LOWER_RATING_LEAGUE" value="Wormix 世界毫无秘密和把戏。对手彼此尊重，没有欺骗。您相信吗？真的？这是属于您的联盟。您是一位新手。"/>
+    <message name="DESCR_FIGHTER_RATING_LEAGUE" value="战斗联盟的第一原则是把枪口对准敌人。就差那么一点点，您将会掌握成功的秘诀。"/>
+    <message name="DESCR_VETERAN_RATING_LEAGUE" value="从现在开始，您知道 Wormix 的奥秘就是大人物。"/>
+    <message name="DESCR_MASTER_RATING_LEAGUE" value="意志力——这是大师和新手之间的不同之处。当您在第一轮将敌人推入水中时，只有难以置信的意志力才能让您摆脱自鸣得意。"/>
+    <message name="DESCR_ACE_RATING_LEAGUE" value="您选择一种武器，不是为了获胜而是让它光芒四射。"/>
+    <message name="DESCR_RUBY_RATING_LEAGUE" value="只有星星比您更高。下方也有星星。这是红宝石联盟，在这里每个人都是耀眼的星星。"/>
+    <message name="MASSIVE_DAMAGE" value="怪物！"/>
+    <message name="DOUBLE_KILL" value="双连杀！"/>
+    <message name="TRIPPLE_KILL" value="三连杀！"/>
+    <message name="ULTRA_KILL" value="横扫千军！"/>
+    <message name="DODGED_DAMAGE" value="躲避"/>
+    <message name="ATTRIBUTES_BONUS" value="属性 {symbol}{value}"/>
+    <message name="LITTLE_COUNT_POINTS" value="您需要 {balance} 成就点数"/>
+    <message name="NEDD_AWARD_MSG" value="要解锁该装备，您必须在之前的等级中获得奖励"/>
+    <message name="NEDD_AWARD" value="所需奖励：{difLevel}"/>
+    <message name="RESET_AWARDS_MSG" value="您确实要重置红宝石奖励吗？"/>
+    <message name="RESET_FOR" value="重置"/>
+    <message name="BTN_GREAT" value="太棒了！"/>
+    <message name="BTN_SHARE_NAME" value="告诉好友们"/>
+    <message name="WIN_GAME_SHARE" value="张贴公布"/>
+    <message name="NO_KEYS_IN_SEARCH_HOUSE" value="没有钥匙!"/>
+    <message name="HINT_KEY_COUNT" value="剩余 {count} 钥匙"/>
+    <message name="ACTIVITY_СALL_TO_PVP" value="我在 Wormix 中的排名：{rating}。{name}，来吧，让我们开始战斗吧！"/>
+    <message name="ACTIVITY_СALL_TO_PVP_NO_RATING" value="{name}，来吧，让我们开始战斗吧！"/>
+    <message name="OPENING_SOON" value="即将开始！"/>
+    <message name="BOSS_GAMEOVER_TITLE_1" value="胜利！"/>
+    <message name="BOSS_GAMEOVER_TITLE_2" value="恶棍已经倒下！"/>
+    <message name="BOSS_GAMEOVER_BONUS_DESCRIPTION" value="这是一场艰难的战斗，但是您胜利了！这是您应得的奖励："/>
+    <message name="BOSS_GAMEOVER_REWARD_DESCRIPTION" value="武器装备战利品："/>
+    <message name="WIN_GAMEOVER_BOSS_MESSAGE" value="{userName} 击败 {bossName}"/>
+    <message name="TUTORIAL_COMPLETE_MESSAGE" value="已完成 '{name_mission}'训练！"/>
+    <message name="DESCR_REWARD_BOSS_INFO_FIRST_COMPLETE" value="首次胜利奖励："/>
+    <message name="DESCR_REWARD_BOSS_INFO" value="奖励："/>
+    <message name="BATTLE_BOSS_BTN" value="战斗不息！"/>
+    <message name="ONE_DAY_PANEL_NAME" value="万岁！胜利！现在该休息一下了……"/>
+    <message name="ONE_DAY_PANEL_DESCR" value="您每天只能完成一次冒险。"/>
+    <message name="ONE_DAY_PANEL_RETURN_TOMORROW" value="明日再来！"/>
+    <message name="HELP_LEARNING_MISSION_ITEM_MENU" value="强烈建议您在进入真实战斗之前完成您的训练。"/>
+    <message name="LEVEL_NOT_APPROPRIATE_PANEL_NAME" value="您真勇敢！但是这还不够……"/>
+    <message name="LEVEL_NOT_APPROPRIATE_PANEL_DESCR" value="您的级别太低，不能参与如此残酷的战斗！"/>
+    <message name="BOSS_GAMEOVER_LOSE_TITLE_2" value="恶棍击败了你！"/>
+    <message name="BOSS_GAMEOVER_LOSE_DESCR_1" value="这次，敌人获胜！但是下次"/>
+    <message name="BOSS_GAMEOVER_LOSE_DESCR_2" value="您将获胜！"/>
+    <message name="LOSE_GAMEOVER_BOSS_MESSAGE" value="结果老怪 {bossName} 比 {userName} 更强大"/>
+    <message name="BOSS_GAMEOVER_DRAW_TITLE_2" value="该撤退了！"/>
+    <message name="BOSS_GAMEOVER_DRAW_DESCR" value="这太不寻常了，但是两股力量旗鼓相当！该撤退休息一下了。"/>
+    <message name="DRAW_GAMEOVER_BOSS_MESSAGE" value="这太不寻常了，但是两股力量旗鼓相当。该撤退休息一下了。"/>
+    <message name="COOPERATIVE_WIN_GAMEOVER_SUPERBOSS_MESSAGE"
+             value="{userName} 和 {friendName} 已击败超级老怪 {bossName} + {bossName2}"/>
+    <message name="WIN_GAMEOVER_SUPERBOSS_MESSAGE" value="{userName} 已击败超级老怪 {bossName} + {bossName2}"/>
+    <message name="COOPERATIVE_LOSE_GAMEOVER_SUPERBOSS_MESSAGE"
+             value="结果超级老怪 {bossName} + {bossName2} 比我和 {friendName} 更强大"/>
+    <message name="LOSE_GAMEOVER_SUPERBOSS_MESSAGE" value="结果超级老怪 {bossName} + {bossName2} 比 {userName} 更强大"/>
+    <message name="COOPERATIVE_WIN_GAMEOVER_BOSS_MESSAGE" value="{userName} 和 {friendName} 已击败老怪 {bossName}"/>
+    <message name="COOPERATIVE_LOSE_GAMEOVER_BOSS_MESSAGE" value="结果老怪 {bossName} 比我和 {friendName} 更强大"/>
+    <message name="NO_PATH_TEXT" value="您现在无法对这只老怪发起进攻，您必须先扫清道路"/>
+    <message name="BONUS_ATTACK" value="攻击力 +{value}"/>
+    <message name="BONUS_ARMOR" value="防御力 +{value}"/>
+    <message name="HEAL_BONUS" value="治疗效果加成"/>
+    <message name="REDUCTION_SHOCK" value="电击防护"/>
+    <message name="ATTACK_SHOCK" value="电击伤害"/>
+    <message name="INCREASE_AIR_DAMAGE" value="空袭"/>
+    <message name="AIR_REDUCTION" value="空中防御"/>
+    <message name="TITLE_CONFIRMATION" value="确认"/>
+    <message name="UNLOCK_BOSS_PANEL_TEXT" value="您确定要解锁此老怪吗？"/>
+    <message name="UNLOCK_BOSS_RESULT_TITLE" value="确认"/>
+    <message name="UNLOCK_BOSS_RESULT_SUCCESS" value="老怪已成功解锁！"/>
+    <message name="UNLOCK_BOSS_RESULT_ERROR" value="发生错误！代码：{code}"/>
+    <message name="UNLOCK_BOSS_TEXT" value="解锁"/>
+    <message name="BACK_BTN" value="返回"/>
+    <message name="SUCCESS_SEND" value="信息发送成功"/>
+    <message name="MOVE_TEAMMATE_HINT" value="更改回合顺序"/>
+    <message name="RETURN_FRIEND_BTN_QTIP" value="邀回一位好友"/>
+    <message name="RETURN_FRIENDS_MENU_TITLE" value="邀回多位好友！"/>
+    <message name="RETURN_FRIENDS_MENU_MSG" value="无人可以邀回，您所有的好友都在积极战斗！赞！"/>
+    <message name="NOTIFY_RETURN_FRIEND" value="请别犹豫，Wormix 等待您的归来！获得属于您的奖励！"/>
+    <message name="RETURN_FRIENDS_MENU_BTN" value="归来！"/>
+    <message name="RETURN_FRIENDS_MENU_DESCR_1" value="邀请您的朋友回到 Wormix 世界！"/>
+    <message name="RETURN_FRIENDS_MENU_DESCR_2" value="每位好友一旦接受您的邀请返回游戏，您都将获得此奖励。"/>
+    <message name="RETURN_FRIENDS_MENU_LABEL_1" value="邀请回归："/>
+    <message name="RETURN_FRIENDS_MENU_LABEL_2" value="奖励："/>
+    <message name="RETURN_FRIENDS_MENU_DISABLE_TEXT_BTN" value="已发送"/>
+    <message name="RETURN_FRIEND_REWARD_MENU_DESCR_1" value="您邀回一位朋友了吗？得到您应得的奖励！"/>
+    <message name="RETURN_FRIEND_REWARD_MENU_DESCR_2" value="欢迎回来！"/>
+    <message name="RETURN_FRIEND_REQUEST_MENU_TITLE" value="欢迎回来！"/>
+    <message name="RETURN_FRIEND_REQUEST_MENU_DESCR" value="感谢您的好友让您重回游戏世界！"/>
+    <message name="RETURN_FRIEND_REQUEST_CELL_DESCR" value="邀请您回到 Wormix 世界！"/>
+    <message name="RETURN_FRIEND_REQUEST_CELL_BTN" value="发送！"/>
+    <message name="REAGENTS_QTIP" value="资源"/>
+    <message name="RETURN_FRIEND_REQUEST_MENU_MSG" value="您确定要发送一份奖励给这位好友吗？"/>
+    <message name="RETURN_FRIEND_POST_MSG" value="我成功邀请一位好友回到游戏中并获得了一份奖励！"/>
+    <message name="COMEBACK_POST_MSG" value="我回到 Wormix 世界并获得了一份奖励！"/>
+    <message name="NOT_TAKEN_AWARD_FOR_ACHIEV" value="您没有任何成就奖励！"/>
+    <message name="RESET_AWARD_ACHIEV_BTN_QTIP" value="重置奖励"/>
+    <message name="UPDATE_YOUR_PLAYER" value="请将您的 flash player 升级至最新版本。"/>
+    <message name="BY_DEFAULT" value="默认"/>
+    <message name="BATTLE_SETTINGS_MENU_TITLE" value="设置"/>
+    <message name="QUALITY_CONTROL_PANEL_TITLE" value="画质"/>
+    <message name="SETTING_EFFECT_TITLE" value="云和更多效果"/>
+    <message name="ERROR_AT_UPDATE_BALANCE" value="交易过程中出现错误。"/>
+    <message name="PVP_WAGER_FRIEND_BTN" value="选择一位战友！"/>
+    <message name="CALL_FRIEND_ON_PVP_MENU_TITLE" value="邀请一位好友！"/>
+    <message name="CHOOSE_FRIEND_FOR_BOSS_TITLE" value="选择一位队友"/>
+    <message name="FULL_SCREEN_ON_BTN_HINT" value="全屏模式"/>
+    <message name="FULL_SCREEN_OFF_BTN_HINT" value="退出全屏模式"/>
+    <message name="OFFHAND_TAB" value="宝物"/>
+    <message name="MEDKIT_ENHANCEMENT" value="医药包疗效"/>
+    <message name="FORBIDDEN_TRANSITION_PAGE" value="该用户并非您的好友"/>
+    <message name="GAMEPAD_SETUP_TITLE" value="手柄设置"/>
+    <message name="GAMEPAD_SETUP_BEFORE_CONTROL_NAME" value="按下"/>
+    <message name="GAMEPAD_SETUP_AFTER_CONTROL_NAME" value="按钮……"/>
+    <message name="CONTROL_LEFT" value="向左"/>
+    <message name="CONTROL_RIGHT" value="向右"/>
+    <message name="CONTROL_UP" value="向上"/>
+    <message name="CONTROL_DOWN" value="向下"/>
+    <message name="CONTROL_BAG" value="打开袋子"/>
+    <message name="CONTROL_SHOOT" value="射击"/>
+    <message name="CONTROL_ALT" value="切换武器状态"/>
+    <message name="CONTROL_JUMP" value="跳跃"/>
+    <message name="CONTROL_BACK_JUMP" value="向后跳跃"/>
+    <message name="CONTROL_ESCAPE" value="逃离战斗"/>
+    <message name="SETTINGS_TITLE" value="设置"/>
+    <message name="LANGUAGE_TITLE" value="语言"/>
+    <message name="RUSSIAN_TITLE" value="俄语"/>
+    <message name="ENGLISH_TITLE" value="英语"/>
+    <message name="CHINESE_TITLE" value="中文"/>
+    <message name="REPORT_A_PROBLEM" value="问题反馈"/>
+    <message name="CONF_POLICY" value="隐私和保密"/>
+    <message name="TERMS_OF_USE" value="使用条款"/>
+    <message name="INFO_AND_SUPPORT" value="信息"/>
+    <message name="SCALE_TEXT" value="增加战斗规模"/>
+    <message name="FACEBOOK_CONNECT_WINDOW_TITLE" value="与好友一起游戏！"/>
+    <message name="FACEBOOK_CONNECT_WINDOW_DESCRIPTION"><![CDATA[一起游戏乐趣更多！<br> 使用 Facebook 账户注册可获得 3 颗红宝石！]]></message>
+    <message name="FACEBOOK_CONNECTED_BONUS_TEXT" value="您已使用 Facebook 账户注册并成功获得 3 颗红宝石！"/>
+    <message name="FACEBOOK_CONNECTED_BONUS_FAIL_TEXT" value="抱歉，已在该游戏中使用过此 Facebook 账户。"/>
+    <message name="NEED_TO_CONNECT_TEXT_SOCIAL_NETWORK" value="如需邀请朋友加入您的团队，请登录您的社交账户。"/>
+    <message name="FACEBOOK_PVP_NEED_TO_CONNECT_TEXT" value="先登录到 Facebook"/>
+    <message name="CHANGE_NAME_TITLE" value="更改名称"/>
+    <message name="BUTTON_SAVE" value="保存"/>
+    <message name="CHANGE_NAME_NOTE" value="* 仅前两次更改名称免费。"/>
+    <message name="DEFAULT_NAME_TEXT" value="未选择名称"/>
+    <message name="REPORT_BODY_TEMPLATE"
+             value="请在此处描述您的问题……&#10;&#10;&#10;&#10;--------请勿删除!--------&#10;UTC 时间：{time}&#10;游戏：Wormix&#10;版本：{version}&#10;玩家ID：{id}&#10;语言：{language}&#10;OS 版本：{os}&#10;---------------------------"/>
+    <message name="SYSPVP_BATTLE_ID" value="战斗 #%1"/>
+    <message name="SYSPVP_YOU_PLAY_FOR" value="您的游戏团队为 %1。"/>
+    <message name="SYSPVP_ENEMY_ID" value="敌人 ID：%1。"/>
+    <message name="SYSPVP_ENEMIES_ID" value="多个敌人 ID：%1。"/>
+    <message name="SYSPVP_ALLY_ID" value="盟友 ID：%1。"/>
+    <message name="SYSPVP_ALLY_PLAYS_FOR" value="您盟友的游戏团队为 %1。"/>
+    <message name="COLOR_GREEN_ACCUS" value="绿色"/>
+    <message name="COLOR_RED_ACCUS" value="红色"/>
+    <message name="COLOR_YELLOW_ACCUS" value="黄色"/>
+    <message name="COLOR_BLUE_ACCUS" value="蓝色"/>
+    <message name="COLOR_UNKNOWN_ACCUS" value="未知色彩"/>
+    <message name="WAIT_FOR_RESULT" value="正在等待战斗结果……"/>
+    <message name="NEED_TO_SETUP_EMAIL" value="在发送消息之前，请先设置电子邮箱。"/>
+    <message name="DO_YOU_LIKE_THIS_GAME" value="您喜欢此游戏吗？"/>
+    <message name="PLEASE_LEAVE_FEEDBACK" value="请留下反馈！"/>
+    <message name="RATE_IT" value="对其作出评价！"/>
+    <message name="REMIND_ME_LATER" value="稍后提醒我"/>
+    <message name="NO_THANKS" value="不，谢谢"/>
+    <message name="EQUIP_EXPIRED" value="已过期物品：{equipList}"/>
+    <message name="HAT_DISAPPEAR" value="物品过期时间:"/>
+    <message name="DAY_TEXT" value="{value} 天"/>
+    <message name="HOURS_TEXT" value="{value} 时"/>
+    <message name="MINUTE_TEXT" value="{value} 分"/>
+    <message name="TEAM_UP" value="团结合作！"/>
+    <message name="CODE" value="更正"/>
+    <message name="ICLOUD_ENABLE_NEW_ACCOUNT" value="您的账户将被保存在 iCloud 中，可以在其他设备上使用。是否继续？"/>
+    <message name="ICLOUD_ENABLE_ALREADY_HAS_ACCOUNT" value="iCloud 中已存在一个账户。是从 iCloud 中加载已有帐号还是覆盖您的帐户？关闭该窗口以取消。"/>
+    <message name="ICLOUD_DISABLE_CONTINUE_WITH_SAME_ACCOUNT"
+             value="您将取消 iCloud 同步。iCloud 中将保留您的账户并且可在其他设备上使用该账户。是否继续？"/>
+    <message name="ICLOUD_DISABLE_CONTINUE_WITH_OTHER_ACCOUNT"
+             value="您将取消 iCloud 同步。iCloud 中将保留您的账户并且可在其他设备上使用该账户。该设备将切换到本地帐户。是否继续？"/>
+    <message name="ICLOUD_TRY_ANOTHER_ACCOUNT" value="您的当前账户已被封禁。您想使用 iCloud 中的另一个账户吗？"/>
+    <message name="PVP_MESSAGE" value="在线战斗。获胜方可赢回赌注并获得奖励。"/>
+    <message name="PVP_DUEL_CARD" value="简单决斗"/>
+    <message name="PVP_SURVIVAL_CARD" value="生存战斗"/>
+    <message name="PVP_DEATH_MATCH_CARD" value="传奇决斗"/>
+    <message name="PVP_TWO_VS_TWO_CARD" value="随机 2х2"/>
+    <message name="PVP_TWO_VS_TWO_WITH_FRIEND_CARD" value="团队 2х2"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_FARMER" value="我已成功击败农民！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_HUNTER" value="我已成功击败猎人！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_MANIACS" value="我已成功击败杀人狂魔！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ENGINEER" value="我已成功击败工程师！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_GUARDIANS_DEPTHS" value="我已成功击败深渊守卫者！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_PIRATE" value="我已成功击败海盗船长！现在还有谁是海盗？"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ILLUSIONIST" value="我已成功击败幻术师！不再有荒唐的诡计！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SHAMAN" value="我赢了！据说是萨满。甚至他的恶魔们都如此的悲惨。"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_VIKING" value="北欧海盗是最佳斗士？我已经完全拥有了他们，尽管他们之前占有优势。"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_WINDMASTER" value="现在控风大师身在何处？已经被吹走了，我是为他而来的。"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_MINER" value="我消灭了地雷工兵！最后，每位地雷工兵都与他的工兵一起归西。"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SAMURAI_CAT" value="我击败了这只猫。确切地说，是 9 次！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SERGEANT" value="中士……尽管他拥有 10 位治疗师，我依然取得了胜利！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_BURNING_DEAD" value="已经告诉他们多次不要玩火。没用的——必须再次应对！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_WANDERING_SOUL" value="如果它不是游魂而是战士，可能还有机会。嗯。"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_YAKUZA" value="我战胜了黑帮！当然不是全部，但至少干掉了三个混蛋。"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_DEAD_PIRATE" value="水、流星、冰锥？哈！战术、技能、完美胜利！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ROMEO_JULIET" value="他们说喜欢杀戮……他们还不认识我。"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_KING_DEAD" value="我一直等着他引爆自己很久了……他却没有那样做。必须帮帮他。"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ANCIENT_GHOST" value="真是一位难对付的对手！……他非常不幸，我不怕暴风！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_DARK_KNIGHT" value="我已成功击败黑暗骑士！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_PALADIN" value="我已成功击败圣骑士！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_HACKER" value="我已成功击败黑客！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_THIEVES" value="我已成功击败偷盗大师！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_PSIONIC" value="我已成功击败传心术士！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_PHANTOMS" value="我已成功击败幻影幽灵！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ARCHIDEMON" value="我已成功击败大恶魔！"/>
+    <message name="WALL_POST_WIN_BOSS_DRUID" value="我已成功击败德鲁伊！"/>
+    <message name="WALL_POST_WIN_BOSS_PHARAOH" value="我已成功击败法老！"/>
+    <message name="WALL_POST_WIN_BOSS_CYBORG" value="我已成功击败半机械人！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ASSASSIN" value="我已成功击败刺客！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ALCHEMIST" value="我已成功击败炼金术士！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ARCHBOT" value="我已成功击败机器人狂魔！"/>
+    <message name="WALL_POST_WIN_BOSS_JARL" value="我已成功击败首领！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ENCHANTER" value="我已成功击败附魔师！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ARCHIVIST" value="我已成功击败档案保管员！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_EMPEROR" value="我已成功击败帝王！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SCIENTIST" value="我已成功击败科学家！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SYMBIOTE" value="我已成功击败共生体！"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ARCTIC_WARRIOR" value="我已成功击败北极勇士！"/>
+    <message name="NUCLEAR_LAUNCH_DETECTED" value="核导弹发射成功！"/>
+    <message name="WATER_INCREASING" value="地面即将沉入水下！"/>
+    <message name="WATER_START_INCREASING" value="地面即将下沉！"/>
+    <message name="DEPOSIT_CONSUMPTION_ERROR" value="今天我们无法找到新的存款。或许您今天已经收到了它们？"/>
+    <message name="DEPOSIT_MAX_COUNT_LIMIT" value="您所开立的存款账户不得超过 {count} 个。"/>
+    <message name="SOCIAL_NONE_STATUS" value="社交媒体"/>
+    <message name="SOCIAL_NONE_ACTION" value="断开连接"/>
+    <message name="SOCIAL_STEAM_NAME" value="Steam"/>
+    <message name="SOCIAL_FB_NAME" value="Facebook"/>
+    <message name="SOCIAL_VK_NAME" value="VKontakte"/>
+    <message name="SOCIAL_FB_SHORT_NAME" value="FB"/>
+    <message name="SOCIAL_VK_SHORT_NAME" value="VK"/>
+    <message name="VK_GAMES" value="VKontakte 游戏"/>
+    <message name="SELECT_SOCIAL_NETWORK" value="选择社交网络"/>
+    <message name="SOCIAL_NETWORKS_NOT_AVAILABLE" value="社交网络不可用"/>
+    <message name="SELECT_FRIEND_TO_INVITE" value="选择好友发起邀请"/>
+    <message name="INPUT_NAME" value="输入名称"/>
+    <message name="INPUT_MESSAGE" value="输入文字"/>
+    <message name="GLOBAL_CHAT_ILLEGAL_STATE" value="错误状态！"/>
+    <message name="GLOBAL_CHAT_TOO_FAST" value="您的消息发送过快！"/>
+    <message name="GLOBAL_CHAT_TAB" value="全球聊天"/>
+    <message name="FRIENDS_TAB" value="好友"/>
+    <message name="CHAT_RESTRICTED" value="禁止临时聊天。"/>
+    <message name="RESTRICT_FOR" value="限制持续到 {date}。"/>
+    <message name="MEMBER_CRAFT_LEGENDARY_MESSAGE" value="{name} 已锻造 {item}!"/>
+    <message name="KAMIKAZE_ALREADY_ACTIVATED" value="您已启动炸药！"/>
+    <message name="CONTEXT_MENU_DUEL" value="决斗"/>
+    <message name="CONTEXT_MENU_TEAM_BATTLE" value="团队战斗"/>
+    <message name="CONTEXT_MENU_HEROIC_BOSS" value="团队战斗 对阵 超级老怪"/>
+    <message name="CONTEXT_MENU_COOP_BOSS" value="团队战斗 对阵 老怪"/>
+    <message name="CONTEXT_MENU_HOTSEAT" value="挑大梁"/>
+    <message name="CONTEXT_MENU_VISIT" value="访问"/>
+    <message name="CONTEXT_MENU_VISIT_PAGE" value="用户页面"/>
+    <message name="CONTEXT_MENU_TOGGLE_STICKERS" value="开关贴纸"/>
+    <message name="NEW_STICKERS_PACK_PURCHASED" value="您购买了一包新贴纸！"/>
+    <message name="PUSHING_MINE_USELESS" value="您必须站在敌人附近"/>
+    <message name="CALL_REINFORCEMENTS_USELESS" value="不能在此处着陆！"/>
+    <message name="CONTROL_TITLE" value="控制键"/>
+    <message name="PAYMEN_OPTION_RUBY6" value="一把红宝石"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY6" value="仅仅一把红宝石便可以带来很多好处！几种一次性武器或获胜所需的反应速度提升!"/>
+    <message name="PAYMEN_OPTION_RUBY5" value="一堆红宝石"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY5" value="现在，这不仅仅是一堆红宝石，我是说真的！不要急于将它们都花掉——理性消费，购买一些有用的东西！"/>
+    <message name="PAYMEN_OPTION_RUBY4" value="一袋红宝石"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY4" value="如果您能做到理性消费，这一小袋红宝石也能发挥大用处。用它购买能够帮您在战场上占据主导地位的武器！"/>
+    <message name="PAYMEN_OPTION_RUBY3" value="一大袋红宝石"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY3" value="现在梦想成真了——您可以购买超酷的武器和装备，成为敌人的真正威胁。想让人们都惧怕您吗？那么这就是您所需要的！"/>
+    <message name="PAYMEN_OPTION_RUBY2" value="一箱红宝石"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY2" value="古老海盗的宝藏可以属于您。这些珍宝可以用来帮您全副武装，为您配备最好的装备和最具杀伤力的武器！"/>
+    <message name="PAYMEN_OPTION_RUBY1" value="一大箱红宝石"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY1" value="由北海巨妖的触须制成，从海底升起，这个一大箱子装着满满一箱子红宝石。拥有了这一大笔财富，您可以购买最好的装备令敌人闻风丧胆"/>
+    <message name="PAYMEN_OPTION_RUBY0" value="一保险柜红宝石"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY0"
+             value="对于那些想要攀登上顶级玩家之巅的人而言，它最好不过了，将带给您高人一等的感觉。您买得起自己想要的一切。但是请记住，您仍需要牢牢掌握自己的技能。"/>
+    <message name="PAYMEN_OPTION_FUZY6" value="一把金币"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY6" value="金币总是带来好运，至少是在您理智消费的时候。您可能会惊叹一小堆金币怎么能让您的生活变得更有活力、更加成功！"/>
+    <message name="PAYMEN_OPTION_FUZY5" value="一堆金币"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY5" value="不是一小堆而是一大堆金沙——您将感觉到对行动的渴望。您将知道自己比以前更加富有很多！"/>
+    <message name="PAYMEN_OPTION_FUZY4" value="一袋金币"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY4" value="很重的一袋金币，用途十分广泛。请记住，金会生金。"/>
+    <message name="PAYMEN_OPTION_FUZY3" value="一大袋金币"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY3"
+             value="可怜的收税员弄丢了自己的袋子。但是我们非常开心您可以将它派上用场。想象一下商店里所有充满诱惑力的商品——有了这袋金币，它们都是您的！"/>
+    <message name="PAYMEN_OPTION_FUZY2" value="一箱金币"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY2" value="刚刚清洗和抛光过，这一满箱金币一定会给您带来好运的。请笑纳：您可以用它们购买自己想要的一切！"/>
+    <message name="PAYMEN_OPTION_FUZY1" value="一大箱金币"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY1" value="疯狂的淘金热——请记住：得到这一大笔宝藏可能会给您带来麻烦，因为您可以在这里买到大量令人眼花缭乱的物品！"/>
+    <message name="PAYMEN_OPTION_FUZY0" value="一保险柜金币"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY0"
+             value="刚从 Wormix 银行大盗那里得到的。不用担心，我们已经为您撬开了锁……只是为了确保里面装满金币。看来是真的。实际上，我们很难对其进行更详细的描述——请亲自检查这所有的宝物！"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY0" value="红宝石狂热者"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY1" value="五十个色度的红宝石"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY2" value="锦上添花"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY3" value="堆积如山!"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY4" value="宝石换宝石"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY0" value="ShutUpAndTakeMyMoney"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY1" value="富有的鲸鱼”"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY2" value="远不止如此"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY3" value="行贿买通"/>
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY4" value="只是看看"/>
+    <message name="SELECT_RACE" value="Select race"/>
+    <message name="SELECTED_RACE" value="选择的种族"/>
+    <message name="BANK_BUNDLE_TITLE" value="束"/>
+    <message name="BANK_BUNDLES_TITLE" value="束"/>
+    <message name="BANK_BUNDLE_DESCR" value="一次获得所有物品和武器"/>
+    <message name="BANK_CLAN_DONATION_TITLE" value="氏族宝库"/>
+    <message name="BANK_CLAN_DONATION_DESCRIPTION" value="捐赠给氏族宝库"/>
+    <message name="HOME_QTIP" value="主菜单"/>
+    <message name="CRAFT_QTIP" value="军械库"/>
+    <message name="ALREADY_ACTIVE_UNIT" value="该单位已经活跃！"/>
+    <message name="BUNDLE_TITLE_1" value="战术的胸部"/>
+    <message name="BUNDLE_DESCR_1" value="一种随机稀有试剂"/>
+    <message name="CRAFT_BOX_BUY_RESULT" value="您已收到一些项目："/>
+    <message name="BUNDLE_TITLE_2" value="元帅的胸部"/>
+    <message name="BUNDLE_DESCR" value="您将从列表中收到随机项目："/>
+    <message name="RANDOM_RARE_REAGENT_NOTE" value="（随机稀有试剂）"/>
+    <message name="MAIN_SERVER_CONNECTION_CLOSED_LOSE" value="您的服务器已经断开时间太长。"/>
+    <message name="BATTLE_LOST_TITLE" value="战斗损失"/>
+    <message name="ALREADY_IN_GAME_LOGIN_TRYING_LIMIT_OUT" value="再次登录出错，请与游戏支持人员联系或者稍后再试。"/>
+    <message name="TEXT_NOT_IN_WHITE_LIST">
+        <![CDATA[Yor are not in server's white list.<br/>Your device id: {uid} is copied to system clipboard]]>
+    </message>
+
+    <message name="LEVEL_BRIEF" value="(水平 {lvl})"/>
+    <message name="WEAPON_IMPROVE_NEED" value="您拥有这个武器{current}级别。要解锁升级功能，您必须增加到最高的{max}级别。"/>
+    <message name="WEAPON_MAX_IMPROVE_PRICE" value="提高至最高级别的价格"/>
+    <message name="WEAPON_AFTER_IMPROVE" value="在下一个等级上："/>
+
+    <message name="WEAPONS_BONUS_TITLE" value="奖励武器！"/>
+    <message name="WEAPONS_BONUS_TEXT" value="由于武器系统升级，您收到免费的武器！"/>
+
+    <message name="DOWNGRADE_WEAPONS_COMPENSATION_TITLE" value="升级补偿！"/>
+    <message name="DOWNGRADE_WEAPONS_COMPENSATION_TEXT" value="看来您的等级低于某些升级的要求。我们必须使用适当的版本更换，并且恢复为您全部的数值！"/>
+    <message name="STEAM_OVERLAY_ACTIVATION_NEEDED" value="请启动Steam overlay，激活购买功能。"/>
+
+    <message name="PREV_SEASON_LABEL" value="上个赛季："/>
+    <message name="PREV_SEASON_PLACE" value="{value}个地方"/>
+
+    <message name="TEAM_MEMBER_TYPE_MERC" value="雇佣军"/>
+    <message name="TEAM_MEMBER_TYPE_FRIEND" value="朋友"/>
+    <message name="TEAM_MEMBER_TYPE_CLANMATE" value="氏族伴侣"/>
+    <message name="TEAM_MEMBER_RESTRICTED_TEXT" value="队友的限制："/>
+
+    <message name="PLAYER_NAME_TITLE" value="Player name："/>
+
+    <!-- ver2.6 -->
+    <message name="GOOGLE_SAVE_LABEL" value="Link with Google"/>
+    <message name="GOOGLE_LINK_NEED"
+             value="To ensure the safety of your game account, it's recommended to link it with Google. Are you agree?"/>
+    <message name="GOOGLE_LINK_LATER_IN_SETTINGS"
+             value="You can link your account later, this can be done in the Settings menu."/>
+    <message name="GOOGLE_LINK_NEW_ACCOUNT"
+             value="Your game account has been successfully linked with Google and is also available on your other devices."/>
+    <message name="GOOGLE_LINK_HAS_OTHER_ACCOUNT"
+             value="There's an existing account already linked with your Google account. Do you want to switch into it, or retain the local account from this device?"/>
+    <message name="GOOGLE_LINK_ALREADY_COMPLETED" value="This device is already linked with your Google account ({account})"/>
+    <message name="BUTTON_STAY" value="Retain"/>
+
+    <message name="TITLE_WELCOME" value="Welcome!"/>
+    <message name="ENTER_TUTORIAL_QUESTION" value="Do you want to start with the tutorial?"/>
+
+    <message name="DOCTOR_BAG_USELESS" value="这个包现在没用了"/>
+    <message name="DOCTOR_BAG_USELESS_NO_ALLIES" value="附近没有受伤的盟友"/>
+    <message name="DOCTOR_BAG_USELESS_MAX_HP" value="一个盟友已经完全健康了"/>
+
+    <message name = "NEED_GOOGLE_AUTH" value = "Google authorization is required. Press [{ok}] to continue." />
+    <message name = "STATUS_ALREADY_ON" value = "Enabled" />
+    <message name = "LABEL_TURN_ON" value = "Enable" />
+    <message name = "LABEL_TURN_OFF" value = "Disable" />
+    <message name = "UNAVAILABLE" value = "Not Available" />
+    <message name = "LABEL_LINKED" value = "Linked" />
+    <message name = "GOOGLE_LINKED_TEXT" value = "Google account ({mail})" />
+
+    <message name="ATOM_MARK_ALREADY_EXIST" value="Atomic bomb mark already set!"/>
+    <message name="FORCE_FIELD_ALREADY_EXIST" value="Force field already set!"/>
+
+    <message name = "ERROR_ADVERTISING_LIMIT_REACHED" value = "Reward for ads is temporarily unavailable. Please try again later." />
+    <message name = "FREE_LABEL" value = "Free" />
+    <message name = "DOUBLE_LABEL" value = "x 2" />
+    <message name = "ADS_UNAVAILABLE_TEMPORAL" value = "Ad is temporarily unavailable. Try again later." />
+    <message name = "ADS_UNAVAILABLE" value = "No ad available. Please contact game support." />
+    <message name = "FAST_BATTLE" value = "Fast battle" />
+    <message name = "FAST_BATTLE_TEXT" value = "Take the full reward for a hard mission without effort!" />
+    <message name = "FAST_BATTLE_REWARD" value = "Reward for fast battle" />
+
+    <message name = "PERSONALIZED_ADS_LABEL" value = "Personal advertising" />
+    <message name = "REFUND_WAGER" value = "Refund wager" />
+
+    <message name="PROFITABLY" value="Best offer!"/>
+    <message name="POPULARLY" value="Popularly!"/>
+    <message name="AUTO_RENEWING" value="(auto-renewing)"/>
+    
+    <message name="ERROR_WRONG_PRICE"
+             value="Wrong price received. We will try to fix it as soon as possible. Please, try again later."/>
+    <message name="ICLOUD_ENABLE_WITH_CREATE_NEW_ACCOUNT"
+             value="Your account already stored in another your iCloud. Would you like to create new account in this iCloud?"/>
+    <message name="BUTTON_CREATE" value="Create"/>
+
+    <message name="HELP_ADMINISTRATION" value="If you have any problems, please contact the game support service for help using one of the TG or VK buttons in the main menu"/>
+    <message name="NAVIGATE_SUPPORT_TELEGRAM" value="Want to join the official Wormix Mobile group in Telegram?"/>
+    <message name="NAVIGATE_SUPPORT_VKONTAKTE" value="Want to join the official Wormix Mobile group in VKontakte?"/>
+    <message name="TITLE_VERSION" value="version"/>
+    <message name="TITLE_ACCOUNT_ID" value="Account ID"/>
+    <message name="ADMIN_CHAT_MESSAGE" value='Message from the administration:'/>
+    <message name="OTHER_PLATFORM_CALLS_DISABLED" value="Calling the player with another platform is temporarily not available."/>
+    <message name="OTHER_PLATFORM_INVITES_UNAVAILABLE" value="Cannot be invited to the player’s clan with another platform."/>
+    <message name="OTHER_PLATFORM_CLAN_SHOW_UNAVAILABLE" value="Cannot to show the player’s clan with another platform."/>
+    <message name="GLOBAL_CHAT_NOT_ALLOWED" value="You will be able to write in the global chat starting from level 11."/>
+
+    <message name="TOKENS_QTIP" value="Tokens"/>
+    <message name="COIN_DESCR" value="The main currency of Wormix. Obtained as a reward in battles, for achievements, and also in many different bonuses."/>
+    <message name="RUBY_DESCR" value="Premium currency of Wormix. Obtained as a reward in some special battles, for rare achievements, and also sometimes in bonuses."/>
+    <message name="TOKENS_DESCR" value="Battle currency of Wormix. Automatically issued every day, as well as in bonuses. Required for admission to battles against simple bots and bosses, or increase the reward for the battle."/>
+
+    <message name="BATTLE_TOKEN" value="Battle token"/>
+    <message name="BATTLE_TOKENS" value="Battle tokens"/>
+    <message name="BATTLE_TOKENS_TEXT" value="Required to play missions and fight bosses."/>
+    <message name="WAGER_TOKENS" value="Wager tokens"/>
+    <message name="WAGER_TOKEN" value="Wager token"/>
+    <message name="WAGER_TOKENS_TEXT" value="Gives a bonus of 100 coins and 5 experience for winning any PVP (wager) battle!"/>
+    <message name="BOSS_TOKENS" value="Boss tokens"/>
+    <message name="BOSS_TOKEN" value="Boss token"/>
+    <message name="BOSS_TOKENS_TEXT" value="Gives increased rewards for winning a boss fight!{br}Required to complete boss achievements."/>
+    <message name="ONE_TOKEN_RESTORE" value="1 {token} will be restored tomorrow"/>
+    <message name="ALL_TOKENS_EXPIRE" value="All tokens disappear at the end of a day!"/>
+    <message name="FREE_BATTLE_TOKENS" value="When all battle tokens are spent, you may buy new ones or wait until they'll be restored (up to 5 total)."/>
+    <message name="BOSS_GAMEOVER_TROPHY" value="* Captured temporary items will expire in a few hours"/>
+    <message name="MISSION_DESCR" value="Complete missions to earn rewards, experience, and find resources!"/>
+    <message name="BOSSES_DESCR" value="Test yourself by challenging the insidious bosses!"/>
+    <message name="WASTED" value="Wasted"/>
+
+    <message name="LIGHT_VERSION" value="轻量版"/>
+    <message name="RACE_BUY_CONFIRM_QUESTION" value="您想购买一场比赛吗？"/>
+    <message name="BUTTON_RESET_PARAMS" value="重置攻击和防御"/>
+
+</dictionary>

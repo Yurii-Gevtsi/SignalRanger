@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+    <message name="ACHIEVEMENTS_TITLE" value="Achievements"/>
+    <message name="ACHIEV_PROGRESS_LABEL" value="Progress"/>
+    <message name="ACHIEV_AWARD_POINTS_LABEL" value="Awards available:"/>
+    <message name="ACHIEV_POINTS_LABEL" value="Next reward in:"/>
+    <message name="AVAILABLE_AWARD" value="Available award"/>
+    <message name="ACHIEV_GOAL_TITLE" value="Reach rank:"/>
+    <message name="ACHIEV_LEVELUP_TITLE" value="New achievement!"/>
+    <message name="ACHIEV_BATTLE_BUTTON" value="Combat"/>
+    <message name="ACHIEV_GAME_BUTTON" value="Game"/>
+    <message name="ACHIEV_BOSSES_BUTTON" value="Bosses"/>
+    <message name="ACHIEV_STATISTIC_BUTTON" value="Statistic"/>
+    <message name="ACHIEV_AWARD_BUTTON" value="Awards"/>
+    <message name="ACHIEV_SELECT_BUTTON" value="Select"/>
+    <message name="ACHIEV_BURNED_ENEMIES_1LEVEL_TITLE" value="Firestarter"/>
+    <message name="ACHIEV_BURNED_ENEMIES_2LEVEL_TITLE" value="Sadist"/>
+    <message name="ACHIEV_BURNED_ENEMIES_3LEVEL_TITLE" value="Pyromaniac"/>
+    <message name="ACHIEV_DESTROYED_SQUARE_1LEVEL_TITLE" value="Demolisher"/>
+    <message name="ACHIEV_DESTROYED_SQUARE_2LEVEL_TITLE" value="Destroyer"/>
+    <message name="ACHIEV_DESTROYED_SQUARE_3LEVEL_TITLE" value="Unstoppable Force"/>
+    <message name="ACHIEV_DROWNED_OPPONENTS_1LEVEL_TITLE" value="Diver"/>
+    <message name="ACHIEV_DROWNED_OPPONENTS_2LEVEL_TITLE" value="Water Demon"/>
+    <message name="ACHIEV_DROWNED_OPPONENTS_3LEVEL_TITLE" value="Neptune"/>
+    <message name="ACHIEV_WAGER_WINNER_1LEVEL_TITLE" value="Winner"/>
+    <message name="ACHIEV_WAGER_WINNER_2LEVEL_TITLE" value="Champion"/>
+    <message name="ACHIEV_WAGER_WINNER_3LEVEL_TITLE" value="Hero"/>
+    <message name="ACHIEV_DIPLOMAT_1LEVEL_TITLE" value="Negotiator"/>
+    <message name="ACHIEV_DIPLOMAT_2LEVEL_TITLE" value="Diplomat"/>
+    <message name="ACHIEV_DIPLOMAT_3LEVEL_TITLE" value="Ambassador"/>
+    <message name="ACHIEV_WIND_KILLS_1LEVEL_TITLE" value="Accurate"/>
+    <message name="ACHIEV_WIND_KILLS_2LEVEL_TITLE" value="Wind master"/>
+    <message name="ACHIEV_WIND_KILLS_3LEVEL_TITLE" value="Shaman"/>
+    <message name="ACHIEV_MASSIVE_DAMAGE_1LEVEL_TITLE" value="Butcher"/>
+    <message name="ACHIEV_MASSIVE_DAMAGE_2LEVEL_TITLE" value="Exterminator"/>
+    <message name="ACHIEV_MASSIVE_DAMAGE_3LEVEL_TITLE" value="Jack the Ripper"/>
+    <message name="ACHIEV_GRAVES_SANK_1LEVEL_TITLE" value="Gravedigger"/>
+    <message name="ACHIEV_GRAVES_SANK_2LEVEL_TITLE" value="Buffy"/>
+    <message name="ACHIEV_GRAVES_SANK_3LEVEL_TITLE" value="Van Helsing"/>
+    <message name="ACHIEV_ONE_HP_WIN_1LEVEL_TITLE" value="Silver spoon"/>
+    <message name="ACHIEV_ONE_HP_WIN_2LEVEL_TITLE" value="Lucky devil"/>
+    <message name="ACHIEV_ONE_HP_WIN_3LEVEL_TITLE" value="Death deceiver"/>
+    <message name="ACHIEV_IMMOBILE_KILLS_1LEVEL_TITLE" value="Steady"/>
+    <message name="ACHIEV_IMMOBILE_KILLS_2LEVEL_TITLE" value="Immovable"/>
+    <message name="ACHIEV_IMMOBILE_KILLS_3LEVEL_TITLE" value="Rock"/>
+    <message name="ACHIEV_FLAWLESS_VICTORIES_1LEVEL_TITLE" value="Sneaky"/>
+    <message name="ACHIEV_FLAWLESS_VICTORIES_2LEVEL_TITLE" value="Careful"/>
+    <message name="ACHIEV_FLAWLESS_VICTORIES_3LEVEL_TITLE" value="Paranoid"/>
+    <message name="ACHIEV_FLEW_MILES_1LEVEL_TITLE" value="Pilot"/>
+    <message name="ACHIEV_FLEW_MILES_2LEVEL_TITLE" value="Ace"/>
+    <message name="ACHIEV_FLEW_MILES_3LEVEL_TITLE" value="Astronaut"/>
+    <message name="ACHIEV_DOUBLE_KILLLS_1LEVEL_TITLE" value="Rapid shooter"/>
+    <message name="ACHIEV_DOUBLE_KILLLS_2LEVEL_TITLE" value="Killer"/>
+    <message name="ACHIEV_DOUBLE_KILLLS_3LEVEL_TITLE" value="Wormax Payne"/>
+    <message name="ACHIEV_MEDKIT_KILLS_1LEVEL_TITLE" value="Apothecary"/>
+    <message name="ACHIEV_MEDKIT_KILLS_2LEVEL_TITLE" value="Witch doctor"/>
+    <message name="ACHIEV_MEDKIT_KILLS_3LEVEL_TITLE" value="Dr. Rabbitus"/>
+    <message name="ACHIEV_GATHERED_SUPPLIES_1LEVEL_TITLE" value="Treasure hunter"/>
+    <message name="ACHIEV_GATHERED_SUPPLIES_2LEVEL_TITLE" value="Plunderer"/>
+    <message name="ACHIEV_GATHERED_SUPPLIES_3LEVEL_TITLE" value="Sea dog"/>
+    <message name="ACHIEV_KAMIKAZE_1LEVEL_TITLE" value="Kamikaze"/>
+    <message name="ACHIEV_KAMIKAZE_2LEVEL_TITLE" value="Come with me"/>
+    <message name="ACHIEV_KAMIKAZE_3LEVEL_TITLE" value="Death grasp"/>
+    <message name="ACHIEV_ROPED_MILES_1LEVEL_TITLE" value="Jumper"/>
+    <message name="ACHIEV_ROPED_MILES_2LEVEL_TITLE" value="Tarzan"/>
+    <message name="ACHIEV_ROPED_MILES_3LEVEL_TITLE" value="Rabbit Shaman"/>
+    <message name="ACHIEV_FUZZES_SPENT_1LEVEL_TITLE" value="Spender"/>
+    <message name="ACHIEV_FUZZES_SPENT_2LEVEL_TITLE" value="Embezzler"/>
+    <message name="ACHIEV_FUZZES_SPENT_3LEVEL_TITLE" value="Monarch"/>
+    <message name="ACHIEV_RUBIES_SPENT_1LEVEL_TITLE" value="Money bag"/>
+    <message name="ACHIEV_RUBIES_SPENT_2LEVEL_TITLE" value="Rich kid"/>
+    <message name="ACHIEV_RUBIES_SPENT_3LEVEL_TITLE" value="Millionaire"/>
+    <message name="ACHIEV_PUMPED_REACTION_1LEVEL_TITLE" value="Fast"/>
+    <message name="ACHIEV_PUMPED_REACTION_2LEVEL_TITLE" value="Reactive"/>
+    <message name="ACHIEV_PUMPED_REACTION_3LEVEL_TITLE" value="Torpedo"/>
+    <message name="ACHIEV_RUBIES_FOUND_1LEVEL_TITLE" value="Looter"/>
+    <message name="ACHIEV_RUBIES_FOUND_2LEVEL_TITLE" value="Miner"/>
+    <message name="ACHIEV_RUBIES_FOUND_3LEVEL_TITLE" value="Jeweler"/>
+    <message name="ACHIEV_MADE_PHOTO_1LEVEL_TITLE" value="Photographer"/>
+    <message name="ACHIEV_MADE_PHOTO_2LEVEL_TITLE" value="Reporter"/>
+    <message name="ACHIEV_MADE_PHOTO_3LEVEL_TITLE" value="Paparazzi"/>
+    <message name="ACHIEV_MADE_VIDEO_1LEVEL_TITLE" value="Operator"/>
+    <message name="ACHIEV_MADE_VIDEO_2LEVEL_TITLE" value="Director"/>
+    <message name="ACHIEV_MADE_VIDEO_3LEVEL_TITLE" value="Movie Addict"/>
+    <message name="ACHIEV_GAME_VISITS_1LEVEL_TITLE" value="Amateur"/>
+    <message name="ACHIEV_GAME_VISITS_2LEVEL_TITLE" value="Gamer"/>
+    <message name="ACHIEV_GAME_VISITS_3LEVEL_TITLE" value="Game maniac"/>
+    <message name="ACHIEV_DROP_WATER_1LEVEL_TITLE" value="Fan"/>
+    <message name="ACHIEV_DROP_WATER_2LEVEL_TITLE" value="Celebrity"/>
+    <message name="ACHIEV_DROP_WATER_3LEVEL_TITLE" value="Idol"/>
+    <message name="ACHIEV_KILL_WALKING_ZOMBIES_1LEVEL_TITLE" value="Slayer"/>
+    <message name="ACHIEV_KILL_WALKING_ZOMBIES_2LEVEL_TITLE" value="Inquisitor"/>
+    <message name="ACHIEV_KILL_WALKING_ZOMBIES_3LEVEL_TITLE" value="Saint"/>
+    <message name="ACHIEV_KILL_WEAR_HATS_1LEVEL_TITLE" value="Dandy"/>
+    <message name="ACHIEV_KILL_WEAR_HATS_2LEVEL_TITLE" value="Hat-lover"/>
+    <message name="ACHIEV_KILL_WEAR_HATS_3LEVEL_TITLE" value="The Mad Hatter"/>
+    <message name="ACHIEV_BURNED_ENEMIES_DESCR" value="Kill {progress} enemies with fire"/>
+    <message name="ACHIEV_DESTROYED_SQUARE_DESCR" value="Destroy {progress} sq. meters of environment"/>
+    <message name="ACHIEV_DROWNED_OPPONENTS_DESCR" value="Drown {progress} enemies"/>
+    <message name="ACHIEV_WAGER_WINNER_DESCR" value="Bet on and win {progress} fights"/>
+    <message name="ACHIEV_DIPLOMAT_DESCR"
+             value="Convince {progress} enemies to surrender while having less than 20 team hit points"/>
+    <message name="ACHIEV_WIND_KILLS_DESCR"
+             value="Kill {progress} enemies standing behind you with the help of the wind"/>
+    <message name="ACHIEV_MASSIVE_DAMAGE_DESCR"
+             value="Deal more than 300 damage during a single turn {progress} times"/>
+    <message name="ACHIEV_GRAVES_SANK_DESCR" value="Throw {progress} graves into the water"/>
+    <message name="ACHIEV_ONE_HP_WIN_DESCR" value="{progress} victories with 1 hit point left"/>
+    <message name="ACHIEV_IMMOBILE_KILLS_DESCR" value="Kill {progress} enemies while frozen"/>
+    <message name="ACHIEV_FLAWLESS_VICTORIES"
+             value="Earn {progress} flawless victories without losing and with any friend on your team"/>
+    <message name="ACHIEV_FLEW_MILES_DESCR" value="Log {progress} meters on Super Boar, Helicopter, UFO or Jetpack"/>
+    <message name="ACHIEV_DOUBLE_KILLLS_DESCR" value="Kill 2 or more enemies during a turn {progress} times"/>
+    <message name="ACHIEV_MEDKIT_KILLS_DESCR" value="Destroy {progress} enemies with medkits"/>
+    <message name="ACHIEV_GATHERED_SUPPLIES_DESCR" value="Collect {progress} medkits, crates or stars"/>
+    <message name="ACHIEV_KAMIKAZE_DESCR" value="Kill {progress} enemies along with yourself"/>
+    <message name="ACHIEV_ROPED_MILES_DESCR" value="Run {progress} meters on the rope"/>
+    <message name="ACHIEV_FUZZES_SPENT_DESCR" value="Make purchases for {progress} fuzzez"/>
+    <message name="ACHIEV_RUBIES_SPENT_DESCR" value="Make purchases for {progress} rubies"/>
+    <message name="ACHIEV_PUMPED_REACTION_DESCR" value="Gain {progress} reaction"/>
+    <message name="ACHIEV_RUBIES_FOUND_DESCR" value="Find {progress} rubies in friends' houses"/>
+    <message name="ACHIEV_MADE_PHOTO_DESCR" value="Take {progress} screenshots"/>
+    <message name="ACHIEV_MADE_VIDEO_DESCR" value="Record {progress} videos"/>
+    <message name="ACHIEV_GAME_VISITS_DESCR" value="Receive rubies in daily bonuses {progress} times"/>
+    <message name="ACHIEV_DROP_WATER_DESCR" value="Knock {progress} enemies in to the water using a Bat or Shocker"/>
+    <message name="ACHIEV_KILL_WALKING_ZOMBIES_DESCR" value="Destroy {progress} revived zombies"/>
+    <message name="ACHIEV_WEAR_HATS_DESCR" value="Wear {progress} hats of fallen enemies"/>
+    <message name="ACHIEV_COOP_FRIEND_WINNER_DESCR" value="Win {progress} battles with a friend"/>
+    <message name="ACHIEV_COOP_FRIEND_WINNER_1LEVEL_TITLE" value="Partners!"/>
+    <message name="ACHIEV_COOP_FRIEND_WINNER_2LEVEL_TITLE" value="Winners!"/>
+    <message name="ACHIEV_COOP_FRIEND_WINNER_3LEVEL_TITLE" value="Double might!"/>
+    <message name="PVP_PLAYED" value="Wagered games played"/>
+    <message name="PVP_WON" value="Wagered games won"/>
+    <message name="PVP_DRAWS" value="Wagered games draws"/>
+    <message name="MISSIONS_PLAYED" value="Missions attempted"/>
+    <message name="MISSIONS_WON" value="Missions accomplished"/>
+    <message name="MISSIONS_EARNED" value="Earned in missions"/>
+    <message name="WAGERS_EARNED" value="Earned from bets"/>
+    <message name="RUBIES_FOUND" value="Rubies found"/>
+    <message name="SOLO_DAMAGE" value="Damage dealt"/>
+    <message name="TEAM_DAMAGE" value="Damage dealt by team"/>
+    <message name="SOLO_DAMAGE_TAKEN" value="Damage received"/>
+    <message name="TEAM_DAMAGE_TAKEN" value="Damage received by team"/>
+    <message name="FRIENDLY_FIRE" value="Damage to teammates"/>
+    <message name="SNIPER_SHOTS" value="Sniper shots"/>
+    <message name="WIND_SHOTS" value="Hits against wind"/>
+    <message name="KILLED_WORMS" value="Worms killed"/>
+    <message name="KILLED_BOXERS" value="Boxers killed"/>
+    <message name="KILLED_DEMONS" value="Demons killed"/>
+    <message name="KILLED_RABBITS" value="Rabbits killed"/>
+    <message name="KILLED_ZOMBIES" value="Zombies killed"/>
+    <message name="KILLED_CATS" value="Cats killed"/>
+    <message name="KILLED_REVIVED" value="Revived zombies destroyed"/>
+    <message name="KILLED_DRAGONS" value="Dragons killed"/>
+    <message name="KILLED_BOTS" value="Robots killed"/>
+    <message name="KILLED_TOTAL" value="Total kills"/>
+    <message name="UNITS_LOST" value="Teammates lost"/>
+    <message name="COLLECTED_MEDKITS" value="Medkits collected"/>
+    <message name="COLLECTED_CRATES" value="Crates collected"/>
+    <message name="COLLECTED_STARS" value="Stars collected"/>
+    <message name="DESTROYED_SUPPLIES" value="Supplies destroyed"/>
+    <message name="GRAVES_SANK" value="Graves thrown into water"/>
+    <message name="METERS_FLOWN" value="Flew, m"/>
+    <message name="METERS_WALKED" value="Ran, m"/>
+    <message name="ACHIEV_PARTISAN_1LEVEL_TITLE" value="Miner"/>
+    <message name="ACHIEV_PARTISAN_2LEVEL_TITLE" value="Saboteur"/>
+    <message name="ACHIEV_PARTISAN_3LEVEL_TITLE" value="Guerrilla"/>
+    <message name="ACHIEV_COLLECTOR_1LEVEL_TITLE" value="Collector"/>
+    <message name="ACHIEV_COLLECTOR_2LEVEL_TITLE" value="Enthusiast"/>
+    <message name="ACHIEV_COLLECTOR_3LEVEL_TITLE" value="Gadget-lover"/>
+    <message name="ACHIEV_PARTISAN_DESCR"
+             value="Force your opponent to lose their turn because of your traps (mines, barriers, etc) {progress} times in wagered fights"/>
+    <message name="ACHIEV_COLLECTOR_DESCR" value="Gather {progress} resources"/>
+    <message name="CODE" value="TRANSLATION"/>
+    <message name="ACHIEV_ADD_IN_MENU_NAME" value="Considerate"/>
+    <message name="ACHIEV_ADD_IN_MENU" value="Add Bombix to application menu"/>
+
+    <!--1.18-->
+    <message name="ACHIEV_DROP_WATER_FIRST_TURN_DESCR"
+             value="Send your enemy to the water (or space) on the first turn {progress} times"/>
+    <message name="ACHIEV_DROP_WATER_FIRST_TURN_1LEVEL_TITLE" value="Sent fishing!"/>
+    <message name="ACHIEV_DROP_WATER_FIRST_TURN_2LEVEL_TITLE" value="Toss it overboard!"/>
+    <message name="ACHIEV_DROP_WATER_FIRST_TURN_3LEVEL_TITLE" value="Master tactician!"/>
+
+    <message name="ACHIEV_WEAPONS_UPGRADE_DESCR" value="Make {progress} weapon upgrades"/>
+    <message name="ACHIEV_WEAPONS_UPGRADE_1LEVEL_TITLE" value="With wrench in teeth"/>
+    <message name="ACHIEV_WEAPONS_UPGRADE_2LEVEL_TITLE" value="Pimp my gun!"/>
+    <message name="ACHIEV_WEAPONS_UPGRADE_3LEVEL_TITLE" value="Chief engineer"/>
+
+    <!-- 1.20 -->
+
+    <message name="ACHIEV_CRAFT_LEGENDARY_DESCR" value="Craft {progress} legendary items"/>
+    <message name="ACHIEV_CRAFT_LEGENDARY_1LEVEL_DESCR" value="Craft a legendary item"/>
+    <message name="ACHIEV_CRAFT_LEGENDARY_1LEVEL_TITLE" value="Master smith"/>
+    <message name="ACHIEV_CRAFT_LEGENDARY_2LEVEL_TITLE" value="Rune smith"/>
+    <message name="ACHIEV_CRAFT_LEGENDARY_3LEVEL_TITLE" value="Legendary smith"/>
+
+    <message name="ACHIEV_SUPERBOSS_DEFEATED_DESCR" value="Defeat {progress} super bosses"/>
+    <message name="ACHIEV_SUPERBOSS_DEFEATED_1LEVEL_TITLE" value="Bounty hunter"/>
+    <message name="ACHIEV_SUPERBOSS_DEFEATED_2LEVEL_TITLE" value="Double gambit"/>
+    <message name="ACHIEV_SUPERBOSS_DEFEATED_3LEVEL_TITLE" value="Monster slayer"/>
+
+    <!--1.28-->
+    <message name="ACHIEV_OPEN_RACE_DESCR" value="Unlock {progress} races"/>
+    <message name="ACHIEV_OPEN_RACE_1LEVEL_DESCR" value="Unlock {progress} races"/>
+    <message name="ACHIEV_OPEN_RACE_1LEVEL_TITLE" value="Mad trinity!"/>
+    <message name="ACHIEV_OPEN_RACE_2LEVEL_TITLE" value="Agressive quintet!"/>
+    <message name="ACHIEV_OPEN_RACE_3LEVEL_TITLE" value="Steel seven!"/>
+</dictionary>

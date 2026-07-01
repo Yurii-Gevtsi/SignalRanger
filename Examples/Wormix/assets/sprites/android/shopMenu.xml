@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:87d00492cd8e14f21f2cca12861a9efe:dbdacc227509d06417abcfbc4ab04541:39ba875d1a96edfcecd6fa3e032d8823$ -->
+<TextureAtlas imagePath="shopMenu.png">
+    <SubTexture name="BankFuzy0" x="759" y="401" rotated="true" width="49" height="66" frameX="-68" frameY="-142" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankFuzy1" x="782" y="866" width="101" height="66" frameX="-49" frameY="-125" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankFuzy2" x="191" y="806" rotated="true" width="87" height="105" frameX="-44" frameY="-104" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankFuzy3" x="312" y="304" width="141" height="97" frameX="-31" frameY="-95" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankFuzy4" x="450" y="786" width="153" height="121" frameX="-23" frameY="-71" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankFuzy5" x="3" y="798" width="184" height="154" frameX="-6" frameY="-39" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankFuzy6" x="288" y="533" width="164" height="176" frameX="-19" frameY="-16" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankFuzy7" x="3" y="491" width="281" height="190" frameX="-10" frameY="-2" frameWidth="300" frameHeight="200"/>
+    <SubTexture name="BankMenuBankCellBack" x="3" y="3" rotated="true" width="456" height="297"/>
+    <SubTexture name="BankMenuBankCellBlueRibbon" x="463" y="286" width="343" height="111"/>
+    <SubTexture name="BankMenuBankCellImageBack" x="228" y="765" width="37" height="37" frameX="-1" frameY="-1" frameWidth="39" frameHeight="39"/>
+    <SubTexture name="BankMenuBankCellPriceBack" x="1007" y="542" width="11" height="11" frameX="-1" frameY="-1" frameWidth="13" frameHeight="13"/>
+    <SubTexture name="BankMenuBuyIcon" x="456" y="600" width="215" height="182"/>
+    <SubTexture name="BankMenuCreditIcon" x="457" y="401" width="298" height="195"/>
+    <SubTexture name="BankMenuWithDiscount_moneyBar" x="759" y="569" rotated="true" width="42" height="19" frameX="0" frameY="0" frameWidth="20" frameHeight="43"/>
+    <SubTexture name="BankRuby0" x="228" y="685" rotated="true" width="50" height="76" frameX="-65" frameY="-142" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankRuby1" x="191" y="953" width="79" height="67" frameX="-62" frameY="-125" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankRuby2" x="887" y="866" width="96" height="88" frameX="-52" frameY="-104" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankRuby3" x="675" y="755" width="132" height="99" frameX="-36" frameY="-95" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankRuby4" x="3" y="956" width="148" height="104" frameX="-25" frameY="-84" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankRuby5" x="812" y="732" width="189" height="130" frameX="-5" frameY="-59" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankRuby6" x="282" y="713" width="164" height="176" frameX="-21" frameY="-18" frameWidth="200" frameHeight="200"/>
+    <SubTexture name="BankRuby7" x="812" y="444" rotated="true" width="191" height="284" frameX="-9" frameY="-3" frameWidth="300" frameHeight="200"/>
+    <SubTexture name="Cell_ribbon_ribbonBack" x="812" y="3" width="206" height="128" frameX="0" frameY="0" frameWidth="207" frameHeight="129"/>
+    <SubTexture name="DepositCell_light" x="3" y="1064" width="126" height="126" frameX="-1" frameY="-1" frameWidth="128" frameHeight="128"/>
+    <SubTexture name="DepositCell_ribbon_arrow" x="191" y="915" rotated="true" width="80" height="34" frameX="-4" frameY="-5" frameWidth="38" frameHeight="89"/>
+    <SubTexture name="ShopCell_back_normal_bottomShade" x="288" y="491" width="15" height="15"/>
+    <SubTexture name="ShopCell_background" x="463" y="3" width="345" height="279"/>
+    <SubTexture name="ShopCell_selectionFrame" x="759" y="592" width="40" height="40"/>
+    <SubTexture name="ShopItemCard_hasImprovements" x="759" y="520" width="45" height="45"/>
+    <SubTexture name="ShopItemCard_purchased" x="759" y="471" width="48" height="45"/>
+    <SubTexture name="ShopItemCard_starHighlight" x="812" y="280" width="201" height="160" frameX="-4" frameY="-7" frameWidth="210" frameHeight="173"/>
+    <SubTexture name="ShopMenuBase_background_2" x="274" y="1017" width="128" height="128"/>
+    <SubTexture name="ShopMenuBase_shopPanel_purchaseRibbon" x="3" y="685" width="221" height="109"/>
+    <SubTexture name="ShopMenuBase_shopPanel_redRibbon" x="3" y="417" width="287" height="70"/>
+    <SubTexture name="ShopMenuBase_shopPanel_tab1_icon" x="312" y="405" width="140" height="124"/>
+    <SubTexture name="ShopMenuBase_shopPanel_tab2_icon" x="155" y="1063" rotated="true" width="111" height="122"/>
+    <SubTexture name="ShopMenuBase_shopPanel_tab3_icon" x="638" y="858" width="140" height="122"/>
+    <SubTexture name="ShopMenuBase_shopPanel_tab4_icon" x="282" y="893" width="151" height="120"/>
+    <SubTexture name="ShopMenuBase_shopPanel_tab5_icon" x="812" y="135" width="202" height="141"/>
+    <SubTexture name="ShopMenuBase_shopPanel_tab6_icon" x="437" y="911" width="135" height="135"/>
+    <SubTexture name="bulletHole" x="1007" y="521" width="14" height="17"/>
+    <SubTexture name="desktop/BlackCircle" x="675" y="600" width="31" height="31"/>
+    <SubTexture name="desktop/ItemBlock" x="675" y="636" width="133" height="115"/>
+    <SubTexture name="desktop/bonusLine" x="1017" y="280" rotated="true" width="4" height="211" frameX="-1" frameY="0" frameWidth="212" frameHeight="4"/>
+    <SubTexture name="desktop/brownBorderLine" x="1007" y="444" width="5" height="4"/>
+    <SubTexture name="desktop/cardBonusBack" x="1007" y="495" rotated="true" width="14" height="22"/>
+    <SubTexture name="desktop/tabDown" x="607" y="786" width="27" height="92" frameX="0" frameY="-11" frameWidth="27" frameHeight="103"/>
+    <SubTexture name="desktop/tabUp" x="155" y="956" width="27" height="103"/>
+    <SubTexture name="desktop/vipTimeLabel" x="3" y="304" width="305" height="109"/>
+    <SubTexture name="dottedLineLong" x="1018" y="135" width="2" height="65"/>
+    <SubTexture name="shop_menu_back_gradient" x="1007" y="557" width="5" height="244" frameX="0" frameY="0" frameWidth="5" frameHeight="294"/>
+</TextureAtlas>

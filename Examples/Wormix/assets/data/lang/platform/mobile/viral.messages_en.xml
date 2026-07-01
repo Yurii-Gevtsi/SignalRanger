@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <message name="ACHIEVEMENT_MESSAGE_1"
+             value="I've got a new achievement in Wormix: '{achievementName}'! Don't believe? Come and play!"/>
+    <message name="ACHIEVEMENT_MESSAGE_2" value="Congratulations! New achievement - '{achievementName}' in Wormix"/>
+    <message name="ACHIEVEMENT_MESSAGE_3"
+             value="Rumors are told that {userName} got an '{achievementName}' achievement in Wormix. These aren't rumors, by the way, I'm very dangerous!"/>
+    <!-- posts -->
+    <message name="VIRAL_SHARE" value="Tell your friends"/>
+    <message name="VIRAL_NEW_RACE_TITLE" value="New race!"/>
+    <message name="VIRAL_NEW_RACE" value="I have changed my race for {race}"/>
+
+    <message name="VIRAL_NEW_HAT_TITLE" value="New hat!"/>
+    <message name="VIRAL_NEW_HAT" value="I've got a new hat: {hat}!"/>
+
+    <message name="VIRAL_NEW_WEAPON_TITLE" value="New weapon!"/>
+    <message name="VIRAL_NEW_WEAPON" value="Hurray! I've got new weapon: {weapon}!"/>
+
+    <message name="VIRAL_NEW_ARTIFACT_TITLE" value="New artifact!"/>
+    <message name="VIRAL_NEW_ARTIFACT" value="I've got new shiny artifact: {artifact}!"/>
+
+    <message name="VIRAL_WIN_PVP_WAGER" value="I defeated {enemyName} and got {rating} rating."/>
+    <message name="VIRAL_WIN_PVP_NO_RATING" value="I defeated {enemyName} in Wormix."/>
+
+    <message name="VIRAL_FOUND_RUBY" value="I searched the house of {name} and got a ruby in Wormix."/>
+    <message name="VIRAL_FOUND_RUBY_TITLE" value="Ruby found"/>
+
+    <message name="VIRAL_4DAY_TITLE" value="4 days with Wormix!"/>
+    <message name="VIRAL_4DAY_SEQUENCE" value="I've visited Wormix for 4 days and got 100 fuzzez!"/>
+    <message name="VIRAL_5DAY_TITLE" value="5 days with Wormix!"/>
+    <message name="VIRAL_5DAY_SEQUENCE" value="I've visited Wormix for 5 days and got 2 ruby!"/>
+
+    <message name="VIRAL_QUESTION_NEW_TEAMMATE" value="Tell your friend that you added them to your team?"/>
+    <message name="VIRAL_QUESTION_ENEMY_LOSED" value="Leave a reminder of your victory?"/>
+    <message name="VIRAL_QUESTION_CHALLENGE_POST" value="Do you want to challenge them?"/>
+    <message name="VIRAL_QUESTION_PUMP_REACTION_POST" value="Ask your friend to boost your reaction in response?"/>
+    <message name="VIRAL_PUMPQUESTION_EMPTYLIST" value="You haven't picked anyone to ask for a reaction boost."/>
+    <message name="VIRAL_PUMPREACTION" value="Raise my reaction and I will raise yours in response!"/>
+
+    <!-- AWARD MESSAGE  tale weapon-->
+    <message name="AWARD_WEAPON_MESSAGE_1" value="Brand new thing. You can't buy it, even with rubies!"/>
+    <message name="AWARD_WEAPON_MESSAGE_2" value="Like my new stuff? It's awesome! I got it with achievement points."/>
+    <message name="AWARD_WEAPON_MESSAGE_3" value="Look and be envious. Available only for achievement points."/>
+
+    <!-- notifications -->
+    <message name="NOTIFY_QUESTION_KICK_TEAMMATE" value="Notify friend?"/>
+    <message name="NOTIFY_KICK_TEAMMATE" value="You are no longer in my Wormix team!"/>
+    <message name="NOTIFY_NEW_TEAMMATE" value="I've hired you to my Wormix squad!"/>
+</dictionary>

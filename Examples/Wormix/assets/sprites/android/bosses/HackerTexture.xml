@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:f5ab99499388088ddd46747b6fa206e8:e5db3b0dcfe567aedaecc9855f1b979f:addb6e6e4ef88f29fda904d97bdb7c9c$ -->
+<TextureAtlas imagePath="HackerTexture.png">
+    <SubTexture name="hacker/Placeholder" x="247" y="8" width="1" height="1" frameX="0" frameY="0" frameWidth="10" frameHeight="10"/>
+    <SubTexture name="hacker/generator/parts/GeneratorBase" x="170" y="8" width="75" height="132" frameX="0" frameY="0" frameWidth="75" frameHeight="133"/>
+    <SubTexture name="hacker/generator/parts/GeneratorShield" x="2" y="108" rotated="true" width="161" height="129"/>
+    <SubTexture name="hacker/generator/parts/LightBulbLight" x="175" y="227" width="14" height="29"/>
+    <SubTexture name="hacker/generator/parts/RedEyeLight" x="160" y="375" width="46" height="46" frameX="0" frameY="-1" frameWidth="46" frameHeight="47"/>
+    <SubTexture name="hacker/generator/parts/RedValue" x="7" y="286" rotated="true" width="13" height="36"/>
+    <SubTexture name="hacker/generator/parts/generatorShieldLight" x="2" y="2" rotated="true" width="166" height="104"/>
+    <SubTexture name="hacker/generator/parts/generatorShieldShape" x="2" y="108" rotated="true" width="161" height="129"/>
+    <SubTexture name="hacker/generator/parts/lines/BaseLight01" x="170" y="246" rotated="true" width="3" height="7"/>
+    <SubTexture name="hacker/generator/parts/lines/BaseLight02" x="210" y="142" rotated="true" width="3" height="13"/>
+    <SubTexture name="hacker/generator/parts/lines/BaseLight03" x="170" y="371" rotated="true" width="19" height="2" frameX="0" frameY="0" frameWidth="3" frameHeight="21"/>
+    <SubTexture name="hacker/generator/parts/lines/BaseLightRed01" x="170" y="255" rotated="true" width="3" height="7"/>
+    <SubTexture name="hacker/generator/parts/lines/BaseLightRed02" x="215" y="142" rotated="true" width="3" height="13"/>
+    <SubTexture name="hacker/generator/parts/lines/BaseLightRed03" x="170" y="190" rotated="true" width="19" height="2" frameX="0" frameY="0" frameWidth="3" frameHeight="21"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartBig" x="208" y="157" rotated="true" width="41" height="6"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartBigRed" x="208" y="165" rotated="true" width="41" height="6"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartLin2" x="170" y="194" rotated="true" width="3" height="16"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartLin2Red" x="170" y="212" rotated="true" width="3" height="16"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartRound" x="227" y="142" width="18" height="6"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartRound2" x="247" y="123" width="7" height="15"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartRound2Red" x="247" y="140" width="7" height="15"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartRound3" x="175" y="258" rotated="true" width="20" height="6"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartRound3Red" x="180" y="295" width="6" height="20"/>
+    <SubTexture name="hacker/generator/parts/lines/linesHightlightPartRoundRed" x="180" y="317" rotated="true" width="6" height="17" frameX="0" frameY="0" frameWidth="18" frameHeight="6"/>
+    <SubTexture name="hacker/generator/parts/vals/Value01" x="180" y="273" width="9" height="6"/>
+    <SubTexture name="hacker/generator/parts/vals/Value02" x="180" y="288" rotated="true" width="7" height="5"/>
+    <SubTexture name="hacker/generator/parts/vals/Value03" x="180" y="281" rotated="true" width="8" height="5"/>
+    <SubTexture name="hacker/generator/parts/vals/Value04" x="175" y="266" rotated="true" width="10" height="5"/>
+    <SubTexture name="hacker/generator/parts/vals/Value05" x="227" y="150" rotated="true" width="11" height="5"/>
+    <SubTexture name="hacker/generator/parts/vals/Value06" x="220" y="142" width="5" height="12"/>
+    <SubTexture name="hacker/generator/parts/vals/Value07" x="203" y="142" width="5" height="13"/>
+    <SubTexture name="hacker/generator/parts/vals/Value08" x="170" y="230" width="3" height="14"/>
+    <SubTexture name="hacker/generator/parts/vals/Value09Red" x="7" y="357" width="10" height="16"/>
+    <SubTexture name="hacker/shield/appearance/dotGlow" x="191" y="266" width="62" height="51" frameX="-5" frameY="-5" frameWidth="67" frameHeight="59"/>
+    <SubTexture name="hacker/shield/bars/HackerBars01" x="170" y="2" width="78" height="4" frameX="0" frameY="0" frameWidth="79" frameHeight="4"/>
+    <SubTexture name="hacker/shield/bars/HackerBars02" x="175" y="273" rotated="true" width="3" height="95"/>
+    <SubTexture name="hacker/shield/bars/HackerBars03" x="152" y="424" width="100" height="2"/>
+    <SubTexture name="hacker/shield/bars/HackerBars04" x="251" y="157" rotated="true" width="3" height="107"/>
+    <SubTexture name="hacker/shield/bars/HackerBars05" x="22" y="436" width="119" height="6"/>
+    <SubTexture name="hacker/shield/bars/HackerBars06" x="14" y="375" rotated="true" width="6" height="131" frameX="0" frameY="0" frameWidth="132" frameHeight="6"/>
+    <SubTexture name="hacker/shield/bars/HackerBars07" x="10" y="375" rotated="true" width="2" height="132" frameX="0" frameY="0" frameWidth="133" frameHeight="2"/>
+    <SubTexture name="hacker/shield/bars/HackerBars08" x="160" y="239" rotated="true" width="3" height="134" frameX="0" frameY="0" frameWidth="135" frameHeight="3"/>
+    <SubTexture name="hacker/shield/bars/HackerBars09" x="22" y="428" width="136" height="6"/>
+    <SubTexture name="hacker/shield/bars/HackerBars10" x="14" y="508" width="136" height="2"/>
+    <SubTexture name="hacker/shield/bars/HackerBars11" x="165" y="108" rotated="true" width="3" height="136"/>
+    <SubTexture name="hacker/shield/bars/HackerBars12" x="2" y="375" rotated="true" width="6" height="135"/>
+    <SubTexture name="hacker/shield/bars/HackerBars13" x="22" y="424" width="128" height="2"/>
+    <SubTexture name="hacker/shield/bars/HackerBars14" x="165" y="246" rotated="true" width="3" height="126" frameX="0" frameY="0" frameWidth="127" frameHeight="3"/>
+    <SubTexture name="hacker/shield/bars/HackerBars15" x="250" y="2" rotated="true" width="4" height="119" frameX="0" frameY="0" frameWidth="120" frameHeight="4"/>
+    <SubTexture name="hacker/shield/bars/HackerBars16" x="2" y="264" rotated="true" width="3" height="109" frameX="0" frameY="0" frameWidth="110" frameHeight="3"/>
+    <SubTexture name="hacker/shield/bars/HackerBars17" x="170" y="266" rotated="true" width="3" height="103" frameX="0" frameY="0" frameWidth="104" frameHeight="3"/>
+    <SubTexture name="hacker/shield/bars/HackerBars18" x="197" y="191" rotated="true" width="4" height="69"/>
+    <SubTexture name="hacker/shield/disappearance/DisappearingPart1" x="2" y="239" width="156" height="23" frameX="-3" frameY="0" frameWidth="164" frameHeight="27"/>
+    <SubTexture name="hacker/shield/disappearance/DisappearingPart2" x="7" y="264" width="151" height="20" frameX="0" frameY="0" frameWidth="156" frameHeight="23"/>
+    <SubTexture name="hacker/shield/lightning/Lightning01" x="203" y="228" rotated="true" width="16" height="30"/>
+    <SubTexture name="hacker/shield/lightning/Lightning02" x="180" y="336" rotated="true" width="18" height="31"/>
+    <SubTexture name="hacker/shield/lightning/Lightning03" x="170" y="157" rotated="true" width="19" height="31"/>
+    <SubTexture name="hacker/shield/lightning/Lightning05" x="7" y="324" rotated="true" width="13" height="31"/>
+    <SubTexture name="hacker/shield/lightning/Lightning06" x="170" y="142" width="31" height="13"/>
+    <SubTexture name="hacker/shield/lightning/Lightning07" x="191" y="157" rotated="true" width="15" height="32"/>
+    <SubTexture name="hacker/shield/lightning/Lightning08" x="203" y="192" width="31" height="16"/>
+    <SubTexture name="hacker/shield/lightning/Lightning09" x="203" y="210" width="31" height="16"/>
+    <SubTexture name="hacker/shield/lightning/Lightning10" x="208" y="173" width="31" height="17"/>
+    <SubTexture name="hacker/shield/lightning/glow/LightningGlow04" x="175" y="194" rotated="true" width="14" height="31"/>
+    <SubTexture name="hacker/shield/parts/CurcleInner" x="22" y="286" width="136" height="136"/>
+</TextureAtlas>
