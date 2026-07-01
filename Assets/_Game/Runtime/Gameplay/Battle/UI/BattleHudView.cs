@@ -178,7 +178,7 @@ namespace Game.Gameplay.Battle.UI
             _fireButtonLabel = _fireButton.GetComponentInChildren<Text>();
         }
 
-        private Image CreatePanel(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
+        private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
             Vector2 sizeDelta, Vector2 anchoredPosition, Color color)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
@@ -188,7 +188,7 @@ namespace Game.Gameplay.Battle.UI
             return image;
         }
 
-        private Image CreateAnchoredPanel(string name, Transform parent, Vector2 anchor,
+        private Image CreateAnchoredPanel(string name, Component parent, Vector2 anchor,
             Vector2 anchoredPosition, Vector2 size, Color color)
         {
             return CreatePanel(name, parent, anchor, anchor, anchor, size, anchoredPosition, color);
@@ -208,7 +208,7 @@ namespace Game.Gameplay.Battle.UI
             return image;
         }
 
-        private Text CreateText(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
+        private Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
             Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAnchor alignment)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
@@ -223,7 +223,7 @@ namespace Game.Gameplay.Battle.UI
             return text;
         }
 
-        private Button CreateButton(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax,
+        private Button CreateButton(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
             Vector2 size, Vector2 anchoredPosition, Color color, string label, int fontSize, Action onClick)
         {
             var pivot = new Vector2(anchorMin.x, anchorMin.y);
@@ -237,12 +237,12 @@ namespace Game.Gameplay.Battle.UI
             return button;
         }
 
-        private static RectTransform CreateRect(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax,
+        private static RectTransform CreateRect(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
             Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPosition)
         {
             var rectObject = new GameObject(name, typeof(RectTransform));
             var rect = (RectTransform)rectObject.transform;
-            rect.SetParent(parent, false);
+            rect.SetParent(parent.transform, false);
             rect.anchorMin = anchorMin;
             rect.anchorMax = anchorMax;
             rect.pivot = pivot;
