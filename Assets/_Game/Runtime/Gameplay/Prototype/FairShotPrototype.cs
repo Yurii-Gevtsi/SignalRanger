@@ -10,7 +10,12 @@ namespace Game.Prototype
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void CreatePrototypeOnSceneStart()
         {
-            if (Object.FindFirstObjectByType<FairShotBattleController>() != null)
+            if (SceneManager.GetActiveScene().name != "SampleScene")
+            {
+                return;
+            }
+
+            if (Object.FindAnyObjectByType<FairShotBattleController>() != null)
             {
                 return;
             }

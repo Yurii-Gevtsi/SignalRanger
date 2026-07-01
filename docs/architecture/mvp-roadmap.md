@@ -6,7 +6,7 @@
 
 Перед початком будь-якої суттєвої фічі:
 
-1. Прочитати `AGENTS.md`.
+1. Прочитати `AGENTS.md` та\або 'CLAUDE.md''.
 2. Прочитати релевантні docs у `docs/architecture/`, `docs/design/`, `docs/research/`.
 3. Подивитися відповідники в `Examples/Warlings` і `Examples/Wormix`.
 4. Виписати короткий research note у task/PR/commit message або окремий doc, якщо зміна велика:
