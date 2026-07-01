@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <message name="TITLE_EXIT" value="要退出 Bombix 吗?"/>
+    <message name="DESCRIPTION_EXIT" value="您确定要退出游戏吗？"/>
+    <message name="HOT_SEAT_CARD_TITLE" value="挑大梁"/>
+    <message name="TEXT_UPDATE_IS_AVAILABLE" value="好消息！本游戏已推出新版本。"/>
+    <message name="ACTION_FOR_ALT_HINT" value="按住SHIFT检查项目"/>
+</dictionary>

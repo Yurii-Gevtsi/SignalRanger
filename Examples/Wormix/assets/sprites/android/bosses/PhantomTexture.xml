@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:8291072ab6b535f23fb748af1e147f91:8bfcea88579fcd75bc7fda5f4640e62e:f898f47b58bce747d1e8db6a47533794$ -->
+<TextureAtlas imagePath="PhantomTexture.png">
+    <SubTexture name="_fear/BackAnimBase" x="32" y="115" rotated="true" width="23" height="21"/>
+    <SubTexture name="_fear/BackAnimTongue" x="114" y="2" rotated="true" width="11" height="6"/>
+    <SubTexture name="_fear/RedJaw" x="78" y="2" width="34" height="17"/>
+    <SubTexture name="_fear/RedSkull" x="2" y="2" rotated="true" width="74" height="59"/>
+    <SubTexture name="_fear/SimpleJaw" x="78" y="21" width="29" height="14"/>
+    <SubTexture name="_fear/SimpleSkull" x="2" y="63" rotated="true" width="63" height="50"/>
+    <SubTexture name="_fear/innerAnim/animation_phantom_part_10" x="109" y="21" rotated="true" width="16" height="15"/>
+    <SubTexture name="_soul/Highlight" x="57" y="124" rotated="true" width="23" height="19"/>
+    <SubTexture name="_soul/Tail01" x="78" y="37" width="28" height="28"/>
+    <SubTexture name="_soul/Tail02" x="67" y="97" rotated="true" width="28" height="25"/>
+    <SubTexture name="_soul/Tail03" x="2" y="115" rotated="true" width="28" height="25"/>
+    <SubTexture name="_soul/Tail04" x="67" y="67" width="28" height="28"/>
+    <SubTexture name="_soul/Tail05" x="97" y="67" rotated="true" width="28" height="27"/>
+    <SubTexture name="_soul/hand" x="114" y="10" width="9" height="7" frameX="0" frameY="0" frameWidth="10" frameHeight="7"/>
+    <SubTexture name="_soul/mouth" x="97" y="96" rotated="true" width="28" height="27"/>
+</TextureAtlas>

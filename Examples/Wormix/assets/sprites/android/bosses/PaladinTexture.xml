@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:35760588dbbb4d93034d38fcfc974b52:c54478b2c8c8c0ef2bd4f8bae8bdab04:c49863d6974da716661e2cde4053005d$ -->
+<TextureAtlas imagePath="PaladinTexture.png">
+    <SubTexture name="paladin/obelisk/Base" x="2" y="182" rotated="true" width="181" height="82"/>
+    <SubTexture name="paladin/obelisk/BaseBright" x="2" y="266" width="82" height="181"/>
+    <SubTexture name="paladin/obelisk/groundDust" x="2" y="169" width="191" height="11" frameX="0" frameY="0" frameWidth="191" frameHeight="12"/>
+    <SubTexture name="paladin/obelisk/leftWing" x="451" y="2" rotated="true" width="58" height="36"/>
+    <SubTexture name="paladin/obelisk/lightBlurred" x="233" y="2" rotated="true" width="216" height="198"/>
+    <SubTexture name="paladin/obelisk/petal" x="195" y="169" rotated="true" width="6" height="5" frameX="0" frameY="0" frameWidth="6" frameHeight="6"/>
+    <SubTexture name="paladin/obelisk/rightWing" x="451" y="40" rotated="true" width="58" height="35"/>
+    <SubTexture name="paladin/swordJustice/SwordBright" x="86" y="266" rotated="true" width="93" height="139"/>
+    <SubTexture name="paladin/swordJustice/dot" x="203" y="169" width="3" height="3" frameX="0" frameY="0" frameWidth="4" frameHeight="4"/>
+    <SubTexture name="paladin/swordJustice/swordBase" x="86" y="407" width="136" height="90"/>
+    <SubTexture name="paladin/swordJustice/swordLight" x="2" y="2" width="229" height="165" frameX="-29" frameY="-20" frameWidth="284" frameHeight="203"/>
+    <SubTexture name="paladin/swordJustice/swordTrail" x="181" y="266" width="112" height="112" frameX="0" frameY="0" frameWidth="189" frameHeight="112"/>
+</TextureAtlas>

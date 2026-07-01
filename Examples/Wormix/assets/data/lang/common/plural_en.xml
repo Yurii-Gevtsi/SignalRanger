@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dictionary>
+    <message name="DAY_PLURALS" value="day,days"/>
+    <message name="RUBY_PLURALS" value="ruby,rubies"/>
+    <message name="FUZY_PLURALS" value="coin,coins"/>
+    <message name="MEDAL_PLURALS" value="medal,medals"/>
+
+</dictionary>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<font>
+    <info face="GROBOLD_0" size="42" bold="0" italic="0" charset="" unicode="1" stretchH="100" smooth="1" aa="1" padding="0,0,0,0" spacing="0,0"/>
+    <common lineHeight="42" base="36" scaleW="161" scaleH="167" pages="1" packed="0" alphaChnl="0" redChnl="0" greenChnl="0" blueChnl="0"/>
+    <pages>
+        <page id="0" file="GROBOLD_NORMAL.png"/>
+    </pages>
+    <distanceField fieldType="msdf" distanceRange="4"/>
+    <chars count="24">
+        <char id="40" index="7" char="(" width="16" height="45" xoffset="1" yoffset="-2" xadvance="17" chnl="15" x="0" y="0" page="0"/>
+        <char id="41" index="8" char=")" width="16" height="45" xoffset="0" yoffset="-2" xadvance="16" chnl="15" x="17" y="0" page="0"/>
+        <char id="57" index="23" char="9" width="29" height="40" xoffset="-3" yoffset="1" xadvance="24" chnl="15" x="34" y="0" page="0"/>
+        <char id="56" index="22" char="8" width="29" height="40" xoffset="-2" yoffset="1" xadvance="25" chnl="15" x="34" y="41" page="0"/>
+        <char id="54" index="20" char="6" width="29" height="40" xoffset="-3" yoffset="0" xadvance="24" chnl="15" x="0" y="46" page="0"/>
+        <char id="51" index="17" char="3" width="31" height="40" xoffset="-2" yoffset="1" xadvance="27" chnl="15" x="64" y="0" page="0"/>
+        <char id="50" index="16" char="2" width="33" height="40" xoffset="-2" yoffset="0" xadvance="28" chnl="15" x="30" y="82" page="0"/>
+        <char id="48" index="14" char="0" width="32" height="40" xoffset="-2" yoffset="1" xadvance="28" chnl="15" x="96" y="0" page="0"/>
+        <char id="47" index="13" char="/" width="24" height="39" xoffset="-1" yoffset="1" xadvance="22" chnl="15" x="0" y="87" page="0"/>
+        <char id="55" index="21" char="7" width="28" height="39" xoffset="-2" yoffset="1" xadvance="23" chnl="15" x="64" y="41" page="0"/>
+        <char id="37" index="4" char="%" width="25" height="39" xoffset="8" yoffset="1" xadvance="31" chnl="15" x="64" y="81" page="0"/>
+        <char id="49" index="15" char="1" width="24" height="39" xoffset="-2" yoffset="1" xadvance="22" chnl="15" x="90" y="81" page="0"/>
+        <char id="52" index="18" char="4" width="30" height="39" xoffset="-2" yoffset="1" xadvance="25" chnl="15" x="93" y="41" page="0"/>
+        <char id="107" index="65" char="k" width="27" height="39" xoffset="-1" yoffset="2" xadvance="24" chnl="15" x="64" y="121" page="0"/>
+        <char id="53" index="19" char="5" width="28" height="38" xoffset="-2" yoffset="2" xadvance="24" chnl="15" x="92" y="121" page="0"/>
+        <char id="61" index="26" char="=" width="33" height="26" xoffset="-2" yoffset="13" xadvance="29" chnl="15" x="25" y="123" page="0"/>
+        <char id="43" index="9" char="+" width="32" height="32" xoffset="0" yoffset="5" xadvance="32" chnl="15" x="115" y="81" page="0"/>
+        <char id="120" index="78" char="x" width="29" height="29" xoffset="-3" yoffset="11" xadvance="23" chnl="15" x="124" y="41" page="0"/>
+        <char id="58" index="24" char=":" width="11" height="23" xoffset="-2" yoffset="16" xadvance="7" chnl="15" x="0" y="127" page="0"/>
+        <char id="45" index="11" char="-" width="18" height="10" xoffset="1" yoffset="18" xadvance="19" chnl="15" x="12" y="150" page="0"/>
+        <char id="44" index="10" char="," width="11" height="13" xoffset="-1" yoffset="31" xadvance="10" chnl="15" x="0" y="151" page="0"/>
+        <char id="46" index="12" char="." width="9" height="9" xoffset="0" yoffset="31" xadvance="9" chnl="15" x="12" y="127" page="0"/>
+        <char id="95" index="0" char="_" width="0" height="0" xoffset="-2" yoffset="36" xadvance="42" chnl="15" x="22" y="127" page="0"/>
+        <char id="42" index="0" char="*" width="0" height="0" xoffset="-2" yoffset="36" xadvance="42" chnl="15" x="23" y="127" page="0"/>
+    </chars>
+    <kernings count="0"/>
+</font>

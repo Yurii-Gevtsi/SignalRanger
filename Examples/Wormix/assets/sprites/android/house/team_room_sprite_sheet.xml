@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:174ddc8bb3cecaa5315adbdbd55a29f9:38e3e401fd68a1d84041913fd1dc36ba:549f86e3e5a85682a682d77a50ca7ae0$ -->
+<TextureAtlas imagePath="team_room_sprite_sheet.atf">
+    <SubTexture name="particle_bubble" x="1988" y="912" width="50" height="50"/>
+    <SubTexture name="teamRoomBg" x="2" y="2" width="1920" height="1080"/>
+    <SubTexture name="team_room_add_btn" x="1924" y="113" width="106" height="106"/>
+    <SubTexture name="team_room_arrow_btn_disabled" x="1988" y="860" width="53" height="50" frameX="0" frameY="-3" frameWidth="62" frameHeight="56"/>
+    <SubTexture name="team_room_arrow_btn_enabled" x="1924" y="860" width="62" height="56"/>
+    <SubTexture name="team_room_colb_bottom" x="669" y="1555" rotated="true" width="213" height="310"/>
+    <SubTexture name="team_room_colb_glass_disabled" x="2" y="1084" width="254" height="505"/>
+    <SubTexture name="team_room_colb_glass_enabled" x="258" y="1084" width="254" height="496" frameX="0" frameY="-9" frameWidth="254" frameHeight="505"/>
+    <SubTexture name="team_room_colb_top" x="648" y="1237" rotated="true" width="307" height="316"/>
+    <SubTexture name="team_room_decor_1" x="2" y="1591" width="477" height="416"/>
+    <SubTexture name="team_room_decor_2" x="514" y="1237" rotated="true" width="132" height="340"/>
+    <SubTexture name="team_room_decor_3" x="1924" y="221" rotated="true" width="84" height="403"/>
+    <SubTexture name="team_room_decor_4" x="481" y="1582" rotated="true" width="186" height="362"/>
+    <SubTexture name="team_room_level_indicator" x="1924" y="2" rotated="true" width="110" height="109"/>
+    <SubTexture name="team_room_off_btn" x="1924" y="626" width="76" height="76"/>
+    <SubTexture name="team_room_on_btn" x="1924" y="704" width="76" height="76"/>
+    <SubTexture name="team_room_swap_btn" x="1924" y="782" width="76" height="76"/>
+    <SubTexture name="team_room_wire" x="514" y="1084" width="1406" height="151"/>
+</TextureAtlas>

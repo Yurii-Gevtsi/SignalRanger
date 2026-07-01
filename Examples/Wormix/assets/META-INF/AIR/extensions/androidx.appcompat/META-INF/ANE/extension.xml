@@ -1,0 +1,40 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>androidx.appcompat</id>
+	<versionNumber>2.0.0</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>androidx.appcompat.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.androidx.appcompat.AppcompatExtension</initializer>
+				<finalizer>com.distriqt.extension.androidx.appcompat.AppcompatExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>androidx.appcompat.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.androidx.appcompat.AppcompatExtension</initializer>
+				<finalizer>com.distriqt.extension.androidx.appcompat.AppcompatExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>androidx.appcompat.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.androidx.appcompat.AppcompatExtension</initializer>
+				<finalizer>com.distriqt.extension.androidx.appcompat.AppcompatExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>androidx.appcompat.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.androidx.appcompat.AppcompatExtension</initializer>
+				<finalizer>com.distriqt.extension.androidx.appcompat.AppcompatExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="default"> 
+			<applicationDeployment /> 
+		</platform>
+		
+	</platforms>
+</extension>

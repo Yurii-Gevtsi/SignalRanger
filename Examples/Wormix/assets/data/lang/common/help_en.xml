@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+    <message name="HELP_CONTROL_TITLE1" value="Movement"/>
+    <message name="HELP_CONTROL_DESCR1"><![CDATA[Left/Right arrows, or A and D keys]]></message>
+
+    <message name="HELP_CONTROL_TITLE2" value="Jump forward"/>
+    <message name="HELP_CONTROL_DESCR2"><![CDATA[Enter key or F key]]></message>
+
+    <message name="HELP_CONTROL_TITLE3" value="Jump backwards"/>
+    <message name="HELP_CONTROL_DESCR3"><![CDATA[Backspace key or R key. Backflip is higher than a regular jump.]]></message>
+
+    <message name="HELP_CONTROL_TITLE4" value="Backpack"/>
+    <message name="HELP_CONTROL_DESCR4"><![CDATA[Q, I or Numpad 0 key to open the backpack]]></message>
+
+    <message name="HELP_CONTROL_TITLE5" value="Shoot"/>
+    <message name="HELP_CONTROL_DESCR5"><![CDATA[Space key. Hold the key to increase the power of the shot.]]></message>
+
+    <message name="HELP_CONTROL_TITLE6" value="Aim"/>
+    <message name="HELP_CONTROL_DESCR6"><![CDATA[Up/Down keys, or W and S keys]]></message>
+
+    <message name="HELP_CONTROL_TITLE7" value="Alternative weapon function"/>
+    <message name="HELP_CONTROL_DESCR7"><![CDATA[Hold Shift key to switch to the alternative weapon function if it has one.]]></message>
+
+    <message name="HELP_CONTROL_TITLE8" value="Pick up a hat"/>
+    <message name="HELP_CONTROL_DESCR8"><![CDATA[Press E key to pick up a hat from the ground.]]></message>
+
+    <message name="HELP_CONTROL_BUFF_TITLE0" value="Poison"/>
+    <message name="HELP_CONTROL_BUFF_TEXT0"><![CDATA[Unit loses health every turn.]]></message>
+    <message name="HELP_CONTROL_BUFF_TITLE1" value="Freeze"/>
+    <message name="HELP_CONTROL_BUFF_TEXT1"><![CDATA[Unit is unable to walk or jump.]]></message>
+    <message name="HELP_CONTROL_BUFF_TITLE2" value="Slow"/>
+    <message name="HELP_CONTROL_BUFF_TEXT2"><![CDATA[Unit's walking speed is reduced.]]></message>
+    <message name="HELP_CONTROL_BUFF_TITLE3" value="Armor reduction"/>
+    <message name="HELP_CONTROL_BUFF_TEXT3"><![CDATA[Unit's armor is reduced.]]></message>
+    <message name="HELP_CONTROL_BUFF_TITLE4" value="Antitoxin"/>
+    <message name="HELP_CONTROL_BUFF_TEXT4"><![CDATA[Unit is protected from poison and healed every turn.]]></message>
+    <message name="HELP_CONTROL_BUFF_TITLE5" value="Antifreeze"/>
+    <message name="HELP_CONTROL_BUFF_TEXT5"><![CDATA[Unit is protected from freezing.]]></message>
+
+</dictionary>

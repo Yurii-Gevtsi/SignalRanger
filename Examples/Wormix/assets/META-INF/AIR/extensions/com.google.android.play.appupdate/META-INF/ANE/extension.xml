@@ -1,0 +1,40 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>com.google.android.play.appupdate</id>
+	<versionNumber>2.1.0</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>com.google.android.play.appupdate.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.googleplay.appupdate.AppupdateExtension</initializer>
+				<finalizer>com.distriqt.extension.googleplay.appupdate.AppupdateExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>com.google.android.play.appupdate.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.googleplay.appupdate.AppupdateExtension</initializer>
+				<finalizer>com.distriqt.extension.googleplay.appupdate.AppupdateExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>com.google.android.play.appupdate.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.googleplay.appupdate.AppupdateExtension</initializer>
+				<finalizer>com.distriqt.extension.googleplay.appupdate.AppupdateExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>com.google.android.play.appupdate.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.googleplay.appupdate.AppupdateExtension</initializer>
+				<finalizer>com.distriqt.extension.googleplay.appupdate.AppupdateExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="default"> 
+			<applicationDeployment /> 
+		</platform>
+		
+	</platforms>
+</extension>

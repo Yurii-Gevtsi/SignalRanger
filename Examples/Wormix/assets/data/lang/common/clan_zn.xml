@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+    <message name="CLAN_TITLE_EMPTY" value="氏族房间"/>
+    <message name="TAB_CREATE_CLAN" value="创建氏族"/>
+    <message name="TAB_CLAN_CHAT" value="聊天"/>
+    <message name="MESSAGE_TO_CLAN" value="给氏族发消息"/>
+    <message name="TAB_CONTRACTS_CLAN" value="契约"/>
+    <message name="TAB_TREASURY_CLAN" value="宝库"/>
+    <message name="TAB_SEARCH_CLAN" value="搜寻氏族"/>
+    <message name="TAB_INVITES_TO_CLAN" value="邀请函"/>
+    <message name="CLAN_INFO_TAB" value="信息"/>
+    <message name="CLAN_EDIT_TAB" value="编辑氏族"/>
+    <message name="CREATE_CLAN_BTN" value="创造一个氏族？"/>
+    <message name="CLAN_NAME" value="氏族的名称"/>
+    <message name="CLAN_DESCRIPTION" value="氏族的说明"/>
+    <message name="MAX_LENGTH_LABEL" value="长达16个字符"/>
+    <message name="CLAN_LOGO" value="氏族徽章："/>
+    <message name="SETTINGS_TEXT" value="用箭头配置"/>
+    <message name="LOGO_LABEL_TEXT" value="徽章"/>
+    <message name="LOGO_COLOR_LABEL_TEXT" value="徽章的颜色"/>
+    <message name="PATTERN_LABEL_TEXT" value="图案"/>
+    <message name="COLOR_LABEL_TEXT" value="图案的颜色"/>
+    <message name="NOT_IN_CLAN" value="不是氏族的成员"/>
+    <message name="CANT_CREATE_CLAN" value="不幸的是，您还不能够创建您的氏族！"/>
+    <message name="CREATE_CLAN_CONFIRMATION" value="所以您准备创建一个氏族吗？"/>
+    <message name="CLAN_EXIT_OPENED" value="已打开"/>
+    <message name="CLAN_EXIT_CLOSED" value="已关闭"/>
+    <message name="JOIN_MINIMAL_RATING" value="加入最小的级别"/>
+    <message name="SEARCH_CLAN_NAME_INPUT" value="输入氏族的名字"/>
+    <message name="SEARCH_CLAN_BTN" value="找到！"/>
+    <message name="CLAN_RATING_POINTS" value="氏族的级别："/>
+    <message name="SEARCH_FAILED_LABEL" value="没有搜索到结果"/>
+    <message name="CLAN_COMPOSITION" value="成员"/>
+    <message name="CLAN_RATING" value="级别："/>
+    <message name="EDIT_CLAN_TAB" value="编辑氏族"/>
+    <message name="CLAN_CAPACITY_LABEL" value="氏族的规模"/>
+    <message name="CLAN_EXPAND_TO" value="增加至{value}"/>
+    <message name="PATTERN_COLOR_LABEL_TEXT" value="图案的颜色"/>
+    <message name="CHANGE_CLAN_NAME_CONFIRMATION" value="我们需要变更您的氏族名字为5颗红宝石吗？"/>
+    <message name="CHANGE_CLAN_EMBLEM_CONFIRMATION" value="我们需要变更您的氏族徽章为5颗红宝石吗？"/>
+    <message name="CHANGE_CLAN_DESCRIPTION_CONFIRMATION" value="我们需要变更您的氏族说明为5颗红宝石吗？"/>
+    <message name="EXPAND_CLAN_CONFIRMATION" value="您确定需要扩大您氏族的规模吗？"/>
+    <message name="CHANGE_CLAN_NAME_FAILED" value="氏族名称和当前使用的名称相同"/>
+    <message name="CHANGE_CLAN_DESCRIPTION_FAILED" value="氏族说明和当前使用的名称相同"/>
+    <message name="CHANGE_CLAN_EMBLEM_FAILED" value="氏族徽章和当前的徽章相同"/>
+    <message name="ERR_CLAN_NAME_EXISTS" value="这个名称已经被另外一个氏族采用！"/>
+    <message name="ERROR_MIN_CHAR_CLAN_NAME" value="氏族名称至少{value}个字符"/>
+    <message name="MAX_CHAR_CLAN_NAME_LABEL" value="不超过{maxChar}个字符"/>
+    <message name="MAX_CAPACITY_TITLE" value="最大的规模"/>
+    <message name="MAX_CAPACITY_LABEL" value="您的氏族已经达到最大的规模。您无法再扩大了！"/>
+    <message name="MESSAGE_ON_GET_LEVEL_IN_ROOM" value="氏族规模已经扩大。"/>
+    <message name="REPEATED_REQUEST_ON_NEW_LEVEL" value="要求扩大规模请求已经发出。"/>
+    <message name="FRIEND_ALREADY_IN_CLAN" value="您的朋友已经在氏族里了！"/>
+    <message name="FRIEND_INVITE_SENT" value="邀请函已经发出！"/>
+    <message name="PLAYER_NOT_IN_CLAN" value="您不在氏族里！"/>
+    <message name="RESTRICTION_ON_RANK_AT_INVITE" value="只有氏族统领和官员能够邀请新成员！"/>
+    <message name="INVITES_COUNT" value="目前邀请函的数量：{invites}。"/>
+    <message name="INVITE_TEXT" value="邀请至"/>
+    <message name="JOIN_TO_CLAN_BTN" value="加入"/>
+    <message name="INVITE_CONFIRMATION_TITLE" value="氏族的邀请函"/>
+    <message name="INVITE_CONFIRMATION_TEXT" value="接受邀请至{clanName}"/>
+    <message name="ERR_REPEATED_INVITE" value="您已经向这个选手发出邀请函。"/>
+    <message name="ERR_PROFILE_INVITE_LIMIT" value="您的朋友收到太多的邀请函。"/>
+    <message name="ERR_CLAN_INVITE_LIMIT" value="您现在不能发送更多的邀请函了。请稍后再试。"/>
+    <message name="ERR_INTEROP_ON_INVITE" value="您朋友的账户已经被阻止，您不能邀请他参加这个氏族。"/>
+    <message name="ERR_INVITE_LOW_LEVEL_FRIEND" value="您不能邀请低于{level}水平的选手"/>
+    <message name="ERR_INVITE_ALREADY_PASSED" value="邀请函已过期"/>
+    <message name="CLAN_UNKNOWN_MESSAGE" value="未被识别的消息。"/>
+    <message name="CLAN_HAS_NEW_NAME" value="{name}更改了氏族名称。"/>
+    <message name="CLAN_HAS_NEW_DESCRIPTION" value="{name}更改了说明。"/>
+    <message name="CLAN_HAS_NEW_CAPACITY" value="{name}扩大了氏族的规模。"/>
+    <message name="CLAN_HAS_NEW_EMBLEM" value="氏族徽章已更改。"/>
+    <message name="CLAN_EXIT_HAS_CLOSED" value="退出氏族已关闭。"/>
+    <message name="CLAN_EXIT_HAS_OPENED" value="退出氏族已打开。"/>
+    <message name="MEMBER_JOINED_CLAN" value="{name}加入了氏族。"/>
+    <message name="MEMBER_LEFT_CLAN" value="{name}离开了氏族。"/>
+    <message name="MEMBER_WAS_EXPELLED" value="{name}被{subject}剔出出氏族。"/>
+    <message name="LEADER_PROMOTE_RANK_MEMBER" value="{name}被提拔至{rank}。"/>
+    <message name="LEADER_LOWER_RANK_MEMBER" value="{name}被降级至{rank}。"/>
+    <message name="RANK_OFFICER_ACCUSITIVE" value="官员"/>
+    <message name="RANK_SOLDIER_ACCUSITIVE" value="战士"/>
+    <message name="LEADER_SWITCHED_WITH_OFFICER" value="{name}现在是新统领。"/>
+    <message name="DEFAULT_NEWS_CLAN_TITLE" value="没有消息"/>
+    <message name="NEWS_CLAN_TITLE_LOCKED" value="您的氏族已被屏蔽。更改氏族的名称和/或者说明，可以解除屏蔽。"/>
+    <message name="NEWS_POST_INFO" value="{profileId}把一条消息留在{date} {time}上了"/>
+    <message name="CONTEXT_MENU_SHOW_CLAN_INFO" value="检查氏族"/>
+    <message name="CONTEXT_MENU_INCREASE_RANK" value="升级"/>
+    <message name="CONTEXT_MENU_REDUCE_RANK" value="降级"/>
+    <message name="CONTEXT_MENU_MAKE_LEADER" value="产生一位新的统领"/>
+    <message name="CONTEXT_MENU_FIRE_FROM_CLAN" value="从氏族里剔出"/>
+    <message name="CONTEXT_MENU_INVITE_TO_CLAN" value="邀请到氏族"/>
+    <message name="EXIT_CLAN_LABEL" value="离开氏族"/>
+    <message name="DELETE_CLAN_LABEL" value="删除氏族"/>
+    <message name="USER_EXPELLED_FROM_CLAN_MSG" value="您已经从这个氏族里被剔出！"/>
+    <message name="USER_EXPELLED_BY_OFFICER_MSG" value="{name} 已经把您从这个氏族里剔出"/>
+<message name="OFFICERS_POSITIONS" value="官员们："/>
+    <message name="CLAN_BTN_QTIP" value="氏族"/>
+    <message name="CONFIRMATION_EXIT_FROM_CLAN" value="您确定要离开这个氏族吗？"/>
+    <message name="NO_RESPONSE_FROM_SERVER_CLAN" value="氏族的服务器没有反应。"/>
+    <message name="CLAN_LOCKED_MESSAGE" value="您的氏族已经被屏蔽，操作被拒绝"/>
+    <message name="USER_RANK_PROMOTE" value="您已经被升级了！"/>
+    <message name="USER_RANK_LOWER" value="您已经被降级了！"/>
+    <message name="ERR_LEADER_QUIT_CLAN" value="只有一位成员的时候，氏族只能删除。把您的领导权移交给一个官员或者删除其他成员。"/>
+    <message name="QUIT_CLAN_CONFIRMATION" value="您确定要解散一个氏族吗？"/>
+    <message name="PROMOTION_CONFIRMATION_OFFICER" value="官员有权邀请新的成员和删除现有的成员。他们也可以把消息发给氏族，从而扩大规模。要提拔这个成员吗？"/>
+    <message name="PROMOTION_CONFIRMATION_LEADER" value="提拔某个成员做统领时，您便自动成为一名官员。您真的想提拔这个成员吗？"/>
+    <message name="CLAN_NOT_FOUND" value="这个氏族已不复存在。"/>
+    <message name="OPEN_CLAN_TYPE" value="等级要求："/>
+    <message name="CLOSE_CLAN_TYPE" value="氏族已被关闭"/>
+    <message name="TERMS_OF_JOINT" value="加入的条件"/>
+    <message name="REQUIRED_RATING_FOR_JOINT" value="最低的等级："/>
+    <message name="CLAN_EMBLEM" value="氏族徽章"/>
+    <message name="MIN_RATING_NEED" value="您必须设置最低的等级"/>
+    <message name="MIN_RATING_ZERO" value="等级必须高于0!"/>
+    <message name="JOIN_RATING_NOT_CHANGED" value="等级值和目前一样！"/>
+    <message name="JOIN_TO_CLAN_LABEL" value="加入的政策"/>
+    <message name="CLAN_SEASON_DATES" value="赛季{numberSeason}: {month} {year}"/>
+    <message name="CLAN_SEASON_BONUS_WITH_BANNER_TEXT" value="恭喜！ 在这个季节，你的家族声称{place}地方并获得了氏族旗帜！ 为了您的努力，您还可以获得："/>
+    <message name="SEASON_BONUS_TITLE" value="赛季结束！"/>
+    <message name="SEASON_CLAN_PLACE" value="最佳"/>
+
+    <message name="OPEN_CLAN" value="自由"/>
+    <message name="CLOSE_CLAN" value="按照邀请"/>
+    <message name="OPEN_FOR_RATING" value="等级：{value}"/>
+    <message name="MAP_CAPACITY_FOR_JOIN_CLAN" value="氏族已满。很不幸，您已经没有房间。"/>
+    <message name="JOIN_CLAN_CONFIRMATION_TITLE" value="加入一个氏族"/>
+    <message name="JOIN_CLAN_CONFIRMATION_TEXT" value="您确定要加入{clanName}吗？"/>
+    <message name="ERR_SOCIAL_ID" value="发生错误，请再次刷新游戏和动作的页面。"/>
+    <message name="RANK_SOLDIER" value="战士"/>
+    <message name="RANK_OFFICER" value="官员"/>
+    <message name="RANK_LEADER" value="统领"/>
+    <message name="RATING_CLANS" value="各氏族"/>
+    <message name="CLAN_PLACE_IN_TOP" value="等级："/>
+    <message name="PLAYER_INVITE_YOU_IN_CLAN" value="{userName} 已邀请您加入{clanName}氏族"/>
+    <message name="PLAYER_RATING_PART_OF_CLAN" value="氏族总等级的{value}%"/>
+    <message name="CLAN_RATING_TOO_SMALL" value="氏族等级太低，无法确定选手的贡献"/>
+    <message name="CLAN_JOIN_DISABLE_BY_LEVEL" value="您必须至少达到{value}的水平才能加入一个氏族！"/>
+    <message name="CANT_CREATE_CLAN_DESC" value="您必须达到{level}并且获得{rating}等级才能创造您自己的氏族。"/>
+    <message name="CREATE_CLAN_LEVEL_REQ_GREEN"><![CDATA[<b><font color='#58AA58'>水平{level}</font></b>]]></message>
+    <message name="CREATE_CLAN_LEVEL_REQ_RED"><![CDATA[<b><font color='#FF5858'>水平{level}</font></b>]]></message>
+    <message name="CREATE_CLAN_RATING_REQ_GREEN"><![CDATA[<b><font color='#58AA58'>至少{rating}</font></b>]]></message>
+    <message name="CREATE_CLAN_RATING_REQ_RED"><![CDATA[<b><font color='#FF5858'>至少{rating}</font></b>]]></message>
+    <message name="CLAN_CHAT_TAB" value="氏族聊天"/>
+    <message name="CLAN_CHAT_VELCOME" value="欢迎参加氏族聊天！"/>
+    <message name="CLAN_CHAT_OFFER_CREATE" value="您还不在氏族里，但是现在可以创建自己的氏族，或者另找其它氏族加入！"/>
+    <message name="CREATE_FOR_BTN" value="为了……创造"/>
+    <message name="UPGRADE_FOR_BTN" value="为了……扩展"/>
+    <message name="PROMOTION_LEADER_FAILED" value="选手必须达到{level}和{rating}等级才能取得统治权。"/>
+    <message name="ERR_ALREADY_IN_CLAN" value="选手已经在氏族里了！"/>
+    <message name="ERR_REQUIREMENTS_FAILURE" value="账户不符合氏族的要求"/>
+    <message name="CLAN_CLOSE_EXIT" value="禁止离开氏族"/>
+    <message name="CLAN_TREASURY_LABEL" value="宝库"/>
+    <message name="CLAN_TREASURY_PAY_LABEL" value="捐给宝库"/>
+    <message name="MEDAL_COLLECT_LABEL" value="赢得的勋章"/>
+    <message name="MEDAL_COLLECT_NOTIFY" value="获得的每个{count}等级都能赢得勋章。"/>
+    <message name="MEDAL_RATE_NEXT_LABEL" value="直至下一枚勋章："/>
+    <message name="MEDAL_COST_LABEL" value="勋章的价格"/>
+    <message name="MEDAL_COST_NOTIFY" value="从{min}到{max}红宝石。宝库里必须要有足够的红宝石才能换取{count}勋章。"/>
+    <message name="CLAN_TREASURY_PAY_BTN" value="捐赠"/>
+    <message name="CLAN_EXCHANGE_MEDAL_FOR" value="交换"/>
+    <message name="CLAN_EXCHANGE_MEDAL_QUESTION" value="您确定要用{medalsCount} {medals}换取{rubiesCount} {rubies}吗?"/>
+    <message name="CLAN_OP_WALLET_SELECT" value="请选择支付方式："/>
+    <message name="CLAN_OP_WALLET_SELF" value="我自己的红宝石"/>
+    <message name="CLAN_OP_WALLET_TREASURY" value="宝库"/>
+    <message name="CLAN_MEDAL_COST_CONFIRM_COUNT" value="宝库里必须至少存在{count} {rubies}！"/>
+    <message name="CLAN_MATE_FIRE_RETURN_PAY" value="捐赠返还："/>
+    <message name="CLAN_MATE_FIRE_MEDALS_COST" value="勋章的费用："/>
+    <message name="CLAN_MATE_FIRE" value="拒绝"/>
+    <message name="CLAN_CAPTION_POSITION" value="位置"/>
+    <message name="CLAN_CAPTION_PLAYER" value="选手"/>
+    <message name="CLAN_CAPTION_PAY" value="捐赠"/>
+    <message name="CLAN_CAPTION_ONLINE" value="在线"/>
+    <message name="CLAN_CAPTION_RATE" value="等级"/>
+    <message name="ONLINE_INGAME" value="在线"/>
+    <message name="ONLINE_HOUR"><![CDATA[<小时]]></message>
+    <message name="ONLINE_TODAY" value="今天"/>
+    <message name="ONLINE_DAYS" value="{count}天数"/>
+    <message name="ONLINE_MORE_MONTH_AGO"><![CDATA[>月]]></message>
+    <message name="ERR_EXIT_CLOSED_CLAN" value="禁止离开氏族。您只能在每个赛季的前{count}天更换氏族！"/>
+    <message name="JOIN_TO_EXIT_CLOSED_CLAN" value="您准备加入已关闭的氏族。您只能在每个赛季的前{count}天离开氏族。"/>
+    <message name="EXIT_FROM_CLAN_LABEL" value="离开氏族"/>
+    <message name="EXIT_FROM_CLAN_FREE" value="自由"/>
+    <message name="EXIT_FROM_CLAN_CLOSED" value="被禁止"/>
+    <message name="DONATE_CLAN_CONFIRMATION" value="您确实愿意捐赠{count} {rubies}吗？"/>
+    <message name="DONATE_CLAN_MEMBER" value="{name}已捐赠的{count} {rubies}."/>
+    <message name="CHANGE_MEDAL_PRICE_CLAN" value="勋章的价格设定在{count} {rubies}。"/>
+    <message name="EXCHANGE_MEDALS_CLAN_MEMBER" value="{name}已用{count} {medals}交换红宝石。"/>
+    <message name="ERR_DONATE_REPEAT" value="今天您已经捐赠过。下一次捐赠可以在明天进行。"/>
+    <message name="TREASURY_NOT_ENOUGH_TITLE" value="宝库里没有足够的红宝石。"/>
+    <message name="NEED_FOR_COMPENSATION_MEMBER" value="您需要用红宝石才能把捐赠返还给选手并且支付勋章的费用。"/>
+    <message name="ONLY_LEADER_CAN_EXPELL_MEMBER_WITH_COMPENSATION" value="只有统领才能拒绝一位做过捐赠或者赢得勋章的选手。"/>
+    <message name="REQUIRE_DONATE_NOTIFY" value="要捐赠，您必须在这个赛季拥有至少{rubies}红宝石或者获得{rating}等级。"/>
+    <message name="CLAN_OP_TITLE_EXPAND_CAPACITY" value="扩大氏族的规模"/>
+    <message name="CLAN_OP_TITLE_CHANGE_DESCRIPTION" value="更改说明"/>
+    <message name="CLAN_OP_TITLE_CHANGE_EMBLEM" value="更改徽章"/>
+    <message name="CLAN_OP_TITLE_RENAME" value="氏族重命名"/>
+    <message name="CLAN_OP_TITLE_DEFAULT" value="氏族行动"/>
+    <message name="CLAN_TREASURY_PAY_NOTIFY_BONUS" value="当您向氏族捐赠时，您能获得额外{value}%的红宝石！"/>
+    <message name="CLAN_TREASURY_PAY_NOTIFY_FIRE" value="如果您被剔出在氏族外，您能要回最近2个赛季的(不包括{value}%奖金)的捐赠。"/>
+    <message name="USER_EXPELLED_COMPENSATION" value="您能要回您的氏族捐赠：{count} {rubies}。"/>
+    <message name="CLAN_MEDAL_COST_CONFIRM_WARNING" value="您真的要设置新的勋章奖励吗？"/>
+    <message name="CONFIRM_EXPELL_CLANMATE" value="您真的要从氏族剔出这位选手吗？"/>
+    <message name="TREASURY_INCOMING_PAYMENT_SUCCESS" value="您已经成功为氏族宝库购买了{count} {rubies}。"/>
+    <message name="TAB_CLAN_ACTIVITY" value="氏族事件"/>
+    <message name="CLAN_CREATED" value="{name}创建了氏族。"/>
+    <message name="CLAN_DELETED" value="{name}解散了氏族。"/>
+    <message name="CLAN_HISTORY_HEADER" value="历史"/>
+    <message name="ERR_INVALID_ARGUMENT" value="错误的要求论据"/>
+    <message name="MEMBER_GLADIATOR_COMPLETE_MESSAGE" value="{name}已经完成角斗士赛跑，得分{count}"/>
+    <message name="CLAN_NO_ACTIVITY_THIS_MONTH" value="上个月在氏族无事发生。"/>
+    <message name="CLAN_REACTION_PUMP" value="泵族伴侣的反应"/>
+    <message name="CLAN_REACTION_PUMPED" value="用泵输送的氏族伴侣："/>
+    <message name="CONTEXT_MENU_MUTE_MODE_ON" value="氏族聊天静音"/>
+    <message name="CONTEXT_MENU_MUTE_MODE_OFF" value="氏族聊天非静音"/>
+    <message name="CONTEXT_MENU_EXPEL_PERMISSION_ON" value="允许氏族伴侣被剔出"/>
+    <message name="CONTEXT_MENU_EXPEL_PERMISSION_OFF" value="禁止氏族伴侣被剔出"/>
+    <message name="OFFICER_WAS_EXPEL_PERMISSION_ON" value="{name}已被允许剔出氏族伴侣({subject})。"/>
+    <message name="OFFICER_WAS_EXPEL_PERMISSION_OFF" value="{name}被禁止剔出氏族伴侣({subject})。"/>
+    <message name="MEMBER_WAS_MUTED" value="{name}在氏族聊天({subject})里已被静音。"/>
+    <message name="MEMBER_WAS_UNMUTED" value="{name}可以在氏族聊天({subject})里发言"/>
+    <message name="ERR_ACCESS_DENIED_FOR_EXPEL_CLANMATE" value="您被禁止剔出氏族伴侣。"/>
+    <message name="ERR_ACCESS_DENIED_FOR_CLAN_CHAT" value="您在氏族聊天里已被静音。"/>
+    <message name="PROMOTION_LEADER_FAILED_2" value="您必须解除官员的所有限制才能移交领导权。"/>
+    <message name="MUTED_QTIP" value="氏族聊天已静音"/>
+    <message name="EXPPER_QTIP" value="禁止剔出氏族伴侣"/>
+    <message name="PROMOTION_OFFICER_FAILED" value="不可选派另一位官员，您必须首先降级某个人。"/>
+    <message name="PROMOTION_OFFICER_FAILED_LIMIT" value="或者扩展您的氏族。"/>
+    <message name="INFO_INVITER" value="邀请人："/>
+    <message name="INFO_INTRO_DATE" value="加入日期："/>
+    <message name="INFO_YESTERDAY_RATE" value="昨天的等级："/>
+    <message name="INFO_WEEK_RATE" value="每周的等级："/>
+    <message name="PREV_SEASON_DELTA_QTIP" value="动力"/>
+    <message name="MEMBER_CRAFT_LEGENDARY_MESSAGE" value="{name} 制作了{item}!"/>
+    <message name="CONFIRM_INVITE_TO_CLAN" value="您确定要邀请这位选手吗？"/>
+    <message name="BANNER_NAME_1" value="氏族旗帜"/>
+    <message name="BANNER_NAME_2" value="战争旗帜"/>
+    <message name="BANNER_NAME_3" value="荣誉旗帜"/>
+    <message name="BANNER_NAME_4" value="冠军旗帜"/>
+    <message name="BANNER_NAME_5" value="胜利旗帜"/>
+    <message name="BANNER_DESCRIPTION_1" value="军队在旗帜附近获得攻击力+6和装甲。"/>
+    <message name="BANNER_DESCRIPTION_2" value="军队在旗帜附近获得攻击力+8与装甲以及+5的再生能力。"/>
+    <message name="BANNER_DESCRIPTION_3" value="所有的军队在战场上速度奖励。军队在旗帜附近还获得攻击力+8和装甲以及+5的再生能力。"/>
+    <message name="BANNER_DESCRIPTION_4" value="军队在战场上获得速度奖励和+5的吸人膏血。军队在旗帜附近还获得攻击力+8和装甲以及+5的再生能力。"/>
+    <message name="BANNER_DESCRIPTION_5" value="军队在战场上获得速度奖励和+5的吸人膏血。军队在旗帜附近还获得攻击力+10和装甲以及+5的再生能力。"/>
+
+    <message name="ERR_CLAN_EXPEL_LIMIT_EXCEEDED" value="Expel from clan daily limit exceeded"/>
+
+    <message name="CLAN_SEASON_AWARD"
+             value="Fight for your clan to be the first in the season rating. Clans that make the top {topPlaces} and score over {ratingPoints} rating points for the season receive an award and a clan banner!"/>
+    <message name="CLAN_SEASON_BONUS_TEXT"
+             value="Congratulations! In this season your clan has claimed {place} place! For your hard efforts you also get:"/>
+    <message name="CONTEXT_MENU_INVITE_TO_CLAN_ANOTHER_PLATFORM" value="Invite to clan unavailable"/>
+    <message name="CONTEXT_MENU_SHOW_CLAN_INFO_ANOTHER_PLATFORM" value="Inspect clan unavailable"/>
+</dictionary>

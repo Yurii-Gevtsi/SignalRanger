@@ -1,0 +1,956 @@
+{"armature": [
+    {
+        "skin": [
+            {
+                "name": "default",
+                "slot": [
+                    {
+                        "name": "pole_bottom",
+                        "z": 0,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "skX": 0,
+                                    "scY": 1,
+                                    "y": 38,
+                                    "skY": 0
+                                },
+                                "name": "armature_pats/pole_bottom",
+                                "type": "armature"
+                            }
+                        ],
+                        "parent": "pole_bottom"
+                    },
+                    {
+                        "name": "pole_top",
+                        "z": 1,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": 28.7,
+                                    "pX": 12.4,
+                                    "pY": 57.3,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "armature_pats/pole_top",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "pole_top"
+                    },
+                    {
+                        "name": "pole_right",
+                        "z": 2,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -20.7,
+                                    "skX": 0,
+                                    "scY": 1,
+                                    "y": -0.9,
+                                    "skY": 0
+                                },
+                                "name": "armature_pats/pole_side",
+                                "type": "armature"
+                            }
+                        ],
+                        "parent": "pole_right"
+                    },
+                    {
+                        "name": "pole_left",
+                        "z": 3,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -20.7,
+                                    "skX": 0,
+                                    "scY": 1,
+                                    "y": -0.9,
+                                    "skY": 0
+                                },
+                                "name": "armature_pats/pole_side",
+                                "type": "armature"
+                            }
+                        ],
+                        "parent": "pole_left"
+                    },
+                    {
+                        "name": "flag",
+                        "z": 4,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "skX": 0,
+                                    "scY": 1,
+                                    "y": -75,
+                                    "skY": 0
+                                },
+                                "name": "armature_pats/flag",
+                                "type": "armature"
+                            }
+                        ],
+                        "parent": "flag"
+                    }
+                ]
+            }
+        ],
+        "name": "ClanBanner",
+        "bone": [
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 0,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": -38,
+                    "skY": 0
+                },
+                "name": "pole_bottom"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 0,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": -222.7,
+                    "skY": 0
+                },
+                "name": "pole_top"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 64.7,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": -169.1,
+                    "skY": 0
+                },
+                "name": "pole_right"
+            },
+            {
+                "transform": {
+                    "scX": -1,
+                    "x": -64.7,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": -169.1,
+                    "skY": 0
+                },
+                "name": "pole_left"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 0,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": -120,
+                    "skY": 0
+                },
+                "name": "flag"
+            }
+        ],
+        "animation": [
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "pole_bottom",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -38,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 0,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "pole_top",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -222.7,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 1,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "pole_right",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 64.7,
+                                    "scY": 1,
+                                    "y": -169.1,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 2,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "pole_left",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": -1,
+                                    "x": -64.7,
+                                    "scY": 1,
+                                    "y": -169.1,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 3,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "flag",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -120,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 4,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": "idle",
+                "duration": 1,
+                "tweenEasing": null
+            }
+        ]
+    },
+    {
+        "skin": [
+            {
+                "name": "default",
+                "slot": [
+                    {
+                        "name": "Layer 1",
+                        "z": 0,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -14,
+                                    "scY": 1,
+                                    "y": -38,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_banner_pole_bottom_1",
+                                "type": "image"
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -14,
+                                    "scY": 1,
+                                    "y": -38,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_banner_pole_bottom_2",
+                                "type": "image"
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -14,
+                                    "scY": 1,
+                                    "y": -38,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_banner_pole_bottom_3",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "Layer 1"
+                    }
+                ]
+            }
+        ],
+        "name": "armature_pats/pole_bottom",
+        "bone": [
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 0,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": -38,
+                    "skY": 0
+                },
+                "name": "Layer 1"
+            }
+        ],
+        "animation": [
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "Layer 1",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -38,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 0,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 1,
+                "duration": 1,
+                "tweenEasing": null
+            },
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "Layer 1",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 0,
+                                "displayIndex": 1,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -38,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 2,
+                "duration": 1,
+                "tweenEasing": null
+            },
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "Layer 1",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 0,
+                                "displayIndex": 1,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -38,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 3,
+                "duration": 1,
+                "tweenEasing": null
+            },
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "Layer 1",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 0,
+                                "displayIndex": 1,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -38,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 4,
+                "duration": 1,
+                "tweenEasing": null
+            },
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "Layer 1",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 0,
+                                "displayIndex": 2,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": -38,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 5,
+                "duration": 1,
+                "tweenEasing": null
+            }
+        ]
+    },
+    {
+        "skin": [
+            {
+                "name": "default",
+                "slot": [
+                    {
+                        "name": "skins",
+                        "z": 0,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -20.7,
+                                    "scY": 1,
+                                    "y": -10.2,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_banner_pole_side_1",
+                                "type": "image"
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -20.7,
+                                    "scY": 1,
+                                    "y": -10.2,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_banner_pole_side_2",
+                                "type": "image"
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -20.7,
+                                    "scY": 1,
+                                    "y": -10.2,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_banner_pole_side_3",
+                                "type": "image"
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -20.7,
+                                    "scY": 1,
+                                    "y": -10.2,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_banner_pole_side_4",
+                                "type": "image"
+                            },
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -20.7,
+                                    "scY": 1,
+                                    "y": -10.2,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_banner_pole_side_5",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "skins"
+                    }
+                ]
+            }
+        ],
+        "name": "armature_pats/pole_side",
+        "bone": [
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 20.7,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": 0.9,
+                    "skY": 0
+                },
+                "name": "skins"
+            }
+        ],
+        "animation": [
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "skins",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 20.7,
+                                    "scY": 1,
+                                    "y": 0.9,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 0,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 1,
+                "duration": 1,
+                "tweenEasing": null
+            },
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "skins",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 0,
+                                "displayIndex": 1,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 20.7,
+                                    "scY": 1,
+                                    "y": -2.7,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 2,
+                "duration": 1,
+                "tweenEasing": null
+            },
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "skins",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 0,
+                                "displayIndex": 2,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 20.7,
+                                    "scY": 1,
+                                    "y": -24.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 3,
+                "duration": 1,
+                "tweenEasing": null
+            },
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "skins",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 0,
+                                "displayIndex": 3,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 20.7,
+                                    "scY": 1,
+                                    "y": -24.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 4,
+                "duration": 1,
+                "tweenEasing": null
+            },
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "skins",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "z": 0,
+                                "displayIndex": 4,
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 8.2,
+                                    "scY": 1,
+                                    "y": -2.3,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": 5,
+                "duration": 1,
+                "tweenEasing": null
+            }
+        ]
+    },
+    {
+        "skin": [
+            {
+                "name": "default",
+                "slot": [
+                    {
+                        "name": "flag",
+                        "z": 0,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -45.4,
+                                    "scY": 1,
+                                    "y": -75,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_baner_flag",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "flag"
+                    },
+                    {
+                        "name": "shadow",
+                        "z": 1,
+                        "display": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": -45.4,
+                                    "scY": 1,
+                                    "y": -75,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "name": "skins/clan_banner_flag_shadow",
+                                "type": "image"
+                            }
+                        ],
+                        "parent": "shadow"
+                    },
+                    {
+                        "z": 2,
+                        "name": "icon",
+                        "parent": "icon"
+                    }
+                ]
+            }
+        ],
+        "name": "armature_pats/flag",
+        "bone": [
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 0,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": 75,
+                    "skY": 0
+                },
+                "name": "flag"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 0,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": 75,
+                    "skY": 0
+                },
+                "name": "shadow"
+            },
+            {
+                "transform": {
+                    "scX": 1,
+                    "x": 0,
+                    "skX": 0,
+                    "scY": 1,
+                    "y": 60,
+                    "skY": 0
+                },
+                "name": "icon"
+            }
+        ],
+        "animation": [
+            {
+                "fadeInTime": 0,
+                "timeline": [
+                    {
+                        "name": "flag",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": 75,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 0,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "shadow",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": 75,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 1,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    },
+                    {
+                        "name": "icon",
+                        "scale": 1,
+                        "frame": [
+                            {
+                                "transform": {
+                                    "scX": 1,
+                                    "x": 0,
+                                    "scY": 1,
+                                    "y": 60,
+                                    "pX": 0,
+                                    "pY": 0,
+                                    "skX": 0,
+                                    "skY": 0
+                                },
+                                "z": 2,
+                                "duration": 1
+                            }
+                        ],
+                        "offset": 0
+                    }
+                ],
+                "scale": 1,
+                "loop": 1,
+                "autoTween": 1,
+                "name": "idle",
+                "duration": 1,
+                "tweenEasing": null
+            }
+        ]
+    }
+], "name": "ClanBanner", "frameRate": 24, "version": 2.3}

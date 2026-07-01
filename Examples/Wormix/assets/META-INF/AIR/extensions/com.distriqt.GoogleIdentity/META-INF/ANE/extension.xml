@@ -1,0 +1,55 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>com.distriqt.GoogleIdentity</id>
+	<versionNumber>7.0.1</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.googleidentity.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.googleidentity.GoogleIdentityExtension</initializer>
+				<finalizer>com.distriqt.extension.googleidentity.GoogleIdentityExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.googleidentity.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.googleidentity.GoogleIdentityExtension</initializer>
+				<finalizer>com.distriqt.extension.googleidentity.GoogleIdentityExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.googleidentity.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.googleidentity.GoogleIdentityExtension</initializer>
+				<finalizer>com.distriqt.extension.googleidentity.GoogleIdentityExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.googleidentity.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.googleidentity.GoogleIdentityExtension</initializer>
+				<finalizer>com.distriqt.extension.googleidentity.GoogleIdentityExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="iPhone-ARM">
+			<applicationDeployment>
+				<nativeLibrary>libGoogleIdentity.a</nativeLibrary>
+				<initializer>GoogleIdentityExtInitializer</initializer>
+				<finalizer>GoogleIdentityExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="iPhone-x86">
+			<applicationDeployment>
+				<nativeLibrary>libGoogleIdentity.a</nativeLibrary>
+				<initializer>GoogleIdentityExtInitializer</initializer>
+				<finalizer>GoogleIdentityExtFinalizer</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="default"> 
+			<applicationDeployment /> 
+		</platform>
+		
+	</platforms>
+</extension>

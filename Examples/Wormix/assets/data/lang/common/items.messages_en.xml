@@ -1,0 +1,1248 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+    <message name="WEAPON.TIMER"
+             value="To switch on the timer use keys '1-5'"/>
+    <message name="AIR_CONTROL.NOTE"
+             value="Use left/right buttons to set the direction, where the strike will be delivered."/>
+    <message name="BAZOOKA.NAME"
+             value="Bazooka"/>
+    <message name="BAZOOKA.DESCR"
+             value="One of the most basic weapons. Affected by the wind (especially when shot with low power)."/>
+    <message name="BAZOOKA.DAMAGE"
+             value="60 hp."/>
+    <message name="GRENADE.NAME"
+             value="Grenade"/>
+    <message name="GRENADE.DESCR"
+             value="Standard grenade. It's quite easy to use as it's not affected by the wind."/>
+    <message name="GRENADE.DAMAGE"
+             value="60 hp."/>
+    <message name="PNEUMATIC_DRILL.NAME"
+             value="Pneumatic drill"/>
+    <message name="PNEUMATIC_DRILL.DESCR"
+             value="Used to dig down vertical tunnels. Can sometimes be used to slightly injure an enemy."/>
+    <message name="PNEUMATIC_DRILL.NOTE"
+             value="Press the shoot button again to stop."/>
+    <message name="PNEUMATIC_DRILL.DAMAGE"
+             value="5 hp per strike."/>
+    <message name="AUGER.NAME"
+             value="Auger"/>
+    <message name="AUGER.DESCR"
+             value="Allows you to dig tunnels under the ground (either horizontally or angularly). Slightly injures and pushes the enemy."/>
+    <message name="AUGER.DAMAGE"
+             value="24 hp per second"/>
+    <message name="DYNAMITE.NAME"
+             value="Dynamite"/>
+    <message name="DYNAMITE.DESCR"
+             value="Detonates in 3 seconds after being set, leaving a large hole in the ground. Strongly pushes an enemy."/>
+    <message name="DYNAMITE.DAMAGE"
+             value="75 hp."/>
+    <message name="MINE.NAME"
+             value="Mine"/>
+    <message name="MINE.DESCR"
+             value="Explodes in a second after any unit comes within its operating range. It can be used for defense, or as a source of additional damage. If there was no unit nearby when setting up a mine, the turn is not spent."/>
+    <message name="MINE.DAMAGE"
+             value="40 hp."/>
+    <message name="RIFLE.NAME"
+             value="Rifle"/>
+    <message name="RIFLE.DESCR"
+             value="A simple, but very useful weapon, it is special because you may move your unit before making the second shot."/>
+    <message name="RIFLE.DAMAGE"
+             value="30 hp for the shot, 2 shots"/>
+    <message name="SHURIKEN.NAME"
+             value="Shurikens"/>
+    <message name="SHURIKEN.DESCR"
+             value="A tricky thrown weapon. You can throw 4 shurikens per turn. The first direct hit on an enemy deals double damage."/>
+    <message name="SHURIKEN.NOTE"
+             value="Most effective when thrown at different enemies."/>
+    <message name="SHURIKEN.DAMAGE"
+             value="17 hp per throw. The first direct hit at a target deals double damage."/>
+    <message name="CL_GRENADE.NAME"
+             value="Cluster grenade "/>
+    <message name="CL_GRENADE.DESCR"
+             value="The standard cluster grenade isn't affected by the wind. It does major damage with its fragments. It's very effective in enclosed spaces."/>
+    <message name="CL_GRENADE.DAMAGE"
+             value="40 hp from explosion, 8 fragments - 15 hp each."/>
+    <message name="UZI.NAME"
+             value="Uzi"/>
+    <message name="UZI.DESCR"
+             value="A common, but effective gun. It shoots in short bursts with almost no disperse. Can be controlled while shooting."/>
+    <message name="UZI.NOTE"
+             value="While shooting you can change the angle of the weapon by up/down buttons."/>
+    <message name="UZI.DAMAGE"
+             value="16 bullets - 5 hp each."/>
+    <message name="MORTAR.NAME"
+             value="Mortar"/>
+    <message name="MORTAR.DESCR"
+             value="A weapon similar to the bazooka. The initial speed can't be regulated. A missile isn't affected by the wind. Releases into several fragments when it explodes."/>
+    <message name="MORTAR.DAMAGE"
+             value="35 hp from explosion, 5 fragments - 25 hp each."/>
+    <message name="STICKY_BOMB.NAME"
+             value="Sticky grenade"/>
+    <message name="STICKY_BOMB.DESCR"
+             value="Sticky grenades adhere to any surface. Releases several explosive fragments upon explosion, which are not affected by the wind and launch in the air."/>
+    <message name="STICKY_BOMB.DAMAGE"
+             value="40 hp for explosion, 7 fragments - 20 hp each."/>
+    <message name="SHOTGUN.NAME"
+             value="Shotgun"/>
+    <message name="SHOTGUN.DESCR"
+             value="A Powerful close combat weapon. In competent hands it can tear an enemy to pieces. It shoots with widely spreading pellets."/>
+    <message name="SHOTGUN.DAMAGE"
+             value="7 pellets - 13 hp each."/>
+    <message name="SWINE.NAME"
+             value="Swine"/>
+    <message name="SWINE.DESCR"
+             value="Starts moving in the pointed direction, but can turn around if it hits obstacle. Try to jump it over."/>
+    <message name="SWINE.NOTE"
+             value="Press the shoot button to explode a swine at any moment."/>
+    <message name="SWINE.DAMAGE"
+             value="90 hp."/>
+    <message name="SUPER_BOAR.NAME"
+             value="Super boar"/>
+    <message name="SUPER_BOAR.DESCR"
+             value="A controllable flying boar. It starts flying upwards when launched and explodes when bumps into the ground or a unit."/>
+    <message name="SUPER_BOAR.NOTE"
+             value="To control a boar use left/right arrows."/>
+    <message name="SUPER_BOAR.DAMAGE"
+             value="90 hp."/>
+    <message name="MINIGUN.NAME"
+             value="Minigun"/>
+    <message name="MINIGUN.DESCR"
+             value="A powerful and fast-firing weapon, capable of dealing great damage. However, it's very inaccurate, so use it on close or middle range."/>
+    <message name="MINIGUN.DAMAGE"
+             value="20 bullet, 6 hp each."/>
+    <message name="CAT_BAZOOKA.NAME"
+             value="Cat bazooka"/>
+    <message name="CAT_BAZOOKA.DESCR"
+             value="Shoots a cat missile which bounces several times in a random direction. It is a very unpredictable weapon that can deal large amounts of damage to either an enemy or a teammate."/>
+    <message name="CAT_BAZOOKA.DAMAGE"
+             value="3 explosions, 50 hp each."/>
+    <message name="DRILL.NAME"
+             value="Drill rocket"/>
+    <message name="DRILL.DESCR"
+             value="A rocket that can reach enemies hiding under the ground or behind obstacles! It is affected by the wind."/>
+    <message name="DRILL.DAMAGE"
+             value="60 hp."/>
+    <message name="SHOCKER.NAME"
+             value="Shocker"/>
+    <message name="SHOCKER.DESCR"
+             value="A close combat weapon based on the direct impact by electric charges to the biological target."/>
+    <message name="SHOCKER.NOTE"
+             value="Tosses up damaged unit. Most effective if you hit several targets."/>
+    <message name="SHOCKER.DAMAGE"
+             value="40 hp + fall damage."/>
+    <message name="HOMING_BAZOOKA.NAME"
+             value="Homing missile"/>
+    <message name="HOMING_BAZOOKA.DESCR"
+             value="A rocket that goes straight after the target by the shortest flight path possible. It works great for long distances."/>
+    <message name="HOMING_BAZOOKA.NOTE"
+             value="Mark the target by tapping at any point on a ground, then adjust direction and power just as for regular bazooka."/>
+    <message name="HOMING_BAZOOKA.DAMAGE"
+             value="60 hp."/>
+    <message name="CANNON.NAME"
+             value="Vintage cannon"/>
+    <message name="CANNON.DESCR"
+             value="Shoots a cannon ball that detonates only after full stop. The shot power is not regulated. Attacking unit cannot move after using the cannon."/>
+    <message name="CANNON.DAMAGE"
+             value="90 hp."/>
+    <message name="TELE_THROWER.NAME"
+             value="Portable teleport"/>
+    <message name="TELE_THROWER.DESCR"
+             value="Allows the user to move to where the last teleport happened once it comes to a stop. Throw it just like a normal grenade."/>
+    <message name="TELE_THROWER.NOTE"
+             value="It can be used several times during a turn. Moving doesn't end your turn."/>
+    <message name="SWITCH_TURN.NAME"
+             value="End turn"/>
+    <message name="SWITCH_TURN.DESCR"
+             value="Used to pass the turn to another member of the team."/>
+    <message name="SWITCH_TURN.NOTE"
+             value="Use the left/right buttons to switch between your teammates. Use the shoot button to choose a unit."/>
+    <message name="SPIDER.NAME"
+             value="Spider mine"/>
+    <message name="SPIDER.DESCR"
+             value="Spider mines crawl up to an enemy and stand on it. If the enemy moves, the spider will detonate immediately, dealing severe damage and poisoning the target."/>
+    <message name="SPIDER.NOTE"
+             value="The Spider will explode 6 seconds after the target starts moving, if there's no enemy on its way. The poison deals damage equal to 5% of the current hp at the end of each turn. Poison can be cured by any medkit. Doesn't damage units with less than 20 hp."/>
+    <message name="SPIDER.DAMAGE"
+             value="65 hp."/>
+    <message name="FIREWORK.NAME"
+             value="Firework"/>
+    <message name="FIREWORK.DESCR"
+             value="Always flies upward, drilling through everything on its way. If it comes across a unit, firework will carry it to the sky."/>
+    <message name="FIREWORK.NOTE"
+             value="It can be used to knock down an enemy standing above you."/>
+    <message name="FIREWORK.DAMAGE"
+             value="50 hp from the explosion. Units that were impaled by the firework also get 20 hp of damage plus the damage from falling to ground."/>
+    <message name="SNIPER_RIFLE.NAME"
+             value="Sniper rifle"/>
+    <message name="SNIPER_RIFLE.DESCR"
+             value="Allows you to make one precise shot, carefully aiming with the laser beam. It is capable of piercing several enemies with one shot."/>
+    <message name="SNIPER_RIFLE.NOTE"
+             value="Nearby targets receive decreased damage."/>
+    <message name="SNIPER_RIFLE.DAMAGE"
+             value="90 hp for the first target, each subsequent target receives slightly lower damage."/>
+    <message name="MOLOTOV.NAME"
+             value="Molotov cocktail"/>
+    <message name="MOLOTOV.DESCR">
+        <![CDATA[Launched as a grenade. It detonates when it contacts the ground, covering it with flaming mixture.]]>
+    </message>
+    <message name="MOLOTOV.DAMAGE"
+             value="40 hp out of explosion, fire damage: 30 hp per second."/>
+
+    <message name="FIRE_THROWER.NAME"
+             value="Flame thrower"/>
+    <message name="FIRE_THROWER.DESCR">
+        <![CDATA[Expells a stream of a burning napalm, which smolders on the ground for some time, burning the enemy.]]>
+    </message>
+    <message name="FIRE_THROWER.DAMAGE"
+             value="30 hp per second."/>
+
+    <message name="NAPALM.NAME"
+             value="Napalm strike"/>
+    <message name="NAPALM.DESCR">
+        <![CDATA[Strikes with bombs that deal minor damage and ignite the ground.]]>
+    </message>
+    <message name="NAPALM.DAMAGE"
+             value="5 rockets, 20 hp each. Fire damage: 30 hp per second."/>
+    <message name="AIR_STRIKE.NAME"
+             value="Air strike"/>
+    <message name="AIR_STRIKE.DESCR"
+             value="Drops 5 rockets at the pointed target. Rockets are not influenced by the wind."/>
+    <message name="AIR_STRIKE.DAMAGE"
+             value="5 rockets, 50 hp each"/>
+    <message name="METEOR.NAME"
+             value="Meteor"/>
+    <message name="METEOR.DESCR"
+             value="Calls a devastating meteor to the earth. Meteors fall to the ground at a random angle, it breaks into 4 fragments when it explodes."/>
+    <message name="METEOR.DAMAGE"
+             value="65 hp out of the strike, 4 fragments, 35 hp each"/>
+    <message name="CAT_STRIKE.NAME"
+             value="Cat strike"/>
+    <message name="CAT_STRIKE.DESCR"
+             value="Strikes with 3 infernal cat bombs into the selected target. Cat bombs are not affected by the wind. After hitting the ground, bombs bounce in random directions."/>
+    <message name="CAT_STRIKE.NOTE"
+             value="Use left/right buttons to specify the direction to throw the bombs."/>
+    <message name="CAT_STRIKE.DAMAGE"
+             value="3 bombs 2 bounces, 50 hp of damage from each strike"/>
+    <message name="WATERMELON.NAME"
+             value="Watermelon bomb"/>
+    <message name="WATERMELON.DESCR"
+             value="An extremely powerful type of a cluster grenade. When it explodes, the watermelon breaks into 6 smaller fragments, which explode on contacting the ground"/>
+    <message name="WATERMELON.DAMAGE"
+             value="80 hp after explosion, 6 fragments, 50 hp each "/>
+    <message name="SLEDGEHAMMER.NAME"
+             value="Sledgehammer"/>
+    <message name="SLEDGEHAMMER.DESCR"
+             value="The most powerful strike, it drives an enemy into the ground, taking 35% of his current hitpoints and burying him in the ground."/>
+    <message name="SLEDGEHAMMER.DAMAGE"
+             value="Minimal damage - 60 hp, maximal - 280 hp."/>
+    <message name="TELEPORT.NAME"
+             value="Teleport"/>
+    <message name="TELEPORT.NOTE"
+             value="To relocate double click on the desired point or press fire button."/>
+    <message name="JETPACK.NAME"
+             value="Jetpack"/>
+    <message name="JETPACK.DESCR"
+             value="Personal super light flying device, it lets you rise above the battlefield with the help of jet thrust."/>
+    <message name="JETPACK.NOTE"
+             value="Remember, fuel is limited! After flying around you can switch to another weapon."/>
+    <message name="ROPE.NAME"
+             value="Rope"/>
+    <message name="ROPE.DESCR"
+             value="A rope that can help you to climb up any obstacle."/>
+    <message name="ROPE.NOTE"
+             value="Moving around with a rope doesn't cost your turn."/>
+    <message name="HARPOON.NAME"
+             value="Electric harpoon"/>
+    <message name="HARPOON.DESCR"
+             value="Hooks up and pulls an enemy to the attacker, causing electrical damage while dragging."/>
+    <message name="HARPOON.DAMAGE"
+             value="30 hp when the target is hit, 8 hp. 4 times/second while dragging."/>
+    <message name="BAT.NAME"
+             value="Bat"/>
+    <message name="BAT.DESCR"
+             value="A unit attacked by this weapon is sent flying at very high speeds. Ideal for pushing enemies into water."/>
+    <message name="BAT.DAMAGE"
+             value="40 hp."/>
+    <message name="KALASH.NAME"
+             value="AK-47"/>
+    <message name="KALASH.DESCR"
+             value="A decent and reliable weapon. It shoots in bursts, one bullet can hit 2 enemies."/>
+    <message name="KALASH.DAMAGE"
+             value="2 bursts with 4 bullets. Each bullet deals 16 hp of damage."/>
+    <message name="GIRDER.NAME"
+             value="Girder"/>
+    <message name="GIRDER.DESCR"
+             value="Strategic utility. Girders can be used as bridges, ladders or defensive constructions. Placing the girder doesn't cost a turn."/>
+    <message name="GIRDER.NOTE"
+             value="Cannot be placed on the ground or near the units."/>
+    <message name="FREEZER.NAME"
+             value="Freezing bazooka"/>
+    <message name="FREEZER.DESCR"
+             value="Shoots special missiles that freeze units in the area of effect. Missiles are affected by the wind."/>
+    <message name="FREEZER.DAMAGE"
+             value="40 hp."/>
+    <message name="FREEZER.NOTE"
+             value="Frozen players cannot move, jump or use the rope for 2 turns. Ice block can be melted with fire or shattered by dealing 200 damage to it."/>
+    <message name="CROSSBOW.NAME"
+             value="Crossbow"/>
+    <message name="CROSSBOW.DESCR"
+             value="Shoots 5 poisoned bolts, which are affected by the wind."/>
+    <message name="CROSSBOW.NOTE"
+             value="Poison deals damage equal to 5% of current hit points at the end of each turn. Poison can be cured with any medkit. Doesn't deal any damage if the unit has 20 hp or less remaining."/>
+    <message name="CROSSBOW.DAMAGE"
+             value="2 shots, 5 bolts dealing 7 damage each."/>
+    <message name="FREEZING_MINE.NAME"
+             value="Freezing mine"/>
+    <message name="FREEZING_MINE.DESCR"
+             value="Special mine that instantly freezes any unit who dares to approach it."/>
+    <message name="FREEZING_MINE.DAMAGE"
+             value="25 hp."/>
+    <message name="FREEZING_MINE.NOTE"
+             value="Frozen players cannot move, jump or use the rope for 2 turns. Ice block can be melted with fire or shattered by dealing 200 damage."/>
+    <message name="GROUNDBREAKER.NAME"
+             value="Ground breaker"/>
+    <message name="GROUNDBREAKER.DESCR"
+             value="Rocket stuffed with devastating shards that cause minor damage but destroy lots of landmass. Affected by the wind."/>
+    <message name="GROUNDBREAKER.DAMAGE"
+             value="50 hp from explosion, 10 shards, 10 hp each"/>
+    <message name="BUNKER_BUSTER.NAME"
+             value="Bunker buster"/>
+    <message name="BUNKER_BUSTER.DESCR"
+             value="Special missile that digs down and detonates once it encounters an enemy unit or reaches the water."/>
+    <message name="BUNKER_BUSTER.DAMAGE"
+             value="40 hp."/>
+    <message name="SUPER_BUNKER_BUSTER.NAME"
+             value="Super bunker buster"/>
+    <message name="SUPER_BUNKER_BUSTER.DESCR"
+             value="Enhanced modification of the bunker buster, destroys much stronger ground."/>
+    <message name="SUPER_BUNKER_BUSTER.DAMAGE"
+             value="50 hp + 30 hp from each shard"/>
+    <message name="GUARDING_BOT.NAME"
+             value="Guardian"/>
+    <message name="GUARDING_BOT.DESCR"
+             value="Defensive device, jumps into the air when enemy approaches and attacks it. Can be triggered only by enemies standing on the ground. If there was no unit nearby while installing the guardian, it does not end your turn."/>
+    <message name="GUARDING_BOT.DAMAGE"
+             value="10 strikes, 3 hp each"/>
+    <message name="TITANIUM_GIRDER.NAME"
+             value="Titanium girder"/>
+    <message name="TITANIUM_GIRDER.DESCR"
+             value="Absolutely indestructible barrier, no weapon can damage it."/>
+    <message name="DISC_LAUNCHER.NAME"
+             value="Disc launcher"/>
+    <message name="DISC_LAUNCHER.DESCR"
+             value="Fires sharp discs which bounce off of any obstacle. Discs explode when they hit an enemy or bounce 4 times. Each bounce increases disc damage."/>
+    <message name="DISC_LAUNCHER.DAMAGE"
+             value="50-130 hp."/>
+    <message name="HOPPING_BAZOOKA.NAME"
+             value="Jumping grenade"/>
+    <message name="HOPPING_BAZOOKA.DESCR"
+             value="Nice choice for long distances. If you press shoot button while grenade is flying, it jumps up and its damage increases. You can do up to 3 jumps."/>
+    <message name="HOPPING_BAZOOKA.DAMAGE"
+             value="40-130 hp."/>
+    <message name="HELICOPTER.NAME"
+             value="Helicopter"/>
+    <message name="HELICOPTER.DESCR"
+             value="It's now possible to attack enemy without leaving your hideout! Helicopters carry 4 bombs. Press the shoot button to drop them. If you press shoot button after using all of your bombs, the helicopter falls and explodes. Picking a weapon crate with helicopter gives it additional gasoline."/>
+    <message name="HELICOPTER.DAMAGE"
+             value="Bomb damage - 25 hp, explosion damage - 30 hp."/>
+    <message name="UFO.NAME"
+             value="UFO"/>
+    <message name="UFO.DESCR"
+             value="UFO is able to pick up and carry objects laying on the ground: fly above the object, press shoot button to capture it, then press it again to release. If you press the shoot button above the enemy, UFO falls on him end explodes."/>
+    <message name="UFO.DAMAGE"
+             value="Explosion damage - 80 hp."/>
+    <message name="ANTIFREEZE.NAME"
+             value="Antifreeze"/>
+    <message name="ANTIFREEZE.DESCR"
+             value="Removes ice from the user and protects him from freezing and slowing effects for 2 turns. Also heals 50 hp. Costs a turn!"/>
+    <message name="FORCE_FIELD.NAME"
+             value="Force field"/>
+    <message name="FORCE_FIELD.DESCR"
+             value="A force field generator which pushes away most kinds of ammo. Doesn't affect rope, harpoon, all kinds of mines, swine, spider mine and UFO. Lasts for 10 turns."/>
+    <message name="WORMCANNON.NAME"
+             value="Circus cannon"/>
+    <message name="WORMCANNON.DESCR"
+             value="Shoots your unit over a large distance. When the unit hits the ground, a large explosion blasts from the crater. Your unit takes 1/3 of the explosion damage."/>
+    <message name="WORMCANNON.DAMAGE"
+             value="120 hp."/>
+    <message name="BOOMERANG.NAME"
+             value="Boomerang"/>
+    <message name="BOOMERANG.DESCR"
+             value="When the boomerang hits an enemy or the ground, it bounces back in your direction so you can try to catch it and throw again. For the second throw, the boomerang won't bounce. Greatly affected by the wind."/>
+    <message name="BOOMERANG.DAMAGE"
+             value="65 hp per strike"/>
+    <message name="ANVIL.NAME"
+             value="Anvil"/>
+    <message name="ANVIL.DESCR">
+        <![CDATA[A heavy anvil drops at target point, pushing a victim into ground and destroying lying objects. The anvil also stays on a ground, preventing enemy from getting out.]]>
+    </message>
+    <message name="ANVIL.DAMAGE"
+             value="70 hp"/>
+    <message name="ANVIL.HINT">
+        <![CDATA[Great weapon to trap an enemy, if he doesn't have turn switch or emergency teleport. Anvil's ability to break ground while falling can be used to push enemies down to water.]]>
+    </message>
+    <message name="EMERGENCY_TELEPORT.NAME"
+             value="Emergency teleport"/>
+    <message name="EMERGENCY_TELEPORT.DESCR"
+             value="Instantly transfers your unit to a random point a medium distance away. Doesn't cost a turn. Can be used in the air."/>
+    <message name="EMERGENCY_TELEPORT.HINT"
+             value="Use the emergency teleport to get out of enclosed spaces without wasting a turn."/>
+    <message name="BANDAGE.NAME"
+             value="Bandage"/>
+    <message name="BANDAGE.DESCR"
+             value="Heals half of the damaged received on previous turn. Each unit can be bandaged only once! Doesn't cost a turn."/>
+    <message name="BANDAGE.HINT"
+             value="It's wise to use bandages to counter an enemy's combo that dealt a lot of damage during the last turn."/>
+    <message name="GRAVITY_GUN.NAME"
+             value="Gravity gun"/>
+    <message name="GRAVITY_GUN.DESCR"
+             value="Pushes an enemy with great force. You can shoot just below yourself to make a powerful jump and reach higher ground. Can be shot twice per turn."/>
+    <message name="GRAVITY_GUN.DAMAGE"
+             value="2 shots, 20 hp each."/>
+    <message name="GRAVITY_GUN.HINT"
+             value="Despite its low damage, a lucky shot can push your enemy a long distance. If you manage to hit your enemy while he is in the air, they will definitely fly into the water!"/>
+    <message name="THUNDERBOLT.NAME"
+             value="Thunderbolt"/>
+    <message name="THUNDERBOLT.DESCR"
+             value="Caution! Shoots a powerful energy ball affected by the wind. When it explodes, it fires lightning bolts to each unit the area."/>
+    <message name="THUNDERBOLT.DAMAGE"
+             value="Ball damage: 95 hp, lightning damage: 70 hp."/>
+    <message name="THUNDERBOLT.HINT"
+             value="You should be very careful when using the thunderbolt, since it's easy to damage your teammates with it. Great against groupped enemies or units standing near a wall."/>
+    <message name="BARRIER.NAME"
+             value="Laser barrier"/>
+    <message name="BARRIER.DESCR"
+             value="A special device for generating protection beams. Your enemy will suffer damage and loose their turn if they pass through the beam. Beams don't affect your team members. Doesn't cost your turn."/>
+    <message name="BARRIER.DAMAGE"
+             value="15 hp."/>
+    <message name="BARRIER.HINT"
+             value="Barriers do little damage, though they are perfect for defense!"/>
+    <message name="ANTITOXIN.NAME"
+             value="Antitoxin"/>
+    <message name="ANTITOXIN.DESCR"
+             value="Restores 15 hp for 6 turns. Poison does no damage to you while you're under antitoxin's effect. Doesn't cost a turn."/>
+    <message name="ANTITOXIN.HINT"
+             value="Use antitoxin to prevent massive poison damage. Try to find a medkit while you're protected."/>
+    <message name="ATOMIC_BOMB.NAME"
+             value="Atomic bomb"/>
+    <message name="ATOMIC_BOMB.DESCR"
+             value="Places a special mark on the map without ending your turn. On your next turn a bomb will be dropped at this mark. The bomb emits several explosions to the sides of epicenter. Enemies at the epicenter are poisoned for 10 turns."/>
+    <message name="ATOMIC_BOMB.DAMAGE"
+             value="80 hp + 6 explosions, 50 hp each."/>
+    <message name="ATOMIC_BOMB.HINT"
+             value="This bomb is a powerful weapon, capable of destroying or sinking several enemies. Your enemy can see its target - so make sure they can't to leave their position before the explosion!"/>
+    <message name="GAS_GRENADE.NAME"
+             value="Gas grenade"/>
+    <message name="GAS_GRENADE.DESCR"
+             value="Gas grenade emits a cloud on explosion, which deals poison damage to all units it covers at the end of a turn, ignoring armor, attack, and dodge chance. Cloud lasts for 6 turns."/>
+    <message name="GAS_GRENADE.DAMAGE"
+             value="50 hp each turn"/>
+    <message name="GAS_GRENADE.HINT"
+             value="Can be used to force the enemy to change his position. Great against frozen targets. Remember, cloud damages your units as well!"/>
+    <message name="BAZOOKA.HINT"
+             value="Use up/down buttons to change angle. Press and hold the attack button to adjust power. Mind the wind!"/>
+    <message name="GRENADE.HINT"
+             value="Grenade is a good choice, when opponent stands in a crater at large distance. Change angle with up/down buttons. Adjust power by holding the attack button. Not affected by the wind."/>
+    <message name="PNEUMATIC_DRILL.HINT"
+             value="The Drill is irreplaceable if you choose Kamikaze tactics. Stand near your opponent and make a tunnel. If you are lucky, your opponent will fall in to it."/>
+    <message name="AUGER.HINT"
+             value="There are two ways to use auger: to make your way through an obstacle or to push your opponent into water. You may change angle with left/right buttons while moving."/>
+    <message name="DYNAMITE.HINT"
+             value="Dynamite deals great damage and is great for pushing your opponents into water. Once the dynamite has been you set you have only few seconds to run away from the blast."/>
+    <message name="MINE.HINT"
+             value="Setting a Mine doesn't end your turn, if there are no units nearby So set up the mine and push your opponent into it for extra damage."/>
+    <message name="RIFLE.HINT"
+             value="The Rifle is good for pushing your opponents into water or a mine. Change angle with up/down buttons."/>
+    <message name="SHURIKEN.HINT"
+             value="You may toss 4 shurikens per turn. To deal maximum damage, try to hit different opponents. Change angle with up/down buttons."/>
+    <message name="CL_GRENADE.HINT"
+             value="The best way to use cluster grenades is to throw it to an opponent standing in a hole. Change angle with up/down buttons."/>
+    <message name="UZI.HINT"
+             value="Uzis deal good damage and can be used to push several opponents off the ground in one turn. Change angle with up/down buttons, you can adjust angle even while shooting!"/>
+    <message name="MORTAR.HINT"
+             value="The Mortar is a reliable, predictable weapon with constant power. It does more damage at high angles. Adjust angle with up/down buttons."/>
+    <message name="STICKY_BOMB.HINT"
+             value="Sticky grenades have a large area of effect and deal large amounts of damage in enclosed spaces. Change angle with up/down buttons."/>
+    <message name="SHOTGUN.HINT"
+             value="The Shotgun is great at close combat. Change angle with up/down buttons."/>
+    <message name="SWINE.HINT"
+             value="Turn in desired direction and press the attack button to launch. You can manually explode a swine at any moment by pressing the attack button again. But remember, swine are unpredictable!"/>
+    <message name="SUPER_BOAR.HINT"
+             value="Press the attack button to launch. You can control the super boar during flight by left/right buttons."/>
+    <message name="MINIGUN.HINT"
+             value="Minigun deals great damage, but has a low accuracy, so it's better used at short distances. Adjust angle with up/down buttons."/>
+    <message name="CAT_BAZOOKA.HINT"
+             value="It's a good idea to launch cat missles from a long distances to avoid occasional ricochet hits. Change angle with up/down buttons."/>
+    <message name="DRILL.HINT"
+             value="Drill rockets come in handy when your enemies are hiding deep under ground. Change angle with up/down buttons. Mind the wind!"/>
+    <message name="SHOCKER.HINT"
+             value="Shocker is a great weapon for throwing your enemies into the water. Stand next to your opponent to hit him. Remember that the effect is even greater if you manage to hit multiple targets."/>
+    <message name="HOMING_BAZOOKA.HINT"
+             value="First, double tap on the map to set the mark. Then change angle with up/down buttons."/>
+    <message name="CANNON.HINT"
+             value="You cannot move after shooting from a cannon, so choose your location wisely. Change angle with up/down buttons."/>
+    <message name="TELE_THROWER.HINT"
+             value="Be careful, the portable teleport bounces from the ground and  may trigger far from desired location. Change angle with up/down buttons."/>
+    <message name="SWITCH_TURN.HINT"
+             value="The timer doesn't stop while you're choosing a unit, so decide quickly. Pick a unit with left/right buttons."/>
+    <message name="SPIDER.HINT"
+             value="Don't stand near an opponent when there's a spider der him - you may receive serious damage when he moves."/>
+    <message name="FIREWORK.HINT"
+             value="Use the firework to hit an enemy above you, no matter how much ground is between you and your foe."/>
+    <message name="SNIPER_RIFLE.HINT"
+             value="The Sniper rifle is much less effective in close combat, so shoot only from a long distance. Adjust angle with up/down buttons."/>
+    <message name="MOLOTOV.HINT"
+             value="The Molotov is a very powerful weapon. Best used against opponents in holes. Change angle with up/down buttons."/>
+    <message name="FIRE_THROWER.HINT"
+             value="Firethrower deals maximum damage when opponent cannot leave the burning area. Adjust angle with up/down buttons.Mind the wind!"/>
+    <message name="NAPALM.HINT"
+             value="Change direction of attack with left/right buttons. To launch the napalm just double tap on the map. Make sure that the enemies won't put out the fire easily."/>
+    <message name="AIR_STRIKE.HINT"
+             value="An Airstrike is most effective against group of enemies. Change direction of attack with left/right buttons. Double tap on the map to launch."/>
+    <message name="METEOR.HINT"
+             value="Use meteor on open ground only, as the angle of attack is determined randomly. Double tap on the map to attack."/>
+    <message name="CAT_STRIKE.HINT"
+             value="Cat strike is effective against large groups of enemies. Change direction of attack with left/right buttons. Double tap on the map to launch. Remember that this weapon is very powerful, but unpredictable."/>
+    <message name="WATERMELON.HINT"
+             value="This Watermelon has a tremendous power! It's heavier than regualr grenades, doesn't fly as far and bounces off the ground. Change angle with up/down buttons."/>
+    <message name="SLEDGEHAMMER.HINT"
+             value="Use the Sledgehammer to literaly nail your opponent down to the ground. You just have to use some fire weapon on your next turn. Stand in front of the enemy and press the attack button to hit."/>
+    <message name="TELEPORT.HINT"
+             value="Teleports your unit to any free point on the map. Use it when there are no other ways to escape. Just double tap on desired location to use."/>
+    <message name="JETPACK.HINT"
+             value="Keep in mind that fuel is limited and the turn timer is ticking. Press the attack button to take off. Use arrow buttons to control the flight. Press the attack button again to land."/>
+    <message name="ROPE.HINT"
+             value="The Rope is used to access the high ground. Change angle with up/down buttons."/>
+    <message name="HARPOON.HINT"
+             value="Harpoon is useful when there is a water or a mine between you and your enemy, you can pull your opponent right where you want them. Change angle with up/down buttons."/>
+    <message name="BAT.HINT"
+             value="the Bat is the best way to send your enemy into a long flight straight to the water. Change angle with up/down buttons. Stand in front of the enemy and press the attack button to hit."/>
+    <message name="KALASH.HINT"
+             value="Extremly effective in close combat. Change angle with up/down buttons."/>
+    <message name="GIRDER.HINT"
+             value="Use the girder to protect units that can be easily pushed to the water. Double tap on the map to set up. Change angle with up/down buttons."/>
+    <message name="FREEZER.HINT"
+             value="Freezer will immobilize enemies that don't have jetpack or portable teleport. Change angle with up/down buttons. Mind the wind!"/>
+    <message name="CROSSBOW.HINT"
+             value="Crossbow is useful at the beginning of the combat against high-level armored enemies. Change angle with up/down buttons. Mind the wind!"/>
+    <message name="FREEZING_MINE.HINT"
+             value="Unlike regular mines, freezing mines trigger immediately. They work great in combination with other mines."/>
+    <message name="GROUNDBREAKER.HINT"
+             value="Groundbreaker destroys huge land masses. Be careful, as it is rather unpredictable. Change angle with up/down buttons. Mind the wind!"/>
+    <message name="BUNKER_BUSTER.HINT"
+             value="Bunker buster is the most effective weapon against opponents hiding underground. Double tap on the map to launch."/>
+    <message name="SUPER_BUNKER_BUSTER.HINT"
+             value="Super bunker buster just tears the ground into pieces! Double tap on the map to launch."/>
+    <message name="GUARDING_BOT.HINT"
+             value="A Guardian is a device that protects you from opponents that decide to come close to you."/>
+    <message name="TITANIUM_GIRDER.HINT"
+             value="Titanium girder is especially useful to protect yourself or to block your opponent. Double tap on the map to set. Change angle with up/down buttons."/>
+    <message name="DISC_LAUNCHER.HINT"
+             value="Disc launcher has a good chance to deal massive damage, if you use it against an enemy group in an enclosed space. Be careful - discs move very fast, and it's hard to dodge your own disc if it bounces back in your direction."/>
+    <message name="HOPPING_BAZOOKA.HINT"
+             value="Effective at medium and large distances, when you can perform at least 2 jumps. Change angle with up/down buttons."/>
+    <message name="HELICOPTER.HINT"
+             value="Use the attack button to drop bombs. Don't forget that helicopter deals additional damage with its explosion. If you accidently injure the controlling character, the helicopter goes down instantly."/>
+    <message name="UFO.HINT"
+             value="You can use UFO to drag aside an enemy's guardians, or move mines lying on the ground for additional damage. To deal direct damage, place UFO above the enemy and press the attack button."/>
+    <message name="ANTIFREEZE.HINT"
+             value="Even though antifreeze makes you to use a turn, it's still the best move against ice users."/>
+    <message name="FORCE_FIELD.HINT"
+             value="Force field provides good protection against most ammo, but its power may not be enough to deflect bullets or accelerated air strike."/>
+    <message name="WORMCANNON.HINT"
+             value="Great for using by revived zombies and nearly dead units, as it is the easy way to inflict large amounts of damage."/>
+    <message name="BOOMERANG.HINT"
+             value="The Boomerang's bounce depends on the wind force and throw power. If you don't manage to catch the boomerang, it explodes on its next impact, dealing only half damage."/>
+    <message name="ANVIL.HINT"
+             value="."/>
+    <message name="HAT.SPEED"
+             value="Speed"/>
+    <message name="HAT.SPEED_ALL"
+             value="Increases movement speed"/>
+    <message name="HAT.MIGHTY_JUMP"
+             value="Mighty jump"/>
+    <message name="HAT.ANTIPOISON"
+             value="Poison protection"/>
+    <message name="HAT.FROST_PROTECTION"
+             value="Cold protection"/>
+    <message name="HAT.FROST_DAMAGE"
+             value="Frost power"/>
+    <message name="HAT.EXPLOSION_DEATH"
+             value="Explodes on unit's death"/>
+    <message name="HAT.PENETRATION"
+             value="Penetration"/>
+    <message name="HAT.WATER_PROTECTION"
+             value="Water protection"/>
+    <message name="HAT.MIGHTY_JUMP"
+             value="Mighty jump"/>
+    <message name="HAT.DOUBLE_JUMP"
+             value="Additional jump in midair"/>
+    <message name="HAT.WATER_BREATH"
+             value="Allows breathing underwater"/>
+    <message name="HAT.PROTECTION_SLOWING"
+             value="Protects from slowing"/>
+    <message name="HAT.IMMOBILITY_REDUCTION"
+             value="Freeze time decreased by 1 turn"/>
+    <message name="HAT.IMMOBILITY_REDUCTION_SELF"
+             value="Freeze reduction"/>
+    <message name="MEDKIT_ENHANCEMENT"
+             value="Medkit effect"/>
+    <message name="HAT.VOODOO"
+             value="Voodoo rabbit mask"/>
+    <message name="HAT.TRIBAL"
+             value="Rabbit shaman mask"/>
+    <message name="HAT.SOMBRERO"
+             value="Sombrero"/>
+    <message name="HAT.MUZZLE"
+             value="Gas mask"/>
+    <message name="HAT.INDIAN"
+             value="Indian feather"/>
+    <message name="HAT.COWBOY"
+             value="Sheriff's hat"/>
+    <message name="HAT.CHIEFTAIN"
+             value="Chieftain's feathers"/>
+    <message name="HAT.AQUALUNG"
+             value="Aqualung"/>
+    <message name="HAT.ACE"
+             value="Ace hat"/>
+    <message name="HAT.FARMER"
+             value="Panama"/>
+    <message name="HAT.SIMPLEHELM"
+             value="Hard hat"/>
+    <message name="HAT.GENTLEMAN"
+             value="Top hat"/>
+    <message name="HAT.TANKHELM"
+             value="Tankman helmet"/>
+    <message name="HAT.ALIEN"
+             value="Alien helm"/>
+    <message name="HAT.VIKING"
+             value="Viking helm"/>
+    <message name="HAT.MONSTER"
+             value="Ripper's mask"/>
+    <message name="HAT.PIRATE"
+             value="Pirate hat"/>
+    <message name="HAT.SAMURAI"
+             value="Samurai helm"/>
+    <message name="HAT.SPIKES"
+             value="Spiked helm"/>
+    <message name="HAT.ELEGANTSAMURAI"
+             value="Exquisite samurai helm"/>
+    <message name="HAT.LEGIONER"
+             value="Legioner helm"/>
+    <message name="HAT.PINKLEGIONER"
+             value="Exquisite legioner helm"/>
+    <message name="HAT.CROWN"
+             value="Crown of the Ancients"/>
+    <message name="HAT.MASTER"
+             value="Master's hat"/>
+    <message name="HAT.ARTIST"
+             value="Beret"/>
+    <message name="HAT.PRINCESS"
+             value="Crown of the Princess"/>
+    <message name="HAT.JAPAN"
+             value="Japanese hairstyle"/>
+    <message name="HAT.PINKHAT"
+             value="Pink hat"/>
+    <message name="HAT.PINKHELMET"
+             value="Pink helm"/>
+    <message name="HAT.GIRLBERRET"
+             value="Beret"/>
+    <message name="HAT.WHITEHAT"
+             value="White hat"/>
+    <message name="HAT.WIZARD"
+             value="Astrologer hat"/>
+    <message name="HAT.CAP"
+             value="Baseball cap"/>
+    <message name="HAT.GANSTER"
+             value="Gangster hat"/>
+    <message name="HAT.ELVIS"
+             value="Elvis Hair"/>
+    <message name="HAT.CRASH_HELMET"
+             value="Fireproof helmet"/>
+    <message name="HAT.SOVIET"
+             value="Soviet hat"/>
+    <message name="HAT.RUSSIAN"
+             value="Russian hat"/>
+    <message name="HAT.OFFICER"
+             value="Officer's cap"/>
+    <message name="HAT.BOSS_PIRATE"
+             value="Hat of pirate captain"/>
+    <message name="HAT.BOSS_GENTLEMAN"
+             value="Illusionist's top hat"/>
+    <message name="HAT.BOSS_TRIBAL"
+             value="Mask of voodoo shaman"/>
+    <message name="HAT.BOSS_VIKING"
+             value="Viking greathelm"/>
+    <message name="HAT.BOSS_ACE"
+             value="Wind Master's helm"/>
+    <message name="HAT.BOSS_GHOST"
+             value="Mask of the ancient ghost"/>
+    <message name="HAT.BOSS_KING_DEAD"
+             value="Zombie King's crown"/>
+    <message name="HAT.BOSS_DEAD_PIRATE"
+             value="Hat of zombie captain"/>
+    <message name="HAT.BOSS_ROMEO"
+             value="Romeo's hat"/>
+    <message name="HAT.BOSS_JUILET"
+             value="Juliet's hat"/>
+    <message name="HAT.BOSS_YAKUZA"
+             value="Headband of the Yakuza"/>
+    <message name="HAT.VAMPIRE"
+             value="Vampire's hat"/>
+    <message name="HAT.DOCTOR_ARMBAND"
+             value="Doctor's headband"/>
+    <message name="HAT.NEO"
+             value="Neo's sunglasses"/>
+    <message name="HAT.NINJA_TURTLES"
+             value="Ninja headband"/>
+    <message name="HAT.BOSS_GUARDIAN"
+             value="Guardian's helm"/>
+    <message name="HAT.BOSS_ENGINEER"
+             value="Engineer's helmet"/>
+    <message name="HAT.PSYCHO"
+             value="Black raven"/>
+    <message name="HAT.GOOGLE_HELMET"
+             value="Google Helmet"/>
+    <message name="HAT.RED_RACING_HELMET"
+             value="Racing helmet"/>
+    <message name="HAT.PURPLE_RACING_HELMET"
+             value="Helmet stunt"/>
+    <message name="HAT.GLADIATOR_HELMET"
+             value="Gladiator helmet"/>
+    <message name="HANDITEM.CHROMESHIELD"
+             value="Chrome Shield"/>
+    <message name="CHROMEORB.NAME"
+             value="Frozen Orb"/>
+    <message name="CHROMEORB.DESCR"
+             value="A magic sphere of unknown origin. Shoots multiple ice shards while it flies towards its target. Enemies hit by the orb, or by at least 2 shards, are slowed for 2 turns. Orb and shards are affected by wind!"/>
+    <message name="CHROMEORB.DAMAGE"
+             value="50 hp orb damage, 30 hp shard damage"/>
+    <message name="CHROMEORB.HINT"
+             value="Your units are protected from slowing caused by ice shards. Try to slow as many enemies as you can by throwing the orb with maximum power."/>
+    <message name="HAT.NIMBUS"
+             value="Halo"/>
+    <message name="HAT.HERO_MASK"
+             value="Hero mask"/>
+    <message name="HAT.BOSS_DARK_KNIGHT"
+             value="Black helmet"/>
+    <message name="HAT.BOSS_PALADIN"
+             value="Paladin's helmet"/>
+    <message name="HAT.BOSS_HACKER"
+             value="Hacker's glasses"/>
+    <message name="HAT.BOSS_THIEF"
+             value="Thief's mask"/>
+    <message name="NEGATOR.NAME"
+             value="Heal blocker"/>
+    <message name="NEGATOR.DESCR">
+        <![CDATA[Device that can be attached to any surface, which disables common healing methods for your enemy. Doesn't affect most bosses and rabbit regeneration. If an enemy destroys the blocker, he gets considerable damage. Lasts for 6 turns.]]>
+    </message>
+    <message name="NEGATOR.DAMAGE"
+             value="75 hp to enemy destroyer."/>
+    <message name="NEGATOR.HINT">
+        <![CDATA[Heal blocker should be used to counter enemy, who relies too much on medkits and regeneration. Use it, when an enemy digs under the ground to heal. Make sure enemy can't destroy the blocker with mines, try to attach it to high walls or ceiling.]]>
+    </message>
+    <message name="HAT.BOSS_PHANTOM"
+             value="Phantom mask"/>
+    <message name="HAT.LAVA_JAW"
+             value="Lava jaw"/>
+    <message name="HAT.PSI_BIOTIC"
+             value="Biotic helm"/>
+    <message name="HAT.BOSS_PSI_TELEPATHIST"
+             value="Telepathist helm"/>
+
+    <message name="HAT.KNIGHT_MASTER"
+             value="Master's knight helm"/>
+    <message name="HAT.KNIGHT_ACE"
+             value="Ace's knight helm"/>
+    <message name="HAT.KNIGHT_ELITE"
+             value="Champion's knight helm"/>
+
+    <message name="HAT.HOCKEY_PLAYER_MASTER"
+             value="Master's hockey helm"/>
+    <message name="HAT.HOCKEY_PLAYER_ACE"
+             value="Ace's hockey helm"/>
+    <message name="HAT.HOCKEY_PLAYER_ELITE"
+             value="Champion's hockey helm"/>
+
+    <message name="HAT.ASSASSIN_MASTER"
+             value="Master's combat helm"/>
+    <message name="HAT.ASSASSIN_ACE"
+             value="Ace's combat helm"/>
+    <message name="HAT.ASSASSIN_ELITE"
+             value="Champion's combat helm"/>
+
+    <message name="HAT.WOLF_MASTER"
+             value="Master's wolf mantle"/>
+    <message name="HAT.WOLF_ACE"
+             value="Ace's wolf mantle"/>
+    <message name="HAT.WOLF_ELITE"
+             value="Champions's wolf mantle"/>
+
+    <message name="CODE"
+             value="TRANSLATION"/>
+
+    <!--ARTIFACTS-->
+    <message name="ARTIFACT.BROKEN_SWORD"
+             value="Broken sword"/>
+    <message name="ARTIFACT.TRAINING_SHIELD"
+             value="Training shield"/>
+    <message name="ARTIFACT.WOODEN_SHIELD"
+             value="Wooden shield"/>
+    <message name="ARTIFACT.WHINGER"
+             value="Whinger"/>
+    <message name="ARTIFACT.TALISMAN"
+             value="Talisman"/>
+    <message name="ARTIFACT.SKULL_STAFF"
+             value="Skull staff"/>
+    <message name="ARTIFACT.SHIELD_ARCHDEMON"
+             value="Archdemon's shiled"/>
+    <message name="ARTIFACT.METAL_SHIELD"
+             value="Iron shield"/>
+    <message name="ARTIFACT.JEDI_SWORD"
+             value="Lightsaber"/>
+    <message name="ARTIFACT.PIRATE_HOOK"
+             value="Pirate hook"/>
+    <message name="ARTIFACT.SAW"
+             value="Great saw"/>
+    <message name="ARTIFACT.TOTEM_FIRE"
+             value="Totem of fire"/>
+    <message name="ARTIFACT.TOTEM_POISON"
+             value="Totem of poison"/>
+    <message name="ARTIFACT.PALADIN_SWORD"
+             value="Paladin's sword"/>
+    <message name="ARTIFACT.ROBO_SHIELD"
+             value="Robo-shield"/>
+    <message name="ARTIFACT.SNAKE_STAFF"
+             value="Snake staff"/>
+    <message name="ARTIFACT.JARL_SPEAR"
+             value="Jarl's spear"/>
+    <message name="ARTIFACT.JARL_STONE_HAMMER"
+             value="Stone hammer"/>
+    <message name="ARTIFACT.ARCHBOT_TOTEM"
+             value="Archbot's wand"/>
+    <message name="ARTIFACT.ICE_SHARD"
+             value="Ice pike"/>
+    <message name="ARTIFACT.WATER_SWORD"
+             value="Sword of depths"/>
+    <message name="ARTIFACT.VAMPIRIC_SWORD"
+             value="Vampiric sword"/>
+    <message name="ARTIFACT.MORGENSHTERN"
+             value="Morning star"/>
+    <message name="ARTIFACT.FIERY_DAGGER"
+             value="Fiery dagger"/>
+    <message name="ARTIFACT.DEATH_TORCH"
+             value="Death torch"/>
+    <message name="ARTIFACT.EMPEROR"
+             value="Divine scepter"/>
+    <message name="ARTIFACT.SCIENTIST"
+             value="Strange device"/>
+    <message name="ARTIFACT.SYMBIOTE"
+             value="Bioblade"/>
+    <message name="ARTIFACT.ARHI_SWORD"
+             value="Archdemon sword"/>
+    <message name="ARTIFACT.JEDI_SWORD_RED" value="Duel sword"/>
+    <message name="ARTIFACT.JEDI_SWORD_RED_CROSS" value="Ceremonial sword"/>
+
+    ///////////////////////////////////////////////////////////////////////
+
+    <!-- 1.9.0 -->
+    <message name="HAT.GREEN_IROQUOIS"
+             value="Green iroquois"/>
+    <message name="HAT.COLORED_IROQUOIS"
+             value="Colored iroquois"/>
+    <message name="HAT.MASK_SCREAM"
+             value="Scream"/>
+    <message name="HAT.DEMON_HAT"
+             value="Demonic helm"/>
+
+    <!-- 1.11.0 -->
+
+    <message name="HAT.CRAFT_SAMURAI_HELM"
+             value="Samurai helm"/>
+    <message name="HAT.CRAFT_RESPIRATOR"
+             value="Respirator"/>
+    <message name="HAT.CRAFT_PSYKER_HELM"
+             value="Psyker helm"/>
+    <message name="HAT.CRAFT_CHAMPION_HELM"
+             value="Champion helm"/>
+    <message name="HAT.CRAFT_SPEC_OPS"
+             value="Spec ops helm"/>
+    <message name="ARTIFACT.CRAFT_CHROME_SHIELD"
+             value="Chrome plated shield"/>
+    <message name="ARTIFACT.CRAFT_BLADE"
+             value="Blade"/>
+
+    <!-- 1.12.0 -->
+
+    <message name="HAT.STEAMPUNK_GLASSES"
+             value="Oculus"/>
+    <message name="HAT.NORDIC_HELM"
+             value="Nordic helm"/>
+    <message name="HAT.FIRESHEEP_HAT"
+             value="Burning ram skull"/>
+    <message name="HAT.FIRE_MASK"
+             value="Grand fire helm"/>
+    <message name="ARTIFACT.ARHI_SWORD"
+             value="Archdemon sword"/>
+    <message name="HAT.FIRE_MASK"
+             value="Grand fire helm"/>
+
+    <!-- 1.13 -->
+    <message name="HAT.MONK_MASTER"
+             value="Hat of a strategist"/>
+    <message name="HAT.MONK_ACE"
+             value="Hat of a mentor"/>
+    <message name="HAT.MONK_ELITE"
+             value="Hat of the guru"/>
+    <message name="HAT.NIGHT_VISION"
+             value="Night vision"/>
+    <message name="HAT.ILLUSIONIST"
+             value="Illusionist's glasses"/>
+    <message name="HAT.DARK_CULTIST"
+             value="Dark cape"/>
+    <message name="HAT.COSMONAUT"
+             value="Spacesuit"/>
+    <message name="HAT.AVIATOR"
+             value="Pilot helm"/>
+    <message name="HAT.MONK"
+             value="Monk hat"/>
+    <message name="HAT.CHEMIST_BOSS"
+             value="Alchemist's top hat"/>
+    <message name="HAT.ASSASSIN_BOSS"
+             value="Assassin's cape"/>
+
+    <!-- 1.13 halloween -->
+    <message name="HAT.HALLOWEEN1"
+             value="Witch hat"/>
+    <message name="HAT.HALLOWEEN2"
+             value="Warlock hat"/>
+    <message name="HAT.PUMPKIN_GREEN"
+             value="Vile pumpkin"/>
+    <message name="HAT.PUMPKIN_RED"
+             value="Hellish pumpkin"/>
+    <message name="HAT.PUMPKIN_ORANGE"
+             value="Orange pumpkin"/>
+
+    <!-- 1.15 -->
+    <message name="HAT.WHITE_YETI"
+             value="White yeti helm"/>
+    <message name="HAT.BLUE_YETI"
+             value="Blue yeti helm"/>
+    <message name="HAT.BLACK_YETI"
+             value="Black yeti helm"/>
+    <message name="HAT.WINTER_HAT"
+             value="Winter hat"/>
+    <message name="HAT.PHARAOH"
+             value="Klaft"/>
+    <message name="HAT.GIFT_HAT"
+             value="Gift box"/>
+    <message name="HAT.EAGLE_HAT"
+             value="Eagle helm"/>
+    <message name="HAT.CHRISTMAS_HELMET"
+             value="Winter helm"/>
+    <message name="HAT.BOX_HAT"
+             value="Gift box"/>
+    <message name="HAT.CYBORG"
+             value="Cyborg helm"/>
+    <message name="HAT.MINION"
+             value="Terminator helm"/>
+    <message name="HAT.KAMIKADZE"
+             value="Bomber hat"/>
+    <message name="HAT.FORTITUDE"
+             value="Reduces knockback from attacks"/>
+    <message name="HAT.EXPLOSION_DEATH"
+             value="Explodes on unit's death"/>
+    <message name="HAT.PENETRATION"
+             value="Penetration"/>
+
+    <!--1.16-->
+    <message name="HAT.JARL"
+             value="Jarl's helm"/>
+    <message name="HAT.BOSS_ARCHBOT"
+             value="Archbot's hat"/>
+
+    <!--1.17-->
+    <message name="HAT.NIGHT"
+             value="Night hat"/>
+
+    <!--1.18-->
+    <message name="HAT.DOCTOR_MASK"
+             value="Doctor mask"/>
+    <message name="HAT.ELECTRIC"
+             value="Electrocap"/>
+    <message name="HAT.PAN"
+             value="Combat pan"/>
+    <message name="HAT.WATER_PROTECTION"
+             value="Saves from drowning once per battle"/>
+    <message name="HAT.FROST_DAMAGE"
+             value="Frost power"/>
+
+    <!-- 1.19 -->
+    <message name="HAT.ENCHANTER"
+             value="Enchanter's mask"/>
+    <message name="HAT.ARCHIVIST"
+             value="Archivist's helm"/>
+
+    <!-- 1.20 -->
+    <message name="HAT.EMPEROR"
+             value="Emperor's fez"/>
+    <message name="ARTIFACT.EMPEROR"
+             value="Divine scepter"/>
+    <message name="HAT.SCIENTIST"
+             value="Scientist's glasses"/>
+    <message name="ARTIFACT.SCIENTIST"
+             value="Strange device"/>
+    <message name="HAT.SYMBIOTE"
+             value="Simbiot helm"/>
+
+    <!-- 1.21 -->
+    <message name="HAT.VILE_MASK"
+             value="Vile visage"/>
+    <message name="ARTIFACT.FROST_SHIELD"
+             value="Frozen shield"/>
+    <message name="ARTIFACT.BLAZING_AXE"
+             value="Blazing axe"/>
+
+    <!-- 1.23 -->
+    <message name="HAT.GENERAL_CAP"
+             value="Commissar hat"/>
+    <message name="HAT.HELM_SAPPER"
+             value="Sapper helm"/>
+    <message name="ARTIFACT.SHOVEL_SAPPER"
+             value="Sapper shovel"/>
+
+    <message name="HAT.SQUAD_ATTACK"
+             value="Squad attack"/>
+    <message name="HAT.SQUAD_ARMOR"
+             value="Squad armor"/>
+
+    <!-- 1.24 -->
+    <message name="HAT.RAVEN_MASK"
+             value="Spectral raven"/>
+    <message name="HAT.MOOSE_HELM"
+             value="Moose helm"/>
+    <message name="HAT.ROBOCHIKEN"
+             value="Mechanochicken"/>
+    <message name="ARTIFACT.HAM_MACE"
+             value="Ham mace"/>
+    <message name="ARTIFACT.PROVOKER_SHIELD"
+             value="Provoking shield"/>
+
+    <!-- 1.25 -->
+    <message name="HAT.FIEND_HELM"
+             value="Fiendish helm"/>
+    <message name="HAT.GRAVITY_MASTER"
+             value="Gravimaster's helm"/>
+    <message name="HAT.HELL_RACER_HELM"
+             value="Hellracer"/>
+    <message name="ARTIFACT.ARMY_KNIFE"
+             value="Army knife"/>
+    <message name="ARTIFACT.GNAWED_BONE"
+             value="Gnawed bone"/>
+    <message name="ARTIFACT.GRAVITY_MASTER_SHIELD"
+             value="Gravity shield"/>
+    <message name="ARTIFACT.TANK_SHIELD"
+             value="Tank plate shiled"/>
+    <message name="HAT.BLACK_BANDAGE"
+             value="Black bandage"/>
+    <message name="HAT.SOLAR_PRIEST_HAT"
+             value="Solar crown"/>
+    <message name="ARTIFACT.SOLAR_SICKLE"
+             value="Solar sickle"/>
+    <message name="ARTIFACT.MIRROR_SHIELD"
+             value="Mirror shield"/>
+    <message name="ARTIFACT.JAWBLADE"
+             value="Jaw blade"/>
+
+    <message name="HAT.HAM_HEAL"
+             value="When life drops below 30%, restores {value} hp and is replaced by bone"/>
+
+    <!-- 1.24 -->
+    <message name="AIR_BLOCKER.NAME"
+             value="Grounding bot"/>
+    <message name="AIR_BLOCKER.DESCR">
+        <![CDATA[Device which can be attached to any surface to damage nearby enemies that stay in the air for too long. Stays for 10 turns, increasing its radius every turn. Doesn't spend a turn.]]>
+    </message>
+    <message name="AIR_BLOCKER.DAMAGE"
+             value="40 hp on trigger."/>
+    <message name="AIR_BLOCKER.HINT">
+        <![CDATA[Greatly disturbs enemy who relies on flying devices.]]>
+    </message>
+
+    <message name="NAIL_GRENADE.NAME"
+             value="Nail grenade"/>
+    <message name="NAIL_GRENADE.DESCR"
+             value="Grenade is activated in 1.5 seconds after the throw, hanging in the midair and shooting nails at nearest units!"/>
+    <message name="NAIL_GRENADE.DAMAGE"
+             value="12 nails, 16 hp each."/>
+    <message name="NAIL_GRENADE.HINT"
+             value="Try to throw this grenade so it affects only one enemy, in this case he'll get major damage. Remember that your own units can also be hit with this grenade!"/>
+
+    <message name="VILE_PUMPKIN.NAME"
+             value="Vile pumpkin"/>
+    <message name="VILE_PUMPKIN.DESCR"
+             value="Ugly, filthy and absolutely useless pumpkin. Throw it into your enemy and it will replace his precious hat! Enemy's attack and armor is reduced by 10 point while wearing a hat, also minor damage is inflicted each turn. Lasts for 6 turns. Can be used 2 times per battle."/>
+    <message name="VILE_PUMPKIN.DAMAGE"
+             value="10 hp for 6 turns"/>
+    <message name="VILE_PUMPKIN.HINT"
+             value="That's easy: use pumpkin on the enemy with the strongest hat."/>
+
+    <message name="FOUL_WATERMELON.NAME"
+             value="Foul watermelon"/>
+    <message name="FOUL_WATERMELON.DESCR"
+             value="Very stinky version of a common watermelon. It's ground destruction is a bit weaker, but it deals far greater damage and poisons units. Also this thing is rather fragile and explodes on second collision."/>
+    <message name="FOUL_WATERMELON.DAMAGE"
+             value="Explosion damage: 90 hp, 6 stinky fragments: 65 hp each."/>
+    <message name="FOUL_WATERMELON.HINT"
+             value="This watermelon deals enormous damage, still destroying plenty of landmass. Really great deal."/>
+
+    <message name="ALCHEMIST_FLASK.NAME"
+             value="Alchemist flask"/>
+    <message name="ALCHEMIST_FLASK.DESCR"
+             value="Changes attack and armor of a target unit. Can be thrown at allies. Doesn't affect most bosses. The effect lasts until the end of your next turn. Doesn't spend a turn."/>
+    <message name="ALCHEMIST_FLASK.HINT"
+             value="Make armored foe greatly vulnerable, increase ally's protection - this thing has many uses."/>
+
+    <message name="ZOMBIE_MARCH.NAME"
+             value="Zombie march"/>
+    <message name="ZOMBIE_MARCH.DESCR"
+             value="Three graves drop into pointed location, revealing zombie troopers that join your team. Graves also deal moderate damage on landing."/>
+    <message name="ZOMBIE_MARCH.DAMAGE"
+             value="40 hp."/>
+    <message name="ZOMBIE_MARCH.HINT"
+             value="Reliable reinforcements that can save the game. Use the landscape, so your enemy couldn't destroy them in one turn."/>
+
+    <message name="BLIZZARD.NAME"
+             value="Blizzard"/>
+    <message name="BLIZZARD.DESCR"
+             value="A weapon of the strongest ones! Five ice shards which fly through any surface. Shards damage and freeze the enemy. Can be used 1 time per battle."/>
+    <message name="BLIZZARD.DAMAGE"
+             value="5 shards, 40 hp each"/>
+    <message name="BLIZZARD.HINT"
+             value="We think this weapon doesn't need any comments!"/>
+
+    <message name="PARASITE.NAME"
+             value="Parasite"/>
+    <message name="PARASITE.DESCR">
+        <![CDATA[Paraiste is thrown like a normal grenade, but it latches to enemy instead of exploding. On the next turn parasite will slow its victim and then explode in 10 seconds.]]>
+    </message>
+    <message name="PARASITE.DAMAGE"
+             value="40 hp on latch, 40 hp more when triggered"/>
+    <message name="PARASITE.HINT">
+        <![CDATA[Parasite damage isn't the greatest, but its main purpose is to trouble your opponent on his next turn. Keep in mind that your enemy may use the turn switch to avoid the effect of the parasite.]]>
+    </message>
+    <message name="LASER_GUN.NAME"
+             value="Laser rifle"/>
+    <message name="LASER_GUN.DESCR">
+        <![CDATA[Laser beam easily cuts through both ground and your enemies! The beam can be controlled by up/down keys.]]>
+    </message>
+    <message name="LASER_GUN.DAMAGE"
+             value="96 hp."/>
+    <message name="LASER_GUN.HINT">
+        <![CDATA[Laser can be as great for drowning as for damage. It can push even frozen enemies to the water.]]>
+    </message>
+
+    <message name="SLEDGEHAMMER.NAME.U1"
+             value="Bashing hammer"/>
+    <message name="SLEDGEHAMMER.DESCR.U1">
+        <![CDATA[The most powerful strike, it drives an enemy into the ground, taking 35% of his current hitpoints and burying him in the ground. Increased battering depth.]]>
+    </message>
+
+    <message name="SLEDGEHAMMER.NAME.U1B"
+             value="Warhammer"/>
+    <message name="SLEDGEHAMMER.DESCR.U1B">
+        <![CDATA[The most powerful strike, it drives an enemy to depression, taking the 35% of their current hit points and burying him in the ground, also reducing attack and armor by 20% for 2 turns.]]>
+    </message>
+
+    <message name="BAT.NAME.U1"
+             value="Reinforced bat"/>
+    <message name="BAT.DISTINCT.U1"
+             value="Target destroys a small amount of landmass on collision."/>
+    <message name="BAT.DESCR.U1">
+        <![CDATA[A unit attacked by this weapon, is sent flying with a very high speed. If target unit hits the ground, it destroys a small amount of landmass and takes damage.]]>
+    </message>
+
+    <message name="UFO.NAME.U1"
+             value="Visitor"/>
+    <message name="UFO.DESCR.U1"
+             value="UFO is able to pick up and carry objects laying on the ground: fly above the object, press shoot button to capture it, then press it again to release. If you press the shoot button above the enemy, UFO falls on him end explodes. Fuel increased by 20%."/>
+    <message name="UFO.DAMAGE.U1"
+             value="Explosion damage: 85 hp."/>
+
+    <message name="UFO.NAME.U2"
+             value="Abductor"/>
+    <message name="UFO.DESCR.U2"
+             value="Carries allied units and objects laying on the ground: fly above the object, press attack button to capture it, then press attack button again to release. If you press attack button above the enemy, UFO falls on him end explodes."/>
+    <message name="UFO.DAMAGE.U2"
+             value="Explosion damage: 95 hp."/>
+
+    <message name="MOLOTOV.NAME.U1"
+             value="Napalm grenade"/>
+    <message name="MOLOTOV.DESCR.U1"
+             value="Explodes on collision with ground, emitting a ring of burning oil. Can be detonated in midair by pressing attack button."/>
+
+    <message name="GAS_GRENADE.NAME.U1"
+             value="Corroding gas"/>
+    <message name="GAS_GRENADE.DISTINCT.U1"
+             value="Can be activated by pressing attack button. Lowers armor by 10%."/>
+    <message name="GAS_GRENADE.DESCR.U1"
+             value="Gas grenade emits a cloud on explosion, which deals poison damage to all units it covers at the end of a turn, ignoring armor, attack, and dodge chance. Also lowers armor by 10%. Lasts for 6 turns. Can be activated in midair by pressing attack button."/>
+    <message name="GAS_GRENADE.NAME.U1B"
+             value="Freezing gas"/>
+    <message name="GAS_GRENADE.DISTINCT.U1B"
+             value="The cloud deals cold damage and slows enemies for 1 turn, but lasts for 5 turns."/>
+    <message name="GAS_GRENADE.DESCR.U1B">
+        <![CDATA[Gas grenade emits a cloud on explosion, which deals cold damage to all units it covers at the end of a turn. Also slows targets for 1 turn. Cloud damage can't be dodged. Lasts for 5 turns.]]>
+    </message>
+
+    <message name="PUSHING_MINE_GROUND_SETUP"
+             value="The mine is set on the ground and will be destroyed in 5 seconds!"/>
+    <message name="PUSHING_MINE_UNIT_SETUP"
+             value="The mine will be activated in 3 seconds!"/>
+
+    <!--1.25-->
+    <message name="PUSHING_MINE.NAME"
+             value="Stunt mine"/>
+    <message name="PUSHING_MINE.DESCR">
+        <![CDATA[This mine can be put under the enemy and it tosses him up in 3 seconds, so you can attack him in midair. Doesn't deal damage and doesn't waste a turn.]]>
+    </message>
+    <message name="PUSHING_MINE.HINT">
+        <![CDATA[Really shines in combination with pushing weapons. Feel free to experiment!]]>
+    </message>
+
+    <message name="FROZEN_ORB.NAME" value="Frozen orb"/>
+    <message name="FROZEN_ORB.DESCR" value="Magic sphere of uncertain origin. Shoots multiple ice shards that aim towards enemies. Enemies hit by the orb are frozen for 2 turns. Enemies hit by at least 2 shards are slowed for 2 turns. Shards damage is not modified by attack or armor. Orb and shards are affected by wind!"/>
+    <message name="FROZEN_ORB.DAMAGE" value="50 hp orb damage, 30 hp shard damage"/>
+    <message name="FROZEN_ORB.HINT">
+        <![CDATA[Your units are protected from slowing caused by ice shards. Try to slow as much enemies as you can by throwing the orb with the maximum power.]]>
+    </message>
+
+    <message name="SOUL_GUN.NAME" value="Soulgun"/>
+    <message name="SOUL_GUN.DESCR">
+        <![CDATA[Releases swarm of hungry spirits towards a target. Spirits pick random ally or enemy unit and rush through the ground to it. Damage of spirits increases, if the weapon user is wounded. If a spirit doesn't find a target, it attacks the user!]]>
+    </message>
+    <message name="SOUL_GUN.DAMAGE" value="16 souls, 4 to 8 hp each"/>
+    <message name="SOUL_GUN.HINT">
+        <![CDATA[Just aim towards an enemy and shoot. Make sure there are no allies in the area of effect. If the enemy is too far, your soldier gets all the damage!]]>
+    </message>
+
+    <message name="DOCTOR_BAG.NAME" value="Doctor bag"/>
+    <message name="DOCTOR_BAG.DESCR">
+        <![CDATA[Restores 75hp to allies standing nearby. Doesn't heal the user himself! Doesn't waste a turn.]]>
+    </message>
+    <message name="DOCTOR_BAG.HINT">
+        <![CDATA[The bag is especially great if you manage to target several allies.]]>
+    </message>
+
+    <message name="HAT.COVER_GIFT_BOX" value="Cover from gift box"/>
+    <message name="HAT.GIFT_BAG" value="Gift bag"/>
+    <message name="HAT.JARL_SHOCK" value="Tan's helm of snow"/>
+    <message name="HAT.JARL_BASIC" value="Tan's helm"/>
+    <message name="HAT.JARL_POISON" value="Tan's helm of nature"/>
+    <message name="HAT.JARL_FIRE" value="Tan's helm of fire"/>
+    <message name="BONUS.LEGENDARY_ITEM_FIRST_ACT" value="Replacement of an item when a fighter is first activated with a random legendary one"/>
+    <message name="BONUS.EPIC_ITEM_FIRST_ACT" value="Replacement of an item when a fighter is first activated with a random epic one"/>
+    <message name="ARTIFACT.CHRISTMAS_TREE" value="Christmas tree"/>
+    <message name="ARTIFACT.BOSS_GRAVITY_MASTER_SHIELD" value="Gravity Master's shield"/>
+
+</dictionary>

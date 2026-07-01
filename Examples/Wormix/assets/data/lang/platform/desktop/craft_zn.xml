@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+    <message name="PREFIX.NORMAL" value="常规"/>
+    <message name="PREFIX.SUPERIOR" value="精良"/>
+    <message name="PREFIX.AGGRESSIVE" value="攻击型"/>
+    <message name="PREFIX.DEFENSIVE" value="防御型"/>
+    <message name="PREFIX.VIOLENT" value="狂暴"/>
+    <message name="PREFIX.EPIC" value="神尊"/>
+    <message name="PREFIX.LEGENDARY" value="传奇"/>
+    <message name="BATTERY" value="电池"/>
+    <message name="GEAR" value="齿轮"/>
+    <message name="WOOD" value="木头"/>
+    <message name="STONE" value="石头"/>
+    <message name="METAL_PLATE" value="金属板"/>
+    <message name="SAND" value="沙子"/>
+    <message name="COAL" value="煤炭"/>
+    <message name="SCREW_BOLT" value="螺栓"/>
+    <message name="SCREW_NUT" value="螺母"/>
+    <message name="PIPE" value="管材"/>
+    <message name="SPRING" value="弹簧"/>
+    <message name="UMBRELLA" value="保护伞"/>
+    <message name="ACCUMULATOR" value="蓄电池"/>
+    <message name="HAMMER" value="铁锤"/>
+    <message name="GUNPOWDER" value="火药"/>
+    <message name="STEEL_BAR" value="钢条"/>
+    <message name="SCREWDRIVER" value="螺丝刀"/>
+    <message name="WRENCH" value="扳手"/>
+    <message name="CRYSTAL" value="水晶"/>
+    <message name="GENERATOR" value="发电机"/>
+    <message name="MICROCHIP" value="微芯片"/>
+    <message name="SNIPER_SCOPE" value="狙击镜"/>
+    <message name="TITAN_BAR" value="泰坦钢锭"/>
+    <message name="RECIPE.NAME" value="配方"/>
+    <message name="CRAFT_CRATE" value="资源"/>
+    <message name="SEARCH_ZONE_GRADE_S" value="仅在战胜超级老怪时获得该奖励。"/>
+    <message name="GRADE_S_DEMAND" value="制作帽子和宝物所需。"/>
+    <message name="BADGE" value="Bombix 徽章"/>
+    <message name="EQUIP_IS_ON_BOSS" value="战胜 {bossName} 可获得该物品作为奖励"/>
+    <message name="ADDITIONAL_BONUSES" value="额外奖励"/>
+    <message name="CRAFT_COLLECTED_INNER_TITLE" value="已收集的资源"/>
+    <message name="CRAFT_TAB_TITLE" value="装备"/>
+    <message name="CRAFT_TITLE" value="升级"/>
+    <message name="CRAFT_DISABLE_QTIP" value="当你达到 {level} 级时，军械库将开启"/>
+    <message name="COLLECT_FOR_REAGENT_BTN" value="锻造"/>
+    <message name="COLLECT_FOR_RUBY_BTN" value="用红宝石锻造："/>
+    <message name="CRAFT_REWARD_TITLE" value="已收到的物品"/>
+    <message name="CRAFT_COST" value="价格："/>
+    <message name="OR_LABEL" value="或"/>
+    <message name="CRAFT_COMPLETE" value="新物品锻造成功！"/>
+    <message name="CRAFT_COMPLETE_POPUP_BTN" value="棒极了！"/>
+    <message name="CRAFTED_ITEM_ADDED" value="已将该物品送到你家"/>
+    <message name="CONFIRMATION_COLLECT_FOR_RUBIES_TEXT" value="你确定想使用红宝石进行升级吗？"/>
+    <message name="CONFIRMATION_COLLECT_TEXT" value="你确定要进行此升级吗？"/>
+    <message name="REQUIRED_LEVEL_HINT" value="你需要达到 {level} 级才能进行此升级"/>
+    <message name="DOWNGRADE_TITLE" value="降级"/>
+    <message name="DOWNGRADE_BTN2" value="拆卸"/>
+    <message name="CONFIRMATION_DOWNGRADE_TEXT" value="拆卸武器时可获得 80% 的资源。你确定要降级吗？"/>
+    <message name="SEARCH_ZONE_GRADE_D" value="找到所需材料的最佳方式是，在任务期间摧毁地面或从赌注较低的战斗中收集箱子。"/>
+    <message name="SEARCH_ZONE_GRADE_C" value="任务期间可以在地面找到或者会在有赌注的战斗中散落出来。击败老怪时极有机会获得。"/>
+    <message name="SEARCH_ZONE_GRADE_B" value="在赌注较高的战斗中会从空中散落，也可能在击败老怪时作为奖励获得。任务期间或赌注较低的战斗中，获得的机会微乎其微。"/>
+    <message name="REAGENT_DEMAND" value="下列武器需要："/>
+    <message name="CODE" value="转换"/>
+    <message name="GREAT_LUCK" value="真幸运！"/>
+    <message name="BEST_EQUIP_ALREADY_EXIST" value="你已经获得一项最高品质的物品！"/>
+    <message name="TRY_YOUR_LUCK" value="试试你的运气！"/>
+    <message name="CRAFT_VARIATION_HINT" value="锻造机的效果无法预知。物品质量纯粹靠运气。"/>
+    <message name="RECRAFT_VARIATION_HINT" value="重新锻造一件物品让你有机会提高它的质量。"/>
+    <message name="RECRAFT_FAIL_POPUP1" value="你撞到铁砧了。"/>
+    <message name="RECRAFT_FAIL_POPUP2" value="你太卖力了，钳子坏了。"/>
+    <message name="RECRAFT_FAIL_POPUP3" value="锤子砸到了你的手指。"/>
+    <message name="RECRAFT_FAIL_POPUP4" value="把手挤到了你的耳朵。"/>
+    <message name="RECRAFT_FAIL_POPUP5" value="可怕的老鼠吃了你的火药。"/>
+    <message name="RECRAFT_FAIL_POPUP6" value="害虫糟蹋了所有的金属。"/>
+    <message name="RECRAFT_FAIL_POPUP01" value="重新锻造失败。"/>
+    <message name="RECRAFT_FAIL_POPUP02" value="再试一次。"/>
+    <message name="CRAFTED_MAX_QUALITY" value="你已成功获得该类中的顶级物品！"/>
+    <message name="SEARCH_ZONE_GRADE_R" value="进入每日排行榜的玩家将获得此物品作为奖励。"/>
+    <message name="NEW_ITEM_CRAFTED_1" value="太棒了！我刚刚制造了 {item}！"/>
+    <message name="NEW_ITEM_CRAFTED_2" value="真是一项杰作！我成功制造了 {item}！"/>
+    <message name="NEW_ITEM_CRAFTED_3" value="嘿，看看我的成果：{item}！"/>
+    <message name="CRAFT_BTN" value="锻造"/>
+    <message name="REBUILD_BTN" value="重新锻造"/>
+    <message name="MILITARY_CARD" value="军用卡"/>
+    <message name="ILLUSIONIST_COIN" value="魔术师硬币"/>
+    <message name="RING_OF_ACOLYTE" value="助手的戒指"/>
+    <message name="CRYSTAL_BALL" value="水晶球"/>
+    <message name="PHILOSOPHICAL_AMULET" value="哲学护身符"/>
+    <message name="PALADIN_BADGE" value="圣骑士的徽章"/>
+    <message name="ARCHIDEMON_STONE_BLUE" value="大恶魔蓝色的石头"/>
+    <message name="ARCHIDEMON_STONE_YELLOW" value="大恶魔黄色的石头"/>
+    <message name="SEARCH_ZONE_GRADE_BOSS_RARE" value="一种罕见的试剂。 老板争取胜利后可以获得。 如果无用，将被更改为Bombix徽章"/>
+</dictionary>

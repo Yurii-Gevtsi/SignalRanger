@@ -1,0 +1,250 @@
+<ui>
+    <object commonSource="CloseButton">
+        <object name="close" type="button" sound="default" rotation="0" x="0" y="0" width="64" height="64" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="instance16" type="upState" rotation="0" x="0" y="0" width="64" height="64" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance16" type="object" rotation="0" x="0" y="0" width="64" height="64" alpha="1"
+                        scaleX="1" scaleY="1" url="button_close_up.png"/>
+            </object>
+            <object name="instance20" type="downState" rotation="0" x="0" y="0" width="64" height="64" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance20" type="object" rotation="0" x="0" y="0" width="64" height="64" alpha="1"
+                        scaleX="1" scaleY="1" url="button_close_down.png"/>
+            </object>
+        </object>
+    </object>
+    <object commonSource="OkButtonSmallLabel">
+        <object name="ok" type="object" rotation="0" x="0" y="0" width="203" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="0" width="NaN" height="NaN" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="21" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="  " wordWrap="false"/>
+            <object name="subbutton" type="button" sound="default" rotation="0" x="0" y="0" width="203" height="53"
+                    alpha="1" scaleX="1" scaleY="1">
+                <object name="instance7" type="upState" rotation="0" x="0" y="0" width="203" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="203" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_green_up.png"/>
+                </object>
+                <object name="instance11" type="downState" rotation="0" x="0" y="0" width="203" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="button_green_down.png" type="3slice" rotation="0" x="0" y="0" width="203" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_green_down.png"/>
+                </object>
+                <object name="disabled" type="disabled" rotation="0" x="0" y="0" width="203" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackgroundDisabled" type="3slice" rotation="0" x="0" y="0" width="203"
+                            height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_grey_up.png"/>
+                </object>
+            </object>
+        </object>
+    </object>
+    <object commonSource="CancelButtonSmallLabel">
+        <object name="cancel" type="object" rotation="0" x="0" y="0" width="203" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="0" width="NaN" height="NaN" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="21" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="  " wordWrap="false"/>
+            <object name="subbutton" type="button" sound="default" rotation="0" x="316.4" y="188.3" width="203"
+                    height="53" alpha="1" scaleX="1" scaleY="1">
+                <object name="instance7" type="upState" rotation="0" x="0" y="0" width="203" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="204" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_red_up.png"/>
+                </object>
+                <object name="instance11" type="downState" rotation="0" x="0" y="0" width="203" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="button_green_down.png" type="3slice" rotation="0" x="0" y="0" width="204" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_red_down.png"/>
+                </object>
+            </object>
+        </object>
+    </object>
+    <object commonSource="OkButtonNormalLabel">
+        <object name="ok" type="object" rotation="0" x="0" y="0" width="218" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="20" width="NaN" height="NaN" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="OK" wordWrap="false"/>
+            <object name="subbutton" type="button" sound="default" rotation="0" x="159.7" y="188.3" width="218"
+                    height="53" alpha="1" scaleX="1" scaleY="1">
+                <object name="instance7" type="upState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackground" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_green_up.png"/>
+                </object>
+                <object name="instance11" type="downState" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="button_green_down.png" type="3slice" rotation="0" x="0" y="0" width="218" height="53"
+                            alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                            url="button_green_down.png"/>
+                </object>
+                <object name="disabled" type="disabled" rotation="0" x="0" y="0" width="218" height="53" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="buttonBackgroundDisabled" type="3slice" rotation="0" x="0" y="0" width="218"
+                            height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_grey_up.png"/>
+                </object>
+            </object>
+        </object>
+    </object>
+    <object commonSource="CancelButtonNormalLabel">
+        <object name="cancel" type="object" rotation="0" x="0" y="0" width="216" height="50" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="191" y="0" width="NaN" height="NaN" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="     " wordWrap="false"/>
+            <object name="buttonBase" type="button" sound="default" rotation="0" x="0" y="0" width="204" height="50"
+                    alpha="1" scaleX="1" scaleY="1">
+                <object name="instance32" type="upState" rotation="0" x="0" y="0" width="204" height="50" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance33" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="204"
+                            height="50" alpha="1" scaleX="1" scaleY="1" paddingLeft="12" paddingRight="13"
+                            bodyEndWidth="1" url="button_red_up.png"/>
+                </object>
+                <object name="instance38" type="downState" rotation="0" x="0" y="0" width="204" height="50" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance39" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="204"
+                            height="50" alpha="1" scaleX="1" scaleY="1" paddingLeft="12" paddingRight="13"
+                            bodyEndWidth="1" url="button_red_down.png"/>
+                </object>
+            </object>
+        </object>
+    </object>
+    <object commonSource="FuzyButton">
+        <object name="fuzyButton" type="object" rotation="0" x="0" y="0" width="222" height="66" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="102" y="17" width="NaN" height="39.75" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_WITH_SHADOWS" size="30" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="     " wordWrap="false"/>
+            <object name="buttonBase" type="button" sound="default" rotation="0" x="0" y="0" width="222" height="66"
+                    alpha="1" scaleX="1" scaleY="1">
+                <object name="instance46" type="upState" rotation="0" x="0" y="0" width="222" height="66" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance47" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="222"
+                            height="66" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_green_up.png"/>
+                </object>
+                <object name="instance52" type="downState" rotation="0" x="0" y="0" width="222" height="66" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance53" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="222"
+                            height="66" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_green_down.png"/>
+                </object>
+                <object name="instance52" type="disabled" rotation="0" x="0" y="0" width="177" height="52.65" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance53" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="177"
+                            height="52.65" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_grey_down.png"/>
+                </object>
+            </object>
+            <object name="icon" type="object" rotation="0" x="46" y="6" width="54" height="52" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object type="object" rotation="0" x="0" y="0" width="54" height="52" alpha="1" scaleX="1" scaleY="1"
+                        url="icon_fuzy.png"/>
+            </object>
+        </object>
+    </object>
+    <object commonSource="RubyButton">
+        <object name="rubyButton" type="object" rotation="0" x="0" y="0" width="180" height="53" alpha="1" scaleX="1"
+                scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="0" width="NaN" height="39.75" alpha="1" scaleX="1"
+                    scaleY="1" font="GROBOLD_WITH_SHADOWS" size="30" color="16777215" bold="false" letterSpacing="0"
+                    align="left" fieldType="dynamic" text="     " wordWrap="false"/>
+            <object name="buttonBase" type="button" sound="default" rotation="0" x="0" y="0" width="177" height="52.65"
+                    alpha="1" scaleX="1" scaleY="1">
+                <object name="instance46" type="upState" rotation="0" x="0" y="0" width="177" height="52.65" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance47" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="177"
+                            height="52.65" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_blue_up.png"/>
+                </object>
+                <object name="instance52" type="downState" rotation="0" x="0" y="0" width="177" height="52.65" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance53" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="177"
+                            height="52.65" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_blue_down.png"/>
+                </object>
+                <object name="instance52" type="disabled" rotation="0" x="0" y="0" width="177" height="52.65" alpha="1"
+                        scaleX="1" scaleY="1">
+                    <object name="instance53" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="177"
+                            height="52.65" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13"
+                            bodyEndWidth="1" url="button_grey_down.png"/>
+                </object>
+            </object>
+            <object name="icon" type="object" rotation="0" x="0" y="6" width="44" height="42" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object type="object" rotation="0" x="0" y="0" width="54" height="52" alpha="1" scaleX="1" scaleY="1"
+                        url="icon_ruby.png"/>
+            </object>
+        </object>
+    </object>
+    <object commonSource="RealMoneyButton">
+        <object name="button" type="button" sound="default" rotation="0" x="0" y="0" width="203" height="53" alpha="1"
+                scaleX="1" scaleY="1">
+            <object name="label" type="text" rotation="0" x="0" y="0" width="NaN" height="NaN" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="21" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Сбросить" wordWrap="false"/>
+            <object name="instance28" type="upState" rotation="0" x="0" y="0" width="203" height="53" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance29" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="203"
+                        height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                        url="button_blue_up.png"/>
+            </object>
+            <object name="instance32" type="downState" rotation="0" x="0" y="0" width="203" height="53" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="instance33" type="3slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="203"
+                        height="53" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" paddingRight="13" bodyEndWidth="1"
+                        url="button_blue_down.png"/>
+            </object>
+        </object>
+    </object>
+    <object commonSource="MenuTabButton">
+        <object name="commonTabButton" type="toggleButton" sound="default" rotation="0" x="0" y="0" width="215"
+                height="65" alpha="1" scaleX="1" scaleY="1">
+            <object name="label" type="text" rotation="0" x="107" y="32" width="NaN" height="NaN" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="17" color="8284506" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Друзья" wordWrap="false"/>
+            <object name="upState" type="upState" rotation="0" x="0" y="0" width="215" height="65" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="content" type="9slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="215"
+                        height="65" alpha="1" scaleX="1" scaleY="1" paddingLeft="2" bodyEndWidth="1" bodyEndHeight="2"
+                        paddingTop="27" url="ChooseFriendMenu_tab_downState.png"/>
+            </object>
+            <object name="downState" type="downState" rotation="0" x="0" y="0" width="215" height="65" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="content" type="9slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="215"
+                        height="65" alpha="1" scaleX="1" scaleY="1" paddingLeft="7" bodyEndWidth="1" bodyEndHeight="1"
+                        paddingTop="7" url="ChooseFriendMenu_tab_upState.png"/>
+            </object>
+        </object>
+    </object>
+    <object commonSource="OrangeButtonNormalLabel">
+        <object name="commonTabButton" type="toggleButton" sound="default" rotation="0" x="0" y="0" width="215"
+                height="65" alpha="1" scaleX="1" scaleY="1">
+            <object name="label" type="text" rotation="0" x="107" y="32" width="NaN" height="NaN" alpha="1" scaleX="1"
+                    scaleY="1" font="WORMIX_NORMAL" size="25" color="16777215" bold="false" letterSpacing="0"
+                    align="center" fieldType="dynamic" text="Друзья" wordWrap="false"/>
+            <object name="upState" type="upState" rotation="0" x="0" y="0" width="215" height="65" alpha="1" scaleX="1"
+                    scaleY="1">
+                <object name="content" type="9slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="215"
+                        height="65" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" bodyEndWidth="1" bodyEndHeight="2"
+                        paddingTop="27" url="button_orange_up.png"/>
+            </object>
+            <object name="downState" type="downState" rotation="0" x="0" y="0" width="215" height="65" alpha="1"
+                    scaleX="1" scaleY="1">
+                <object name="content" type="9slice" rotation="0" x="0" y="0" pivotX="0" pivotY="0" width="215"
+                        height="65" alpha="1" scaleX="1" scaleY="1" paddingLeft="13" bodyEndWidth="1" bodyEndHeight="1"
+                        paddingTop="7" url="button_orange_down.png"/>
+            </object>
+        </object>
+    </object>
+    <object commonSource="Empty"></object>
+</ui>

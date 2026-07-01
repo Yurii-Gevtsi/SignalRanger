@@ -1,0 +1,1360 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+    <message name="AND" value="and"/>
+    <message name="LOADING" value="Loading..."/>
+    <message name="UPLOADING" value="Uploading..."/>
+    <message name="SAVING" value="Saving..."/>
+    <message name="WAITING_DATA" value="Waiting for data..."/>
+    <message name="SWITCHING_TURN" value="Switching turn..."/>
+    <message name="CONNECTING" value="Connecting..."/>
+    <message name="TITLE_ERROR" value="Error"/>
+    <message name="TITLE_ATTENTION" value="Attention"/>
+    <message name="TITLE_BUY" value="Purchase"/>
+    <message name="TITLE_SERVER_MSG" value="Server message"/>
+    <message name="TITLE_MSG" value="Message"/>
+    <message name="TITLE_BAN" value="Ban"/>
+    <message name="GAME_NAME" value="Wormix"/>
+    <message name="TITLE_UPDATE_IS_AVAILABLE" value="New Update Available!"/>
+    <message name="PERFORMANCE_WARNING" value="This option may reduce game performance!"/>
+    <message name="FACEBOOK_DISCONNECT_WARNING" value="Are you sure you want to disconnect Facebook profile?"/>
+    <message name="CHANGE_NAME_ERROR" value="Name is too long"/>
+    <message name="UPDATE" value="Update"/>
+    <message name="SERVER_UPDATE"
+             value="Sorry, looks like the server is down for maintenance. Please wait a few minutes and try to reconnect."/>
+    <message name="ERROR_SERVER" value="The request was cancelled."/>
+    <message name="ERROR_SAVING" value="An error occurred while the data was saving. The transaction was cancelled."/>
+    <message name="ERROR_SOCIAL" value="An error occurred while accessing the social network API."/>
+    <message name="ERROR_SOCIAL_OP" value="An error occurred while accessing the social network API. {errpr}"/>
+    <message name="ERROR_SCENE_LOAD" value="An error occurred while loading data (id = {id})"/>
+    <message name="ERROR_HACKING_ATTEMPT" value="Insufficient funds. The transaction was cancelled."/>
+    <message name="ERROR_REQUEST_FRIEND_TO_BATTLE" value="You can not call this player to battle."/>
+    <message name="ERROR_BANK_FAIL"
+             value="Transaction failed, possibly due to high server load Please, try again later."/>
+    <message name="ERROR_WRONG_PRICE"
+             value="Wrong price received. We will try to fix it as soon as possible. Please, try again later."/>
+    <message name="ERROR_NOT_ENOUGH_MONEY" value="Insufficient funds."/>
+    <message name="UNSYNCH_ERROR" value="Desync. The command {received} came instead of {expected}."/>
+    <message name="TITLE_ERROR_LOAD_RES" value="Error while loading resources."/>
+    <message name="MSG_ERROR_LOAD_ROOM_RES" value="Please, re-enter the room."/>
+    <message name="RECEIPT_VERIFICATION_ERROR_APPLE"
+             value="Your purchase could not be verified through Apple's servers. Please try again later."/>
+    <message name="RECEIPT_VERIFICATION_ERROR_GOOGLE"
+             value="Your purchase could not be verified with Google's servers. Please try again later."/>
+    <message name="RECEIPT_VERIFICATION_ERROR_STEAM" value="Your purchase is canceled."/>
+    <message name="INCORRECT_PROTOCOL_VERSION" value="Incorrect protocol version, please update the client."/>
+    <message name="LEVEL_UP_DIALOG_TITLE" value="You leveled up!"/>
+    <message name="LEVEL_UP_DIALOG_DESCRIPTION" value="New opportunities"/>
+    <message name="LEVEL_UP_DIALOG_BONUS_TEXT" value="New level bonus:"/>
+    <message name="LEVEL_UP_DIALOG_THINGS_TEXT" value="New items available in shop:"/>
+    <message name="LEVEL_UP_DIALOG_BUTTON_SHOP" value="To the shop!"/>
+    <message name="LEVEL_UP_DIALOG_LIFE_TIPS" value="Health"/>
+    <message name="LEVEL_UP_DIALOG_PARAMS_TIPS" value="Stat points"/>
+    <message name="LEVEL_UP_DIALOG_COMMAND_TIPS" value="Squad size"/>
+    <message name="BUY_RUBIES_SUCCESSFULL" value="Thanks for your purchase. We are at your disposal!"/>
+    <message name="OLD_ADS_TEXT" value="DRIVE. SHOOT. WIN."/>
+    <message name="ADS_TEXT" value="It's time."/>
+    <message name="ADS_BUTTON_TEXT" value="Fight!"/>
+    <message name="SHOP" value="Shop"/>
+    <message name="WEAPON_TAB" value="Weapons"/>
+    <message name="HAT_TAB" value="Hats"/>
+    <message name="LONG_RANGE_WEAPONS" value="Long Range"/>
+    <message name="CLOSE_RANGE_WEAPONS" value="Close Range"/>
+    <message name="SPECIAL_WEAPONS" value="Special"/>
+    <message name="GADGETS" value="Gadgets"/>
+    <message name="HATS" value="Hats"/>
+    <message name="ARTIFACTS" value="Artifacts"/>
+    <message name="CATEGORY_PURCHASED" value="Purchased!"/>
+    <message name="SALE_TEXT" value="Sensational Sale!"/>
+    <message name="REMAINING_TEXT" value="Remaining:"/>
+    <message name="BUY_EXISTING_WEAPON" value="You already have this weapon"/>
+    <message name="BUY_EXISTING_EQUIP" value="You've already got this item"/>
+    <message name="BUY_2_HAT" value="You just bought a hat. Are you sure you want to change it?"/>
+    <message name="BUY_SUCCESSFUL" value="Your items have been purchased. They are now in your armory."/>
+    <message name="SHOP_REQUIRED_LEVEL" value="Required level"/>
+    <message name="SHOP_REQUIRED_FRIENDS" value="Required friends"/>
+    <message name="SHOP_REQUIRED_RATING" value="Required rating"/>
+    <message name="SCENARIO_REQUIREMENT" value="defeat {scenario}"/>
+    <message name="SHOP_SCENARIO_REQUIREMENT" value="Defeat:"/>
+    <message name="SHOP_BUY_FOR_REAL_MONEY" value="or purchase with rubies"/>
+    <message name="SHOP_REQUIRED_FIELD" value="requires {requirements} to pay in fuzzez"/>
+    <message name="SHOP_REQUIRED_IMPOSSIBLE"><![CDATA[requires<br/>{levelRequirement}]]></message>
+    <message name="FRIENDS_REQUIREMENT" value="{friendsCnt} friends"/>
+    <message name="LEVEL_REQUIREMENT" value="{level} level"/>
+    <message name="RATING_REQUIREMENT" value="{rating} rating"/>
+    <message name="CRAFT_PRICE_LABEL" value="Crafting cost:"/>
+    <message name="PRICE_LABEL" value="Price:"/>
+    <message name="PRICE_FREE" value="free"/>
+    <message name="PRICE_OR_LABEL" value="or"/>
+    <message name="ALREADY_CRAFTED_LABEL" value="You've got the best item of this kind!"/>
+    <message name="CRAFT_EQUIP_NOT_ENOUGH_REGS" value="Not enough reagents to craft for fuzzez"/>
+    <message name="DAMAGE" value="Damage"/>
+    <message name="COUNT_LABEL" value="Quantity"/>
+    <message name="QUANTITY_INFINITY" value=" infinite"/>
+    <message name="QUANTITY_PER_BATTLE" value=" per battle"/>
+    <message name="BUY_REACTION_RATES" value="Your reaction has been increased by {count}"/>
+    <message name="FIRST_SHOT_DELAY" value="Can be used starting from turn {turn}."/>
+    <message name="ARENA" value="Arena"/>
+    <message name="BATTLES_AVAILABLE" value="Battle tokens available:"/>
+    <message name="TEAM_HP_LABEL" value="Total health"/>
+    <message name="TEAM_LABEL" value="Team size"/>
+    <message name="AWARD_LABEL" value="Award"/>
+    <message name="MISSION_TAB_NAME" value="Missions"/>
+    <message name="PVP_TAB_NAME" value="Multiplayer"/>
+    <message name="BOSS_TAB_NAME" value="Bosses"/>
+    <message name="BOSS_COOP_TAB_NAME" value="Cooperative"/>
+    <message name="SUPER_BOSS_TAB_NAME" value="Superbosses"/>
+    <message name="TITLE_HEROIC_BOSSES_PANEL" value="New boss combinations every day!"/>
+    <message name="PVP_MESSAGE">
+        <![CDATA[Online fights. Ladies and gentlemen! Place your bets on your victory!<br/>Fight organizers take 20% of earnings]]></message>
+    <message name="BOSS_COOP_TITLE" value="Mate:"/>
+    <message name="PVP_DUEL_CARD" value="Duel"/>
+    <message name="PVP_SURVIVAL_CARD" value="Survival (1х1х1)"/>
+    <message name="PVP_DEATH_MATCH_CARD" value="Deathmatch"/>
+    <message name="PVP_TWO_VS_TWO_CARD" value="2 vs 2 (random)"/>
+    <message name="PVP_TWO_VS_TWO_WITH_FRIEND_CARD" value="2 vs 2 (with friend)"/>
+    <message name="PVP_TWO_VS_TWO_WITH_FRIEND_CARD_DESC"
+             value="Select a friend who will be your partner in this battle."/>
+    <message name="PVP_FIND_ENEMY" value="Find enemy!"/>
+    <message name="PVP_WAGER_LABEL" value="Wager:"/>
+    <message name="PVP_BONUS_LABEL" value="Rating:"/>
+    <message name="PVP_PRIZE_LABEL" value="Reward:"/>
+    <message name="BONUS_EXPERIENCE" value="Bonus experience:"/>
+    <message name="PVP_WAGER_AVAILABLE_FOR" value="You have to be at least {level} level "/>
+    <message name="PVP_WAGER_AVAILABLE_FOR_TEAM_MIN" value="You need to have at least {team}-soldiers team"/>
+    <message name="PVP_WAGER_AVAILABLE_FOR_TEAM_MAX" value="You need to have no more then {team} soldiers in team"/>
+    <message name="PVP_WAGER_BTN" value="Sign up for battle!"/>
+    <message name="MISSION_BTN" value="Start!"/>
+    <message name="BOSS_BTN" value="Start!"/>
+    <message name="SEARCH_BTN" value="Find"/>
+    <message name="FRIENDS_TITLE" value="Friends"/>
+    <message name="RANDOM_PARTNER" value="Random teammate"/>
+    <message name="CHOOSE_FRIEND_BTN" value="Select friend"/>
+
+    <message name="FRIEND_EXCEED_BATTLES" value="Your friend ran out of battle tokens"/>
+    <message name="FRIEND_MISSION_LOCKED" value="This boss is unavailable for your friend"/>
+    <message name="NO_FRIENDS_FOR_COOP_MISSION" value="You have no friends online to attack this boss!"/>
+    <message name="NO_FRIENDS_FOR_COOP_FIGHT" value="You have no friends online to fight together!"/>
+    <message name="NO_FRIENDS_FOR_INVITE" value="All your friends are already invited!"/>
+
+    <message name="ARENA_DELAY_MESSAGE" value="You reached the battle tokens limit."/>
+    <message name="ARENA_DELAY_DESC" value="You can get back to your missions in:"/>
+    <message name="ARENA_DELAY_DONT_WAIT" value="Don't want to wait? Lust for battle?"/>
+    <message name="ARENA_BUY_BATTLE" value="You may buy one more battle token"/>
+    <message name="ARENA_BUY_FIVE_BATTLES" value="You may buy 5 battles token at once:"/>
+    <message name="ARENA_BUY_BTN_NAME" value="Buy for:"/>
+    <message name="ARENA_EXISTS_MONEY" value="Your money:"/>
+    <message name="ARENA_OR_LABEL" value="or"/>
+
+    <message name="BOSS_RESOURCES_LOAD" value="Loading boss resources"/>
+
+    <message name="MISSION_FREE_GAME" value="Free game"/>
+    <message name="CHOOOSE_FRIEND_BTN_NAME" value="Choose a friend!"/>
+    <message name="HOT_SEAT_CARD_DESC">
+        <![CDATA[Play with your friends on a single device! <br/>Just select one - and fight!]]></message>
+    <message name="LEARN_BTN_NAME" value="Train!"/>
+    <message name="UNKNOWN_CARD_NAME" value="Unknown mission"/>
+    <message name="UNKNOWN_CARD_DESC" value="This mission is too secret to reveal right now!"/>
+    <message name="PLAY_MISSION_BTN_NAME" value="Perform!"/>
+    <message name="COMMON_CHAT_TITLE" value="Common chat"/>
+    <message name="TEAM_CHAT_TITLE" value="Team chat"/>
+    <message name="BOSS_SINGLE_MODE_BTN" value="Single"/>
+    <message name="BOSS_COOP_MODE_BTN" value="With a friend"/>
+    <message name="BOSS_PLAY_BTN" value="Fight!"/>
+    <message name="BOSS_AWARD" value="Award: "/>
+    <message name="BOSS_LOCKED"
+             value="Now you can not attack this boss, because the path to him has not been cleared yet!"/>
+    <message name="BOSS_UNAVAILABLE_TITLE" value="You're brave! But that alone is not enough!"/>
+    <message name="BOSS_UNAVAILABLE_DESC" value="You are too low level to enter into such a serious battle!"/>
+    <message name="BOSS_UNAVAILABLE_REQUIRED_LEVEL" value="Required: "/>
+    <message name="BOSS_UNAVAILABLE_REQUIRED_LEVEL_TEXT" value="level."/>
+
+    <message name="UNAVAILABLE_PANEL_TITLE" value="Undiscovered enemy! Boss is not defeated!"/>
+    <message name="UNAVAILABLE_PANEL_DESCRIPTION_1"
+             value="You can't fight against this pair now - you have to beat both bosses first."/>
+    <message name="UNAVAILABLE_PANEL_DESCRIPTION_2" value="You have to beat:"/>
+    <message name="AVAILABLE_PANEL_DESCRIPTION"
+             value="On each difficulty you have to fight a team of two bosses. The higher difficulty leads to greater reward."/>
+
+    <message name="REMOVE_FROM_GROUP" value="Kick out"/>
+    <message name="ADD_IN_GROUP" value="Hire?"/>
+    <message name="REPLACE_IN_GROUP_CONFIRMATION" value="Replace your team member with this one?"/>
+    <message name="INACTIVE_IN_GROUP" value="Inactive"/>
+    <message name="ACTIVATE_IN_GROUP" value="Activate"/>
+    <message name="DEACTIVATE_IN_GROUP" value="Deactivate"/>
+    <message name="USER_PAGE" value="User page"/>
+    <message name="CALL_TO_BATTLE" value="Challenge to a fight"/>
+    <message name="CALL_TO_LOCAL_BATTLE" value="Hot seat"/>
+    <message name="GROUP_ICON_QTIP" value="My team"/>
+    <message name="CAN_NOT_ADD_IN_GROUP" value="You can't have more team members at your current level."/>
+    <message name="REMOVE_FROM_GROUP_CONFIRMATION" value="Are you sure you want to kick your friend from the team?"/>
+    <message name="ALREADY_IN_TEAM" value="Unit is already in the team"/>
+    <message name="BUTTON_ADD" value="Add"/>
+    <message name="PARAMS_TITLE" value="Stats"/>
+    <message name="ALLOCATE_POINTS" value="Points available:"/>
+    <message name="RESET_PARAMS_NAME" value="Reset parameters"/>
+    <message name="RESET_PARAMS_DESC">
+        <![CDATA[Only attack and armor is reset. <br/>Reaction rate remains unchanged. <br/><br/>Points can be reset.]]></message>
+    <message name="ALLOCATE_POINTS" value="Points available:"/>
+    <message name="NO_POINTS" value="There are no points to improve your stats"/>
+    <message name="ARMOR_DESCRIPTION" value="Damage done to you is diminished, depending on your armor"/>
+    <message name="ATTACK_DESCRIPTION" value="Damage done to your enemy is increased, depending on your attack"/>
+    <message name="REACTION_DESCRIPTION" value="Increases the chance of getting the first turn in a duel."/>
+    <!--value="Increases the chance of getting the first turn in a duel. Reaction rate can be boosted by the friends that visit your house, or purchased for rubies"/>-->
+    <message name="POINTS_ICON_QTIP" value="My stats"/>
+    <message name="ARMOR" value="Armor"/>
+    <message name="ATTACK" value="Attack"/>
+    <message name="ATTACK_POISON" value="Poison damage"/>
+    <message name="ATTACK_FIRE" value="Fire damage"/>
+    <message name="REDUCTION_FIRE" value="Fire reduction"/>
+    <message name="LEECH" value="Vampirism"/>
+    <message name="DODGE" value="Dodge chance"/>
+    <message name="REGENERATION" value="Regeneration"/>
+    <message name="REACTION" value="Reaction"/>
+    <message name="HP" value="Health"/>
+    <message name="TO_HP" value="to health"/>
+    <message name="RATING" value="Rating"/>
+    <message name="RATING_DESCRIPTION" value="Increase your rating by taking down opponents in multiplayer battles"/>
+    <message name="RATING_WARNING" value="To get access you need to set your name first."/>
+    <message name="RATING_AWARDS_TITLE" value="The sign of the strongest!"/>
+    <message name="RATING_AWARDS_TEXT" value="Get into the daily top and score at least {rating} rating points to get a unique cap the next day!"/>
+    <message name="PRIZE_TWO_MISSION" value="2 missions"/>
+    <message name="SHOW_FRIEND_HOUSE" value="Visit"/>
+    <message name="DUEL_WITH_FRIEND" value="Duel!"/>
+    <message name="LEVEL_NET_ENOUGH_FOR_SEARCH"
+             value="You may only visit a friend's room only after they have reached the second level"/>
+    <message name="CALL_TO_BATTLE_BY_ID" value="Challenge by ID"/>
+    <message name="REFRESH_FRIENDLIST" value="Refresh friends list"/>
+    <message name="TIPS_ON_OFF" value="Tips on/off"/>
+    <message name="CHAR_HINT_ON_OFF" value="Names on/off"/>
+    <message name="RACE" value="Race"/>
+    <message name="SELECT_RACE" value="Select race"/>
+    <message name="SELECTED_RACE" value="Selected race"/>
+    <message name="HARDNESS" value="Difficulty"/>
+    <message name="EASY" value="Easy"/>
+    <message name="MEDIUM" value="Medium"/>
+    <message name="HARD" value="Hard"/>
+    <message name="HEROIC_BOSSES_DIFFICULTY_EASY" value="Normal"/>
+    <message name="HEROIC_BOSSES_DIFFICULTY_MEDIUM" value="Nightmare"/>
+    <message name="HEROIC_BOSSES_DIFFICULTY_HARD" value="Hellfire"/>
+    <message name="HEROIC_BOSSES_DIFFICULTY_INSANE" value="Armageddon"/>
+    <message name="ENEMIES_COUNT_LABEL" value="Enemy count:"/>
+    <message name="REACTION_MENU_TITLE" value="Your reaction has been boosted"/>
+    <message name="ASK_FRIEND_PUMP_REACTION_TITLE" value="Your friends"/>
+    <message name="REACTION_MENU_BUTTON" value="Boost"/>
+    <message name="REACTION_MENU_MSG_NONE_SELECTED" value="No one has boosted you yet"/>
+    <message name="REACTION_MENU_MSG_NONE_PUMPED_3DAYS" value="Your reaction hasn't been boosted in the last 3 days"/>
+    <message name="ALBUM_TITLE" value="Wormix"/>
+    <message name="ALBUM_DESCRIPTION" value="My best moments in Wormix! Come in, let's fight: {app_link}"/>
+    <message name="PHOTO_LOAD_COMPLETE" value="Upload finished. "/>
+    <message name="PHOTO_MENU_TITLE" value="Publish the photo"/>
+    <message name="VIDEO_TITLE" value="Video"/>
+    <message name="VIDEO_LIMIT_MSG">
+        <![CDATA[<font color="#A20000"><b>Attention! </b></font><br/><font color="#524336">Restriction of the video clip <b>15Mb</b>.</font>]]></message>
+    <message name="VIDEO_LIMIT_DESC" value="The larger your video is, the longer it will take to upload on your page."/>
+    <message name="VIDEO_SAVE_TITLE" value="Saving the video."/>
+    <message name="VIDEO_SAVE_ATTENTION">
+        <![CDATA[<font color="#A20000"><b>You have an unsaved video.</b></font>]]></message>
+    <message name="VIDEO_SAVE_SIZE"><![CDATA[<b>Size:</b> {value} Mb]]></message>
+    <message name="VIDEO_SAVE_QUESTION" value="Upload a video to your page?"/>
+    <message name="VIDEO_SAVE_SUCCESS" value="Successfully uploaded on your page/!"/>
+    <message name="VIDEO_FILE_NAME" value="Wormix: I am {name} ({level})"/>
+    <message name="VIDEO_SAVING_TITLE" value="Saving the  video, please wait...."/>
+    <message name="VIDEO_SAVING_DESC"
+             value="It will take about 2 minutes to upload a 15 mb video  with a 1 mb/s internet connection."/>
+    <message name="BANK_TITLE" value="Bank"/>
+    <message name="BANK_CHOOSE" value="Choose currency:"/>
+    <message name="BANK_BUY_RUBY" value="rubies"/>
+    <message name="BANK_BUY_COIN" value="fuzzez"/>
+    <message name="GO_AT_BANK" value="You can purchase fuzzez and rubies in a bank."/>
+    <message name="BUTTON_GO_AT_BANK" value="Bank"/>
+    <message name="RUBY_PRICE" value="{count} rubies for {price}"/>
+    <message name="FUZZES_PRICE" value="{count} fuzzez for {price}"/>
+    <message name="OK_CURRENCY" value="OK"/>
+    <message name="BANK_BONUS" value="bonus"/>
+    <message name="BANK_VALUE_TITLE" value="You're buying:"/>
+    <message name="BANK_BONUS_INFO" value="Bonus! The more you buy the bigger bonus you get!"/>
+    <message name="BANK_INCOME_PAYMENT_RUBY" value="Incoming payment received. {count} rubies added to your account"/>
+    <message name="BANK_INCOME_PAYMENT_COIN" value="Incoming payment received. {count} fuzzez added to your account"/>
+    <message name="BANK_BTN" value="Add"/>
+    <message name="BANK_BUY_TITLE" value="Direct buy"/>
+    <message name="BANK_DEPOSIT_TITLE" value="Deposit"/>
+    <message name="BANK_DEPOSIT_SINGLE_TITLE" value="Deposit"/>
+    <message name="BANK_VIP_TITLE" value="VIP-Account"/>
+    <message name="BANK_BUNDLE_TITLE" value="Bundle"/>
+    <message name="BANK_BUNDLES_TITLE" value="Bundles"/>
+    <message name="BANK_BUY_DESCR" value="Buy rubies or fuzzez"/>
+    <message name="BANK_DEPOSIT_DESCR" value="Get rubies or fuzzez within 5 days"/>
+    <message name="BANK_DEPOSIT_FIRST_DAY" value="(today!)"/>
+    <message name="BANK_VIP_DESCR" value="Get all items and weapons at once"/>
+    <message name="BANK_BUNDLE_DESCR" value="Get different items from list"/>
+    <message name="BANK_CLAN_DONATION_TITLE" value="Clan treasury"/>
+    <message name="BANK_CLAN_DONATION_DESCRIPTION" value="Donate to clan treasury"/>
+    <message name="BANK_DEPOSIT_TIME" value="Within 5 days"/>
+    <message name="BANK_NO_BONUS" value="No bonus"/>
+    <message name="GET_DEPOSIT" value="Get your deposit!"/>
+    <message name="BATTLE_OFFER_TITLE" value="Challenge to a duel!"/>
+    <message name="BATTLE_BOSS_OFFER_TITLE" value="Challenge to the Super Boss!"/>
+    <message name="BATTLE_2X2_OFFER_TITLE" value="Team battle!"/>
+    <message name="BATTLE_OFFER_ACCEPT" value="Accept"/>
+    <message name="BATTLE_WAITE_LABLE" value="You have to wait"/>
+    <message name="TITLE_BATTLE_OFFER_PROFILE_REJECT" value="Profiles matching error"/>
+    <message name="BATTLE_OFFER_PROFILE_REJECT" value="Your profile has changed during this battle offer"/>
+    <message name="VIP_LABEL" value="VIP: "/>
+    <message name="VIP_WEEK" value="1 Week"/>
+    <message name="VIP_WEEK_TIME" value="7 days"/>
+    <message name="VIP_MONTH" value="1 Month"/>
+    <message name="VIP_MONTH_TIME" value="30 days"/>
+    <message name="VIP_WEEK_TITLE" value='"7 days hero!"'/>
+    <message name="VIP_MONTH_TITLE" value='"Street Fight Monster"'/>
+    <message name="VIP_DESCR">
+        <![CDATA[VIP-Account doubles experience and money earned in missions and boss fights. Also VIP-Account grants you unlimited access to ALL weapons available at the level from game shop, except medicaments and ruby weapons! All base weapons get MAX level!<br>The best way to immediately engage the game on the highest level!]]>
+    </message>
+    <message name="WEAPON_GET_ALL" value="MAX level common weapon!"/>
+    <message name="STICKERS_GET_ALL" value="Access to ALL stickers!"/>
+    <message name="VIP_BOOSTER" value="Double experience and money rewards for missions and bosses!"/>
+    <message name="VIP_RENAME" value="Two free character renames!"/>
+    <message name="TIME_PERIOD" value="Length of subscription: "/>
+    <message name="AUTO_RENEWING" value="(auto-renewing)"/>
+    <message name="DEPOSIT_BUY_SUCCESS"
+             value="Congratulations! You opened new deposit! Your first day income is {count} {moneyType}."/>
+
+    <message name="DEPOSIT_DAYS_TITLE" value="Deposit profit schedule:"/>
+
+    <message name="BOSS_BATTLE_OFFER_TITLE" value="invites you to a fight with the boss:"/>
+    <message name="SUPER_BOSS_BATTLE_OFFER_TITLE" value="invites you to a fight with the superboss:"/>
+
+    <message name="SEARCHING_RANDOM_PARTNER" value="Please wait while server is searching for a teammate"/>
+    <message name="SEARCHING_RANDOM_PARTNER_TITLE" value="Looking for a teammate..."/>
+
+    <message name="SEC_LABEL" value="sec"/>
+    <message name="BATTLE_OP_REQUEST_TITLE" value="Waiting for the reply from:"/>
+    <message name="ENEMY_WAITING_MSG" value="Waiting for the enemy..."/>
+    <message name="BATTLE_REQUEST_MSG" value="Please wait while the server chooses an opponent"/>
+    <message name="BATTLE_REQUEST_TITLE" value="Challenge for a fight "/>
+    <message name="BATTLE_CANCEL_TITLE" value="Cancel combat"/>
+    <message name="BATTLE_REQUEST_BUSY" value="The player is in the middle of combat and can't accept your request."/>
+    <message name="BATTLE_LOGIN_TIMEOUT" value="Connection time to pvp server is exceeded, the fight was cancelled."/>
+    <message name="BATTLE_REQUEST_DECLINE" value="Your friend rejected the request. "/>
+    <message name="BATTLE_REQUEST_NOT_ONLINE" value="Your friend is not playing the game."/>
+    <message name="PVP_SERVER_CONNECTION_ERROR" value="Pvp server is not available."/>
+    <message name="PVP_SERVER_LOGIN_ERROR" value="Connection to PVP server failed."/>
+    <message name="PVP_SERVER_CONNECTION_CLOSED" value="Game was disconnected from PVP server."/>
+    <message name="PVP_SERVER_INCORRECT_BATTLE_ID" value="Unable to create battle: incorrect battle id!"/>
+    <message name="PVP_SERVER_BATTLE_CREATION_ERROR" value="Unable to create battle!"/>
+    <message name="PVP_SERVER_BANNED" value="User is banned"/>
+    <message name="RECONNECT_TIMEOUT" value="Pvp reconnection timeout"/>
+    <message name="YOUR_ID" value="Your ID:"/>
+    <message name="ENEMY_ID" value="Enemy's ID:"/>
+    <message name="ENTER_ID_FRIEND" value="Please enter the friend's ID"/>
+    <message name="ENTER_INCORRECT_ID_FRIEND" value="Given ID is incorrect"/>
+    <message name="CALL_TO_BATTLE_YOUSELF" value="You cannot fight to yourself"/>
+    <message name="ENTER_ID_FRIEND_IS_NOT_FRIEND" value="You've entered the ID of a user that is not your friend"/>
+    <message name="EXCEEDED_MAX_LENGTH" value="ID is too long"/>
+    <message name="TRY_AGAIN_BUTTON" value="Try again"/>
+    <message name="LOGIN_ERROR_TITLE" value="Internet access required!"/>
+    <message name="LOGIN_ERROR_MESSAGE">
+        <![CDATA[Wormix is an online game and requires Internet access. <br/>Please connect to the Internet and try again.]]></message>
+    <message name="MAIN_SERVER_CONNECTION_ERROR"
+             value="The server is under construction. Please, try to reconnect later."/>
+    <message name="MAIN_SERVER_CONNECTION_CLOSED">
+        <![CDATA[Connection to server is lost. <br/>Try to reconnect?]]></message>
+    <message name="PVP_SERVER_PROFILACTIC_WORK" value="The pvp server is under construction"/>
+    <message name="ENEMY_TURN_MSG" value="waiting for the enemy to complete their turn"/>
+    <message name="PVP_BATTLE_STUCK"
+             value="The fight was cancelled by the server, as there was no opponent activity for a long time "/>
+    <message name="PVP_BATTLE_UNSYNC" value="The fight was cancelled due to sync errors"/>
+    <message name="PVP_SERVER_DOWN" value="The PvP server is going to be reloaded. All bets will be refunded."/>
+    <message name="WAITING_FOR_OTHER_PLAYERS" value="Waiting for other players..."/>
+    <message name="CURRENT_USER_ALREADY_IN_BATTLE"
+             value="You're already in combat. Try to resend a request a bit later. If you see this error again, please, reload the game."/>
+    <message name="BATTLE_REQUEST_UNDEFINED_RESULT" value="Undefined error during the request."/>
+    <message name="BATTLE_REQUEST_ACCEPTED" value="Request accepted."/>
+    <message name="BATTLE_REQUEST_BANNED" value="The friend you are requesting has been banned."/>
+    <message name="BATTLE_REQUEST_TIMEOUT" value="Server response time limit exceeded."/>
+    <message name="BATTLE_REQUEST_CLIENT_ERROR" value="Your friend wasn't able to accept your request."/>
+    <message name="BATTLE_REQUEST_DISCONNECTED" value="Connection to PvP server failed during the request."/>
+    <message name="BATTLE_REQUEST_FRIEND_LACKS_MONEY" value="Your friend doesn't have enough money to join you!"/>
+    <message name="BATTLE_REQUEST_FRIEND_LACKS_LEVEL" value="Your friend's level is too low!"/>
+    <message name="BATTLE_REQUEST_EXCEED_BATTLES" value="Your friend doesn't have any battle tokens remaining!"/>
+    <message name="BATTLE_REQUEST_MISSION_LOCKED" value="Your friend cannot battle this boss!"/>
+    <message name="BATTLE_REQUEST_PLAYER_LACKS_MONEY" value="You don't have enough money!"/>
+    <message name="BATTLE_REQUEST_PLAYER_LACKS_LEVEL" value="Your level is too low for this battle!"/>
+    <message name="BATTLE_REQUEST_PLAYER_EXCEED_BATTLES" value="You don't have any battle tokens remaining!"/>
+    <message name="BATTLE_REQUEST_ARENA_IS_LOCKED"
+             value="This battle mode is closed at the moment, but it will become available in a few hours!"/>
+    <message name="BATTLE_REQUEST_TEAM_IS_SMALL" value="Your battle team is too small!"/>
+
+    <message name="BATTLE_RESULT_SAVING" value="Saving battle result on server"/>
+    <message name="WINNER_TITLE" value="Victory!"/>
+    <message name="LOOSER_TITLE" value="Defeat!"/>
+    <message name="DRAW_TITLE" value="Draw! "/>
+    <message name="OPPONENT_CHEATER" value="Your enemy was caught cheating"/>
+    <message name="OPPONENT_SURRENDER_TITLE" value="The opponent has capitulated!"/>
+    <message name="GO_EXP_LABEL" value="Experience received"/>
+    <message name="GO_BONUS_EXP_LABEL" value="Bonus experience"/>
+    <message name="GO_MONEY_LABEL" value="Money received"/>
+    <message name="GO_NEW_LEVEL" value="New level"/>
+    <message name="LEVEL_LABEL" value="Level"/>
+    <message name="BONUS" value="Bonus"/>
+    <message name="PROTOCOL_CHEATER" value="Error in game protocol."/>
+    <message name="FPS_CHEATER">
+        <![CDATA[The battle has been cancelled because of low performance. <br/>You may have kept the game minimized for a long time.]]></message>
+    <message name="SPEED_HACK_CHEATER">
+        <![CDATA[The battle was interrupted due to high latency. <br/>You may have kept the game minimized for a long time.]]></message>
+    <message name="SERVER_SAID_I_AM_CHEATER">
+        <![CDATA[The battle was cancelled because of the lack of commands from the client. <br/> Combat log was saved on the server.]]></message>
+    <message name="COIN_QTIP" value="Fuzzes"/>
+    <message name="RUBY_QTIP" value="Rubies"/>
+    <message name="PROMO_QTIP" value="Promo"/>
+    <message name="AVAILABLE_RUBIES_OFFERS_NAME" value="Special offer!"/>
+    <message name="AVAILABLE_RUBIES_OFFERS_DESCR" value="Get a FREE Rubies!"/>
+    <message name="AVAILABLE_FUZIES_OFFERS_NAME" value="Special offer!"/>
+    <message name="AVAILABLE_FUZIES_OFFERS_DESCR" value="Get a FREE FUZIES!"/>
+    <message name="NO_OFFERS" value="No new offers"/>
+    <message name="WINNER_RATING" value="Got rating"/>
+    <message name="WINNER_MONEY" value="Got money"/>
+    <message name="LOSED_RATING" value="Lost rating"/>
+    <message name="LOSED_MONEY" value="Lost money"/>
+    <message name="DISABLE_CHAT" value="Turn off chat"/>
+    <message name="CHAT_DISABLED" value="The chat is turned off "/>
+    <message name="ENABLE_CHAT" value="Turn on chat"/>
+    <message name="CHAT_ENABLED" value="The chat is turned on "/>
+    <message name="CHAT_CALL_TO_PVP" value="wants to call you for a fight!"/>
+    <message name="EXIT_BATTLE" value="Surrender?"/>
+    <message name="EXIT_BATTLE_MSG" value="Do you really want to surrender?"/>
+    <message name="POST_NEWS_TITLE" value="Public news"/>
+    <message name="EXP_QTIP" value="Current experience: {cur}/{max}"/>
+    <message name="HOUSE_QTIP" value="House"/>
+    <message name="NEWS_QTIP" value="News"/>
+    <message name="RATING_QTIP" value="Top Players"/>
+    <message name="MINIMAL_RATING_QTIP" value="Minimum rating required for award receiving"/>
+    <message name="BONUS_QTIP" value="You got a present!"/>
+    <message name="REACTION_QTIP" value="Reaction rate"/>
+    <message name="REACTION2_QTIP" value="Increase friend's reaction rate"/>
+    <message name="WIND_QTIP">
+        <![CDATA[Wind speed and direction <br/>Some kinds of weapon are influenced by the wind]]></message>
+    <message name="CHAT_QTIP" value="Chat"/>
+    <message name="BAG_QTIP" value="Armory "/>
+    <message name="FLAG_QTIP" value="Surrender"/>
+    <message name="SOUND_ON" value="Sound on"/>
+    <message name="SOUND_OFF" value="Sound off"/>
+    <message name="SOUND_LABEL" value="Sound"/>
+    <message name="MUSIC_ON" value="Music on"/>
+    <message name="MUSIC_OFF" value="Music off"/>
+    <message name="MUSIC_LABEL" value="Music"/>
+    <message name="PVP_IGNORE_MODE_ON" value="All PvP invitations are declined"/>
+    <message name="PVP_IGNORE_MODE_OFF" value="PvP invitations are allowed"/>
+    <message name="PVP_IGNORE_LABEL" value="PvP invites"/>
+    <message name="STATUS_ON" value="On"/>
+    <message name="STATUS_OFF" value="Off"/>
+    <message name="ENTER_FROM_CLOUD_LABEL" value="Enter from iCloud"/>
+    <message name="FULLSCREEN_ON" value="Fullscreen mode"/>
+    <message name="FULLSCREEN_OFF" value="Windowed mode"/>
+    <message name="FULLSCREEN_LABEL" value="Fullscreen"/>
+    <message name="ALLSOUND_QTIP" value="Sound and music on/off"/>
+    <message name="VOLUME_QTIP" value="Master volume (Ctrl + +/-)"/>
+    <message name="QUALITY_HIGH_QTIP" value="High quality"/>
+    <message name="QUALITY_MEDIUM_QTIP" value="Medium quality"/>
+    <message name="QUALITY_LOW_QTIP" value="Low quality"/>
+    <message name="PHOTO_QTIP" value="Photo (Ctrl + P)"/>
+    <message name="VIDEO_QTIP" value="Video (Ctrl + V)"/>
+    <message name="SCALE_QTIP" value="Zoom in/Zoom out (+/-)"/>
+    <message name="CONTAINS_RANDOM_WEAPON" value="Contains random weapon"/>
+    <message name="EXIT_QTIP" value="Exit"/>
+    <message name="SHOP_QTIP" value="Shop"/>
+    <message name="BANK_QTIP" value="Bank"/>
+    <message name="SETTINGS_QTIP" value="Settings"/>
+    <message name="VIP_QTIP" value="VIP-Account"/>
+    <message name="HOME_QTIP" value="Main menu"/>
+    <message name="DEPOSIT_QTIP" value="Your deposits!"/>
+    <message name="LEVEL_QTIP" value="Level"/>
+    <message name="TEAM_TITLE" value="Team"/>
+    <message name="CAN_HIRE_AT_LEVEL" value="Available from level {lvl}"/>
+    <message name="ARMORY_QTIP" value="Arsenal"/>
+    <message name="TEAM_QTIP" value="Team"/>
+    <message name="WARDROBE_QTIP" value="Wardrobe"/>
+    <message name="RACE_QTIP" value="Choice of the race"/>
+    <message name="ACHIEV_QTIP" value="Achievement points"/>
+    <message name="CRAFT_QTIP" value="Armory"/>
+
+
+    <message name="EQUIP_TAB" value="Equipment"/>
+    <message name="WARDROBE_REMOVE_ALL" value="Remove all"/>
+    <message name="WARDROBE_ARTIFACTS_TITLE" value="Artifacts"/>
+    <message name="WARDROBE_HATS_TITLE" value="Hats"/>
+    <message name="TAB_HIRE_FROM_CLAN" value="From clan"/>
+    <message name="TAB_HIRE_FRIEND" value="Friends"/>
+    <message name="TAB_HIRE_BOT" value="Mercenaries"/>
+    <message name="CLAN_TEAM_MEMBER_DESC">
+        <![CDATA[You get a clan mate with full equipment. You can have only one clan mate into team.<br>This unit becomes inactive, if either you or he leaves a clan.]]>
+    </message>
+    <message name="FRIEND_TEAM_MEMBER_DESC" value="Such friends teammate are added in team without any equips."/>
+    <message name="MERCENARY_TEAM_MEMBER_DESC" value="Mercenaries usually have high-quality gear, but it cannot be equipped by other fighters or used for crafting."/>
+    <message name="NO_PROFILES_FOR_ADD_TO_TEAM" value="There's no one you can hire."/>
+    <message name="MEMBER_SOCLAN_ALREADY_EXIST_LIMIT" value="You have maximal possible number of clan mates."/>
+    <message name="PUMP_REACTION_OK" value="Your friend got a +1 boost to reaction rate"/>
+    <message name="PUMP_REACTION_TODAY_ALREADY" value="You can increase friend's reaction rate only once per day."/>
+    <message name="PUMP_REACTION_ERROR" value="You cannot increase your own reaction rate!"/>
+    <message name="PUMP_REACTION_DAY_LIMIT" value="The daily reaction boost limit has been reached."/>
+    <message name="PUMP_REACTION_DAY_LIMIT_ADD"
+             value="You increased reaction rate for {count} friends from the chosen list."/>
+    <message name="SEARCH_NO_RESULTS" value="empty"/>
+    <message name="BAG_TITLE" value="Backpack"/>
+    <message name="RATING_TITLE" value="Top Players"/>
+    <message name="RATING_POS_LABEL" value="place"/>
+    <message name="RATING_TO_DAY" value="Today"/>
+    <message name="RATING_YESTERDAY" value="Yesterday"/>
+    <message name="RATING_ALL_TIME" value="All time"/>
+    <message name="RATING_BATTLES_ALL" value="All"/>
+    <message name="RATING_BATTLES_BET_SMALL" value="Bet 15"/>
+    <message name="RATING_BATTLES_BET_MED" value="Bet 50"/>
+    <message name="RATING_BATTLES_BET_BIG" value="Bet 300"/>
+    <message name="RATING_BTN_2х2" value="2х2"/>
+    <message name="RATING_BTN_2х2_FRIEND" value="Team 2х2"/>
+    <message name="LOWER_RATING_LEAGUE" value="League of Novices"/>
+    <message name="VETERAN_RATING_LEAGUE" value="League of Veterans"/>
+    <message name="FIGHTER_RATING_LEAGUE" value="League of Fighters"/>
+    <message name="MASTER_RATING_LEAGUE" value="League of Masters"/>
+    <message name="ACE_RATING_LEAGUE" value="League of Aces"/>
+    <message name="RUBY_RATING_LEAGUE" value="Ruby League"/>
+    <message name="MIN_RATING" value="Minimal rating:"/>
+    <message name="NOT_ENOUGH_RATING_TITLE" value="Join the ranks of best players!"/>
+    <message name="NOT_ENOUGH_RATING_DESCR" value="You have to score 10 rating points to join the League of Novices."/>
+    <message name="HELP_TITLE" value="Controls"/>
+    <message name="BONUS_EXP" value="exp"/>
+    <message name="BONUS_FUZY" value="coins +"/>
+    <message name="BONUS_HOLIDAYS_TITLE" value="Holiday bonus!"/>
+    <message name="BONUS_HOLIDAYS_DEFAULT_MSG">
+        <![CDATA[<b>Congratulations!<br>Read more in the official group <font color="#0033FF"><a href="{club_link}" target="_blank">{club_text}</a></font></b>]]></message>
+    <message name="DAILY_BONUS_TITLE" value="Daily Bonus Reward!"/>
+    <message name="DAILY_BONUS_CONGRATZ" value="Congratulations! Your daily bonus:"/>
+    <message name="DAILY_BONUS_TEXT" value="Visit us every day to maintain your bonus streak!"/>
+    <message name="DAILY_BONUS_DAY" value="Day"/>
+    <message name="DEPOSIT_OVERALL_TITLE" value="Summary for 5 days"/>
+    <message name="DEPOSIT_INCOME_TITLE" value="Your deposits!"/>
+    <message name="DEPOSIT_INCOME_MSG" value="How nice to receive income from deposits every day!"/>
+    <message name="COLLECT" value="Collect"/>
+    <message name="NEED_RUBY_TITLE" value="Need rubies"/>
+    <message name="NEED_RUBY_BUTTON1_TEXT" value="Invite a friend"/>
+    <message name="NEED_RUBY_BUTTON2_TEXT" value="Be the first to visit their house!"/>
+    <message name="NEED_RUBY_BUTTON3_TEXT" value="Get one or more rubies"/>
+    <message name="NEED_RUBY_BUTTON4_TEXT" value="Invite friends"/>
+    <message name="NEED_RUBY_CHECKBOX_TEXT" value="I don't need free rubies, don't show this window again"/>
+    <message name="NO_FIVE_DAY_TITLE" value="Search"/>
+    <message name="NO_FIVE_DAY_DESCR"
+             value="Your friend hasn't entered the game for more than 2 months! Unfortunately, you haven't found anything."/>
+    <message name="RANDOM_MAP" value="Random map "/>
+    <message name="SELECT_RANDOM_MAP" value="Choose random map"/>
+    <message name="SELECT_MAP_TITLE" value="Choice of map"/>
+    <message name="MAP_TITLE" value="Map:"/>
+    <message name="MAP.LIBERTY" value="The statue of Liberty"/>
+    <message name="MAP.CREAM" value="Training polygon"/>
+    <message name="MAP.SAND" value="Sandbox"/>
+    <message name="MAP.SIGNS" value="Signs"/>
+    <message name="MAP.BAMBOO" value="Bamboos "/>
+    <message name="MAP.FRUITS" value="Fruit"/>
+    <message name="MAP.DINO" value="Islands"/>
+    <message name="MAP.BAMBOO_NEW" value="Bamboos 2"/>
+    <message name="MAP.PIRATE" value="Pirate Island "/>
+    <message name="MAP.TREES" value="Enchanted forest "/>
+    <message name="MAP.CHUDO" value="Miracle Yudo"/>
+    <message name="MAP.MOUSE" value="Mouse"/>
+    <message name="MAP.CHRISTMAS" value="New Year"/>
+    <message name="MAP.TRAIN" value="Train"/>
+    <message name="MAP.VILLA" value="Villa "/>
+    <message name="MAP.CAKE" value="Happy birthday"/>
+    <message name="MAP.DOSERS" value="Bulldozers "/>
+    <message name="MAP.TEA_PARTY" value="Tea party"/>
+    <message name="MAP.LAB_PAST" value="Laboratory"/>
+    <message name="MAP.ASTEROID_BATTLE" value="Asteroid"/>
+    <message name="MAP.PUMPKINS" value="Pumpkins"/>
+    <message name="MAP.HELL" value="Hell"/>
+    <message name="MAP.WILDWEST" value="Wild west"/>
+    <message name="MAP.MYSTERIOUS_ISLAND" value="Mysterious island"/>
+    <message name="MAP.GLADE_NEW" value="Lawn"/>
+    <message name="MAP.DINO_BONES" value="Dino-Bones"/>
+    <message name="MAP.COPPER_MOUNTAIN" value="Copper mountain"/>
+    <message name="MAP.DRACULA" value="Dracula"/>
+    <message name="MAP.HOGWARTS" value="Hogwarts"/>
+    <message name="MAP.ABORIGINE" value="Aborigine"/>
+    <message name="MAP.BEACH" value="Beach"/>
+    <message name="MAP.UNDERWATER" value="Underwater world"/>
+    <message name="MAP.PARADISE" value="Paradise"/>
+    <message name="MAP.WAR" value="Battle"/>
+    <message name="MAP.BASKETBALL" value="Basketball"/>
+    <message name="MAP.SAWMILL" value="Sawmill"/>
+    <message name="MAP.ROCK" value="Rock"/>
+    <message name="MAP.ARSENAL" value="Arsenal"/>
+    <message name="MAP.ITALY" value="Italy"/>
+    <message name="MAP.FASTFOOD" value="Fast food"/>
+    <message name="MAP.JUNGLE" value="Jungle"/>
+    <message name="MAP.RETRO" value="Retro"/>
+    <message name="MAP.SPONGEBOB" value="Sponge Bob"/>
+    <message name="MAP.HELLOWEEN" value="Halloween"/>
+    <message name="MAP.LONDON" value="London"/>
+    <message name="MAP.CASTLE" value="Castle"/>
+    <message name="MAP.FROZEN_DRAGON" value="Frozen Dragon"/>
+    <message name="MAP.GLACIER" value="Glacier"/>
+    <message name="MAP.VIKING" value="Vikings"/>
+    <message name="MAP.CONGELATION" value="Congelation"/>
+    <message name="MAP.SIEGE" value="Siege"/>
+    <message name="MAP.NAVAL_BATTLE" value="Naval battle"/>
+    <message name="MAP.SEA_FORT" value="Sea fort"/>
+    <message name="MAP.PIRATE_BAY" value="Pirate bay"/>
+    <message name="MAP.LAGOON" value="Lagoon"/>
+    <message name="MAP.KRAKEN" value="Kraken"/>
+    <message name="MAP.THREE_ISLANDS" value="Three islands"/>
+    <message name="MAP.CRADLE" value="Cradle"/>
+    <message name="MAP.CRASH" value="Crash"/>
+    <message name="MAP.DUNGEON" value="Dungeon"/>
+    <message name="MAP.ENDLESS_DESERT" value="Endless desert"/>
+    <message name="MAP.FOREST_HUT" value="Forest hut"/>
+    <message name="MAP.MANIAC" value="Maniac"/>
+    <message name="MAP.VALLEY_MILLS" value="Valley of mills"/>
+    <message name="MAP.ROAD_RACES" value="Road race"/>
+    <message name="MAP.HIGHWAY" value="Highway"/>
+    <message name="MAP.GAS_STATION" value="Gas station"/>
+    <message name="MAP.ABANDONED_MINES" value="Abandoned mines"/>
+    <message name="MAP.CITY_MINERS" value="Miners town"/>
+    <message name="MAP.ESCAPE" value="Escape"/>
+    <message name="MAP.FISHING_VILLAGE" value="Fishing village"/>
+    <message name="MAP.VILLAGE" value="Village"/>
+    <message name="MAP.APOCALYPSE" value="Apocalypse"/>
+    <message name="MAP.CHURCH" value="Church"/>
+    <message name="MAP.DARK_KNIGHT" value="Dark tower"/>
+    <message name="MAP.PRISON" value="Prison"/>
+    <message name="MAP.ZEON" value="Zeon"/>
+    <message name="MAP.ESTATE" value="Estate"/>
+    <message name="MAP.PSIONIC" value="Psykers"/>
+    <message name="MAP.DRUID" value="Druids grove"/>
+    <message name="MAP.MARS" value="Mars"/>
+    <message name="MAP.MUSHROOMS" value="Mushrooms"/>
+    <message name="MAP.SATURN" value="Saturn"/>
+    <message name="MAP.ASSASIN" value="Avatar"/>
+    <message name="MAP.HALLOWEEN2" value="Halloween 2"/>
+    <message name="MAP.SNOWOODS" value="Snowoods"/>
+    <message name="MAP.ARCHBOT" value="Persia"/>
+    <message name="MAP.JARL" value="Villa 2"/>
+    <message name="MAP.MINES2" value="Mines"/>
+    <message name="MAP.LIANAS" value="Lianas"/>
+    <message name="MAP.BARBARIANS" value="Barbarians"/>
+    <message name="MAP.CASTLES2" value="Castles 2"/>
+    <message name="MAP.OLDLONDON" value="Old London"/>
+    <message name="MAP.NEWJUNGLE" value="New jungle"/>
+    <message name="MAP.GRAVEYARD" value="Graveyard"/>
+    <message name="MAP.PRERIE" value="Prairie"/>
+    <message name="MAP.TOTEM" value="Totem"/>
+    <message name="MAP.RIFT" value="Rift"/>
+    <message name="MAP.JUNGLETOP" value="Jungle top"/>
+    <message name="MAP.FARM" value="Farm"/>
+    <message name="MAP.BLADES" value="Blades"/>
+    <message name="MAP.TWINPEAKS" value="Twin peaks"/>
+    <message name="MAP.CAVE" value="Deep cave"/>
+    <message name="MAP.GRASSEDRUINS" value="Overgrown ruins"/>
+    <message name="MAP.CHASM" value="Chasm"/>
+    <message name="MAP.CROSSING" value="Crossing"/>
+    <message name="MAP.DAYOFTHEDEAD" value="Arriva"/>
+    <message name="MAP.MUERTO" value="Muerto"/>
+    <message name="MAP.FROZEN_ISLAND" value="Frozen island"/>
+    <message name="MAP.FROZEN_BAY" value="Frozen bay"/>
+    <message name="MAP.ICE_JUNGLE" value="Ice jungles"/>
+    <message name="MAP.SWAMP" value="Wild swamp"/>
+    <message name="MAP.SWAMP_HUT" value="Swamp hut"/>
+    <message name="MAP.DEEPSPACE" value="Deep space"/>
+    <message name="MAP.TRAIN2" value="Train 2"/>
+    <message name="MAP.MINING" value="Excavation"/>
+    <message name="MAP.LAUNCH" value="Launch"/>
+    <message name="MAP.BIOM" value="Biome"/>
+    <message name="MAP.PROJECTX" value="Project-X"/>
+    <message name="MAP.TUNNELS" value="Tunnels"/>
+    <message name="MAP.NIGHTLANDFILL" value="Night dump"/>
+    <message name="MAP.PROJECTX_RACE" value="Project X base"/>
+    <message name="MAP.PROJECTX_RACE_LAB" value="Project X laboratory"/>
+    <message name="MAP.CASTLES3" value="Castles 3"/>
+    <message name="MAP.YETI" value="Yeti"/>
+    <message name="MAP.ICEBERG" value="Iceberg"/>
+    <message name="MAP.SHARKS" value="Sharks"/>
+    <message name="MAP.BIGSNAKE" value="Big snake"/>
+    <message name="MAP.NIGHTMONSTERS" value="Night monsters"/>
+    <message name="MAP.SHIP_GRAVEYARD" value="Ship graveyard"/>
+    <message name="MAP.DUMP" value="Huge dump"/>
+    <message name="MAP.DRAGON_BATTLE" value="Battle of dragons"/>
+
+    <message name="RACE_TITLE" value="Choice of the race"/>
+    <message name="RACE_UNAVAILABLE" value="Selection of this race is not allowed"/>
+    <message name="RACE_BOXER_NAME" value="Boxer"/>
+    <message name="RACE_BOXER_DESCR"
+             value="Soldiers, whose health is tempered in fights. Legends are told about hardness of their skulls"/>
+    <message name="RACE_DEMON_NAME" value="Demon"/>
+    <message name="RACE_DEMON_DESCR"
+             value="Demons are cruel soldiers, devoted to their master, they don't know mercy."/>
+    <message name="RACE_RABBIT_NAME" value="Rabbit"/>
+    <message name="RACE_RABBIT_DESCR"
+             value="Rabbits are fast as lightning. Their belief in the Great Carrot allows them to heal their wounds right on the battlefield."/>
+    <message name="RACE_ZOMBIE_NAME" value="Zombie"/>
+    <message name="RACE_ZOMBIE_DESCR"
+             value="Zombies - living corpses controlled by an alien will. Emotionless and resistant to pain, they'll bring you total victory."/>
+    <message name="RACE_CAT_NAME" value="Cat"/>
+    <message name="RACE_CAT_DESCR"
+             value="Cats are cunning and skillful tricksters, they always have something up their sleeves to surpirse their enemy."/>
+    <message name="RACE_DRAGON_NAME" value="Dragon"/>
+    <message name="RACE_DRAGON_DESCR"
+             value="Nobody believed in them. Everyone thought they were simply a fairy tale. But they returned, wielding fire! Real. Flying ... Dragons!"/>
+    <message name="RACE_ROBOT_NAME" value="Robot"/>
+    <message name="RACE_ROBOT_DESCR"
+             value="Swarm of mechanical bots joined the combat! There steel brains know no mercy. The enemy will flee in terror."/>
+    <message name="RACE_NO_WORMS"
+             value="You won't be able to switch back to the {raceName} race. All of your hats will be usable without any restrictions"/>
+    <message name="ABILITIES_LABEL" value="Abilities"/>
+    <message name="NO_ABILITIES" value="absent"/>
+    <message name="ABILITY_ARMOR_NAME" value="Hard skull"/>
+    <message name="ABILITY_ARMOR_DESCR"><![CDATA[A character gets permanent <b>+1</b> armor points each <b>3</b> levels (maximum +10).]]></message>
+    <message name="ABILITY_HP_NAME" value="Mighty health"/>
+    <message name="ABILITY_HP_DESCR"><![CDATA[ Permanent <b>{hpPct}% health bonus</b>.]]></message>
+    <message name="ABILITY_UNDERWATER_NAME" value="Underwater breath"/>
+    <message name="ABILITY_UNDERWATER_DESCR" value="A hero drowns until it has ground under them."/>
+    <message name="ABILITY_POISON_NAME" value="Lethal poison"/>
+    <message name="ABILITY_POISON_DESCR"><![CDATA[Poison deals <b>{value}% more damage</b>.]]></message>
+    <message name="ABILITY_SPEED_NAME" value="Mobility"/>
+    <message name="ABILITY_SPEED_DESCR">
+        <![CDATA[Rabbits have a +6 speed bonus and an extra jump. They can also perform a powered jump by simultaneously pressing the up arrow or the snail button and the jump button.]]></message>
+    <message name="ABILITY_REGEN_NAME" value="Regeneration"/>
+    <message name="ABILITY_REGEN_DESCR"
+             value="When the hare's health drops below 75%, it will begin to nervously nibble on a carrot, restoring health at the end of each of its team's turns."/>
+    <message name="ABILITY_REVIVAL_NAME" value="Revival"/>
+    <message name="ABILITY_REVIVAL_DESCR"
+             value="Enemies slain by zombie return from the graves to fight their former comrades!"/>
+    <message name="ABILITY_DMGREDUCTION_NAME" value="Unstoppable"/>
+    <message name="ABILITY_DMGREDUCTION_DESCR"
+             value="It's bad idea to try to destroy zombies by regular bullets! All damage done to them is reduced by {dmgReduction}."/>
+    <message name="ABILITY_REVENGE_NAME" value="Zombie curse"/>
+    <message name="ABILITY_REVENGE_DESCR"
+             value="When a zombie is killed, a bolt of negative energy is unleashed upon its slayer. The bolt does minor damage and places a poison."/>
+    <message name="ABILITY_CLIMBING_NAME" value="Cat's grace"/>
+    <message name="ABILITY_CLIMBING_DESCR" value="Cats can climb any walls! Press the jump key twice to take hold."/>
+    <message name="ABILITY_PHASING_NAME" value="Cat's luck"/>
+    <message name="ABILITY_PHASING_DESCR"
+             value="When the cat is running out of health, it gets a chance to avoid any damage."/>
+    <message name="ABILITY_FLYING_NAME" value="Flight of dragon"/>
+    <message name="ABILITY_FLYING_DESCR" value="Dragons can swing up into the air and soar for a long distance."/>
+    <message name="ABILITY_FIERY_PACE_NAME" value="Fiery pace"/>
+    <message name="ABILITY_FIERY_PACE_DESCR"
+             value="Dragons leave a trail of embers which ignite on the next turn, damaging any enemy that steps on them. Use dragon flames to defrost frozen allies!"/>
+    <message name="ABILITY_SHOCK_NAME" value="Static charge"/>
+    <message name="ABILITY_SHOCK_DESCR"
+             value="Deals damage and throw away enemies, which end a turn near robot or attack him in close combat."/>
+    <message name="ABILITY_MARK_NAME" value="Combat analysis"/>
+    <message name="ABILITY_MARK_DESCR" value="Reduces the armor of the last attacked target by 20%."/>
+    <message name="ABILITY_DROID_NAME" value="Defensive droid"/>
+    <message name="ABILITY_DROID_DESCR"
+             value="Personal defensive droid, which is created at the beginning of robot's turn and lasts till his next turn. In 3 seconds after enemy gets close, the droid emits a charge which breaks enemy's turn. Droid can be destroyed by any attack."/>
+    <message name="BUTTON_OK" value="OK"/>
+    <message name="BUTTON_YES" value="Yes"/>
+    <message name="BUTTON_CANCEL" value="Cancel"/>
+    <message name="BUTTON_CLOSE" value="Close"/>
+    <message name="BUTTON_HIRE" value="Hire!"/>
+    <message name="BUTTON_BUY" value="Buy"/>
+    <message name="BUTTON_RESET" value="Reset"/>
+    <message name="BUTTON_SELECT" value="Choose"/>
+    <message name="BUTTON_PUBLISH" value="Publish"/>
+    <message name="BUTTON_SEND" value="Send"/>
+    <message name="BUTTON_REQUEST" value="Call!"/>
+    <message name="BUTTON_ARENA" value="To arena"/>
+    <message name="BUTTON_BALLS" value="Distribute points"/>
+    <message name="BUTTON_CREATE" value="Create"/>
+    <message name="BUTTON_NEW_PROFILE" value="Restart"/>
+    <message name="BUTTON_ASK_FRIEND" value="Ask friend"/>
+    <message name="BUTTON_ASK_FRIEND2" value="Friend's help"/>
+    <message name="BUTTON_RESTART" value="Restart"/>
+    <message name="BUTTON_SELECT_MAP" value="Select map"/>
+    <message name="BUTTON_NEXT_FIGHT" value="Next fight"/>
+    <message name="BUTTON_TO_MENU" value="To menu"/>
+    <message name="BUTTON_LOAD" value="Load"/>
+    <message name="BUTTON_OVERWRITE" value="Overwrite"/>
+    <message name="BUTTON_SOLO_PLAY" value="Play solo"/>
+    <message name="BUTTON_ON" value="On"/>
+    <message name="BUTTON_OFF" value="Off"/>
+    <message name="BUTTON_INFO" value="Info"/>
+    <message name="BUTTON_IMPROVE" value="Improve"/>
+    <message name="BUTTON_LEAVE" value="Leave"/>
+    <message name="BUTTON_EDIT" value="Configure"/>
+    <message name="BUTTON_INCREASE" value="Increase"/>
+
+    <message name="BATTLE_INIT" value="Initializing"/>
+    <message name="BATTLE_INIT_POS" value="Arranging positions"/>
+    <message name="BATTLE_INIT_MAP" value="Initializing level"/>
+    <message name="BATTLE_LOAD_MAP_CONFIG" value="Downloading level parameters"/>
+    <message name="BATTLE_LOAD_MAP" value="Downloading level data"/>
+    <message name="BATTLE_ENEMY_DATA_LOAD" value="Downloading enemy profile"/>
+    <message name="BATTLE_PVP_LOGIN" value="Authorizing"/>
+    <message name="BATTLE_MISSION_LOAD" value="Downloading mission data"/>
+    <message name="BATTLE_PVP_CONNECT" value="Connecting to pvp server"/>
+    <message name="BATTLE_CLEARING" value="Clearing battle data"/>
+    <message name="GRENADE_TIMER" value="Explosion in {counter} sec."/>
+    <message name="CROSSHAIR_TOO_HIGH" value="Too high!"/>
+    <message name="GIRDER_IMPOSSIBLE" value="Girder can't be placed on the ground or in the vicinity of any units"/>
+    <message name="TELEPORT_IMPOSSIBLE" value="Unit can't be teleported in that location!"/>
+    <message name="ALREADY_BANDAGED" value="This unit is bandaged already!"/>
+    <message name="ALREADY_ANTITOXIN" value="Antitoxin's already used on this unit!"/>
+    <message name="BANDAGE_USELESS" value="Bandage is useless at the moment!"/>
+    <message name="INVITE_FRIENDS_TEXT" value="Try Wormix!"/>
+    <message name="NOTE_TITLE" value="Note"/>
+    <message name="NOTE_TITLE_WINNER" value="Wormix-report. Victory! Enemy {name}"/>
+    <message name="NOTE_TITLE_LOOSER" value="Wormix-report. Defeat. Enemy {name}"/>
+    <message name="NOTE_TITLE_DRAW_GAME" value="Wormix-report. Draw. Enemy {name}"/>
+    <message name="NOTE_BODY">
+        <![CDATA[<b>My team:</b> {my_team_descr}. <br/> <b>Enemy team:</b> {opponent_team_descr}.]]></message>
+    <message name="NOTE_LEVEL" value="Level "/>
+    <message name="TITLE_ADD_NOTE" value="Note saving "/>
+    <message name="NOTE_ADD_SUCCESS" value="The note has been successfully saved and it will appear on your page "/>
+    <message name="NOTE_ADD_ERROR" value="An error occurred while saving your note "/>
+    <message name="CREATE_NOTE_BTN" value="In the note "/>
+    <message name="NOTE_BALLS_ATTENTION" value="You've got new stat points!"/>
+    <message name="VIRAL_NEW_LEVEL" value="I reached {level} level in Wormix !"/>
+    <message name="VIRAL_LETSFIGHT" value="My rating in Wormix: {rating}. I am ready to fight!"/>
+    <message name="WINNER_STATUS" value="I have defeated {opponent} in Wormix!!!"/>
+    <message name="STATUS_TEXT"
+             value="Do you yearn for new battles? Choose one of the following positions and your friends will respond!"/>
+    <message name="NEWS_SUBTITLE" value="Your &quot;Wormix Times&quot;"/>
+    <message name="STATUS_CALL_REQUEST_0" value="Enter Wormix. I will break anyone!"/>
+    <message name="STATUS_CALL_REQUEST_1" value="Who wants to fight in Wormix? I am ready"/>
+    <message name="STATUS_CALL_REQUEST_2" value="My bazooka yearns for blood! See you in Wormix!"/>
+    <message name="STATUS_CALL_REQUEST_3" value="I am expecting a challenge to a duel in Wormix!"/>
+    <message name="NEWS_SUBTITLE" value="Your &quot;Wormix Times&quot;"/>
+    <message name="SYSPVP_OPPONENT_OUT" value="Player %1 wasn't able to reconnect"/>
+    <message name="SYSPVP_INACTIVITY_DROP" value="Player %1 is dropped due to inactivity"/>
+    <message name="SYSPVP_UNCONFIRMED_EOT" value="Player %1 hasn't confirmed the end of their turn"/>
+    <message name="SYSPVP_OPPONENT_SURRENDER" value="Player %1 has surrendered"/>
+    <message name="SYSPVP_OPPONENT_CHEATER" value="Player %1 was dropped by server"/>
+    <message name="SYSPVP_OPPONENT_LOST_CONNECTION" value="Player %1 disconnected"/>
+    <message name="SYSPVP_OPPONENT_RETURNED" value="Player %1 reconnected"/>
+    <message name="SYSPVP_PLAYER_REPEATED_COMMAND" value="Repeated command from player %1"/>
+    <message name="SYSPVP_PLAYER_SKIPPED_COMMAND" value="Player %1 missed a command"/>
+    <message name="SYSPVP_LONG_TURN" value="The time limit will soon be exceeded!"/>
+    <message name="SYSPVP_UNDEFINED" value="Undefined system message"/>
+    <message name="SYSPVP_NEW_TURN" value="Battle #%1, turn #%2 (%3)"/>
+    <message name="SYSPVP_PLAYER_WIPED" value="Player %1 is destroyed!"/>
+    <message name="RATING_TO_DAY" value="Today"/>
+    <message name="RATING_YESTERDAY" value="Yesterday"/>
+    <message name="RATING_ALL_TIME" value="All time"/>
+    <message name="DESCR_LOWER_RATING_LEAGUE"
+             value="In the world of Wormix there are no secrets or tricks. Opponents respect each other and don't cheat. Do you believe this? Really? This is your league. You are a novice."/>
+    <message name="DESCR_FIGHTER_RATING_LEAGUE"
+             value="The first rule of Fight league is to point the barrel of the gun at the enemy. Just a little more and you'll learn the secret of success."/>
+    <message name="DESCR_VETERAN_RATING_LEAGUE" value="Since now you know that Wormix's secret is a really big gun."/>
+    <message name="DESCR_MASTER_RATING_LEAGUE"
+             value="Willpower - that's what makes difference between master and novice. Only incredible willpower keeps you from gloating, while you push your enemy into the water on the first turn."/>
+    <message name="DESCR_ACE_RATING_LEAGUE"
+             value="You choose the weapon, not just to win, but to make it spectacular."/>
+    <message name="DESCR_RUBY_RATING_LEAGUE"
+             value="Only stars are higher than you. And underneath there are stars too. Because it is the Ruby league - everyone is a star here."/>
+    <message name="MASSIVE_DAMAGE" value="Monster!"/>
+    <message name="DOUBLE_KILL" value="Double kill!"/>
+    <message name="TRIPPLE_KILL" value="Tripple kill!"/>
+    <message name="ULTRA_KILL" value="Total annihilation!"/>
+    <message name="DODGED_DAMAGE" value="dodge"/>
+    <message name="ATTRIBUTES_BONUS" value="attributes {symbol}{value}"/>
+    <message name="LITTLE_COUNT_POINTS" value="You need {balance} achievement points"/>
+    <message name="NEDD_AWARD_MSG" value="To unlock this equipment, you have to take rewards on previous levels"/>
+    <message name="NEDD_AWARD" value="Rewards required: {difLevel}"/>
+    <message name="RESET_AWARDS_MSG" value="Do you really want to reset awards for rubies?"/>
+    <message name="RESET_FOR" value="Reset for"/>
+    <message name="BTN_GREAT" value="Great!"/>
+    <message name="BTN_SHARE_NAME" value="Tell friends"/>
+    <message name="WIN_GAME_SHARE" value="Post on wall"/>
+    <message name="NO_KEYS_IN_SEARCH_HOUSE" value="no keys!"/>
+    <message name="HINT_KEY_COUNT" value="{count} keys left"/>
+    <message name="ACTIVITY_СALL_TO_PVP" value="My rating in Wormix: {rating}. {name}, come on, let's fight!"/>
+    <message name="ACTIVITY_СALL_TO_PVP_NO_RATING" value="{name}, come on, let's fight!"/>
+    <message name="OPENING_SOON" value="Opening soon!"/>
+    <message name="BOSS_GAMEOVER_TITLE_1" value="Victory!"/>
+    <message name="BOSS_GAMEOVER_TITLE_2" value="Villain has fallen!"/>
+    <message name="BOSS_GAMEOVER_BONUS_DESCRIPTION"
+             value="It was a hard fight, but you prevailed! Here is the reward you deserve:"/>
+    <message name="BOSS_GAMEOVER_REWARD_DESCRIPTION" value="Captured weapons and equipment:"/>
+    <message name="BOSS_GAMEOVER_TROPHY" value="* Captured temporary items will expire in a few hours"/>
+    <message name="WIN_GAMEOVER_BOSS_MESSAGE" value="{userName} defeated {bossName}"/>
+    <message name="TUTORIAL_COMPLETE_MESSAGE" value="Training '{name_mission}' completed!"/>
+    <message name="DESCR_REWARD_BOSS_INFO_FIRST_COMPLETE" value="Reward for the first victory:"/>
+    <message name="DESCR_REWARD_BOSS_INFO" value="Reward:"/>
+    <message name="BATTLE_BOSS_BTN" value="Fight!"/>
+    <message name="ONE_DAY_PANEL_NAME" value="Hooray! Victory! Now it's time to rest.."/>
+    <message name="ONE_DAY_PANEL_DESCR" value="You can complete only one adventure every day."/>
+    <message name="ONE_DAY_PANEL_RETURN_TOMORROW" value=" Come back tomorrow!"/>
+    <message name="HELP_LEARNING_MISSION_ITEM_MENU"
+             value="We strongly recommend that you complete your training before rushing to a real battle."/>
+    <message name="LEVEL_NOT_APPROPRIATE_PANEL_NAME" value="You are brave! But that's not enough.."/>
+    <message name="LEVEL_NOT_APPROPRIATE_PANEL_DESCR" value="Your level is too low for such serious battles!"/>
+    <message name="BOSS_GAMEOVER_LOSE_TITLE_2" value="Villain has defeated you!"/>
+    <message name="BOSS_GAMEOVER_LOSE_DESCR_1" value="This time your enemy is victorious! But next time"/>
+    <message name="BOSS_GAMEOVER_LOSE_DESCR_2" value="You're going to win!"/>
+    <message name="LOSE_GAMEOVER_BOSS_MESSAGE" value="Boss {bossName} turned out to be stronger than {userName}"/>
+    <message name="BOSS_GAMEOVER_DRAW_TITLE_2" value="Time to step back!"/>
+    <message name="BOSS_GAMEOVER_DRAW_DESCR"
+             value="This is quite uncommon, but both powers are equal! It's time to withdraw and rest."/>
+    <message name="DRAW_GAMEOVER_BOSS_MESSAGE"
+             value="This is quite uncommon, but both your powers are equal. Time to step back and rest."/>
+    <message name="COOPERATIVE_WIN_GAMEOVER_SUPERBOSS_MESSAGE"
+             value="{userName} and {friendName} defeated superboss {bossName} + {bossName2}"/>
+    <message name="WIN_GAMEOVER_SUPERBOSS_MESSAGE" value="{userName} defeated superboss {bossName} + {bossName2}"/>
+    <message name="COOPERATIVE_LOSE_GAMEOVER_SUPERBOSS_MESSAGE"
+             value="Superboss {bossName} + {bossName2} turned out to be stronger than I and {friendName}"/>
+    <message name="LOSE_GAMEOVER_SUPERBOSS_MESSAGE"
+             value="Superboss {bossName} + {bossName2} turned out to be stronger than {userName}"/>
+    <message name="COOPERATIVE_WIN_GAMEOVER_BOSS_MESSAGE" value="{userName} and {friendName} defeated boss {bossName}"/>
+    <message name="COOPERATIVE_LOSE_GAMEOVER_BOSS_MESSAGE"
+             value="Boss {bossName} turned out to be stronger than I and {friendName}"/>
+
+    <message name="NO_PATH_TEXT" value="You cannot attack this boss now, you must clear the path first"/>
+    <message name="BONUS_ATTACK" value="+{value} to attack"/>
+    <message name="BONUS_ARMOR" value="+{value} to armor"/>
+    <message name="HEAL_BONUS" value="Healing bonus"/>
+    <message name="REDUCTION_SHOCK" value="Shock protection"/>
+    <message name="ATTACK_SHOCK" value="Shock damage"/>
+    <message name="INCREASE_AIR_DAMAGE" value="Air strikes"/>
+    <message name="AIR_REDUCTION" value="Air defense"/>
+
+
+    <message name="TITLE_CONFIRMATION" value="Confirmation"/>
+    <message name="UNLOCK_BOSS_PANEL_TEXT" value="Are you sure you want to unlock this boss?"/>
+    <message name="UNLOCK_BOSS_RESULT_TITLE" value="Confirmation"/>
+    <message name="UNLOCK_BOSS_RESULT_SUCCESS" value="Boss successfully unlocked!"/>
+    <message name="UNLOCK_BOSS_RESULT_ERROR" value="Erorr occured! Code: {code}"/>
+    <message name="UNLOCK_BOSS_TEXT" value="Unlock"/>
+    <message name="BACK_BTN" value="back"/>
+    <message name="SUCCESS_SEND" value="Message sent successfully"/>
+    <message name="MOVE_TEAMMATE_HINT" value="Change turn order"/>
+    <message name="RETURN_FRIEND_BTN_QTIP" value="Return a friend"/>
+    <message name="RETURN_FRIENDS_MENU_TITLE" value="Return friends!"/>
+    <message name="RETURN_FRIENDS_MENU_MSG"
+             value="Nobody to invite back, all your friends are actively playing! Kudos!"/>
+    <message name="NOTIFY_RETURN_FRIEND" value="Don't hesitate, return to Wormix! And get your reward!"/>
+    <message name="RETURN_FRIENDS_MENU_BTN" value="Return!"/>
+    <message name="RETURN_FRIENDS_MENU_DESCR_1" value="Ask your friends to return to Wormix!"/>
+    <message name="RETURN_FRIENDS_MENU_DESCR_2"
+             value="You'll get this reward for each friend, who accepts your invitation and returns to the game:"/>
+    <message name="RETURN_FRIENDS_MENU_LABEL_1" value="Invite back:"/>
+    <message name="RETURN_FRIENDS_MENU_LABEL_2" value="Reward:"/>
+    <message name="RETURN_FRIENDS_MENU_DISABLE_TEXT_BTN" value="sent"/>
+    <message name="RETURN_FRIEND_REWARD_MENU_DESCR_1"
+             value="Did you bring back a friend? Get your well deserved reward!"/>
+    <message name="RETURN_FRIEND_REWARD_MENU_DESCR_2" value="Welcome back!"/>
+    <message name="RETURN_FRIEND_REQUEST_MENU_TITLE" value="Welcome back!"/>
+    <message name="RETURN_FRIEND_REQUEST_MENU_DESCR" value="Thank your friend that brought you back to the game!"/>
+    <message name="RETURN_FRIEND_REQUEST_CELL_DESCR" value="invites you back to Wormix!"/>
+    <message name="RETURN_FRIEND_REQUEST_CELL_BTN" value="Send!"/>
+    <message name="REAGENTS_QTIP" value="Resources"/>
+    <message name="RETURN_FRIEND_REQUEST_MENU_MSG" value="Do you really want to send a reward to this friend?"/>
+    <message name="RETURN_FRIEND_POST_MSG" value="I brought a friend back to the game and got a reward!"/>
+    <message name="COMEBACK_POST_MSG" value="I returned to Wormix and got a reward!"/>
+    <message name="NOT_TAKEN_AWARD_FOR_ACHIEV" value="You don't have any awards for achievements!"/>
+    <message name="RESET_AWARD_ACHIEV_BTN_QTIP" value="Reset awards"/>
+    <message name="UPDATE_YOUR_PLAYER" value="Please update your flash player to the latest version."/>
+    <message name="BY_DEFAULT" value="default"/>
+    <message name="BATTLE_SETTINGS_MENU_TITLE" value="Settings"/>
+    <message name="QUALITY_CONTROL_PANEL_TITLE" value="Graphics quality"/>
+    <message name="SETTING_EFFECT_TITLE" value="Clouds and additional effects"/>
+    <message name="ERROR_AT_UPDATE_BALANCE" value="Error occurred during transaction."/>
+    <message name="PVP_WAGER_FRIEND_BTN" value="Choose a partner!"/>
+    <message name="CALL_FRIEND_ON_PVP_MENU_TITLE" value="Call a friend!"/>
+    <message name="CHOOSE_FRIEND_FOR_BOSS_TITLE" value="Select a teammate"/>
+    <message name="FULL_SCREEN_ON_BTN_HINT" value="fullscreen mode"/>
+    <message name="FULL_SCREEN_OFF_BTN_HINT" value="exit fullscreen mode"/>
+    <message name="OFFHAND_TAB" value="Artifacts"/>
+    <message name="MEDKIT_ENHANCEMENT" value="Medkit effect"/>
+    <message name="FORBIDDEN_TRANSITION_PAGE" value="This user is not your friend"/>
+
+    <message name="GAMEPAD_SETUP_TITLE" value="Gamepad setup"/>
+    <message name="GAMEPAD_SETUP_BEFORE_CONTROL_NAME" value="Press "/>
+    <message name="GAMEPAD_SETUP_AFTER_CONTROL_NAME" value=" button..."/>
+
+    <message name="CONTROL_LEFT" value="Left"/>
+    <message name="CONTROL_RIGHT" value="Right"/>
+    <message name="CONTROL_UP" value="Up"/>
+    <message name="CONTROL_DOWN" value="Down"/>
+    <message name="CONTROL_BAG" value="Open the bag"/>
+    <message name="CONTROL_SHOOT" value="Shoot"/>
+    <message name="CONTROL_ALT" value="Switch weapon state"/>
+    <message name="CONTROL_JUMP" value="Jump"/>
+    <message name="CONTROL_BACK_JUMP" value="Back jump"/>
+    <message name="CONTROL_ESCAPE" value="Escape the battle"/>
+
+    <message name="SETTINGS_TITLE" value="Settings"/>
+    <message name="LANGUAGE_TITLE" value="Language"/>
+    <message name="RUSSIAN_TITLE" value="Russian"/>
+    <message name="ENGLISH_TITLE" value="English"/>
+    <message name="CHINESE_TITLE" value="Chinese"/>
+    <message name="REPORT_A_PROBLEM" value="Report a problem"/>
+    <message name="CONF_POLICY" value="Privacy"/>
+    <message name="TERMS_OF_USE" value="Terms of use"/>
+    <message name="INFO_AND_SUPPORT" value="Information"/>
+    <message name="SCALE_TEXT" value="Increase scale in Battle"/>
+    <message name="FACEBOOK_CONNECT_WINDOW_TITLE" value="Play with your friends!"/>
+    <message name="FACEBOOK_CONNECT_WINDOW_DESCRIPTION">
+        <![CDATA[It's much more fun to play together! <br> Sign up with your Facebook account and get 3 rubies!]]>
+    </message>
+    <message name="FACEBOOK_CONNECTED_BONUS_TEXT" value="You've got 3 rubies for signing up with Facebook!"/>
+    <message name="FACEBOOK_CONNECTED_BONUS_FAIL_TEXT"
+             value="Sorry, but this Facebook account is already used in the game."/>
+    <message name="NEED_TO_CONNECT_TEXT_SOCIAL_NETWORK"
+             value="To add friends to your team please connect your social account."/>
+    <message name="FACEBOOK_PVP_NEED_TO_CONNECT_TEXT" value="Connect to Facebook first"/>
+    <message name="CHANGE_NAME_TITLE" value="Change name"/>
+    <message name="BUTTON_SAVE" value="Save"/>
+    <message name="CHANGE_NAME_NOTE" value="*Changing your name is free the first two times only."/>
+    <message name="DEFAULT_NAME_TEXT" value="Name is not selected"/>
+    <message name="REPORT_BODY_TEMPLATE"
+             value="Please describe your problem here...&#10;&#10;&#10;&#10;--------DO NOT DELETE!--------&#10;UTC Time: {time}&#10;Game: Wormix&#10;Version: {version}&#10;PlayerID: {id}&#10;Language: {language}&#10;OS Version: {os}&#10;---------------------------"/>
+
+    <message name="SYSPVP_BATTLE_ID" value="Battle #%1"/>
+    <message name="SYSPVP_YOU_PLAY_FOR" value="You play for team %1. "/>
+    <message name="SYSPVP_ENEMY_ID" value="Your enemy's ID: %1. "/>
+    <message name="SYSPVP_ENEMIES_ID" value="Your enemies' IDs: %1. "/>
+    <message name="SYSPVP_ALLY_ID" value="Your ally's ID: %1. "/>
+    <message name="SYSPVP_ALLY_PLAYS_FOR" value="Your ally plays for team %1. "/>
+    <message name="COLOR_GREEN_ACCUS" value="green"/>
+    <message name="COLOR_RED_ACCUS" value="red"/>
+    <message name="COLOR_YELLOW_ACCUS" value="yellow"/>
+    <message name="COLOR_BLUE_ACCUS" value="blue"/>
+    <message name="COLOR_UNKNOWN_ACCUS" value="unknown"/>
+
+    <message name="WAIT_FOR_RESULT" value="Waiting for battle results..."/>
+
+    <message name="NEED_TO_SETUP_EMAIL" value="You have to set up the email before trying to send a message."/>
+    <message name="DO_YOU_LIKE_THIS_GAME" value="Do you like this game?"/>
+    <message name="PLEASE_LEAVE_FEEDBACK" value="Please leave feedback!"/>
+    <message name="RATE_IT" value="Rate it!"/>
+    <message name="REMIND_ME_LATER" value="Remind me later"/>
+    <message name="NO_THANKS" value="No, Thanks"/>
+    <message name="EQUIP_EXPIRED" value="Items expired: {equipList}"/>
+    <message name="HAT_DISAPPEAR" value="Item expires in:"/>
+    <message name="DAY_TEXT" value="{value} d"/>
+    <message name="HOURS_TEXT" value="{value} h"/>
+    <message name="MINUTE_TEXT" value="{value} min"/>
+    <message name="TEAM_UP" value="Team Up!"/>
+    <message name="CODE" value="correction"/>
+
+    <message name="ICLOUD_ENABLE_NEW_ACCOUNT"
+             value="Your account will be stored in iCloud and become available on other devices. Continue?"/>
+    <message name="ICLOUD_ENABLE_WITH_CREATE_NEW_ACCOUNT"
+             value="Your account already stored in another your iCloud. Would you like to create new account in this iCloud?"/>
+    <message name="ICLOUD_ENABLE_ALREADY_HAS_ACCOUNT"
+             value="There is already an account in iCloud. Shall we load existing account from iCloud or stay with your device account? Close this window to cancel."/>
+    <message name="ICLOUD_DISABLE_CONTINUE_WITH_SAME_ACCOUNT"
+             value="You are going to cancel iCloud synch. Your account will remain in iCloud and will be available on other devices. Continue?"/>
+    <message name="ICLOUD_DISABLE_CONTINUE_WITH_OTHER_ACCOUNT"
+             value="You are going to cancel iCloud synch. Your account will remain in iCloud and will be available on other devices. This device will switch to local account. Continue?"/>
+    <message name="ICLOUD_TRY_ANOTHER_ACCOUNT"
+             value="Your current account is banned. Do you want to use another account from iCloud?"/>
+
+    <message name="PVP_MESSAGE" value="Online battles. If you win, you get your wager back plus your reward!"/>
+    <message name="PVP_DUEL_CARD" value="Simple duel"/>
+    <message name="PVP_SURVIVAL_CARD" value="Survival"/>
+    <message name="PVP_DEATH_MATCH_CARD" value="Epic duel"/>
+    <message name="PVP_TWO_VS_TWO_CARD" value="Random 2х2"/>
+    <message name="PVP_TWO_VS_TWO_WITH_FRIEND_CARD" value="Team 2х2"/>
+
+
+    <!-- VIRAL bosses -->
+    <message name="WALL_POST_PLAYER_WIN_BOSS_FARMER" value="I've defeated the Farmer!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_HUNTER" value="I've defeated the Hunter!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_MANIACS" value="I've defeated the Maniacs!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ENGINEER" value="I've defeated the Engineer!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_GUARDIANS_DEPTHS" value="I've defeated Guardians of the Depths!"/>
+
+    <message name="WALL_POST_PLAYER_WIN_BOSS_PIRATE"
+             value="I defeated the pirate Captain! So who's the terror of the sea now?"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ILLUSIONIST"
+             value="I defeated the Illusionist! No more ridiculous tricks!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SHAMAN"
+             value="I win! Shaman, they said. Even his demons are so pathetic."/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_VIKING"
+             value="Vikings are best fighters? I've totally owned them, though they had an advantage."/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_WINDMASTER"
+             value="So where's the Wind Master now? Blown away, as I came for him."/>
+
+    <message name="WALL_POST_PLAYER_WIN_BOSS_MINER"
+             value="I got rid of the Miner! Eventually, each miner meets his sapper."/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SAMURAI_CAT" value="I defeated this cat. Nine times, to be exact!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SERGEANT" value="Sergeant... I would've win even if he had 10 healers!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_BURNING_DEAD"
+             value="Told them numerous times not to play with fire. Useless - had to handle it again!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_WANDERING_SOUL"
+             value="Maybe if it would be Warrior, not Wandering Spirit, it could have a chance. Hmpf."/>
+
+    <message name="WALL_POST_PLAYER_WIN_BOSS_YAKUZA"
+             value="I defeated Yakuza! Not all of them, of course, but at least three bastards."/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_DEAD_PIRATE"
+             value="Water, meteors, ice spikes? Ha! Tactics, skill, flawless victory!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ROMEO_JULIET" value="They say love kills... They don't know me yet."/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_KING_DEAD"
+             value="I waited for him to explode himself for so long... but he didn't. Had to help him."/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ANCIENT_GHOST"
+             value="Finally, a tough opponent!.. Unfortunately for him, I'm not afraid of the storm!"/>
+
+    <message name="WALL_POST_PLAYER_WIN_BOSS_DARK_KNIGHT" value="I've defeated the Dark Knight!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_PALADIN" value="I've defeated the Paladin!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_HACKER" value="I've defeated the Hacker!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_THIEVES" value="I've defeated Master thieves!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_PSIONIC" value="I've defeated Telepathist!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_PHANTOMS" value="I've defeated Phantoms!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ARCHIDEMON" value="I've defeated Archdemon!"/>
+
+    <message name="WALL_POST_WIN_BOSS_DRUID" value="I've defeated the Druid!"/>
+    <message name="WALL_POST_WIN_BOSS_PHARAOH" value="I've defeated the Pharaoh!"/>
+    <message name="WALL_POST_WIN_BOSS_CYBORG" value="I've defeated the Cyborg!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ASSASSIN" value="I've defeated the Assassin!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ALCHEMIST" value="I've defeated the Alchemist!"/>
+
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ARCHBOT" value="I've defeated the Archbot!"/>
+    <message name="WALL_POST_WIN_BOSS_JARL" value="I've defeated the Jarl!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ENCHANTER" value="I've defeated the Enchanter!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ARCHIVIST" value="I've defeated the Archivist!"/>
+
+    <message name="WALL_POST_PLAYER_WIN_BOSS_EMPEROR" value="I've defeated the Emperor!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SCIENTIST" value="I've defeated the Scientist!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_SYMBIOTE" value="I've defeated the Simbiot!"/>
+    <message name="WALL_POST_PLAYER_WIN_BOSS_ARCTIC_WARRIOR" value="I've defeated the Arctic Warrior!"/>
+
+    <message name="NUCLEAR_LAUNCH_DETECTED" value="Nuclear missili launched!"/>
+    <message name="WATER_INCREASING" value="The ground is going &#10;underwater!"/>
+    <message name="WATER_START_INCREASING" value="The ground is about to go down!"/>
+
+    <!--deposits-->
+    <message name="DEPOSIT_CONSUMPTION_ERROR"
+             value="We can't find any new deposits today. May be you already got them today?"/>
+    <message name="DEPOSIT_MAX_COUNT_LIMIT" value="You can't have more then {count} opened deposits."/>
+    <!---->
+    <message name="SOCIAL_NONE_STATUS" value="Social"/>
+    <message name="SOCIAL_NONE_ACTION" value="Disconnect"/>
+    <message name="SOCIAL_STEAM_NAME" value="Steam"/>
+    <message name="SOCIAL_FB_NAME" value="Facebook"/>
+    <message name="SOCIAL_VK_NAME" value="VKontakte"/>
+    <message name="SOCIAL_FB_SHORT_NAME" value="FB"/>
+    <message name="SOCIAL_VK_SHORT_NAME" value="VK"/>
+
+    <message name="VK_GAMES" value="VKontakte Games"/>
+
+    <message name="SELECT_SOCIAL_NETWORK" value="Select social network"/>
+    <message name="SOCIAL_NETWORKS_NOT_AVAILABLE" value="Social networks not awailable"/>
+    <message name="SELECT_FRIEND_TO_INVITE" value="Choose friend for invite"/>
+    <message name="INPUT_NAME" value="Input name"/>
+    <message name="INPUT_MESSAGE" value="Input text"/>
+    <message name="GLOBAL_CHAT_NOT_ALLOWED"
+             value="You will be able to write in the global chat starting from level 11."/>
+    <message name="GLOBAL_CHAT_ILLEGAL_STATE" value="Incorrect state!"/>
+    <message name="GLOBAL_CHAT_TOO_FAST" value="You're sending messages too fast!"/>
+    <message name="GLOBAL_CHAT_TAB" value="Global chat"/>
+    <message name="FRIENDS_TAB" value="Friends"/>
+
+    <message name="CHAT_RESTRICTED" value="Temporal chat ban."/>
+    <message name="RESTRICT_FOR" value="Restriction lasts till {date}."/>
+    <message name="MEMBER_CRAFT_LEGENDARY_MESSAGE" value="{name} crafted {item}!"/>
+
+    <message name="KAMIKAZE_ALREADY_ACTIVATED" value="You've already activated the explosives!"/>
+    <message name="ALREADY_ACTIVE_UNIT" value="The unit is active already!"/>
+
+    <!--/context menu-->
+    <message name="CONTEXT_MENU_DUEL" value="Duel"/>
+    <message name="CONTEXT_MENU_TEAM_BATTLE" value="Team battle"/>
+    <message name="CONTEXT_MENU_HEROIC_BOSS" value="Team battle vs super boss"/>
+    <message name="CONTEXT_MENU_COOP_BOSS" value="Team battle vs boss"/>
+    <message name="CONTEXT_MENU_HOTSEAT" value="Hot seat"/>
+    <message name="CONTEXT_MENU_VISIT" value="Visit"/>
+    <message name="CONTEXT_MENU_VISIT_PAGE" value="User page"/>
+    <message name="CONTEXT_MENU_TOGGLE_STICKERS" value="Toggle stickers"/>
+
+    <!-- stickers-->
+    <message name="NEW_STICKERS_PACK_PURCHASED" value="You bought a new pack of stickers!"/>
+    <message name="PUSHING_MINE_USELESS" value="You have to stand near the enemy"/>
+
+    <message name="CALL_REINFORCEMENTS_USELESS" value="Impossible to land here!"/>
+
+    <message name="CONTROL_TITLE" value="Controls"/>
+
+    <!-- bank slots names -->
+    <message name="PAYMEN_OPTION_RUBY6" value="Handful of rubies"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY6"
+             value="Even a handful of rubies can bring a lot of profits! A couple of the one-off weapons or a reaction boost that's what you need for the victory!"/>
+    <message name="PAYMEN_OPTION_RUBY5" value="Pile of rubies"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY5"
+             value="Now it's more than just a bunch of rubies, now we're talking! But don't rush to spend them all the way - be wiser with your decisions and get some use of them!"/>
+    <message name="PAYMEN_OPTION_RUBY4" value="Bag of rubies"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY4"
+             value="This small bag of rubies can make a good profit if you spend it wisely. That's what you need to get the weapon to dominate the battlefield!"/>
+    <message name="PAYMEN_OPTION_RUBY3" value="Big bag of rubies"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY3"
+             value="Now things got real - you can buy cool weapons and equipment to become a real threat for your enemies. Do you want people to fear you? Than that's exactly what you need!"/>
+    <message name="PAYMEN_OPTION_RUBY2" value="Chest of rubies"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY2"
+             value="The old pirate's stash that can be yours. Such treasure can fully equip you with the best items and most powerful weapons!"/>
+    <message name="PAYMEN_OPTION_RUBY1" value="Big chest of rubies"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY1"
+             value="Made out of the Kraken's tentacles and raised from the bottom of the sea this chest is bursting with the rubies it holds. With such luxury you can afford the best pieces of equipment to terrorize your enemies"/>
+    <message name="PAYMEN_OPTION_RUBY0" value="Safe of rubies"/>
+    <message name="PAYMEN_OPTION_DESCR_RUBY0"
+             value="For those who eager to climb up to the Olimp mountaintop of the best players and observe the others from its height. You afford whatever you crave. But keep in mind you will still need to master your skills."/>
+
+    <message name="PAYMEN_OPTION_FUZY6" value="Handful of coins"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY6"
+             value="Gold always brings luck, at least if you spend it wisely. You might be surprised how small pile of coins can make your life more dynamic and successful!"/>
+    <message name="PAYMEN_OPTION_FUZY5" value="Pile of coins"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY5"
+             value="Not a small but a big pile, a placer of gold - and you feel this itch for action. When you know you can afford way more than you had before!"/>
+    <message name="PAYMEN_OPTION_FUZY4" value="Bag of coins"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY4"
+             value="A nice tapping and already heavy bag of coins has a very wide range for applications. Gold always brings more gold, remember that."/>
+    <message name="PAYMEN_OPTION_FUZY3" value="Big bag of coins"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY3"
+             value="Poor fellow tax collector lost his bag, but we're happy to provide you with it to put it in use. Imagine all the tempting goods in the shop - with this bag they could be yours!"/>
+    <message name="PAYMEN_OPTION_FUZY2" value="Chest of coins"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY2"
+             value="Just cleaned and polished, this chest full of coins can definitely bring some luck. Take this for granted: you can buy whatever you want with this beauty!"/>
+    <message name="PAYMEN_OPTION_FUZY1" value="Big chest of coins"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY1"
+             value="The gold fever is in the air - remember: the opportunities you get with such a big treasure can get you into troubles, because you could afford many fancy things here!"/>
+    <message name="PAYMEN_OPTION_FUZY0" value="Safe of coins"/>
+    <message name="PAYMEN_OPTION_DESCR_FUZY0"
+             value="Just brought from the Wormix bank heist. No worries, we lockpicked it for you... just to make sure it's full of gold. It seem so. We actually struggle to describe it more - just check ALL of these TREASURES by yourself!!!"/>
+
+    <!-- bank deposits names -->
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY0" value='Ruby madness'/>
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY1" value='50 shades of red'/>
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY2" value='Ice on the fringe'/>
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY3" value='Pile it up!'/>
+    <message name="PAYMEN_OPTION_DEPOSIT_RUBY4" value='A gem for a gem'/>
+
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY0" value='ShutUpAndTakeMy&#10;Money'/>
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY1" value='Wealthy whale'/>
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY2" value='More than that'/>
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY3" value='Grease a palm'/>
+    <message name="PAYMEN_OPTION_DEPOSIT_FUZY4" value='Just looking'/>
+
+    <!-- bundles -->
+    <message name="BUNDLE_TITLE_1" value="Tactic's Chest"/>
+    <message name="BUNDLE_TITLE_2" value="Marshal's Chest"/>
+
+    <message name="BUNDLE_DESCR" value="You will receive random item from list:"/>
+
+    <message name="CRAFT_BOX_BUY_RESULT" value="You have received some items:"/>
+
+    <message name="RANDOM_RARE_REAGENT_NOTE" value="(Random rare reagent)"/>
+
+
+    <message name="MAIN_SERVER_CONNECTION_CLOSED_LOSE" value="You were disconnected from server for too long."/>
+    <message name="BATTLE_LOST_TITLE" value="Loss of combat"/>
+    <message name="ALREADY_IN_GAME_LOGIN_TRYING_LIMIT_OUT"
+             value="Error trying to login again, please contact the game support or try again later."/>
+
+    <message name="TEXT_NOT_IN_WHITE_LIST">
+        <![CDATA[Yor are not in server's white list.<br/>Your device id: {uid} is copied to system clipboard]]>
+    </message>
+
+    <message name="LEVEL_BRIEF" value="(lvl {lvl})"/>
+
+    <message name="WEAPON_IMPROVE_NEED"
+             value="You have {current} level of this weapon. To unlock upgrades you have to increase it to maximal {max} level."/>
+    <message name="WEAPON_MAX_IMPROVE_PRICE" value="Increase to maximal level price"/>
+    <message name="WEAPON_AFTER_IMPROVE" value="On next level:"/>
+
+    <message name="WEAPONS_BONUS_TITLE" value="Bonus weapons!"/>
+    <message name="WEAPONS_BONUS_TEXT" value="Due to changes in weapon system you receive free weapons!"/>
+
+    <message name="DOWNGRADE_WEAPONS_COMPENSATION_TITLE" value="Compensation for upgrades!"/>
+    <message name="DOWNGRADE_WEAPONS_COMPENSATION_TEXT"
+             value="It appeared that your level is lower than requirements for some of your upgrades. We had to replace them for appropriate version and return you their full value!"/>
+
+    <message name="STEAM_OVERLAY_ACTIVATION_NEEDED" value="Please activate Steam overlay for purchase enabling."/>
+
+    <message name="PREV_SEASON_LABEL" value="Last season:"/>
+    <message name="PREV_SEASON_PLACE" value="{value} place"/>
+
+    <message name="TEAM_MEMBER_TYPE_MERC" value="Mercenary"/>
+    <message name="TEAM_MEMBER_TYPE_FRIEND" value="Friend"/>
+    <message name="TEAM_MEMBER_TYPE_CLANMATE" value="Clanmate"/>
+    <message name="TEAM_MEMBER_RESTRICTED_TEXT" value="Teammate restrictions:"/>
+
+    <message name="PLAYER_NAME_TITLE" value="Player name:"/>
+
+    <message name="HELP_ADMINISTRATION" value="If you have any problems, please contact the game support service for help using one of the TG or VK buttons in the main menu"/>
+    <message name="NAVIGATE_SUPPORT_TELEGRAM" value="Want to join the official Wormix Mobile group in Telegram?"/>
+    <message name="NAVIGATE_SUPPORT_VKONTAKTE" value="Want to join the official Wormix Mobile group in VKontakte?"/>
+    <message name="TITLE_VERSION" value="version"/>
+    <message name="TITLE_ACCOUNT_ID" value="Account ID"/>
+    <message name="ADMIN_CHAT_MESSAGE" value='Message from the administration:'/>
+    <message name="OTHER_PLATFORM_CALLS_DISABLED" value="Calling the player with another platform is temporarily not available."/>
+    <message name="OTHER_PLATFORM_INVITES_UNAVAILABLE" value="Cannot be invited to the player’s clan with another platform."/>
+    <message name="OTHER_PLATFORM_CLAN_SHOW_UNAVAILABLE" value="Cannot to show the player’s clan with another platform."/>
+
+    <!-- ver2.6 -->
+    <message name="GOOGLE_SAVE_LABEL" value="Link with Google"/>
+    <message name="GOOGLE_LINK_NEED"
+             value="To ensure the safety of your game account, it's recommended to link it with Google. Are you agree?"/>
+    <message name="GOOGLE_LINK_LATER_IN_SETTINGS"
+             value="You can link your account later, this can be done in the Settings menu."/>
+    <message name="GOOGLE_LINK_NEW_ACCOUNT"
+             value="Your game account has been successfully linked with Google and is also available on your other devices."/>
+    <message name="GOOGLE_LINK_HAS_OTHER_ACCOUNT"
+             value="There's an existing account already linked with your Google account. Do you want to switch into it, or retain the local account from this device?"/>
+    <message name="GOOGLE_LINK_ALREADY_COMPLETED" value="This device is already linked with your Google account ({account})"/>
+    <message name="BUTTON_STAY" value="Retain"/>
+
+    <message name="TITLE_WELCOME" value="Welcome!"/>
+    <message name="ENTER_TUTORIAL_QUESTION" value="Do you want to start with the tutorial?"/>
+
+    <message name="DOCTOR_BAG_USELESS" value="The bag is useless now"/>
+    <message name="DOCTOR_BAG_USELESS_NO_ALLIES" value="There are no injured allies nearby"/>
+    <message name="DOCTOR_BAG_USELESS_MAX_HP" value="An ally is already at full health"/>
+
+    <message name = "NEED_GOOGLE_AUTH" value = "Google authorization is required. Press [{ok}] to continue." />
+    <message name = "STATUS_ALREADY_ON" value = "Enabled" />
+    <message name = "LABEL_TURN_ON" value = "Enable" />
+    <message name = "LABEL_TURN_OFF" value = "Disable" />
+    <message name = "UNAVAILABLE" value = "Not Available" />
+    <message name = "LABEL_LINKED" value = "Linked" />
+    <message name = "GOOGLE_LINKED_TEXT" value = "Google account ({mail})" />
+
+    <message name="ATOM_MARK_ALREADY_EXIST" value="Atomic bomb mark already set!"/>
+    <message name="FORCE_FIELD_ALREADY_EXIST" value="Force field already set!"/>
+
+    <message name = "ERROR_ADVERTISING_LIMIT_REACHED" value = "Reward for ads is temporarily unavailable. Please try again later." />
+    <message name = "FREE_LABEL" value = "Free" />
+    <message name = "DOUBLE_LABEL" value = "x 2" />
+    <message name = "ADS_UNAVAILABLE_TEMPORAL" value = "Ad is temporarily unavailable. Try again later." />
+    <message name = "ADS_UNAVAILABLE" value = "No ad available. Please contact game support." />
+    <message name = "FAST_BATTLE" value = "Fast battle" />
+    <message name = "FAST_BATTLE_TEXT" value = "Take the full reward for a hard mission without effort!" />
+    <message name = "FAST_BATTLE_REWARD" value = "Reward for fast battle" />
+
+    <message name = "PERSONALIZED_ADS_LABEL" value = "Personal advertising" />
+    <message name = "REFUND_WAGER" value = "Refund wager" />
+
+    <message name="PROFITABLY" value="Best offer!"/>
+    <message name="POPULARLY" value="Popularly!"/>
+
+    <message name="TOKENS_QTIP" value="Tokens"/>
+    <message name="COIN_DESCR" value="The main currency of Wormix. Obtained as a reward in battles, for achievements, and also in many different bonuses."/>
+    <message name="RUBY_DESCR" value="Premium currency of Wormix. Obtained as a reward in some special battles, for rare achievements, and also sometimes in bonuses."/>
+    <message name="TOKENS_DESCR" value="Battle currency of Wormix. Automatically issued every day, as well as in bonuses. Required for admission to battles against simple bots and bosses, or increase the reward for the battle."/>
+
+    <message name="BATTLE_TOKEN" value="Battle token"/>
+    <message name="BATTLE_TOKENS" value="Battle tokens"/>
+    <message name="BATTLE_TOKENS_TEXT" value="Required to play missions and fight bosses."/>
+    <message name="WAGER_TOKENS" value="Wager tokens"/>
+    <message name="WAGER_TOKEN" value="Wager token"/>
+    <message name="WAGER_TOKENS_TEXT" value="Gives a bonus of 100 coins and 5 experience for winning any PVP (wager) battle!"/>
+    <message name="BOSS_TOKENS" value="Boss tokens"/>
+    <message name="BOSS_TOKEN" value="Boss token"/>
+    <message name="BOSS_TOKENS_TEXT" value="Gives increased rewards for winning a boss fight!{br}Required to complete boss achievements."/>
+    <message name="ONE_TOKEN_RESTORE" value="1 {token} will be restored tomorrow"/>
+    <message name="ALL_TOKENS_EXPIRE" value="All tokens disappear at the end of a day!"/>
+    <message name="FREE_BATTLE_TOKENS" value="When all battle tokens are spent, you may buy new ones or wait until they'll be restored (up to 5 total)."/>
+    <message name="MISSION_DESCR" value="Complete missions to earn rewards, experience, and find resources!"/>
+    <message name="BOSSES_DESCR" value="Test yourself by challenging the insidious bosses!"/>
+    <message name="WASTED" value="Wasted"/>
+
+    <message name="LIGHT_VERSION" value="light version"/>
+    <message name="RACE_BUY_CONFIRM_QUESTION" value="Do you want to buy a race?"/>
+    <message name="BUTTON_RESET_PARAMS" value="Reset attack and armor"/>
+
+</dictionary>

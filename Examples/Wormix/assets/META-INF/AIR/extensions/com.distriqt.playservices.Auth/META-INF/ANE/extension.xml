@@ -1,0 +1,40 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>com.distriqt.playservices.Auth</id>
+	<versionNumber>22.0.0</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.playservices.auth.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.playservices.auth.AuthExtension</initializer>
+				<finalizer>com.distriqt.extension.playservices.auth.AuthExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.playservices.auth.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.playservices.auth.AuthExtension</initializer>
+				<finalizer>com.distriqt.extension.playservices.auth.AuthExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.playservices.auth.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.playservices.auth.AuthExtension</initializer>
+				<finalizer>com.distriqt.extension.playservices.auth.AuthExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>com.distriqt.playservices.auth.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.playservices.auth.AuthExtension</initializer>
+				<finalizer>com.distriqt.extension.playservices.auth.AuthExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="default">
+			<applicationDeployment />
+		</platform>
+
+	</platforms>
+</extension>

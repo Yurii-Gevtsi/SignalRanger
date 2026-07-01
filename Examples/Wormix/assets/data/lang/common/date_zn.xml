@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+<message name="date_format" value="yyyy.mm.dd"/>
+<message name="time_format" value="hh.MM"/>
+<message name="date_full_format" value="dddd, mmmm d yyyy"/>
+<message name="jan_short" value="1月"/>
+<message name="feb_short" value="2月"/>
+<message name="mar_short" value="3月"/>
+<message name="apr_short" value="4月"/>
+<message name="may_short" value="5月"/>
+<message name="jun_short" value="6月"/>
+<message name="jul_short" value="7月"/>
+<message name="aug_short" value="8月"/>
+<message name="sep_short" value="9月"/>
+<message name="oct_short" value="10月"/>
+<message name="nov_short" value="11月"/>
+<message name="dec_short" value="12月"/>
+<message name="jan_full" value="1月"/>
+<message name="feb_full" value="2月"/>
+<message name="mar_full" value="3月"/>
+<message name="apr_full" value="4月"/>
+<message name="may_full" value="5月"/>
+<message name="jun_full" value="6月"/>
+<message name="jul_full" value="7月"/>
+<message name="aug_full" value="8月"/>
+<message name="sep_full" value="9月"/>
+<message name="oct_full" value="10月"/>
+<message name="nov_full" value="11月"/>
+<message name="dec_full" value="12月"/>
+<message name="sun_short" value="星期日"/>
+<message name="mon_short" value="星期一"/>
+<message name="tue_short" value="星期二"/>
+<message name="wed_short" value="星期三"/>
+<message name="thu_short" value="星期四"/>
+<message name="fri_short" value="星期五"/>
+<message name="sat_short" value="星期六"/>
+<message name="sun_full" value="星期天"/>
+<message name="mon_full" value="星期一"/>
+<message name="tue_full" value="星期二"/>
+<message name="wed_full" value="星期三"/>
+<message name="thu_full" value="星期四"/>
+<message name="fri_full" value="星期五"/>
+<message name="sat_full" value="星期六"/>
+</dictionary>

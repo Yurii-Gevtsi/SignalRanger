@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:8f8363f4be6d00a7c73d4e42d1dee427:fc28d3415ee3be3056c0847cb875fa94:600f98b0fde2ec30083d70b5c4230c72$ -->
+<TextureAtlas imagePath="spriteSheet_menu.png">
+    <SubTexture name="AchievLevelUpMessage_background" x="315" y="1897" width="25" height="22" frameX="-1" frameY="-1" frameWidth="27" frameHeight="24"/>
+    <SubTexture name="AchievLevelUpMessage_blueRibbon" x="3" y="555" width="480" height="55" frameX="-1" frameY="-1" frameWidth="481" frameHeight="56"/>
+    <SubTexture name="AchievLevelUpMessage_gradient" x="499" y="1390" width="184" height="22" frameX="-1" frameY="-2" frameWidth="188" frameHeight="24"/>
+    <SubTexture name="AchievPointsIcon" x="1646" y="1006" width="48" height="56" frameX="-1" frameY="-1" frameWidth="49" frameHeight="57"/>
+    <SubTexture name="AidBonusSmallIcon" x="1878" y="1002" width="30" height="28" frameX="0" frameY="-1" frameWidth="30" frameHeight="29"/>
+    <SubTexture name="AmmoSmallIcon" x="1806" y="863" width="32" height="37" frameX="0" frameY="-1" frameWidth="32" frameHeight="38"/>
+    <SubTexture name="ArenaMenu_bossPanel_back" x="3" y="1738" width="135" height="128" frameX="-1" frameY="-1" frameWidth="137" frameHeight="130"/>
+    <SubTexture name="ArenaMenu_bossPanel_back_inactive" x="931" y="1906" width="128" height="128" frameX="0" frameY="0" frameWidth="130" frameHeight="130"/>
+    <SubTexture name="ArenaMenu_bossPanel_lock" x="1585" y="1006" width="57" height="66" frameX="-1" frameY="-1" frameWidth="59" frameHeight="68"/>
+    <SubTexture name="ArenaMenu_bossPanel_selection" x="1459" y="455" width="208" height="208" frameX="-1" frameY="-1" frameWidth="210" frameHeight="210"/>
+    <SubTexture name="ArenaMenu_bossPanel_stripe" x="195" y="1897" width="116" height="22" frameX="-1" frameY="-1" frameWidth="118" frameHeight="24"/>
+    <SubTexture name="ArenaMenu_bossPanel_stripe2" x="274" y="1923" rotated="true" width="22" height="116" frameX="-1" frameY="-1" frameWidth="118" frameHeight="24"/>
+    <SubTexture name="ArenaMenu_missionCardEasy_icon" x="800" y="478" rotated="true" width="73" height="107" frameX="-1" frameY="-1" frameWidth="108" frameHeight="74"/>
+    <SubTexture name="ArenaMenu_missionCardHard_icon" x="1280" y="1594" rotated="true" width="80" height="87" frameX="-1" frameY="-1" frameWidth="89" frameHeight="81"/>
+    <SubTexture name="ArenaMenu_missionCardMedium_icon" x="1403" y="1865" width="72" height="86" frameX="-1" frameY="-1" frameWidth="73" frameHeight="87"/>
+    <SubTexture name="ArenaMenu_missionCard_iconBack" x="396" y="750" rotated="true" width="87" height="95"/>
+    <SubTexture name="ArenaMenu_mission_hotSeatCard_fill" x="1342" y="778" width="3" height="3" frameX="0" frameY="0" frameWidth="4" frameHeight="4"/>
+    <SubTexture name="ArenaMenu_redDot" x="1101" y="791" width="14" height="14" frameX="-1" frameY="-1" frameWidth="16" frameHeight="16"/>
+    <SubTexture name="ArenaMenu_tabs_delayTab_clock" x="1467" y="1103" width="62" height="69" frameX="0" frameY="-1" frameWidth="63" frameHeight="70"/>
+    <SubTexture name="ArenaMenu_tabs_delayTab_greenLine" x="3" y="3" width="872" height="57"/>
+    <SubTexture name="ArenaMenu_tabs_tab_boss_content_border" x="482" y="1121" rotated="true" width="5" height="23" frameX="0" frameY="0" frameWidth="24" frameHeight="6"/>
+    <SubTexture name="ArenaMenu_whiteSquare" x="1806" y="904" width="32" height="32"/>
+    <SubTexture name="ArenaMenu_whiteTriangle" x="195" y="1709" width="150" height="50"/>
+    <SubTexture name="ArmorPenetrationSmallIcon" x="1625" y="1899" rotated="true" width="31" height="26" frameX="-1" frameY="-1" frameWidth="27" frameHeight="32"/>
+    <SubTexture name="AttackIcon" x="1405" y="1681" rotated="true" width="80" height="83"/>
+    <SubTexture name="BankMenuVipIcon" x="877" y="553" width="239" height="199"/>
+    <SubTexture name="BankMenuVipMonthIcon" x="1676" y="481" rotated="true" width="273" height="239"/>
+    <SubTexture name="BombIcon" x="1014" y="1594" width="92" height="96"/>
+    <SubTexture name="BossGameOverDrawPanel_goldenSword" x="877" y="756" rotated="true" width="220" height="92" frameX="-1" frameY="-1" frameWidth="93" frameHeight="221"/>
+    <SubTexture name="BossGameOverDrawPanel_line" x="3" y="1531" width="196" height="4" frameX="-3" frameY="0" frameWidth="202" frameHeight="4"/>
+    <SubTexture name="BossGameOverDrawPanel_redRibbon" x="499" y="578" width="263" height="111" frameX="-1" frameY="-1" frameWidth="264" frameHeight="112"/>
+    <SubTexture name="BossGameOverDrawPanel_sword" x="1120" y="938" rotated="true" width="206" height="144" frameX="-1" frameY="-1" frameWidth="145" frameHeight="207"/>
+    <SubTexture name="BossGameOverLosePanel_darkRedRibbon" x="499" y="693" width="263" height="111" frameX="-1" frameY="0" frameWidth="264" frameHeight="112"/>
+    <SubTexture name="BossGameOverLosePanel_darkSowrd" x="207" y="1067" width="181" height="173" frameX="-1" frameY="-1" frameWidth="182" frameHeight="175"/>
+    <SubTexture name="BossGameOverWinPanel_dynamite" x="195" y="1763" rotated="true" width="142" height="130" frameX="-1" frameY="-1" frameWidth="131" frameHeight="143"/>
+    <SubTexture name="BossGameOverWinPanel_gun1" x="773" y="644" rotated="true" width="100" height="111" frameX="-1" frameY="-1" frameWidth="112" frameHeight="101"/>
+    <SubTexture name="BossGameOverWinPanel_gun2" x="546" y="1907" rotated="true" width="77" height="136" frameX="-1" frameY="-1" frameWidth="137" frameHeight="78"/>
+    <SubTexture name="BossTab_card1_icon" x="1459" y="667" rotated="true" width="208" height="175"/>
+    <SubTexture name="BossTab_card2_icon" x="3" y="1539" rotated="true" width="188" height="143"/>
+    <SubTexture name="BossTab_card3_icon" x="1120" y="553" rotated="true" width="225" height="202"/>
+    <SubTexture name="BossTypeTab_cardHeroic_back_backBottom" x="773" y="310" rotated="true" width="23" height="270"/>
+    <SubTexture name="BossTypeTab_cardHeroic_back_backTop" x="1953" y="536" rotated="true" width="92" height="270"/>
+    <SubTexture name="BossesBack1" x="879" y="3" width="793" height="242"/>
+    <SubTexture name="BossesBack2" x="3" y="64" width="793" height="242"/>
+    <SubTexture name="BuyHatDialog_bossDot" x="843" y="630" width="10" height="10" frameX="-1" frameY="-1" frameWidth="11" frameHeight="11"/>
+    <SubTexture name="BuyHatDialog_cellsContainer_cells_template" x="1681" y="1950" width="46" height="46" frameX="-1" frameY="-1" frameWidth="48" frameHeight="48"/>
+    <SubTexture name="BuyHatDialog_instance6_instance7" x="1120" y="759" rotated="true" width="218" height="175" frameX="-1" frameY="-1" frameWidth="176" frameHeight="220"/>
+    <SubTexture name="BuyHatDialog_shadow" x="142" y="1897" width="10" height="9" frameX="0" frameY="0" frameWidth="10" frameHeight="10"/>
+    <SubTexture name="BuyHatDialog_stripe" x="1342" y="785" width="3" height="3"/>
+    <SubTexture name="BuyWeaponDialog_iconBackground" x="877" y="852" rotated="true" width="217" height="156" frameX="-1" frameY="-1" frameWidth="157" frameHeight="219"/>
+    <SubTexture name="BuyWeaponDialog_icon_wrapper" x="1982" y="1008" width="30" height="29" frameX="0" frameY="0" frameWidth="30" frameHeight="30"/>
+    <SubTexture name="ChooseFriendMenu_border" x="1080" y="1012" width="5" height="5"/>
+    <SubTexture name="ChooseFriendMenu_charicon_back" x="1459" y="846" width="207" height="156" frameX="-1" frameY="-1" frameWidth="208" frameHeight="158"/>
+    <SubTexture name="ChooseFriendMenu_dot" x="1240" y="1969" width="12" height="12" frameX="-1" frameY="-1" frameWidth="14" frameHeight="14"/>
+    <SubTexture name="ChooseFriendMenu_level" x="1123" y="1992" width="54" height="53"/>
+    <SubTexture name="ChooseFriendMenu_line" x="1080" y="1012" width="5" height="5"/>
+    <SubTexture name="ChooseFriendMenu_shadow" x="393" y="923" width="98" height="12" frameX="-1" frameY="-1" frameWidth="100" frameHeight="14"/>
+    <SubTexture name="ChooseFriendMenu_tab_downState" x="772" y="1024" rotated="true" width="53" height="5" frameX="0" frameY="0" frameWidth="5" frameHeight="56"/>
+    <SubTexture name="ChooseFriendMenu_tab_upState" x="373" y="1559" width="13" height="54" frameX="-1" frameY="-1" frameWidth="15" frameHeight="56"/>
+    <SubTexture name="DailyBonusPanel_blueStar" x="142" y="1783" width="49" height="50"/>
+    <SubTexture name="DailyBonusPanel_greenStar" x="1120" y="1474" width="48" height="49" frameX="-1" frameY="-1" frameWidth="49" frameHeight="50"/>
+    <SubTexture name="DailyBonusPanel_gun" x="1529" y="1176" rotated="true" width="52" height="69" frameX="-1" frameY="-1" frameWidth="70" frameHeight="54"/>
+    <SubTexture name="DailyBonusPanel_question" x="1330" y="1103" width="57" height="73" frameX="-1" frameY="-1" frameWidth="58" frameHeight="74"/>
+    <SubTexture name="DailyBonusPanel_redRibbon" x="3" y="762" width="262" height="91" frameX="-1" frameY="-1" frameWidth="263" frameHeight="92"/>
+    <SubTexture name="DailyBonusPanel_ribbon" x="1676" y="309" width="281" height="93" frameX="0" frameY="-8" frameWidth="282" frameHeight="101"/>
+    <SubTexture name="DailyBonusPanel_seqControl_seqBar" x="713" y="1906" width="77" height="134" frameX="-1" frameY="-1" frameWidth="78" frameHeight="136"/>
+    <SubTexture name="DailyBonusPanel_seqControl_seqBar_grey" x="627" y="1907" width="82" height="134" frameX="-1" frameY="0" frameWidth="84" frameHeight="135"/>
+    <SubTexture name="DailyBonusPanel_yellowStar" x="1603" y="1103" width="54" height="56" frameX="-1" frameY="-1" frameWidth="55" frameHeight="57"/>
+    <SubTexture name="DamageSmallIcon" x="1075" y="1369" width="41" height="38" frameX="0" frameY="-1" frameWidth="42" frameHeight="39"/>
+    <SubTexture name="DefenceIcon" x="800" y="400" width="74" height="74"/>
+    <SubTexture name="DepositWindow_HintBack" x="3" y="857" width="243" height="88"/>
+    <SubTexture name="DepositWindow_Icon" x="1063" y="1894" width="83" height="94"/>
+    <SubTexture name="DepositWindow_calender" x="703" y="1319" width="160" height="180" frameX="-3" frameY="0" frameWidth="163" frameHeight="181"/>
+    <SubTexture name="DepositWindow_coin1" x="1477" y="1288" rotated="true" width="54" height="69"/>
+    <SubTexture name="DepositWindow_coin2" x="1063" y="1992" width="56" height="53"/>
+    <SubTexture name="DepositWindow_signsColor" x="1342" y="792" width="3" height="3"/>
+    <SubTexture name="DodgeSmallIcon" x="1761" y="907" rotated="true" width="36" height="33" frameX="-1" frameY="-1" frameWidth="34" frameHeight="37"/>
+    <SubTexture name="DoubleJumpSmallIcon" x="1801" y="940" rotated="true" width="36" height="30" frameX="-1" frameY="-1" frameWidth="31" frameHeight="37"/>
+    <SubTexture name="ExperienceIcon" x="1625" y="1844" width="51" height="51"/>
+    <SubTexture name="FacebookConnectAdsArrow_arrow" x="2021" y="3" width="24" height="65" frameX="-1" frameY="-1" frameWidth="25" frameHeight="66"/>
+    <SubTexture name="FacebookConnectAdsArrow_gradient" x="766" y="578" width="3" height="160" frameX="0" frameY="0" frameWidth="4" frameHeight="161"/>
+    <SubTexture name="FacebookConnectionForm_blueButton" x="1634" y="1076" rotated="true" width="53" height="21"/>
+    <SubTexture name="FacebookConnectionForm_dot" x="1642" y="2034" width="11" height="11" frameX="-1" frameY="-1" frameWidth="12" frameHeight="12"/>
+    <SubTexture name="FacebookConnectionForm_facebook_icon" x="1631" y="1580" width="51" height="52" frameX="-1" frameY="-1" frameWidth="52" frameHeight="53"/>
+    <SubTexture name="FireDamageSmallIcon" x="1665" y="1819" rotated="true" width="26" height="21" frameX="-1" frameY="-1" frameWidth="22" frameHeight="27"/>
+    <SubTexture name="FireResistSmallIcon" x="142" y="1837" rotated="true" width="40" height="29" frameX="-1" frameY="0" frameWidth="30" frameHeight="40"/>
+    <SubTexture name="FreezeReductionIcon" x="1518" y="1361" width="52" height="60"/>
+    <SubTexture name="FriendGameOverPanel_pipe1" x="393" y="939" width="97" height="149" frameX="-1" frameY="-1" frameWidth="98" frameHeight="150"/>
+    <SubTexture name="FriendGameOverPanel_pipe2" x="3" y="1897" rotated="true" width="135" height="138" frameX="-1" frameY="-1" frameWidth="139" frameHeight="137"/>
+    <SubTexture name="FriendGameOverPanel_pipe3" x="704" y="1033" width="165" height="104" frameX="-1" frameY="-1" frameWidth="166" frameHeight="105"/>
+    <SubTexture name="FrostDamageSmallIcon" x="1987" y="977" width="31" height="27" frameX="-1" frameY="-1" frameWidth="32" frameHeight="28"/>
+    <SubTexture name="FrostResistSmallIcon" x="1703" y="1734" rotated="true" width="28" height="25" frameX="-1" frameY="-1" frameWidth="26" frameHeight="30"/>
+    <SubTexture name="FullUserHint_back" x="2016" y="1008" width="29" height="29"/>
+    <SubTexture name="FullUserHint_worm" x="296" y="894" width="2" height="2" frameX="0" frameY="0" frameWidth="3" frameHeight="3"/>
+    <SubTexture name="HintProgressAchiev_background" x="1695" y="1818" width="21" height="21" frameX="0" frameY="0" frameWidth="22" frameHeight="22"/>
+    <SubTexture name="HintProgressAchiev_barBack" x="1720" y="1818" width="21" height="21" frameX="0" frameY="0" frameWidth="22" frameHeight="22"/>
+    <SubTexture name="HintProgressAchiev_progressBar" x="1621" y="1819" rotated="true" width="40" height="21" frameX="0" frameY="0" frameWidth="22" frameHeight="41"/>
+    <SubTexture name="HintProgressAchiev_rewardBack" x="1148" y="1527" rotated="true" width="68" height="63" frameX="-1" frameY="-1" frameWidth="65" frameHeight="69"/>
+    <SubTexture name="HolidayBonusPanel_star" x="957" y="1694" rotated="true" width="95" height="96" frameX="-1" frameY="0" frameWidth="100" frameHeight="100"/>
+    <SubTexture name="HouseMenu_userInfo_avatar_frame" x="1223" y="1969" width="13" height="13"/>
+    <SubTexture name="HpIcon" x="1400" y="1052" width="54" height="47" frameX="-1" frameY="-1" frameWidth="55" frameHeight="48"/>
+    <SubTexture name="LevelUpDialog_GreyRibbon_part1" x="3" y="688" width="389" height="70" frameX="-1" frameY="-1" frameWidth="391" frameHeight="71"/>
+    <SubTexture name="LevelUpDialog_GreyRibbon_part2" x="3" y="614" width="434" height="70" frameX="-1" frameY="-1" frameWidth="435" frameHeight="71"/>
+    <SubTexture name="LevelUpDialog_cell" x="1841" y="970" width="33" height="33" frameX="0" frameY="0" frameWidth="34" frameHeight="34"/>
+    <SubTexture name="LevelUpDialog_char" x="207" y="1403" rotated="true" width="179" height="152" frameX="-1" frameY="-1" frameWidth="153" frameHeight="180"/>
+    <SubTexture name="LevelUpDialog_yellowRibbon_part1" x="3" y="310" width="492" height="69" frameX="-1" frameY="-1" frameWidth="493" frameHeight="70"/>
+    <SubTexture name="LevelUpDialog_yellowRibbon_part2" x="1676" y="406" width="281" height="71" frameX="-1" frameY="-1" frameWidth="282" frameHeight="73"/>
+    <SubTexture name="LevelUpDialog_yellowStar" x="1342" y="815" rotated="true" width="113" height="120" frameX="-1" frameY="-1" frameWidth="121" frameHeight="114"/>
+    <SubTexture name="LightningResistSmallIcon" x="1947" y="982" rotated="true" width="31" height="26" frameX="-1" frameY="-1" frameWidth="27" frameHeight="32"/>
+    <SubTexture name="LightningSmallIcon" x="1572" y="1079" rotated="true" width="33" height="20" frameX="-1" frameY="-1" frameWidth="21" frameHeight="34"/>
+    <SubTexture name="LoadingMessageWithIcon_back" x="1842" y="855" width="37" height="37"/>
+    <SubTexture name="LoadingMessageWithIcon_icon" x="1467" y="1593" width="73" height="81"/>
+    <SubTexture name="MainMenuScena_bank" x="1056" y="1694" width="85" height="95" frameX="0" frameY="-1" frameWidth="85" frameHeight="97"/>
+    <SubTexture name="MainMenuScena_friendList_avatar_level" x="1544" y="1648" width="38" height="26" frameX="-1" frameY="-1" frameWidth="40" frameHeight="28"/>
+    <SubTexture name="MainMenuScena_friendList_onlineStatus" x="161" y="1686" rotated="true" width="30" height="47" frameX="-1" frameY="-1" frameWidth="49" frameHeight="31"/>
+    <SubTexture name="MsgVertBox_cancel_icon" x="800" y="64" width="75" height="102" frameX="-1" frameY="-1" frameWidth="76" frameHeight="103"/>
+    <SubTexture name="MsgVertBox_ok_icon" x="1128" y="1793" rotated="true" width="69" height="94" frameX="0" frameY="-1" frameWidth="94" frameHeight="71"/>
+    <SubTexture name="NoneSmallIcon" x="142" y="1910" width="10" height="9" frameX="-1" frameY="-1" frameWidth="11" frameHeight="11"/>
+    <SubTexture name="PlugIfNotEnoughRating_plugpic" x="879" y="249" width="576" height="300" frameX="-1" frameY="-1" frameWidth="577" frameHeight="301"/>
+    <SubTexture name="PoisonDamageSmallIcon" x="474" y="1759" width="19" height="24" frameX="-1" frameY="-1" frameWidth="20" frameHeight="25"/>
+    <SubTexture name="PoisonResistSmallIcon" x="1665" y="1735" rotated="true" width="34" height="24" frameX="-1" frameY="-1" frameWidth="26" frameHeight="36"/>
+    <SubTexture name="PvpCard_unavailable_teamIcon" x="773" y="863" width="100" height="71" frameX="-1" frameY="-1" frameWidth="101" frameHeight="72"/>
+    <SubTexture name="PvpTabGradient" x="766" y="805" rotated="true" width="3" height="19" frameX="-1" frameY="0" frameWidth="20" frameHeight="3"/>
+    <SubTexture name="PvpTab_battleBtn_btnBack" x="3" y="1870" rotated="true" width="53" height="23" frameX="0" frameY="0" frameWidth="24" frameHeight="54"/>
+    <SubTexture name="PvpTab_card15_back_backBottom" x="499" y="500" width="270" height="22" frameX="0" frameY="0" frameWidth="270" frameHeight="23"/>
+    <SubTexture name="PvpTab_card15_back_backTop" x="1676" y="724" width="270" height="91" frameX="0" frameY="0" frameWidth="270" frameHeight="92"/>
+    <SubTexture name="PvpTab_card15_icon" x="681" y="1562" width="174" height="174"/>
+    <SubTexture name="PvpTab_card15_iconBack" x="499" y="808" width="201" height="190"/>
+    <SubTexture name="PvpTab_card15_title" x="1539" y="1763" rotated="true" width="78" height="79"/>
+    <SubTexture name="PvpTab_card2x2_back_backBottom" x="499" y="526" width="270" height="22" frameX="0" frameY="0" frameWidth="270" frameHeight="23"/>
+    <SubTexture name="PvpTab_card2x2_back_backTop" x="499" y="310" width="270" height="91" frameX="0" frameY="0" frameWidth="270" frameHeight="92"/>
+    <SubTexture name="PvpTab_card2x2_icon" x="499" y="1572" width="174" height="174"/>
+    <SubTexture name="PvpTab_card2x2_iconBack" x="499" y="1002" width="201" height="190"/>
+    <SubTexture name="PvpTab_card2x2_title" x="392" y="1092" rotated="true" width="86" height="140"/>
+    <SubTexture name="PvpTab_card50_back_backBottom" x="499" y="552" width="270" height="22" frameX="0" frameY="0" frameWidth="270" frameHeight="23"/>
+    <SubTexture name="PvpTab_card50_back_backTop" x="499" y="405" width="270" height="91" frameX="0" frameY="0" frameWidth="270" frameHeight="92"/>
+    <SubTexture name="PvpTab_card50_icon" x="704" y="1141" rotated="true" width="163" height="174"/>
+    <SubTexture name="PvpTab_card50_iconBack" x="875" y="1012" width="201" height="190"/>
+    <SubTexture name="PvpTab_card50_title" x="772" y="938" width="99" height="82"/>
+    <SubTexture name="RatingPanel_alltimeBtn" x="1330" y="1038" width="5" height="61" frameX="-1" frameY="-1" frameWidth="6" frameHeight="62"/>
+    <SubTexture name="RatingPanel_alltimeBtn_line" x="800" y="393" rotated="true" width="75" height="3" frameX="-1" frameY="0" frameWidth="5" frameHeight="75"/>
+    <SubTexture name="RatingPanel_deltaPanel_equals" x="1953" y="506" rotated="true" width="4" height="17" frameX="-1" frameY="-1" frameWidth="18" frameHeight="5"/>
+    <SubTexture name="RatingPanel_nonTopCell_icon_1" x="1485" y="1080" rotated="true" width="43" height="12" frameX="-1" frameY="-1" frameWidth="13" frameHeight="44"/>
+    <SubTexture name="RatingPanel_nonTopCell_icon_2" x="1670" y="926" rotated="true" width="43" height="12" frameX="-1" frameY="-1" frameWidth="13" frameHeight="44"/>
+    <SubTexture name="RatingPanel_nonTopCell_icon_3" x="1684" y="1216" rotated="true" width="43" height="12" frameX="-1" frameY="-1" frameWidth="13" frameHeight="44"/>
+    <SubTexture name="RatingSmallIcon" x="1922" y="944" width="24" height="25" frameX="-1" frameY="-1" frameWidth="25" frameHeight="26"/>
+    <SubTexture name="ReactionIcon" x="1204" y="1594" width="72" height="91" frameX="-1" frameY="-1" frameWidth="73" frameHeight="93"/>
+    <SubTexture name="ReactionSpeedLine" x="1953" y="481" rotated="true" width="4" height="21" frameX="0" frameY="-1" frameWidth="21" frameHeight="5"/>
+    <SubTexture name="RegenerationSmallIcon" x="1745" y="1814" rotated="true" width="26" height="25" frameX="-1" frameY="0" frameWidth="26" frameHeight="26"/>
+    <SubTexture name="ResistSmallIcon" x="344" y="1894" width="40" height="25" frameX="-1" frameY="-1" frameWidth="41" frameHeight="26"/>
+    <SubTexture name="SelectMapMenu_circle" x="1364" y="1594" width="83" height="83" frameX="-1" frameY="-1" frameWidth="85" frameHeight="85"/>
+    <SubTexture name="SelectMapMenu_fill" x="1953" y="527" width="4" height="4"/>
+    <SubTexture name="SelectMapMenu_map_loading1" x="794" y="1906" width="133" height="133"/>
+    <SubTexture name="SelectMapMenu_map_loading2" x="800" y="170" rotated="true" width="75" height="76"/>
+    <SubTexture name="SelectMapMenu_map_mapBackground" x="681" y="1521" width="17" height="21" frameX="0" frameY="0" frameWidth="18" frameHeight="22"/>
+    <SubTexture name="SelectMapMenu_shirm" x="1342" y="799" width="3" height="3"/>
+    <SubTexture name="SelectMapMenu_squares" x="938" y="1794" width="96" height="96" frameX="0" frameY="0" frameWidth="97" frameHeight="97"/>
+    <SubTexture name="SettingsDialog_changeName_back" x="766" y="742" width="3" height="59" frameX="-1" frameY="-1" frameWidth="4" frameHeight="60"/>
+    <SubTexture name="ShopItemCard_lock" x="1324" y="1377" width="68" height="85" frameX="-1" frameY="-1" frameWidth="69" frameHeight="87"/>
+    <SubTexture name="ShopMenuBase_back_upState_arrow" x="60" y="1870" width="35" height="23" frameX="-1" frameY="-1" frameWidth="36" frameHeight="24"/>
+    <SubTexture name="ShopMenuBase_shadowClose" x="1342" y="806" width="3" height="3" frameX="0" frameY="0" frameWidth="4" frameHeight="4"/>
+    <SubTexture name="SmallIconShadow" x="829" y="1024" width="25" height="5" frameX="0" frameY="-1" frameWidth="26" frameHeight="6"/>
+    <SubTexture name="SmallPencil" x="161" y="1737" width="30" height="42"/>
+    <SubTexture name="SolidDialogLine" x="290" y="894" rotated="true" width="2" height="3"/>
+    <SubTexture name="SpeedSmallIcon" x="1385" y="1256" width="42" height="28" frameX="-1" frameY="-1" frameWidth="44" frameHeight="29"/>
+    <SubTexture name="SquadAttackIcon" x="1886" y="819" rotated="true" width="39" height="30" frameX="-5" frameY="0" frameWidth="35" frameHeight="39"/>
+    <SubTexture name="SquadDefenceIcon" x="1431" y="1254" width="40" height="30"/>
+    <SubTexture name="SuperBossesPanel_HardBackDown" x="499" y="1196" rotated="true" width="200" height="190" frameX="-1" frameY="-1" frameWidth="192" frameHeight="201"/>
+    <SubTexture name="SuperBossesPanel_HardBackUp" x="1120" y="1086" rotated="true" width="200" height="190" frameX="-1" frameY="-1" frameWidth="192" frameHeight="201"/>
+    <SubTexture name="SuperBossesPanel_HellBackDown" x="871" y="1206" rotated="true" width="200" height="190" frameX="-1" frameY="-1" frameWidth="192" frameHeight="201"/>
+    <SubTexture name="SuperBossesPanel_HellBackUp" x="1120" y="1280" rotated="true" width="200" height="190" frameX="-1" frameY="-1" frameWidth="192" frameHeight="201"/>
+    <SubTexture name="SuperBossesPanel_NightmareBackDown" x="867" y="1400" rotated="true" width="200" height="190" frameX="-1" frameY="-1" frameWidth="192" frameHeight="201"/>
+    <SubTexture name="SuperBossesPanel_NightmareBackUp" x="3" y="949" rotated="true" width="200" height="190" frameX="-1" frameY="-1" frameWidth="192" frameHeight="201"/>
+    <SubTexture name="SuperBossesPanel_NormalBackDown" x="3" y="1143" rotated="true" width="200" height="190" frameX="-1" frameY="-1" frameWidth="192" frameHeight="201"/>
+    <SubTexture name="SuperBossesPanel_NormalBackUp" x="3" y="1337" rotated="true" width="200" height="190" frameX="-1" frameY="-1" frameWidth="192" frameHeight="201"/>
+    <SubTexture name="SuperBossesPanel_greenLine" x="1075" y="1206" rotated="true" width="1" height="114" frameX="-2" frameY="-1" frameWidth="117" frameHeight="2"/>
+    <SubTexture name="SuperBossesPanel_greenShadow" x="687" y="1390" rotated="true" width="12" height="83" frameX="0" frameY="-1" frameWidth="83" frameHeight="13"/>
+    <SubTexture name="SuperBossesPanel_line" x="494" y="1090" rotated="true" width="1" height="144" frameX="-2" frameY="-1" frameWidth="146" frameHeight="3"/>
+    <SubTexture name="SuperBossesPanel_orangeLine" x="1671" y="455" rotated="true" width="1" height="153" frameX="-3" frameY="-1" frameWidth="157" frameHeight="2"/>
+    <SubTexture name="SuperBossesPanel_orangeShadow" x="459" y="1907" width="83" height="12" frameX="0" frameY="-1" frameWidth="83" frameHeight="13"/>
+    <SubTexture name="SuperBossesPanel_redLine" x="1671" y="612" rotated="true" width="1" height="153" frameX="-3" frameY="-1" frameWidth="157" frameHeight="2"/>
+    <SubTexture name="SuperBossesPanel_redShadow" x="459" y="1907" width="83" height="12" frameX="0" frameY="-1" frameWidth="83" frameHeight="13"/>
+    <SubTexture name="SuperBossesPanel_shirm" x="487" y="842" width="3" height="3"/>
+    <SubTexture name="SuperBossesPanel_yellowLine" x="1671" y="769" rotated="true" width="1" height="153" frameX="-3" frameY="-1" frameWidth="157" frameHeight="2"/>
+    <SubTexture name="SuperBossesPanel_yellowShadow" x="1451" y="1593" rotated="true" width="12" height="83" frameX="0" frameY="-1" frameWidth="83" frameHeight="13"/>
+    <SubTexture name="Surrender_boxer" x="195" y="1559" width="174" height="146" frameX="-1" frameY="-1" frameWidth="176" frameHeight="147"/>
+    <SubTexture name="Surrender_rabbit" x="207" y="1244" rotated="true" width="179" height="155" frameX="-1" frameY="-1" frameWidth="156" frameHeight="180"/>
+    <SubTexture name="Surrender_shade" x="269" y="894" width="3" height="3" frameX="0" frameY="0" frameWidth="4" frameHeight="4"/>
+    <SubTexture name="TabBar_cells_back2_cellFrame" x="1517" y="1249" width="35" height="35" frameX="0" frameY="0" frameWidth="36" frameHeight="36"/>
+    <SubTexture name="TabBar_cells_blink" x="482" y="1148" width="4" height="71" frameX="0" frameY="0" frameWidth="4" frameHeight="73"/>
+    <SubTexture name="TeamIcon" x="1397" y="1466" rotated="true" width="59" height="56" frameX="-1" frameY="-1" frameWidth="57" frameHeight="60"/>
+    <SubTexture name="TokenBattleBig" x="650" y="1794" width="92" height="108"/>
+    <SubTexture name="TokenBossBig" x="746" y="1794" width="92" height="108"/>
+    <SubTexture name="TokenPvpWagerBig" x="842" y="1794" width="92" height="108"/>
+    <SubTexture name="TopAwardCell_bronse" x="390" y="1303" rotated="true" width="105" height="106" frameX="0" frameY="-1" frameWidth="106" frameHeight="106"/>
+    <SubTexture name="TopAwardCell_gold" x="390" y="1413" rotated="true" width="105" height="106" frameX="0" frameY="-1" frameWidth="106" frameHeight="106"/>
+    <SubTexture name="TopAwardCell_silver" x="390" y="1523" rotated="true" width="105" height="106" frameX="0" frameY="-1" frameWidth="106" frameHeight="106"/>
+    <SubTexture name="TutorialCard_1_icon" x="1145" y="1692" rotated="true" width="82" height="91" frameX="-1" frameY="-1" frameWidth="92" frameHeight="83"/>
+    <SubTexture name="TutorialCard_2_icon" x="1150" y="1891" width="69" height="92" frameX="-1" frameY="-1" frameWidth="71" frameHeight="93"/>
+    <SubTexture name="TutorialCard_3_icon" x="1406" y="1288" width="67" height="70" frameX="-1" frameY="-1" frameWidth="69" frameHeight="72"/>
+    <SubTexture name="TutorialCard_4_icon" x="1324" y="1288" width="78" height="85" frameX="-1" frameY="-1" frameWidth="80" frameHeight="87"/>
+    <SubTexture name="TutorialCard_5_icon" x="800" y="250" rotated="true" width="75" height="74" frameX="-1" frameY="-1" frameWidth="75" frameHeight="76"/>
+    <SubTexture name="TutorialPanel_cloud" x="3" y="1686" width="154" height="48" frameX="-1" frameY="0" frameWidth="155" frameHeight="48"/>
+    <SubTexture name="TutorialPanel_tutorialBg" x="1657" y="2034" width="11" height="11" frameX="0" frameY="0" frameWidth="12" frameHeight="12"/>
+    <SubTexture name="UnderwaterSmallIcon" x="1556" y="1249" rotated="true" width="32" height="35" frameX="-1" frameY="-1" frameWidth="36" frameHeight="33"/>
+    <SubTexture name="UserInfo_level_back" x="1599" y="1952" width="78" height="78" frameX="-1" frameY="-1" frameWidth="79" frameHeight="79"/>
+    <SubTexture name="UserInfo_level_blink" x="1945" y="1012" width="29" height="28" frameX="-1" frameY="-1" frameWidth="30" frameHeight="29"/>
+    <SubTexture name="VIPUserHint_Back" x="1075" y="1324" width="41" height="41"/>
+    <SubTexture name="VIPUserHint_IconShadow" x="482" y="1092" rotated="true" width="5" height="25"/>
+    <SubTexture name="VIPUserHint_ParamLine" x="276" y="894" width="3" height="3"/>
+    <SubTexture name="VIPUserHint_TitleLine" x="494" y="939" rotated="true" width="1" height="147" frameX="-2" frameY="-1" frameWidth="151" frameHeight="3"/>
+    <SubTexture name="VampyricSmallIcon" x="1600" y="1929" rotated="true" width="34" height="19" frameX="-1" frameY="-1" frameWidth="20" frameHeight="35"/>
+    <SubTexture name="VipTimerBack" x="142" y="1738" width="13" height="37"/>
+    <SubTexture name="Vip_Icon" x="1038" y="1794" rotated="true" width="86" height="96"/>
+    <SubTexture name="WaitForPvpOpponentDialog_levelBackground" x="1661" y="1101" width="54" height="54" frameX="-1" frameY="-1" frameWidth="55" frameHeight="55"/>
+    <SubTexture name="Wardrobe_charPlace_shadow" x="487" y="383" rotated="true" width="8" height="92" frameX="0" frameY="-1" frameWidth="92" frameHeight="9"/>
+    <SubTexture name="WeaponHint_panel" x="1672" y="2034" width="11" height="11" frameX="0" frameY="0" frameWidth="12" frameHeight="12"/>
+    <SubTexture name="White" x="283" y="894" width="3" height="3" frameX="0" frameY="0" frameWidth="4" frameHeight="4"/>
+    <SubTexture name="WhiteCircle" x="1479" y="1853" width="79" height="79"/>
+    <SubTexture name="WhiteCircleSmall" x="1330" y="1018" width="6" height="6"/>
+    <SubTexture name="WindowWideFrame" x="129" y="1870" width="23" height="23" frameX="-1" frameY="-1" frameWidth="25" frameHeight="25"/>
+    <SubTexture name="arrow_left_down" x="1080" y="1123" width="36" height="39" frameX="-1" frameY="-1" frameWidth="37" frameHeight="40"/>
+    <SubTexture name="arrow_left_up" x="1080" y="1166" width="36" height="39" frameX="-1" frameY="-1" frameWidth="37" frameHeight="40"/>
+    <SubTexture name="arrows_rotate" x="99" y="1870" rotated="true" width="26" height="23"/>
+    <SubTexture name="backIcon" x="349" y="1733" rotated="true" width="37" height="57" frameX="-1" frameY="-1" frameWidth="58" frameHeight="38"/>
+    <SubTexture name="base_overlay_avatar_back" x="250" y="901" rotated="true" width="139" height="158"/>
+    <SubTexture name="base_overlay_bank_back" x="341" y="1794" width="114" height="96"/>
+    <SubTexture name="base_overlay_bank_btn_down" x="555" y="1794" rotated="true" width="91" height="109" frameX="0" frameY="0" frameWidth="109" frameHeight="92"/>
+    <SubTexture name="base_overlay_bank_btn_up" x="459" y="1794" rotated="true" width="92" height="109"/>
+    <SubTexture name="base_overlay_blick_" x="1264" y="1969" width="85" height="76"/>
+    <SubTexture name="base_overlay_blick_avatar" x="1698" y="1004" rotated="true" width="48" height="54"/>
+    <SubTexture name="base_overlay_blick_avatar_wire" x="800" y="589" width="73" height="37"/>
+    <SubTexture name="base_overlay_blick_chain" x="1101" y="851" width="13" height="77"/>
+    <SubTexture name="base_overlay_blick_fuzy" x="702" y="1503" width="160" height="44"/>
+    <SubTexture name="base_overlay_blick_holder" x="704" y="808" width="16" height="16"/>
+    <SubTexture name="base_overlay_blick_ruby" x="441" y="614" rotated="true" width="42" height="132"/>
+    <SubTexture name="base_overlay_blick_shop" x="393" y="849" rotated="true" width="99" height="70" frameX="0" frameY="0" frameWidth="83" frameHeight="99"/>
+    <SubTexture name="base_overlay_blick_smile" x="681" y="1477" width="17" height="40"/>
+    <SubTexture name="base_overlay_default_avatar" x="914" y="1594" width="96" height="96"/>
+    <SubTexture name="base_overlay_deposit_active" x="1201" y="1787" rotated="true" width="79" height="88"/>
+    <SubTexture name="base_overlay_deposit_back" x="396" y="688" width="41" height="58"/>
+    <SubTexture name="base_overlay_deposit_inactive" x="1458" y="1006" rotated="true" width="62" height="70"/>
+    <SubTexture name="base_overlay_deposit_loader" x="1687" y="2000" width="45" height="45"/>
+    <SubTexture name="base_overlay_icon_achieve_down" x="207" y="949" width="39" height="55"/>
+    <SubTexture name="base_overlay_icon_achieve_up" x="207" y="1008" width="39" height="55"/>
+    <SubTexture name="base_overlay_icon_arsenal_down" x="1071" y="1411" rotated="true" width="45" height="54"/>
+    <SubTexture name="base_overlay_icon_arsenal_up" x="1071" y="1469" rotated="true" width="45" height="54"/>
+    <SubTexture name="base_overlay_icon_craft_down" x="1592" y="1234" rotated="true" width="48" height="50"/>
+    <SubTexture name="base_overlay_icon_craft_up" x="1644" y="1234" rotated="true" width="48" height="50"/>
+    <SubTexture name="base_overlay_icon_home_down" x="1460" y="1466" width="58" height="56"/>
+    <SubTexture name="base_overlay_icon_home_up" x="1522" y="1466" width="58" height="56"/>
+    <SubTexture name="base_overlay_icon_race_down" x="1172" y="1474" rotated="true" width="43" height="49"/>
+    <SubTexture name="base_overlay_icon_race_up" x="1219" y="1474" rotated="true" width="43" height="49"/>
+    <SubTexture name="base_overlay_icon_team_down" x="1621" y="1763" rotated="true" width="48" height="52"/>
+    <SubTexture name="base_overlay_icon_team_up" x="1671" y="1678" rotated="true" width="48" height="52"/>
+    <SubTexture name="base_overlay_icon_wardrobe_down" x="497" y="1750" width="56" height="40"/>
+    <SubTexture name="base_overlay_icon_wardrobe_up" x="557" y="1750" width="56" height="40"/>
+    <SubTexture name="base_overlay_leave_down" x="1080" y="1021" rotated="true" width="36" height="47"/>
+    <SubTexture name="base_overlay_leave_up" x="1080" y="1072" rotated="true" width="36" height="47"/>
+    <SubTexture name="base_overlay_level_back" x="1950" y="810" rotated="true" width="95" height="131"/>
+    <SubTexture name="base_overlay_level_over" x="1533" y="1103" width="66" height="66"/>
+    <SubTexture name="base_overlay_level_progress" x="704" y="828" width="65" height="65"/>
+    <SubTexture name="base_overlay_main_btn_back" x="3" y="383" width="480" height="168"/>
+    <SubTexture name="base_overlay_main_btn_down" x="1676" y="3" width="341" height="149"/>
+    <SubTexture name="base_overlay_main_btn_up" x="1676" y="156" width="341" height="149"/>
+    <SubTexture name="base_overlay_nav_btn_back" x="1342" y="939" width="112" height="109"/>
+    <SubTexture name="base_overlay_nav_btn_down" x="1223" y="1879" width="86" height="86"/>
+    <SubTexture name="base_overlay_nav_btn_friend_default" x="1284" y="1780" width="86" height="86"/>
+    <SubTexture name="base_overlay_nav_btn_friend_over" x="1315" y="1685" width="86" height="86"/>
+    <SubTexture name="base_overlay_nav_btn_over" x="1313" y="1870" width="86" height="86"/>
+    <SubTexture name="base_overlay_nav_btn_up" x="1374" y="1775" width="86" height="86"/>
+    <SubTexture name="base_overlay_nav_panel_back" x="1464" y="1768" width="71" height="81"/>
+    <SubTexture name="base_overlay_photo_btn" x="1520" y="1526" rotated="true" width="48" height="61"/>
+    <SubTexture name="base_overlay_rating_back" x="1526" y="1953" rotated="true" width="69" height="79"/>
+    <SubTexture name="base_overlay_rating_btn" x="1535" y="1288" width="59" height="59"/>
+    <SubTexture name="base_overlay_rating_over" x="1585" y="1173" width="57" height="57"/>
+    <SubTexture name="base_overlay_rating_up" x="1598" y="1288" width="57" height="57"/>
+    <SubTexture name="base_overlay_right_corner_back" x="499" y="1416" width="178" height="152"/>
+    <SubTexture name="base_overlay_settings_btn_down" x="1330" y="1180" width="72" height="72"/>
+    <SubTexture name="base_overlay_settings_btn_up" x="1391" y="1103" width="72" height="72"/>
+    <SubTexture name="base_overlay_shop_back" x="300" y="1923" width="137" height="114"/>
+    <SubTexture name="base_overlay_shop_btn_down" x="1349" y="553" rotated="true" width="106" height="127"/>
+    <SubTexture name="base_overlay_shop_btn_up" x="1349" y="684" rotated="true" width="106" height="127"/>
+    <SubTexture name="base_overlay_text_back" x="1406" y="1179" rotated="true" width="58" height="71"/>
+    <SubTexture name="base_overlay_vip_btn" x="1574" y="1351" width="59" height="59"/>
+    <SubTexture name="bounusExpIcon" x="1673" y="1763" width="51" height="51"/>
+    <SubTexture name="but_post_message_disabled" x="1468" y="1176" rotated="true" width="57" height="69"/>
+    <SubTexture name="but_post_message_down" x="1524" y="1006" rotated="true" width="57" height="69"/>
+    <SubTexture name="but_post_message_up" x="1457" y="1362" rotated="true" width="57" height="69"/>
+    <SubTexture name="button_blue_down" x="1457" y="1435" rotated="true" width="53" height="27"/>
+    <SubTexture name="button_blue_up" x="1514" y="1435" rotated="true" width="53" height="27"/>
+    <SubTexture name="button_close_down" x="704" y="897" width="64" height="64"/>
+    <SubTexture name="button_close_up" x="704" y="965" width="64" height="64"/>
+    <SubTexture name="button_green_down" x="1719" y="1101" width="27" height="53"/>
+    <SubTexture name="button_green_up" x="1750" y="1002" width="27" height="53"/>
+    <SubTexture name="button_grey_down" x="1544" y="1591" width="27" height="53"/>
+    <SubTexture name="button_grey_up" x="1572" y="1526" width="27" height="53"/>
+    <SubTexture name="button_hint_back" x="677" y="1740" width="95" height="50"/>
+    <SubTexture name="button_hint_forward" x="776" y="1740" width="95" height="50"/>
+    <SubTexture name="button_new_blue_down" x="2021" y="304" width="24" height="52" frameX="0" frameY="-2" frameWidth="24" frameHeight="54"/>
+    <SubTexture name="button_new_blue_up" x="2021" y="72" width="24" height="54"/>
+    <SubTexture name="button_new_disabled" x="2021" y="130" width="24" height="54"/>
+    <SubTexture name="button_new_green_down" x="1553" y="1735" rotated="true" width="52" height="24" frameX="0" frameY="-2" frameWidth="24" frameHeight="54"/>
+    <SubTexture name="button_new_green_up" x="2021" y="188" width="24" height="54"/>
+    <SubTexture name="button_new_red_down" x="1609" y="1735" rotated="true" width="52" height="24" frameX="0" frameY="-2" frameWidth="24" frameHeight="54"/>
+    <SubTexture name="button_new_red_up" x="2021" y="246" width="24" height="54"/>
+    <SubTexture name="button_orange_down" x="1584" y="1466" width="27" height="53"/>
+    <SubTexture name="button_orange_up" x="1575" y="1583" width="27" height="53"/>
+    <SubTexture name="button_purple_down" x="1603" y="1523" width="27" height="53"/>
+    <SubTexture name="button_purple_up" x="1553" y="1678" width="27" height="53"/>
+    <SubTexture name="button_quad_close_down" x="1764" y="863" rotated="true" width="38" height="40" frameX="0" frameY="-2" frameWidth="40" frameHeight="40"/>
+    <SubTexture name="button_quad_close_up" x="1676" y="865" width="40" height="40"/>
+    <SubTexture name="button_quad_grey_down" x="1800" y="819" rotated="true" width="38" height="40" frameX="0" frameY="-2" frameWidth="40" frameHeight="40"/>
+    <SubTexture name="button_quad_grey_up" x="1713" y="819" width="40" height="40"/>
+    <SubTexture name="button_red_down" x="1584" y="1678" width="27" height="53"/>
+    <SubTexture name="button_red_up" x="1615" y="1678" width="27" height="53"/>
+    <SubTexture name="button_round_green_down" x="1220" y="1527" width="63" height="63" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+    <SubTexture name="button_round_green_up" x="1423" y="1526" width="63" height="63" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+    <SubTexture name="button_round_yellow_disabled" x="1353" y="1960" width="85" height="85"/>
+    <SubTexture name="button_round_yellow_down" x="1961" y="360" width="84" height="84" frameX="-1" frameY="-1" frameWidth="85" frameHeight="85"/>
+    <SubTexture name="button_round_yellow_up" x="1961" y="448" width="84" height="84" frameX="-1" frameY="-1" frameWidth="85" frameHeight="85"/>
+    <SubTexture name="changeNameSubbutton_icon" x="1691" y="1066" rotated="true" width="36" height="31" frameX="-1" frameY="-1" frameWidth="32" frameHeight="37"/>
+    <SubTexture name="change_delta_down" x="1609" y="1076" width="21" height="23" frameX="0" frameY="-1" frameWidth="22" frameHeight="24"/>
+    <SubTexture name="change_delta_equal" x="681" y="1546" width="16" height="12"/>
+    <SubTexture name="change_delta_up" x="1098" y="953" rotated="true" width="18" height="17" frameX="-1" frameY="-1" frameWidth="18" frameHeight="20"/>
+    <SubTexture name="chat_tab_message_icon" x="388" y="1894" width="33" height="25"/>
+    <SubTexture name="chat_tab_team_icon" x="1330" y="1256" width="51" height="28"/>
+    <SubTexture name="chat_toggle_button" x="390" y="1633" width="105" height="59"/>
+    <SubTexture name="check" x="1730" y="1843" rotated="true" width="42" height="45" frameX="-1" frameY="-1" frameWidth="46" frameHeight="44"/>
+    <SubTexture name="completedBossInfo_icon" x="441" y="1923" width="93" height="111" frameX="0" frameY="-1" frameWidth="94" frameHeight="113"/>
+    <SubTexture name="craft_box_1" x="269" y="762" rotated="true" width="120" height="128"/>
+    <SubTexture name="craft_box_2" x="142" y="1923" width="128" height="118"/>
+    <SubTexture name="crown" x="1266" y="1474" width="64" height="48"/>
+    <SubTexture name="default_cell_back" x="1924" y="894" width="21" height="21"/>
+    <SubTexture name="default_cell_disabled_back" x="1924" y="919" width="21" height="21"/>
+    <SubTexture name="default_cell_selected_back" x="1922" y="973" width="21" height="21"/>
+    <SubTexture name="dndLabel" x="1490" y="1526" rotated="true" width="26" height="63"/>
+    <SubTexture name="double_chat_tab_active" x="392" y="1238" width="103" height="61"/>
+    <SubTexture name="double_chat_tab_inactive" x="390" y="1696" width="103" height="59" frameX="0" frameY="0" frameWidth="103" frameHeight="61"/>
+    <SubTexture name="emoji_cloud_frame" x="1071" y="1527" width="73" height="63"/>
+    <SubTexture name="emoji_cloud_tale" x="1778" y="1987" rotated="true" width="38" height="42"/>
+    <SubTexture name="fullscreen_icon" x="1680" y="1844" rotated="true" width="46" height="47"/>
+    <SubTexture name="gamepad_icon" x="1670" y="945" rotated="true" width="52" height="55"/>
+    <SubTexture name="greenCheck" x="1442" y="1955" rotated="true" width="80" height="85"/>
+    <SubTexture name="hint_action_button_up" x="1736" y="1993" width="38" height="43"/>
+    <SubTexture name="hint_action_button_vip_up" x="1773" y="1940" width="38" height="43"/>
+    <SubTexture name="hot_seat_icon" x="800" y="328" width="75" height="61" frameX="-1" frameY="-1" frameWidth="76" frameHeight="62"/>
+    <SubTexture name="iCloudButton_downState" x="1606" y="1580" width="21" height="53"/>
+    <SubTexture name="iCloudButton_label" x="1396" y="1377" rotated="true" width="57" height="85"/>
+    <SubTexture name="iCloudButton_upState" x="1646" y="1678" width="21" height="53"/>
+    <SubTexture name="icon_anonymous" x="1459" y="249" width="213" height="196"/>
+    <SubTexture name="icon_clan_delegate" x="1475" y="1249" rotated="true" width="38" height="35"/>
+    <SubTexture name="icon_clan_expel_off" x="1760" y="1892" rotated="true" width="40" height="44"/>
+    <SubTexture name="icon_clan_expel_on" x="1676" y="819" rotated="true" width="33" height="42"/>
+    <SubTexture name="icon_clan_increase" x="1804" y="974" width="33" height="33"/>
+    <SubTexture name="icon_clan_info" x="1571" y="1425" rotated="true" width="40" height="37"/>
+    <SubTexture name="icon_clan_invite" x="1757" y="819" rotated="true" width="39" height="40"/>
+    <SubTexture name="icon_clan_kick" x="1841" y="1007" width="29" height="28"/>
+    <SubTexture name="icon_clan_mute_off" x="1666" y="1636" width="45" height="38"/>
+    <SubTexture name="icon_clan_mute_on" x="1731" y="1944" rotated="true" width="38" height="45"/>
+    <SubTexture name="icon_clan_reduce" x="1950" y="945" width="33" height="33"/>
+    <SubTexture name="icon_fuzy" x="1726" y="945" rotated="true" width="51" height="53"/>
+    <SubTexture name="icon_info" x="1098" y="974" width="17" height="43" frameX="-24" frameY="-9" frameWidth="64" frameHeight="64"/>
+    <SubTexture name="icon_info_new" x="1882" y="967" rotated="true" width="36" height="31"/>
+    <SubTexture name="icon_message_new" x="1080" y="1289" width="36" height="31"/>
+    <SubTexture name="icon_mini_2x2" x="1646" y="1163" rotated="true" width="34" height="55"/>
+    <SubTexture name="icon_mini_boss" x="1886" y="853" width="38" height="37"/>
+    <SubTexture name="icon_mini_duel" x="1717" y="909" width="40" height="32"/>
+    <SubTexture name="icon_mini_home" x="617" y="1750" rotated="true" width="45" height="40"/>
+    <SubTexture name="icon_mini_hotseat" x="1842" y="819" width="40" height="32"/>
+    <SubTexture name="icon_mini_suber_boss" x="1728" y="1763" rotated="true" width="42" height="47"/>
+    <SubTexture name="icon_mini_user_page" x="1660" y="1899" width="47" height="47"/>
+    <SubTexture name="icon_note_new" x="434" y="1759" width="36" height="31"/>
+    <SubTexture name="icon_ruby" x="1684" y="1159" rotated="true" width="51" height="53"/>
+    <SubTexture name="icon_send" x="1987" y="945" width="32" height="28"/>
+    <SubTexture name="icon_stat_air_damage" x="1804" y="1011" width="28" height="28"/>
+    <SubTexture name="icon_stat_air_defence" x="425" y="1894" rotated="true" width="30" height="25"/>
+    <SubTexture name="icon_stickers_new" x="1080" y="1250" width="36" height="35"/>
+    <SubTexture name="icon_stickers_off" x="1720" y="863" width="40" height="40"/>
+    <SubTexture name="icon_stickers_on" x="1622" y="1637" rotated="true" width="40" height="37"/>
+    <SubTexture name="icon_team_message_new" x="1532" y="1079" width="36" height="20"/>
+    <SubTexture name="icon_tg" x="1287" y="1526" width="64" height="64"/>
+    <SubTexture name="icon_vk" x="1355" y="1526" width="64" height="64"/>
+    <SubTexture name="item_back_dark" x="1080" y="1012" width="5" height="5"/>
+    <SubTexture name="item_back_light" x="1089" y="1012" width="5" height="5"/>
+    <SubTexture name="languageButton_chinese" x="1489" y="1678" rotated="true" width="60" height="81"/>
+    <SubTexture name="languageButton_english" x="1181" y="1987" width="79" height="58" frameX="-1" frameY="-1" frameWidth="80" frameHeight="60"/>
+    <SubTexture name="languageButton_russian" x="1562" y="1846" rotated="true" width="59" height="79" frameX="-1" frameY="-1" frameWidth="80" frameHeight="60"/>
+    <SubTexture name="left_panel_toggle_button" x="859" y="1594" width="51" height="108"/>
+    <SubTexture name="lockedBossInfo_icon" x="1231" y="1689" width="80" height="87" frameX="0" frameY="-1" frameWidth="81" frameHeight="89"/>
+    <SubTexture name="message_icon" x="156" y="1870" rotated="true" width="35" height="44"/>
+    <SubTexture name="music_icon" x="1883" y="894" rotated="true" width="37" height="32" frameX="-1" frameY="-1" frameWidth="33" frameHeight="39"/>
+    <SubTexture name="newField" x="773" y="584" rotated="true" width="23" height="56" frameX="-1" frameY="-1" frameWidth="58" frameHeight="25"/>
+    <SubTexture name="nextIcon" x="1731" y="1062" width="32" height="34" frameX="-3" frameY="-1" frameWidth="36" frameHeight="36"/>
+    <SubTexture name="nextIconDisabled" x="1842" y="896" rotated="true" width="36" height="33" frameX="-3" frameY="0" frameWidth="36" frameHeight="36"/>
+    <SubTexture name="panel_back" x="1912" y="1002" width="29" height="29"/>
+    <SubTexture name="panel_back_light" x="2023" y="945" width="21" height="21" frameX="0" frameY="0" frameWidth="22" frameHeight="22"/>
+    <SubTexture name="panel_background" x="724" y="808" width="16" height="16"/>
+    <SubTexture name="paramsIcon" x="1334" y="1466" width="59" height="56" frameX="-1" frameY="-1" frameWidth="60" frameHeight="57"/>
+    <SubTexture name="parts/brow" x="1458" y="1080" width="23" height="19" frameX="0" frameY="0" frameWidth="24" frameHeight="19"/>
+    <SubTexture name="parts/cab_body" x="1339" y="1052" width="57" height="47"/>
+    <SubTexture name="parts/cab_ear_back" x="250" y="857" width="15" height="22"/>
+    <SubTexture name="parts/cab_hair" x="390" y="1759" width="40" height="31"/>
+    <SubTexture name="parts/cheeky" x="250" y="883" width="15" height="14"/>
+    <SubTexture name="parts/ear" x="859" y="1706" rotated="true" width="12" height="23"/>
+    <SubTexture name="parts/eye_1" x="1101" y="756" rotated="true" width="15" height="14"/>
+    <SubTexture name="parts/eye_2" x="1101" y="774" rotated="true" width="15" height="13"/>
+    <SubTexture name="parts/eyelid_part_1" x="1101" y="827" width="14" height="8"/>
+    <SubTexture name="parts/eyelid_part_2" x="1342" y="759" rotated="true" width="3" height="15" frameX="0" frameY="0" frameWidth="16" frameHeight="3"/>
+    <SubTexture name="parts/fang" x="1626" y="2034" width="12" height="11"/>
+    <SubTexture name="parts/grass" x="825" y="630" width="14" height="10"/>
+    <SubTexture name="parts/hog_spark_circle" x="1330" y="1028" width="6" height="6"/>
+    <SubTexture name="parts/hog_spark_rope" x="1101" y="839" rotated="true" width="14" height="8"/>
+    <SubTexture name="parts/hog_spark_star" x="1638" y="1929" width="12" height="12"/>
+    <SubTexture name="parts/hoof_back" x="1599" y="2034" rotated="true" width="23" height="11"/>
+    <SubTexture name="parts/hoof_front" x="800" y="630" rotated="true" width="21" height="10"/>
+    <SubTexture name="parts/lip" x="349" y="1709" width="20" height="11"/>
+    <SubTexture name="parts/nose" x="1098" y="932" width="18" height="17"/>
+    <SubTexture name="parts/shadow" x="1330" y="950" rotated="true" width="6" height="64"/>
+    <SubTexture name="photoUpload_back" x="1912" y="1002" width="29" height="29"/>
+    <SubTexture name="photoUpload_overlay" x="858" y="1024" width="5" height="5"/>
+    <SubTexture name="prevIcon" x="1586" y="1640" width="32" height="34" frameX="-1" frameY="-1" frameWidth="36" frameHeight="36"/>
+    <SubTexture name="prevIconDisabled" x="1882" y="930" rotated="true" width="36" height="33" frameX="0" frameY="0" frameWidth="36" frameHeight="36"/>
+    <SubTexture name="progress_back" x="773" y="759" width="100" height="100"/>
+    <SubTexture name="ratingIcon" x="875" y="1706" width="78" height="84" frameX="-1" frameY="-1" frameWidth="79" frameHeight="86"/>
+    <SubTexture name="redDot" x="1101" y="809" width="14" height="14" frameX="-1" frameY="-1" frameWidth="15" frameHeight="15"/>
+    <SubTexture name="red_line" x="487" y="796" width="8" height="42"/>
+    <SubTexture name="scroll_thumb" x="1330" y="938" width="8" height="8"/>
+    <SubTexture name="settingsIcon" x="1711" y="1895" width="45" height="45" frameX="-1" frameY="-1" frameWidth="46" frameHeight="46"/>
+    <SubTexture name="sound_icon" x="1961" y="309" width="55" height="47" frameX="-1" frameY="-1" frameWidth="56" frameHeight="48"/>
+    <SubTexture name="sticker_icon" x="1842" y="933" rotated="true" width="36" height="33"/>
+    <SubTexture name="sub_tab_back" x="857" y="630" rotated="true" width="16" height="8"/>
+    <SubTexture name="sub_tab_down" x="487" y="479" width="8" height="60"/>
+    <SubTexture name="sub_tab_up" x="487" y="735" width="8" height="57" frameX="0" frameY="0" frameWidth="8" frameHeight="60"/>
+    <SubTexture name="tab_button_disabled" x="373" y="1617" width="13" height="54"/>
+    <SubTexture name="tab_button_down" x="373" y="1675" width="13" height="54"/>
+    <SubTexture name="tab_button_up" x="1479" y="1936" rotated="true" width="54" height="13"/>
+    <SubTexture name="tab_new_disabled" x="487" y="543" width="8" height="60"/>
+    <SubTexture name="tab_new_down" x="487" y="607" width="8" height="60"/>
+    <SubTexture name="tab_new_up" x="487" y="671" width="8" height="60"/>
+    <SubTexture name="text_input_back" x="1537" y="1936" rotated="true" width="59" height="12" frameX="0" frameY="0" frameWidth="12" frameHeight="60"/>
+    <SubTexture name="text_input_background" x="744" y="808" width="16" height="16"/>
+    <SubTexture name="title_underline" x="1324" y="1086" rotated="true" width="2" height="198" frameX="-2" frameY="0" frameWidth="201" frameHeight="2"/>
+    <SubTexture name="unavailableBossInfo_arrow" x="1080" y="1209" rotated="true" width="36" height="37" frameX="-1" frameY="-1" frameWidth="38" frameHeight="37"/>
+    <SubTexture name="unavailableBossInfo_icon" x="1110" y="1594" width="90" height="94" frameX="-1" frameY="-1" frameWidth="91" frameHeight="95"/>
+    <SubTexture name="user_hint_params_line" x="1459" y="449" width="212" height="2" frameX="-1" frameY="0" frameWidth="213" frameHeight="2"/>
+</TextureAtlas>

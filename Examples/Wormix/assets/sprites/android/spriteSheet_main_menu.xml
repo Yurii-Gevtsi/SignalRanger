@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:bdf2a0cf9b4e43134f8e03a619aa3564:a3a612ca76f42a425b8e1454726cea2c:7accaa58c0e9cdb1e3bd3d808581556c$ -->
+<TextureAtlas imagePath="spriteSheet_main_menu.png">
+    <SubTexture name="main_menu_back" x="2" y="2" width="1920" height="1080"/>
+    <SubTexture name="main_menu_balk_0" x="129" y="1659" width="208" height="97" frameX="0" frameY="-1" frameWidth="209" frameHeight="98"/>
+    <SubTexture name="main_menu_balk_1" x="1924" y="924" width="74" height="24" frameX="-1" frameY="0" frameWidth="76" frameHeight="25"/>
+    <SubTexture name="main_menu_balk_2" x="2" y="1294" width="125" height="464"/>
+    <SubTexture name="main_menu_barrels_0" x="1924" y="154" width="91" height="232" frameX="0" frameY="-3" frameWidth="93" frameHeight="235"/>
+    <SubTexture name="main_menu_barrels_1" x="816" y="1084" width="282" height="185" frameX="0" frameY="-1" frameWidth="283" frameHeight="186"/>
+    <SubTexture name="main_menu_camera" x="852" y="1533" width="134" height="114" frameX="0" frameY="-1" frameWidth="135" frameHeight="116"/>
+    <SubTexture name="main_menu_chains_0" x="1924" y="388" width="89" height="534"/>
+    <SubTexture name="main_menu_chains_1" x="1924" y="950" width="62" height="342"/>
+    <SubTexture name="main_menu_char_platform_0" x="174" y="1084" width="319" height="198"/>
+    <SubTexture name="main_menu_char_platform_1" x="495" y="1084" width="319" height="198"/>
+    <SubTexture name="main_menu_coner" x="2" y="1760" width="304" height="252" frameX="-1" frameY="-1" frameWidth="305" frameHeight="253"/>
+    <SubTexture name="main_menu_glow_0" x="2031" y="2" width="13" height="80" frameX="0" frameY="0" frameWidth="14" frameHeight="82"/>
+    <SubTexture name="main_menu_glow_1" x="2017" y="154" width="25" height="39" frameX="0" frameY="0" frameWidth="26" frameHeight="39"/>
+    <SubTexture name="main_menu_laser" x="852" y="1294" width="246" height="237"/>
+    <SubTexture name="main_menu_mountains" x="129" y="1294" width="721" height="363"/>
+    <SubTexture name="main_menu_name_green" x="1924" y="2" width="105" height="74"/>
+    <SubTexture name="main_menu_name_orange" x="1924" y="78" width="105" height="74"/>
+    <SubTexture name="main_menu_platform_blick" x="1100" y="1294" width="236" height="160"/>
+    <SubTexture name="main_menu_rocket" x="1100" y="1084" width="59" height="125"/>
+    <SubTexture name="main_menu_sky_0" x="339" y="1659" width="729" height="350"/>
+    <SubTexture name="main_menu_wire_0" x="988" y="1533" width="195" height="91" frameX="0" frameY="0" frameWidth="196" frameHeight="91"/>
+    <SubTexture name="main_menu_wire_1" x="2" y="1084" width="170" height="199"/>
+</TextureAtlas>

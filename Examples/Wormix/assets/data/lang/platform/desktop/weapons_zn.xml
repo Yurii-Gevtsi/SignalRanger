@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+<message name="EXPLOSION_DELAY.NOTE" value="完全停止后发生爆炸。在装弹的同时，你可以按住 SHIFT 键将计时器设置为 1 秒。"/>
+<message name="DOWNGRADE_ON_SHIFT.NOTE" value="按下SHIFT键，该武器具有升级/正常模式开关"/>
+<message name="ROPE.NOTE.U2" value="向供应舱SHIFT拍摄绳索。"/>
+<message name="SHOCKER.DESCR.U2" value="基于电荷对目标的直接影响的近战武器。 目标减速2回合。 该弹药向中等半径的最近敌人弹跳。 如果您在攻击时按住SHIFT，则不会弹跳。"/>
+<message name="GRAVITY_GUN.NOTE.U2" value="攻击时抓住一个对象保持SHIFT。"/>
+    <message name="TELEPORT.DESCR"
+             value="允许单元移动到地图上的任何区域。最小面积大小必须大于单位面积。轻度伤害并结束您的回合。"/>
+    <message name="TELEPORT.DESCR.U1A"
+             value="允许单元移动到地图上的任何区域。处理在初始点和目标点的小破坏。转弯。"/>
+</dictionary>

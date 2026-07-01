@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dictionary>
+<message name="PARAMS_CHEAT" value="禁止进行角色参数作弊"/>
+<message name="PROTOCOL_CHEAT" value="禁止进行游戏协议破解"/>
+<message name="BATTLE_CANCEL" value="禁止使用导致战斗取消的程序和漏洞"/>
+<message name="BOT_USE" value="禁止使用游戏外挂"/>
+<message name="SEARCH_CHEAT" value="禁止使用软件搜索朋友"/>
+<message name="USE_PROGRAMS_FOR_CHEAT" value="禁止使用和发布第三方软件"/>
+<message name="WARDROBE_CHEAT" value="禁止破坏服装衣柜"/>
+<message name="FRIEND_LIST_CHEAT" value="禁止替换好友列表"/>
+<message name="SHOP_CHEAT" value="禁止破坏游戏商店"/>
+<message name="BAN_FOR_CHAT" value="禁止侮辱其他玩家"/>
+<message name="GENERAL_BAN" value="禁止违反游戏规则"/>
+<message name="BAN_END_DATE" value="封禁结束时间："/>
+<message name="HELP_FOR_BAN" value="请发送解封请求至"/>
+<message name="USER_ID" value="你的游戏账号："/>
+</dictionary>

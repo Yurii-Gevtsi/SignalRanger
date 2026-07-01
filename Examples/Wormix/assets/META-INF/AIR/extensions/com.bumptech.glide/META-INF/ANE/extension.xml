@@ -1,0 +1,40 @@
+<extension xmlns="http://ns.adobe.com/air/extension/50.2">
+	<id>com.bumptech.glide</id>
+	<versionNumber>5.0.0</versionNumber>
+	<platforms>
+
+		<platform name="Android-ARM">
+			<applicationDeployment>
+				<nativeLibrary>com.bumptech.glide.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.bumptech.glide.GlideExtension</initializer>
+				<finalizer>com.distriqt.extension.bumptech.glide.GlideExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-ARM64">
+			<applicationDeployment>
+				<nativeLibrary>com.bumptech.glide.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.bumptech.glide.GlideExtension</initializer>
+				<finalizer>com.distriqt.extension.bumptech.glide.GlideExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x86">
+			<applicationDeployment>
+				<nativeLibrary>com.bumptech.glide.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.bumptech.glide.GlideExtension</initializer>
+				<finalizer>com.distriqt.extension.bumptech.glide.GlideExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+		<platform name="Android-x64">
+			<applicationDeployment>
+				<nativeLibrary>com.bumptech.glide.android.jar</nativeLibrary>
+				<initializer>com.distriqt.extension.bumptech.glide.GlideExtension</initializer>
+				<finalizer>com.distriqt.extension.bumptech.glide.GlideExtension</finalizer>
+			</applicationDeployment>
+		</platform>
+
+		<platform name="default"> 
+			<applicationDeployment /> 
+		</platform>
+		
+	</platforms>
+</extension>

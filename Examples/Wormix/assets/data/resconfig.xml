@@ -1,0 +1,326 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+    <!-- Внимание ресурсов с одинаковым именем файла быть не должно, даже если они лежат по отдельным папкам -->
+
+    <!-- общие для всех звуки -->
+    <sound ns="ru.pragmatix.wormix.data." path="sounds/sound.swf" lazy="true">
+
+        <!-- ambient -->
+		<resource className="MenuBeginning"/>
+		<resource className="MenuLoop"/>
+
+        <resource className="BattleTheme1"/>
+        <resource className="BattleTheme2"/>
+        <resource className="BattleTheme3"/>
+
+        <!--<resource className="map1_loop"/>-->
+        <!-- menu -->
+        <resource className="arena"/>
+        <resource className="armory"/>
+        <resource className="bag"/>
+        <resource className="bank"/>
+        <resource className="best"/>
+        <resource className="menu_close"/>
+        <resource className="menu_deny"/>
+        <resource className="menu_grant"/>
+        <resource className="menu_open"/>
+        <resource className="menu_select"/>
+        <resource className="menu_turn"/>
+        <resource className="shop"/>
+        <resource className="message"/>
+
+        <!-- misk -->
+        <resource className="airstrike"/>
+        <resource className="battle_start"/>
+        <resource className="bonus"/>
+        <resource className="lose"/>
+        <resource className="screenshot"/>
+        <resource className="water_splash1"/>
+        <resource className="water_splash2"/>
+        <resource className="water_splash3"/>
+        <resource className="impact"/>
+        <resource className="move_drop"/>
+
+        <!-- weapon -->
+        <resource className="kanat_impact"/>
+        <resource className="icegun_attack"/>
+        <resource className="icegun_explosion"/>
+        <resource className="icegun_icecrash"/>
+        <resource className="hrumhrum"/>
+        <resource className="bat_swoosh"/>
+        <resource className="bat_smash"/>
+        <resource className="balka"/>
+        <resource className="arbalet_attack"/>
+
+        <resource className="arbuz_bounce"/>
+        <resource className="direction"/>
+        <resource className="dynamite_explosion"/>
+        <resource className="dynamite_fuse_loop"/>
+        <resource className="electroshocker"/>
+        <resource className="fire_loop"/>
+        <resource className="flamer"/>
+        <resource className="flamer_loop"/>
+        <resource className="grenade_attack"/>
+        <resource className="grenade1_bounce"/>
+        <resource className="grenade1_bounce_stop"/>
+        <resource className="grenade1_explosion"/>
+        <resource className="ground_loop"/>
+        <resource className="jackhammer"/>
+        <resource className="jetpack_loop"/>
+        <resource className="jetpack_start"/>
+        <resource className="jetpack_stop"/>
+        <resource className="mine_beep"/>
+        <resource className="molotov_broke"/>
+        <resource className="rikoshet1"/>
+        <resource className="rikoshet2"/>
+        <resource className="rocket_attack"/>
+        <resource className="rocket1_explosion"/>
+        <resource className="salute_explosion"/>
+        <resource className="salute_start"/>
+        <resource className="sheep_super_loop"/>
+        <resource className="swine"/>
+        <resource className="cat_air_strike"/>
+        <resource className="shotgun_attack"/>
+        <resource className="shotgun2_attack"/>
+        <resource className="slimer"/>
+        <resource className="sniper"/>
+        <resource className="teleport"/>
+        <resource className="throwpower"/>
+        <resource className="uzi_loop"/>
+        <resource className="vulcan_loop"/>
+        <resource className="cassete_explosion_random1"/>
+        <resource className="cassete_explosion_random2"/>
+        <resource className="cassete_explosion_random3"/>
+        <resource className="water_impact_random1"/>
+        <resource className="water_impact_random2"/>
+        <resource className="water_impact_random3"/>
+        <resource className="water_up"/>
+
+        <resource className="SpiderMineWalk_LOOP2"/>
+        <resource className="SpiderMineArmed"/>
+        <resource className="SpiderMineAttack"/>
+        <resource className="ShurikenAttack01"/>
+        <resource className="ShurikenAttack02"/>
+        <resource className="ShurikenAttack03"/>
+        <resource className="ShurikenAttack04"/>
+        <resource className="ShurikenHitGround01"/>
+        <resource className="ShurikenHitGround02"/>
+        <resource className="ShurikenHitGround03"/>
+        <resource className="ShurikenHitGround04"/>
+        <resource className="ShurikenHitWorm01"/>
+        <resource className="ShurikenHitWorm02"/>
+        <resource className="ShurikenHitWorm03"/>
+        <resource className="ShurikenHitWorm04"/>
+        <resource className="VintageCannonAttack"/>
+        <resource className="VintageCannonballExplosion"/>
+        <resource className="VintageCannonballHit01"/>
+        <resource className="VintageCannonballHit02"/>
+        <resource className="VintageCannonballHit03"/>
+        <resource className="WoodClubAttack"/>
+
+        <!-- новые пушки -->
+        <resource className="antifreeze"/>
+        <resource className="boomerang_attack"/>
+        <resource className="boomerang_bounce"/>
+        <resource className="disc_attack"/>
+        <resource className="disc_bounce"/>
+        <resource className="grenade_jump"/>
+        <resource className="helicopter_loop"/>
+        <resource className="helicopter_shot"/>
+        <resource className="shield_activation"/>
+        <resource className="shield_loop"/>
+        <resource className="ufo_loop"/>
+        <resource className="ufo_pickup"/>
+
+        <!--new-->
+        <resource className="AntitoxinSound"/>
+        <resource className="BandageSound"/>
+        <resource className="ExtraTeleportSound"/>
+        <resource className="GravigunAttackSound"/>
+        <resource className="GravigunExplosion"/>
+        <resource className="LaserbarActivationSound"/>
+        <resource className="LaserbarBounceSound"/>
+        <resource className="WeaponCraftSound"/>
+        <resource className="WeaponUncraftSound"/>
+        <resource className="ParasiteBounce"/>
+        <resource className="ParasiteExplosion"/>
+        <resource className="ParasiteFire"/>
+        <resource className="ParasiteImpact"/>
+        <resource className="AppleTake"/>
+        <resource className="AppleExplosion"/>
+        <resource className="star_collect"/>
+        <resource className="box_bounce"/>
+
+        <!--dragon sounds-->
+        <resource className="DragonFirewalkSound"/>
+        <resource className="DragonFlightSound"/>
+
+        <!--dark shield buff sounds-->
+        <resource className="darkknight_aura_on"/>
+        <resource className="darkknight_aura_off"/>
+
+        <!--atom bomb sounds-->
+        <resource className="atom_bomb_aim"/>
+
+        <resource className="soulgun_fire"/>
+        <resource className="soulgun_hit"/>
+    </sound>
+
+    <!-- звуки для русского червя -->
+    <sound ns="ru.pragmatix.wormix.data." path="sounds/sound_worm_ru.swf" lazy="true">
+        <!-- misk -->
+        <resource className="worm.win_ru"/>
+
+        <!-- payer -->
+        <resource className="worm.damage1_ru"/>
+        <resource className="worm.damage2_ru"/>
+        <resource className="worm.damage3_ru"/>
+        <resource className="worm.damage4_ru"/>
+
+        <resource className="worm.speak_cheknutiy_ru"/>
+        <resource className="worm.speak_granata_ru"/>
+        <resource className="worm.speak_hoho_ru"/>
+        <resource className="worm.speak_lojis_ru"/>
+        <resource className="worm.speak_mest_ru"/>
+        <resource className="worm.speak_nashol_ru"/>
+        <resource className="worm.speak_nepopal_ru"/>
+        <resource className="worm.speak_nukanuka_ru"/>
+        <resource className="worm.speak_ogon_ru"/>
+        <resource className="worm.speak_pervayakrov_ru"/>
+        <resource className="worm.speak_pogodi_ru"/>
+        <resource className="worm.speak_predatel_ru"/>
+        <resource className="worm.speak_prijok1_ru"/>
+        <resource className="worm.speak_prijok2_ru"/>
+        <resource className="worm.speak_promazal_ru"/>
+        <resource className="worm.speak_smeh1_ru"/>
+        <resource className="worm.speak_smeh2_ru"/>
+        <resource className="worm.speak_smotri_ru"/>
+        <resource className="worm.speak_ubit_ru"/>
+        <resource className="worm.speak_vottebe_ru"/>
+        <resource className="worm.speak_vpered_ru"/>
+        <resource className="worm.speak_yessir_ru"/>
+        <resource className="worm.speak_vboy_ru"/>
+        <resource className="worm.speak_v_ataku_ru"/>
+        <resource className="worm.speak_komandir_ru"/>
+        <resource className="worm.speak_jdu_prikaza_ru"/>
+        <resource className="worm.speak_cel_obnarujena_ru"/>
+    </sound>
+
+    <!-- звуки для русского червя -->
+    <sound ns="ru.pragmatix.wormix.data." path="sounds/sound_worm_en.swf" lazy="true">
+        <!-- misk -->
+        <resource className="worm.win_en"/>
+
+        <!-- payer -->
+        <resource className="worm.damage1_en"/>
+        <resource className="worm.damage2_en"/>
+        <resource className="worm.damage3_en"/>
+        <resource className="worm.damage4_en"/>
+
+        <resource className="worm.speak_cheknutiy_en"/>
+        <resource className="worm.speak_granata_en"/>
+        <resource className="worm.speak_hoho_en"/>
+        <resource className="worm.speak_lojis_en"/>
+        <resource className="worm.speak_mest_en"/>
+        <resource className="worm.speak_nashol_en"/>
+        <resource className="worm.speak_nepopal_en"/>
+        <resource className="worm.speak_nukanuka_en"/>
+        <resource className="worm.speak_ogon_en"/>
+        <resource className="worm.speak_pervayakrov_en"/>
+        <resource className="worm.speak_pogodi_en"/>
+        <resource className="worm.speak_predatel_en"/>
+        <resource className="worm.speak_prijok1_en"/>
+        <resource className="worm.speak_prijok2_en"/>
+        <resource className="worm.speak_promazal_en"/>
+        <resource className="worm.speak_smeh1_en"/>
+        <resource className="worm.speak_smeh2_en"/>
+        <resource className="worm.speak_smotri_en"/>
+        <resource className="worm.speak_ubit_en"/>
+        <resource className="worm.speak_vottebe_en"/>
+        <resource className="worm.speak_vpered_en"/>
+        <resource className="worm.speak_yessir_en"/>
+        <resource className="worm.speak_vboy_en"/>
+        <resource className="worm.speak_v_ataku_en"/>
+        <resource className="worm.speak_komandir_en"/>
+        <resource className="worm.speak_jdu_prikaza_en"/>
+        <resource className="worm.speak_cel_obnarujena_en"/>
+    </sound>
+
+    <!-- звуки для английского боксера -->
+    <sound ns="ru.pragmatix.wormix.data." path="sounds/sound_boxer_en.swf" lazy="true">
+        <!-- misk -->
+        <resource className="boxer.win_boxer_en"/>
+
+        <!-- payer -->
+        <resource className="boxer.damage1_en"/>
+        <resource className="boxer.damage2_en"/>
+        <resource className="boxer.damage3_en"/>
+        <resource className="boxer.damage4_en"/>
+
+        <resource className="boxer.speak_cel_obnarujena_en"/>
+        <resource className="boxer.speak_cheknutiy_en"/>
+        <resource className="boxer.speak_granata_en"/>
+        <resource className="boxer.speak_hoho_en"/>
+        <resource className="boxer.speak_jdu_prikaza_en"/>
+        <resource className="boxer.speak_komandir_en"/>
+        <resource className="boxer.speak_lojis_en"/>
+        <resource className="boxer.speak_mest_en"/>
+        <resource className="boxer.speak_nashol_en"/>
+        <resource className="boxer.speak_nepopal_en"/>
+        <resource className="boxer.speak_nukanuka_en"/>
+        <resource className="boxer.speak_ogon_en"/>
+        <resource className="boxer.speak_pervayakrov_en"/>
+        <resource className="boxer.speak_pobeda_en"/>
+        <resource className="boxer.speak_pogodi_en"/>
+        <resource className="boxer.speak_predatel_en"/>
+        <resource className="boxer.speak_prijok1_en"/>
+        <resource className="boxer.speak_prijok2_en"/>
+        <resource className="boxer.speak_promazal_en"/>
+        <resource className="boxer.speak_smeh1_en"/>
+        <resource className="boxer.speak_smeh2_en"/>
+        <resource className="boxer.speak_smotri_en"/>
+        <resource className="boxer.speak_ubit_en"/>
+        <resource className="boxer.speak_v_ataku_en"/>
+        <resource className="boxer.speak_vboy_en"/>
+        <resource className="boxer.speak_vottebe_en"/>
+        <resource className="boxer.speak_vpered_en"/>
+    </sound>
+
+<!--
+    <library ns="ru.pragmatix.wormix.data." >
+        <resource className="TitleFont"/>
+        <resource className="NumberFont"/>
+        <resource className="ArialFont"/>
+        <resource className="ArialBoldFont"/>
+    </library>
+-->
+
+    <library ns="ru.pragmatix.wormix.data." path="learning/learningMissionsObjects.swf" lazy="true">
+        <resource className="LearningMission1_LeftPart"/>
+        <resource className="LearningMission1_CentralPart"/>
+        <resource className="LearningMission1_RightPart"/>
+        <!--2 mission-->
+        <resource className="LearningMission2_MovingPart"/>
+        <resource className="LearningMission2_StandingPart"/>
+        <!--3 mission-->
+        <resource className="LearningMission3_CentralPart"/>
+        <resource className="LearningMission3_LeftDownPart"/>
+        <resource className="LearningMission3_LeftUpPart"/>
+        <resource className="LearningMission3_RightPart"/>
+        <!--4 mission-->
+        <resource className="LearningMission4_CentralPart"/>
+        <!--5 mission-->
+        <resource className="LearningMission5_CentralPart"/>
+    </library>
+
+    <library ns="ru.pragmatix.wormix.data." path="maps/mapObjects.swf" lazy="true">
+        <resource className="Plug"/>
+        <resource className="Girder"/>
+        <resource className="GirderUpg1"/>
+        <resource className="AmAnvil"/>
+        <resource className="ArchidemonCage"/>
+        <resource className="ArchidemonCageErase"/>
+    </library>
+
+</resources>
