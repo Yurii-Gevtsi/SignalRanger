@@ -1,49 +1,69 @@
-# Codex Project Rules
+# Правила проєкту для Codex
 
-This project is an original Unity mobile game built from scratch.
+Це оригінальна мобільна Unity-гра, яка створюється з нуля. Приклади в `Examples/` використовуються як глибокий технічний і продуктовий референс.
 
-## Primary Goal
+## Головна мета
 
-Design and implement a simpler, more approachable mobile tactical artillery game inspired only at a high level by older successful examples. The game should be easy for a new player to enter, while leaving room for long-term progression, content growth, live tuning, events, and retention systems.
+Спроєктувати й реалізувати простішу, доступнішу мобільну тактичну artillery-гру з короткими покроковими боями, чесною фізикою пострілу, чистим мобільним UI, поступовою прогресією та можливістю майбутнього росту через зброю, арени, події, PvE/PvP, економіку, рекламу, покупки й live-ops.
 
-## Strict IP Boundaries
+Базовий продуктовий напрям:
 
-Do not copy from APK/XAPK examples:
+```text
+чистота бойового ядра як у компактних успішних artillery-іграх
++ відчуття довгострокового розвитку як у live-іграх
+- перевантажена економіка, VIP-перевага, шум підсистем і токсична реклама
+```
 
-- source code or decompiled code;
-- class names, method names, package names, or proprietary identifiers;
-- assets, sprites, images, audio, video, fonts, text, layouts, configs, or balance data;
-- scene structure, file structure, economy numbers, weapon stats, maps, UI layouts, or proprietary gameplay logic.
+## Робота з прикладами
 
-APK/XAPK analysis is allowed only as high-level technical research. Use it to understand broad architecture choices, common mobile SDK categories, packaging patterns, asset categories, and possible game systems. Never port implementation details from the examples.
+Агенти можуть вільно ознайомлюватися з розпакованими APK/XAPK у `Examples/`, включно з assets-структурою, маніфестами, конфігураціями, SDK-ознаками, ресурсами, layout-файлами, декомпільованими або витягнутими класами, якщо вони доступні локально. Це дозволено для:
 
-## Allowed Reference Use
+- розуміння архітектурних підходів;
+- вивчення організації систем;
+- виявлення сильних і слабких сторін готових ігор;
+- порівняння підходів до battle loop, UI, прогресії, економіки, SDK, live-ops;
+- формування власних технічних рішень;
+- пришвидшення проєктування через переймання досвіду й практик.
+- запозичення з власним трактуванням готових рішень, механік, принципів та архітектур.
 
-The unpacked examples in `Examples/` may be inspected only for high-level observations such as:
+Перед кожною суттєвою новою фічею або системою агент має спочатку спробувати знайти та подивитись як це реалізовано у прикладах, щоб не витрачати час на створення всього з нуля:
 
-- engine or runtime indicators;
-- Android permissions;
-- SDK categories such as ads, analytics, billing, notifications, remote config, or backend clients;
-- broad asset categories;
-- broad feature categories such as shop, rewards, inventory, tutorial, level progression, settings, or multiplayer.
+1. Знайти, чи є в `Examples/Warlings` або `Examples/Wormix` подібна система, екран, механіка, SDK-категорія або asset-група.
+2. Коротко виписати високорівневі спостереження: що система робить, які має ризики, що виглядає сильним, що варто спростити.
+3. Спроєктувати власну реалізацію з власними назвами, моделями, конфігами, балансом, UI та кодом.
+4. За потреби оновити документацію в `docs/`.
 
-When documenting research, summarize patterns in original wording. Avoid reproducing proprietary file lists, config values, internal names, or extracted content.
+## Межі IP та копіювання
 
-## Architecture Principles
+Дозволено ретельно аналізувати приклади й брати з них досвід, патерни та продуктові уроки. Заборонено переносити 1:1 або майже 1:1:
 
-- Keep gameplay, UI, data, and SDK integrations separated.
-- Wrap third-party SDKs behind project-owned service interfaces.
-- Keep core gameplay testable without Android, Firebase, ads, billing, or other external SDKs.
-- Prefer Unity 2D with URP, the Input System, Addressables later when needed, and ScriptableObject-based authored content for early development.
-- Keep the first version deliberately small: fast onboarding, few core weapons, clear UI, short matches, and minimal meta systems.
-- Add live/game-economy systems in layers after the core loop is fun.
+- вихідний або декомпільований код;
+- назви класів, методів, package names, proprietary identifiers;
+- assets, sprites, картинки, звуки, відео, шрифти;
+- тексти, локалізацію, layout-и, конфіги;
+- ціни, economy tables, weapon stats;
+- пропрієтарні алгоритми або логіку гри у відтвореному вигляді.
 
-## Collaboration Rules
+Рекомендований підхід: “зрозумів принцип -> описав власними словами -> реалізував власним кодом і власною структурою”.
 
-- Read this file and relevant files in `docs/` before large design or implementation changes.
-- Propose architecture before broad changes to core systems, data models, SDK integrations, or folder structure.
-- Document important architecture decisions in `docs/architecture/`.
-- Do not modify or delete files in `Examples/` unless explicitly asked.
-- Treat `Examples/` as research material, not source material.
-- Prefer small, modular changes with focused verification.
+## Архітектурні принципи
+
+- Тримати gameplay, UI, data, SDK та platform integrations окремими шарами.
+- Обгортати сторонні SDK власними інтерфейсами сервісів.
+- Core gameplay має тестуватися без Android, Firebase, реклами, billing, backend або інших зовнішніх SDK.
+- Для ранньої розробки використовувати Unity 2D, URP, Input System, ScriptableObject-конфіги та просту composition root.
+- Не додавати heavy meta-системи, доки core loop не став цікавим.
+- Спочатку полірувати постріл, прицілювання, projectile feel, turn flow, damage, win/loss.
+- Прогресію, економіку, магазин, рекламу, IAP, remote config і live-ops додавати шарами.
+- Не робити платну або VIP-перевагу в ranked/competitive combat.
+
+## Правила співпраці
+
+- Перед великими змінами читати `AGENTS.md` і релевантні файли в `docs/`.
+- Перед новою фічею дивитися відповідні приклади в `Examples/`, але не копіювати їх.
+- Перед широкими змінами core systems, data models, SDK integrations або folder structure спочатку запропонувати архітектуру.
+- Важливі рішення документувати в `docs/architecture/` або `docs/design/`.
+- Файли в `Examples/` можна читати й аналізувати, але не змінювати без прямого прохання.
+- Працювати малими модульними кроками з перевіркою.
+- Після імплементації конкретних кроків\етапів\фічів з документу - позначати таск як виконаний.
 

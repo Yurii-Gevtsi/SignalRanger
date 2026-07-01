@@ -1,133 +1,133 @@
-# Player Review Direction
+# Напрям з аналізу відгуків гравців
 
-This document summarizes product direction from the provided review analysis for Wormix and Warlings 2. It is not a source for copying content, names, balance, UI, economy, or proprietary systems. It is a high-level interpretation of player needs, frustrations, and opportunities for an original game.
+Цей документ підсумовує продуктовий напрям із аналізу відгуків про Wormix і Warlings 2. Це не джерело для копіювання content, names, balance, UI, economy або proprietary systems. Це високорівнева інтерпретація player needs, frustrations і opportunities для оригінальної гри.
 
-## Strategic Formula
+## Стратегічна формула
 
-The best direction for this project:
+Найкращий напрям для проєкту:
 
 ```text
-Warlings 2-like clarity of battle core
-+ Wormix-like feeling of long-term progression
-- Wormix-like economy/system overload
-- unfair PvP, aggressive ads, and account trust problems
+читабельність і чистота бойового ядра Warlings 2
++ відчуття довгострокової прогресії Wormix
+- перевантаження економікою/підсистемами Wormix
+- несправедливий PvP, агресивна реклама, account trust problems
 ```
 
-In practical terms: build a clean, readable, satisfying battle loop first, then add progression in layers. Do not begin with a heavy meta-game.
+Практично: спочатку чистий, зрозумілий, приємний battle loop, потім progression layers. Не починати з heavy meta-game.
 
-## What Players Seem To Love
+## Що гравцям подобається
 
-Across the genre signals, players respond strongly to:
+Сигнали жанру:
 
 - short turn-based tactical duels;
-- funny or expressive characters;
+- funny або expressive characters;
 - varied weapons with clear tactical roles;
 - readable projectile physics;
-- destructible or interactive terrain;
-- PvE and PvP options;
+- destructible або interactive terrain;
+- PvE і PvP options;
 - unlocks that create anticipation;
-- new maps, weapons, seasonal arenas, and event reasons to return.
+- new maps, weapons, seasonal arenas, event reasons to return.
 
-The fantasy works: clever shots, surprising weapons, compact battles, and the feeling that victory came from skillful decisions.
+Фантазія працює: clever shots, surprising weapons, compact battles, victory through skillful decisions.
 
-## What Breaks Trust
+## Що ламає довіру
 
-The most dangerous issues are not lack of content. They are trust failures:
+Найнебезпечніші проблеми не в нестачі контенту, а в trust failures:
 
-- uncomfortable aiming or accidental shots;
+- незручне прицілювання або accidental shots;
 - unfair matchmaking;
-- large power gaps between new and old players;
-- VIP or paid advantages in competitive combat;
-- exploits, cheating, or unclear server authority;
-- lost purchases or broken account migration;
+- великий power gap між новими й старими гравцями;
+- VIP або paid advantages у competitive combat;
+- exploits, cheating або unclear server authority;
+- lost purchases або broken account migration;
 - unstable reconnects;
-- ads that feel like punishment after every match;
-- long animations or weapons that create cheap losses;
-- bad spawn positions that decide the match before the player acts.
+- ads як покарання після кожного матчу;
+- довгі animations або weapons that create cheap losses;
+- bad spawn positions, які вирішують матч до першої дії.
 
-For this genre, trust is a primary feature. Players need to believe that controls, physics, match results, saves, purchases, and ranking are fair.
+У цьому жанрі trust є primary feature. Гравець має вірити controls, physics, match result, saves, purchases і ranking.
 
-## Lessons From Wormix
+## Уроки з Wormix
 
-Useful ideas:
+Корисні ідеї:
 
-- long-term content progression can retain players;
-- multiple character archetypes can deepen team identity;
-- PvE and PvP can coexist;
-- events, bosses, and new content can keep the game alive.
+- long-term content progression може утримувати гравців;
+- multiple character archetypes поглиблюють team identity;
+- PvE і PvP можуть співіснувати;
+- events, bosses і new content оживляють гру.
 
-Avoid:
+Уникати:
 
-- too many currencies;
-- too many crafting resources;
-- too many parameters;
-- too many early gates;
+- забагато currencies;
+- забагато crafting resources;
+- забагато parameters;
+- забагато early gates;
 - VIP-driven combat advantage;
-- overwhelming new players before they reach the real fun;
-- piling permanent systems on top of permanent systems.
+- перевантаження новачка до real fun;
+- permanent systems on top of permanent systems.
 
-Wormix is valuable mainly as a warning about system weight. Keep the joy of tactical battles and progression, not the complexity mass.
+Wormix корисний як warning про system weight. Зберегти tactical battles і progression, не complexity mass.
 
-## Lessons From Warlings 2
+## Уроки з Warlings 2
 
-Useful ideas:
+Корисні ідеї:
 
-- a compact, readable battle-first product is easier to understand;
-- a moderate weapon roster can feel rich without becoming exhausting;
-- offline AI, local hotseat, and online PvP serve different player moods;
-- destructible terrain and short sessions are strong genre anchors;
-- player requests for more maps/weapons usually mean the core loop is working.
+- compact, readable battle-first product легше зрозуміти;
+- moderate weapon roster дає variety без exhaustion;
+- offline AI, local hotseat і online PvP закривають різні moods;
+- destructible terrain і short sessions є strong genre anchors;
+- прохання гравців про більше maps/weapons часто означає, що core loop працює.
 
-Avoid:
+Уникати:
 
 - unfair online matchmaking;
 - aggressive ad cadence;
 - obvious weapon imbalance;
 - spawn positions that create unfair early deaths;
-- weapons or animations that waste too much match time;
-- leaving anti-cheat and competitive integrity too late.
+- weapons або animations, які waste too much match time;
+- відкладати anti-cheat і competitive integrity надто пізно.
 
-Warlings 2 is closer to the product shape we want: battle first, meta second.
+Warlings 2 ближчий до product shape, який нам потрібен: battle first, meta second.
 
 ## Product Pillars
 
-### 1. The Shot Must Feel Fair
+### 1. Постріл має бути чесним
 
-The first priority is aiming, power control, projectile readability, collision clarity, and feedback. Every miss should feel like the player's mistake or a readable tactical risk, not a UI failure.
+Перший пріоритет: aiming, power control, projectile readability, collision clarity, feedback. Кожен промах має відчуватися як помилка гравця або readable tactical risk, а не UI failure.
 
 Design implications:
 
 - deliberate fire confirmation;
-- visible trajectory preview or partial assist early on;
-- clear wind/force indicators if wind exists;
+- visible trajectory preview або partial assist early;
+- clear wind/force indicators, якщо wind exists;
 - generous touch targets;
 - no accidental release-to-fire during early tests;
-- instant feedback on damage, knockback, and terrain effects.
+- instant feedback on damage, knockback, terrain effects.
 
-### 2. PvP Must Feel Safe Early
+### 2. PvP має бути безпечним рано
 
-Players should taste human tactical tension early, but competitive power should be normalized.
+Гравець має рано відчути human tactical tension, але competitive power має бути normalized.
 
 Design implications:
 
-- early casual PvP or bot-assisted PvP equivalent;
-- ranked PvP only after basics are learned;
-- normalized stats in ranked modes;
+- early casual PvP або bot-assisted PvP equivalent;
+- ranked PvP only after basics;
+- normalized stats in ranked;
 - matchmaking by skill/rating and available arsenal band;
 - no paid combat advantage in ranked;
-- server-authoritative results when online features arrive.
+- server-authoritative results when online arrives.
 
-### 3. Progression Must Be Legible
+### 3. Progression має бути читабельною
 
-Progression should motivate, not bury the player.
+Progression мотивує, але не ховає гру.
 
-Recommended initial layers:
+Ранні layers:
 
 - account level;
 - character growth;
 - weapon mastery.
 
-Avoid early:
+Уникати early:
 
 - many currencies;
 - many crafting resources;
@@ -135,11 +135,11 @@ Avoid early:
 - VIP battle power;
 - dozens of unlock conditions.
 
-### 4. Content Should Expand Through Events, Not Permanent Noise
+### 4. Content має рости через події, не через шум
 
-Long-term freshness should come from time-limited content and new battle contexts rather than constant permanent economy expansion.
+Long-term freshness краще давати time-limited content і новими battle contexts, а не постійним economy expansion.
 
-Good candidates:
+Кандидати:
 
 - seasonal arenas;
 - weekly boss challenges;
@@ -148,34 +148,34 @@ Good candidates:
 - short PvE event chains;
 - cosmetic event rewards.
 
-### 5. Monetization Must Not Punish Play
+### 5. Монетизація не повинна карати за гру
 
-Ads and purchases should not make each match feel taxed.
+Ads і purchases не мають робити кожен матч “оподаткованим”.
 
 Guidelines:
 
 - no forced ad after every battle;
-- rewarded ads should be optional and clearly framed;
-- remove-ads purchase can exist later;
-- paid content should focus on cosmetics, convenience, passes, and non-ranked expression;
+- rewarded ads optional and clear;
+- remove-ads purchase later;
+- paid content: cosmetics, convenience, passes, non-ranked expression;
 - ranked combat must remain fair.
 
-## Recommended Launch Scope
+## Рекомендований launch scope
 
-Target a small but complete first public version:
+Small but complete first public version:
 
 - 12-16 original weapons;
 - 4-6 original character archetypes;
 - 4-6 arenas;
 - short campaign/tutorial path;
 - offline AI battles;
-- local or casual PvP path if feasible;
+- local або casual PvP path if feasible;
 - simple account level;
 - simple character and weapon progression;
 - one soft currency;
 - optional premium currency only for cosmetics/pass/convenience later.
 
-For the first prototype, this is still too much. The prototype should prove only:
+Для першого prototype це ще забагато. Prototype доводить тільки:
 
 - aiming;
 - projectile feel;
@@ -185,26 +185,26 @@ For the first prototype, this is still too much. The prototype should prove only
 - win/loss;
 - one readable HUD.
 
-## Priority Risks To Design Around
+## Priority Risks
 
 1. Bad aiming feel.
-2. Cheap losses from spawn, edge falls, or overpowered weapons.
+2. Cheap losses from spawn, edge falls, overpowered weapons.
 3. Matchmaking unfairness.
 4. Power gap from progression or monetization.
 5. Account/save/purchase trust failures.
-6. Too much meta complexity before the player loves the core.
-7. Ads damaging the rhythm.
-8. Content updates adding permanent complexity instead of fresh play.
+6. Too much meta complexity before player loves core.
+7. Ads damaging rhythm.
+8. Updates adding permanent complexity instead of fresh play.
 
 ## Design North Star
 
-The player should feel:
+Гравець має відчувати:
 
 ```text
-I understood the situation.
-I made a clever shot.
-The result was fair.
-I earned progress.
-I want one more match.
+Я зрозумів ситуацію.
+Я зробив розумний постріл.
+Результат був чесним.
+Я отримав прогрес.
+Я хочу ще один матч.
 ```
 
