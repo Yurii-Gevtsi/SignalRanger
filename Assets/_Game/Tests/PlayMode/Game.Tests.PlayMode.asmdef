@@ -8,6 +8,11 @@
         "Game.App",
         "Game.UI",
         "Game.Infrastructure",
+        "Game.Progression",
+        "Game.Inventory",
+        "Game.Audio",
+        "Game.Economy",
+        "Game.Tutorial",
         "UnityEngine.TestRunner"
     ],
     "includePlatforms": [],
