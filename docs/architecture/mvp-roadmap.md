@@ -6,7 +6,9 @@
 
 Виконано: Phase 0 (foundation), Phase 1 (battle core), Phase 2 (arenas), Phase 3 (weapons: 5 зброй, inventory/executor/effects), Phase 4 (HUD, aim confirmation, result screen), Phase 5 (Boot→Menu→Battle→Result flow), Phase 6 (save/migrations), Phase 7 (8 missions + campaign), Phase 8 (tutorial system + first-battle coach), Phase 9 (economy/inventory + loadout екран), Phase 10 (AI + difficulty per mission), Phase 11 (settings/audio + feedback hooks), Phase 12 (no-op infrastructure interfaces). Також: 3 character archetypes.
 
-Головні відкриті задачі до повного MVP: Phase 13.2 (PlayMode smoke tests) і Phase 14 (Android settings/performance/build gate). Полірувальні борги: HUD/меню у `Game.Gameplay`/`Game.App` без винесення у `Game.UI`; legacy uGUI `Text` без TMP/локалізації; один спільний projectile-ефект на всі ролі зброї; архетипи-інструменти зброї (cover/defensive/movement) як окремі ефекти.
+Виконано додатково: Phase 13.2 PlayMode smoke, Phase 14.1 Android settings, HUD-контракти у `Game.Core.Battle`, uGUI-view у `Game.UI.Battle` через фабрику, `BurstProjectileEffect` як заготовка для role-специфічних ефектів.
+
+MVP definition виконано. Лишилися ручні пункти: Phase 14.2 performance pass (потребує Profiler) і фінальний review gate — див. [phase-14-build-and-review.md](phase-14-build-and-review.md). Полірувальні борги: legacy uGUI `Text` без TMP/локалізації; role-специфічні ефекти зброї (`BurstProjectileEffect` є, але не інтегрований — поточна damage-модель ще не готова до multi-projectile per shot); архетипи-інструменти (cover/defensive/movement) як окремі ефекти.
 
 ## Правило для кожної фічі
 
