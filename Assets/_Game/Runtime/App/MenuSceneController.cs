@@ -13,10 +13,8 @@ namespace Game.App
     public sealed class MenuSceneController : MonoBehaviour
     {
         private static readonly Color BackgroundColor = new(0.12f, 0.17f, 0.20f);
-        private static readonly Color PanelColor = new(0.08f, 0.11f, 0.13f, 0.86f);
         private static readonly Color PrimaryColor = new(0.22f, 0.66f, 0.38f);
         private static readonly Color SecondaryColor = new(0.18f, 0.25f, 0.31f);
-        private static readonly Color DisabledColor = new(0.16f, 0.18f, 0.20f);
 
         private Sprite _whiteSprite;
         private Font _font;
@@ -99,38 +97,35 @@ namespace Game.App
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
+
+            // Top band with title/subtitle (anchored to the top edge).
             CreatePanel("Top Band", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0f, 260f), Vector2.zero, new Color(0.05f, 0.08f, 0.10f, 0.92f));
-
+                new Vector2(0f, 220f), Vector2.zero, new Color(0.05f, 0.08f, 0.10f, 0.92f));
             CreateText("Title", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-96f, 88f), new Vector2(0f, -68f), 52, TextAnchor.MiddleLeft, "Тактичний бій");
+                new Vector2(-96f, 78f), new Vector2(0f, -58f), 48, TextAnchor.MiddleLeft, "Тактичний бій");
             CreateText("Subtitle", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-96f, 72f), new Vector2(0f, -148f), 28, TextAnchor.MiddleLeft, "Короткі артилерійські дуелі. MVP build.");
+                new Vector2(-96f, 64f), new Vector2(0f, -132f), 26, TextAnchor.MiddleLeft, "Короткі артилерійські дуелі. MVP build.");
 
-            var panel = CreatePanel("Mission Panel", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(760f, 760f), new Vector2(0f, -120f), PanelColor);
+            // Mission info block, anchored under the top band.
+            CreateText("Mission Label", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(-120f, 42f), new Vector2(0f, -280f), 30, TextAnchor.MiddleLeft, "Наступна місія");
+            CreateText("Mission Name", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(-120f, 60f), new Vector2(0f, -336f), 42, TextAnchor.MiddleLeft, DescribeMissionTitle(nextMission));
+            CreateText("Mission Details", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(-120f, 120f), new Vector2(0f, -430f), 25, TextAnchor.UpperLeft, DescribeMissionDetails(nextMission));
+            CreateText("Profile Summary", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(-120f, 120f), new Vector2(0f, -560f), 23, TextAnchor.UpperLeft, DescribeProfile(saveData, nextMission));
 
-            CreateText("Mission Label", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-88f, 68f), new Vector2(0f, -54f), 34, TextAnchor.MiddleLeft, "Наступна місія");
-            CreateText("Mission Name", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-88f, 84f), new Vector2(0f, -132f), 46, TextAnchor.MiddleLeft, DescribeMissionTitle(nextMission));
-            CreateText("Mission Details", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-88f, 112f), new Vector2(0f, -232f), 26, TextAnchor.UpperLeft,
-                DescribeMissionDetails(nextMission));
-            CreateText("Profile Summary", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-88f, 82f), new Vector2(0f, -352f), 24, TextAnchor.UpperLeft, DescribeProfile(saveData, nextMission));
-
-            CreateButton("Play Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(620f, 116f), new Vector2(0f, 236f), PrimaryColor, "Грати", 44, StartBattle);
-            CreateButton("Loadout Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(620f, 86f), new Vector2(0f, 132f), SecondaryColor, "Спорядження", 30, OpenLoadout);
-            CreateButton("Settings Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(620f, 86f), new Vector2(0f, 34f), SecondaryColor, "Налаштування", 30, OpenSettings);
-            CreateButton("Debug Battle Button", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(620f, 74f), new Vector2(0f, -60f), DisabledColor, "Debug: відкрити бій", 26, StartBattle);
+            // Actions, anchored to the bottom edge so they never overlap the info above.
+            CreateButton("Play Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(680f, 124f), new Vector2(0f, 250f), PrimaryColor, "Грати", 44, StartBattle);
+            CreateButton("Loadout Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(332f, 100f), new Vector2(-176f, 132f), SecondaryColor, "Спорядження", 28, OpenLoadout);
+            CreateButton("Settings Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(332f, 100f), new Vector2(176f, 132f), SecondaryColor, "Налаштування", 28, OpenSettings);
 
             _statusText = CreateText("Status", root, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(-96f, 74f), new Vector2(0f, 48f), 26, TextAnchor.MiddleLeft,
+                new Vector2(-96f, 44f), new Vector2(0f, 48f), 24, TextAnchor.MiddleCenter,
                 DescribeMenuStatus(AppServices.LastSaveLoadResult, AppServices.LastMissionCompletionResult));
         }
 

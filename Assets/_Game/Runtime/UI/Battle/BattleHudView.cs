@@ -56,6 +56,7 @@ namespace Game.UI.Battle
         public event Action NextWeaponRequested;
         public event Action RestartRequested;
         public event Action ContinueRequested;
+        public event Action MenuRequested;
 
         private void Awake()
         {
@@ -144,9 +145,14 @@ namespace Game.UI.Battle
                 new Vector2(-40f, -12f), new Vector2(20f, 6f), 30, TextAnchor.LowerLeft);
 
             var restart = CreateButton("Restart", bar, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(180f, 72f), new Vector2(-16f, -16f), NeutralButtonColor, "Рестарт", 24,
+                new Vector2(176f, 72f), new Vector2(-16f, -16f), NeutralButtonColor, "Рестарт", 24,
                 () => RestartRequested?.Invoke());
             _ = restart;
+
+            var menu = CreateButton("Menu", bar, new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(140f, 72f), new Vector2(-(16f + 176f + 12f), -16f), new Color(0.30f, 0.20f, 0.22f), "Меню", 24,
+                () => MenuRequested?.Invoke());
+            _ = menu;
         }
 
         private void BuildHealthBars(Transform root)
@@ -246,11 +252,12 @@ namespace Game.UI.Battle
             _resultOutcomeText.text = state.ResultOutcome;
             _resultRewardText.text = state.ResultReward;
             _resultUnlockText.text = state.ResultUnlock;
-            _resultContinueNoteText.text = state.CanContinue ? "Наступна арена готова." : "Спробуй ще раз і покращ результат.";
+            _resultContinueNoteText.text = state.CanContinue ? "Наступну місію відкрито." : "Спробуй ще раз або повернись у меню.";
             _resultRetryLabel.text = state.RetryLabel;
             _resultContinueLabel.text = state.ContinueLabel;
-            _resultContinueButton.interactable = state.CanContinue;
-            _resultContinueLabel.color = state.CanContinue ? Color.white : new Color(1f, 1f, 1f, 0.4f);
+            // Right button always leaves the battle: continue (win) or back to menu (loss).
+            _resultContinueButton.interactable = true;
+            _resultContinueLabel.color = Color.white;
         }
 
         private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,

@@ -132,6 +132,7 @@ namespace Game.Gameplay.Battle.Assembly
             _hud.NextWeaponRequested += () => SelectWeapon(_inventory.SelectedIndex + 1);
             _hud.RestartRequested += RestartScene;
             _hud.ContinueRequested += ContinueFromResult;
+            _hud.MenuRequested += ExitToMenu;
         }
 
         private void Update()
@@ -776,16 +777,22 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void ContinueFromResult()
         {
-            if (!IsBattleReady() || !_battleResult.IsFinished || !_resultScreenState.CanContinue)
+            if (!IsBattleReady() || !_battleResult.IsFinished)
             {
                 return;
             }
 
+            // Win: report completion so the menu advances. Loss: just return to menu.
             if (_battleResult.Outcome == BattleOutcome.PlayerWon)
             {
                 GameSessionContext.ReportMissionCompleted();
             }
 
+            SceneManager.LoadScene(GameSceneNames.Menu);
+        }
+
+        private void ExitToMenu()
+        {
             SceneManager.LoadScene(GameSceneNames.Menu);
         }
 
@@ -835,7 +842,7 @@ namespace Game.Gameplay.Battle.Assembly
                 _battleResult.IsFinished && _resultScreenState.RewardPreview.HasUnlock ? _resultScreenState.RewardPreview.UnlockText : "Нових відкриттів немає",
                 _battleResult.IsFinished && _resultScreenState.CanContinue,
                 _battleResult.IsFinished ? _resultScreenState.RetryLabel : "Повторити",
-                _battleResult.IsFinished ? _resultScreenState.ContinueLabel : "Далі");
+                _resultScreenState.CanContinue ? _resultScreenState.ContinueLabel : "В меню");
 
             _hud.Render(state);
         }
@@ -894,17 +901,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private static string DescribeWeapon(WeaponDefinition weapon)
         {
-            return weapon == null
-                ? "невідома зброя"
-                : weapon.WeaponId switch
-                {
-                    "weapon.steady-orb" => "Рівна сфера",
-                    "weapon.pulse-shell" => "Імпульсний снаряд",
-                    "weapon.close-pop" => "Ближній хлопок",
-                    "weapon.long-lance" => "Довгий спис",
-                    "weapon.scatter-arc" => "Розсипна дуга",
-                    _ => "Зброя"
-                };
+            return weapon == null ? "невідома зброя" : WeaponDisplayNames.Get(weapon.WeaponId);
         }
 
         private int GetTeamHealth(BattleTeamId teamId)

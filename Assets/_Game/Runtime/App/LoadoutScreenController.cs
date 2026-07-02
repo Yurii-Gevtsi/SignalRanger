@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Game.Gameplay.Battle.Weapons;
 using UnityEngine;
 using UnityEngine.UI;
@@ -128,7 +127,7 @@ namespace Game.App
             {
                 WeaponId = weaponId,
                 Unlocked = unlocked,
-                BaseLabel = $"{DisplayName(weaponId)}  ·  {weapon.Role}",
+                BaseLabel = $"{WeaponDisplayNames.Get(weaponId)}  ·  {DescribeRole(weapon.Role)}",
                 Image = image,
                 Label = label
             });
@@ -211,13 +210,18 @@ namespace Game.App
             }
         }
 
-        private static string DisplayName(string weaponId)
+        private static string DescribeRole(WeaponRole role)
         {
-            var name = weaponId.StartsWith("weapon.", StringComparison.Ordinal) ? weaponId.Substring(7) : weaponId;
-            name = name.Replace('-', ' ').Replace('.', ' ');
-            return string.Join(" ", name.Split(' ')
-                .Where(part => part.Length > 0)
-                .Select(part => char.ToUpperInvariant(part[0]) + part.Substring(1)));
+            return role switch
+            {
+                WeaponRole.DirectProjectile => "прямий",
+                WeaponRole.ArcingExplosive => "навісний",
+                WeaponRole.ShortRangeBurst => "ближній",
+                WeaponRole.CoverTool => "укриття",
+                WeaponRole.DefensiveTool => "захист",
+                WeaponRole.MovementTool => "маневр",
+                _ => "зброя"
+            };
         }
 
         private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,

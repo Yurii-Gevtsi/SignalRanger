@@ -13,6 +13,7 @@ namespace Game.Core.Battle
         event Action NextWeaponRequested;
         event Action RestartRequested;
         event Action ContinueRequested;
+        event Action MenuRequested;
 
         void Render(in BattleHudState state);
     }
