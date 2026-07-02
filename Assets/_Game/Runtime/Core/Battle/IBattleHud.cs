@@ -1,10 +1,10 @@
 using System;
 
-namespace Game.Gameplay.Battle.UI
+namespace Game.Core.Battle
 {
     /// <summary>
-    /// Battle HUD contract. The scene controller renders a <see cref="BattleHudState"/>
-    /// each frame and reacts to button events, without knowing the concrete UI toolkit.
+    /// Battle HUD contract. The scene renders a <see cref="BattleHudState"/> each frame
+    /// and reacts to button events, without knowing the concrete UI toolkit.
     /// </summary>
     public interface IBattleHud
     {

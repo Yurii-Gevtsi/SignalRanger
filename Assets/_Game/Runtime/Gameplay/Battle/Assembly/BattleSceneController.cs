@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core;
+using Game.Core.Battle;
 using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.AI;
 using Game.Gameplay.Battle.Domain;
@@ -8,7 +9,6 @@ using Game.Gameplay.Battle.Feedback;
 using Game.Gameplay.Battle.Projectiles;
 using Game.Gameplay.Battle.Results;
 using Game.Gameplay.Battle.Runtime;
-using Game.Gameplay.Battle.UI;
 using Game.Gameplay.Battle.Units;
 using Game.Gameplay.Battle.Weapons;
 using UnityEngine;
@@ -70,7 +70,7 @@ namespace Game.Gameplay.Battle.Assembly
         private BattleResult _battleResult;
         private BattleResultScreenState _resultScreenState;
         private string _status;
-        private BattleHudView _hud;
+        private IBattleHud _hud;
         private SimpleAiShooter _aiShooter;
         private AiDifficulty _aiDifficulty;
         private CharacterArchetype _playerArchetype;
@@ -120,9 +120,13 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void BuildHud()
         {
-            var hudObject = new GameObject("Battle HUD");
-            hudObject.transform.SetParent(transform, false);
-            _hud = hudObject.AddComponent<BattleHudView>();
+            _hud = BattleHudFactoryBridge.Create(transform);
+            if (_hud == null)
+            {
+                Debug.LogWarning("BattleHudFactoryBridge.Factory not registered; HUD will be disabled.");
+                return;
+            }
+
             _hud.FireRequested += Fire;
             _hud.CancelRequested += CancelAim;
             _hud.NextWeaponRequested += () => SelectWeapon(_inventory.SelectedIndex + 1);

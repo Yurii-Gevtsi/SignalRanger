@@ -1,8 +1,8 @@
-namespace Game.Gameplay.Battle.UI
+namespace Game.Core.Battle
 {
     /// <summary>
     /// Immutable snapshot the battle scene pushes to the HUD each frame.
-    /// Keeps the view free of gameplay types so it only knows how to draw.
+    /// Lives in Core so gameplay and UI both consume it without depending on each other.
     /// </summary>
     public readonly struct BattleHudState
     {

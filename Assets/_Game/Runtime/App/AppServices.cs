@@ -52,6 +52,7 @@ namespace Game.App
             Tutorial = new TutorialService(SaveService.Current, TutorialStepLibrary.CreateFirstBattleSteps());
             Game.Core.BattleTutorialBridge.Feed = new AppBattleTutorialFeed(Tutorial, SaveService);
             Game.Core.BattleFeedbackBridge.Sink = new AppBattleFeedbackSink(Audio);
+            Game.Core.Battle.BattleHudFactoryBridge.Factory = new Game.UI.Battle.BattleHudViewFactory();
             Session = new GameSessionService(SaveService.Current, Campaign);
             LastMissionCompletionResult = default;
             IsInitialized = true;

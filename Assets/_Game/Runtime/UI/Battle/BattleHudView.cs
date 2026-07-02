@@ -1,15 +1,16 @@
 using System;
+using Game.Core.Battle;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
-namespace Game.Gameplay.Battle.UI
+namespace Game.UI.Battle
 {
     /// <summary>
     /// Runtime-built uGUI battle HUD: top status/turn bar, per-team health bars,
-    /// a power meter, and large touch-friendly action buttons.
-    /// Anchored to screen corners so panels never overlap across mobile aspect ratios.
+    /// a power meter, and large touch-friendly action buttons. Attached to a parent
+    /// transform by <see cref="BattleHudViewFactory"/> in the app composition root.
     /// </summary>
     public sealed class BattleHudView : MonoBehaviour, IBattleHud
     {
@@ -324,6 +325,17 @@ namespace Game.Gameplay.Battle.UI
             rect.sizeDelta = sizeDelta;
             rect.anchoredPosition = anchoredPosition;
             return rect;
+        }
+    }
+
+    /// <summary>Default factory implementation that attaches a <see cref="BattleHudView"/> under the given parent.</summary>
+    public sealed class BattleHudViewFactory : IBattleHudFactory
+    {
+        public IBattleHud Create(Transform parent)
+        {
+            var hudObject = new GameObject("Battle HUD");
+            hudObject.transform.SetParent(parent, false);
+            return hudObject.AddComponent<BattleHudView>();
         }
     }
 }
