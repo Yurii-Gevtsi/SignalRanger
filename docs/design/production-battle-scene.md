@@ -1,6 +1,6 @@
 # Production Battle Scene
 
-Це перша production-oriented battle scene за roadmap `Phase 1.7`, тепер розширена першим шаром data-driven арен з `Phase 2.1`.
+Це перша production-oriented battle scene з MVP implementation phases, тепер розширена першим шаром data-driven арен.
 
 ## Як запустити
 
@@ -92,7 +92,15 @@ Battle scene більше не використовує один hardcoded proje
 
 Баланс: жодна зброя не завдає ≥100 damage (юніт стартує зі 100 HP), тож немає one-shot із повного HP на першому ході (покрито тестом `PrototypeWeapons_CannotOneShotFullHealthUnit`).
 
-Ще не реалізовані архетипи-інструменти (cover/defensive/movement) винесені в окрему пропозицію архітектури — вони потребують нових core-абстракцій (мутація арени/юнітів), а не лише даних.
+`PrototypeWeaponLibrary` тепер також містить три utility-інструменти:
+
+| ID | Роль | Ніша |
+|---|---|---|
+| `weapon.rampart-kit` | CoverTool | розгортає тимчасову лінію укриття в точці impact |
+| `weapon.guard-pulse` | DefensiveTool | відновлює здоров'я дружнім юнітам у радіусі impact |
+| `weapon.relay-step` | MovementTool | зміщує власника по осі X до точки impact |
+
+`BattleSceneController` отримав роль-специфічне impact resolution: projectile damage тепер береться з `ProjectileDefinition`, а не з "останньої активної зброї", тому burst/multi-hit працює коректно. Хід завершується лише після того, як долетять усі projectile-и поточного пострілу.
 
 ## Phase 4.1: Battle HUD
 
@@ -144,8 +152,8 @@ IMGUI debug-панель (`OnGUI`) замінена на справжній mobi
 
 - Placeholder visuals.
 - Немає AI.
-- HUD-текст поки через legacy uGUI `Text`; видимі рядки українською, але без повного TMP/localization pipeline.
+- HUD і runtime menu/loadout/settings screens переведені на TMP; UI chrome читає рядки з `Game.Core.Localization.GameText`.
 - HUD у збірці `Game.Gameplay`, ще не в `Game.UI`.
 - Result overlay поки runtime HUD, а не окрема Result scene.
-- Є weapon inventory/executor + 5 зброй, але поки один спільний projectile-ефект на всі ролі (без cover/defensive/movement).
+- Є weapon inventory/executor + 8 зброй; `ShortRangeBurst` має multi-projectile fire, а `CoverTool` / `DefensiveTool` / `MovementTool` мають окреме impact-поведінку.
 - Terrain collision є, але destructible terrain ще немає.

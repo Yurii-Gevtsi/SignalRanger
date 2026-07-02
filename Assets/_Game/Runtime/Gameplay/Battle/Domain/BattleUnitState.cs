@@ -39,5 +39,17 @@ namespace Game.Gameplay.Battle.Domain
                 healthBefore,
                 Health);
         }
+
+        public int RestoreHealth(int amount)
+        {
+            if (amount <= 0 || IsDefeated)
+            {
+                return 0;
+            }
+
+            var healthBefore = Health;
+            Health = Mathf.Min(MaxHealth, Health + amount);
+            return Health - healthBefore;
+        }
     }
 }

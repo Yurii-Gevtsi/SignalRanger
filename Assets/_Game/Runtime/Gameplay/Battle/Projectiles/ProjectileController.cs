@@ -81,7 +81,9 @@ namespace Game.Gameplay.Battle.Projectiles
                 _definition.ProjectileId,
                 _ownerUnitId,
                 point,
-                _body != null ? _body.linearVelocity : Vector2.zero));
+                _body != null ? _body.linearVelocity : Vector2.zero,
+                _definition.Damage,
+                _definition.ImpactRadius));
 
             Destroy(gameObject);
         }

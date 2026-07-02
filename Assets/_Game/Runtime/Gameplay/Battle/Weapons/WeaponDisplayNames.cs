@@ -16,7 +16,10 @@ namespace Game.Gameplay.Battle.Weapons
             { "weapon.pulse-shell", "Пульс-снаряд" },
             { "weapon.close-pop", "Ближній удар" },
             { "weapon.long-lance", "Довгий спис" },
-            { "weapon.scatter-arc", "Розсіювач" }
+            { "weapon.scatter-arc", "Розсіювач" },
+            { "weapon.rampart-kit", "Блок-пакет" },
+            { "weapon.guard-pulse", "Захисний імпульс" },
+            { "weapon.relay-step", "Крок-реле" }
         };
 
         public static string Get(string weaponId)

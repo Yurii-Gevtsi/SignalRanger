@@ -1,5 +1,7 @@
 namespace Game.Core.Battle
 {
+    using Game.Core.Localization;
+
     /// <summary>
     /// Immutable snapshot the battle scene pushes to the HUD each frame.
     /// Lives in Core so gameplay and UI both consume it without depending on each other.
@@ -50,8 +52,8 @@ namespace Game.Core.Battle
             ResultReward = resultReward ?? string.Empty;
             ResultUnlock = resultUnlock ?? string.Empty;
             CanContinue = canContinue;
-            RetryLabel = retryLabel ?? "Повторити";
-            ContinueLabel = continueLabel ?? "Далі";
+            RetryLabel = retryLabel ?? GameText.Restart;
+            ContinueLabel = continueLabel ?? GameText.Continue;
         }
 
         public string Status { get; }

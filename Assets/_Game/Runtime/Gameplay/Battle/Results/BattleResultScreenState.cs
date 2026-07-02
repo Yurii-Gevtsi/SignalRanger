@@ -1,4 +1,5 @@
 using Game.Gameplay.Battle.Domain;
+using Game.Core.Localization;
 
 namespace Game.Gameplay.Battle.Results
 {
@@ -16,8 +17,8 @@ namespace Game.Gameplay.Battle.Results
             Title = title ?? string.Empty;
             Subtitle = subtitle ?? string.Empty;
             RewardPreview = rewardPreview;
-            RetryLabel = retryLabel ?? "Повторити";
-            ContinueLabel = continueLabel ?? "Далі";
+            RetryLabel = retryLabel ?? GameText.Restart;
+            ContinueLabel = continueLabel ?? GameText.Continue;
         }
 
         public BattleResult Result { get; }

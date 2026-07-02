@@ -96,6 +96,24 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(custom.FireCount, Is.EqualTo(1));
         }
 
+        [Test]
+        public void RegisteredWeaponEffect_OverridesRoleEffectForSpecificWeapon()
+        {
+            var weapon = Weapon("weapon.exec.weapon-specific", -1);
+            var inventory = new WeaponInventoryRuntime(new[] { weapon });
+            var executor = new WeaponExecutor();
+            var roleEffect = new CountingEffect();
+            var weaponEffect = new CountingEffect();
+            executor.RegisterEffect(WeaponRole.DirectProjectile, roleEffect);
+            executor.RegisterEffect(weapon.WeaponId, weaponEffect);
+
+            var result = executor.TryFireSelected(inventory, Context(weapon, new RecordingSpawner()));
+
+            Assert.That(result, Is.EqualTo(WeaponFireResult.Fired));
+            Assert.That(roleEffect.FireCount, Is.EqualTo(0));
+            Assert.That(weaponEffect.FireCount, Is.EqualTo(1));
+        }
+
         private sealed class CountingEffect : IWeaponEffect
         {
             public int FireCount { get; private set; }

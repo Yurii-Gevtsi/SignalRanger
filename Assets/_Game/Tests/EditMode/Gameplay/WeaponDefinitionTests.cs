@@ -12,7 +12,7 @@ namespace Game.Tests.EditMode.Gameplay
         {
             var weapons = PrototypeWeaponLibrary.CreateAll();
 
-            Assert.That(weapons, Has.Length.InRange(4, 6));
+            Assert.That(weapons, Has.Length.InRange(6, 8));
             Assert.That(weapons.Select(weapon => weapon.WeaponId).Distinct().Count(), Is.EqualTo(weapons.Length));
             foreach (var weapon in weapons)
             {
@@ -33,6 +33,9 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(roles, Contains.Item(WeaponRole.DirectProjectile));
             Assert.That(roles, Contains.Item(WeaponRole.ArcingExplosive));
             Assert.That(roles, Contains.Item(WeaponRole.ShortRangeBurst));
+            Assert.That(roles, Contains.Item(WeaponRole.CoverTool));
+            Assert.That(roles, Contains.Item(WeaponRole.DefensiveTool));
+            Assert.That(roles, Contains.Item(WeaponRole.MovementTool));
         }
 
         [Test]

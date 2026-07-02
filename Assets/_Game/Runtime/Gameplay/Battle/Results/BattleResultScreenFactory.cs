@@ -1,4 +1,5 @@
 using Game.Gameplay.Battle.Domain;
+using Game.Core.Localization;
 
 namespace Game.Gameplay.Battle.Results
 {
@@ -10,32 +11,32 @@ namespace Game.Gameplay.Battle.Results
             {
                 BattleOutcome.PlayerWon => new BattleResultScreenState(
                     result,
-                    "Перемога",
-                    $"Бій завершено за {turnNumber} ходів.",
-                    new BattleRewardPreview(25, "Відкрито попередній доступ до наступної арени"),
-                    "Повторити",
-                    "Далі"),
+                    GameText.VictoryTitle(),
+                    GameText.VictorySubtitle(turnNumber),
+                    new BattleRewardPreview(25, GameText.NextArenaPreview()),
+                    GameText.Restart,
+                    GameText.Continue),
                 BattleOutcome.OpponentWon => new BattleResultScreenState(
                     result,
-                    "Поразка",
-                    $"Суперник переміг після {turnNumber} ходів.",
+                    GameText.DefeatTitle(),
+                    GameText.DefeatSubtitle(turnNumber),
                     new BattleRewardPreview(0, string.Empty),
-                    "Повторити",
-                    "Далі"),
+                    GameText.Restart,
+                    GameText.Continue),
                 BattleOutcome.Draw => new BattleResultScreenState(
                     result,
-                    "Нічия",
-                    $"Обидві команди вибули після {turnNumber} ходів.",
+                    GameText.DrawTitle(),
+                    GameText.DrawSubtitle(turnNumber),
                     new BattleRewardPreview(10, string.Empty),
-                    "Повторити",
-                    "Далі"),
+                    GameText.Restart,
+                    GameText.Continue),
                 _ => new BattleResultScreenState(
                     result,
-                    "Бій триває",
+                    GameText.OngoingBattleTitle(),
                     string.Empty,
                     new BattleRewardPreview(0, string.Empty),
-                    "Повторити",
-                    "Далі")
+                    GameText.Restart,
+                    GameText.Continue)
             };
         }
     }

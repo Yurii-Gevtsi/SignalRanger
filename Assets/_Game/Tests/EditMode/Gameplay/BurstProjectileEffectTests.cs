@@ -66,5 +66,19 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.That(spawner.Requests, Has.Count.EqualTo(1));
         }
+
+        [Test]
+        public void Fire_SplitsDamageAcrossPellets()
+        {
+            var spawner = new RecordingSpawner();
+            var effect = new BurstProjectileEffect(shotCount: 3);
+            var context = new WeaponFireContext(Weapon(), "unit.player.01", Vector2.zero, Vector2.right, 10f, null, spawner);
+
+            effect.Fire(context);
+
+            Assert.That(spawner.Requests[0].Definition.Damage, Is.EqualTo(10));
+            Assert.That(spawner.Requests[1].Definition.Damage, Is.EqualTo(10));
+            Assert.That(spawner.Requests[2].Definition.Damage, Is.EqualTo(10));
+        }
     }
 }

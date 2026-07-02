@@ -9,7 +9,8 @@ namespace Game.Tests.EditMode.Gameplay
         private static readonly string[] All =
         {
             "weapon.steady-orb", "weapon.pulse-shell", "weapon.close-pop",
-            "weapon.long-lance", "weapon.scatter-arc"
+            "weapon.long-lance", "weapon.scatter-arc", "weapon.rampart-kit",
+            "weapon.guard-pulse", "weapon.relay-step"
         };
 
         [Test]
@@ -61,5 +62,17 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.That(result, Is.EqualTo(new[] { "weapon.steady-orb" }));
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        [Test]
+        public void Resolve_InEditorKeepsFullTestLoadoutAcrossMissionRestrictions()
+        {
+            var allowed = new[] { "weapon.steady-orb", "weapon.pulse-shell" };
+
+            var result = BattleLoadoutResolver.Resolve(All, allowed, All);
+
+            Assert.That(result, Is.EqualTo(All));
+        }
+#endif
     }
 }

@@ -1,5 +1,7 @@
 using System;
 using Game.Core.Battle;
+using Game.Core.Localization;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -27,29 +29,28 @@ namespace Game.UI.Battle
         private static readonly Color NeutralButtonColor = new(0.2f, 0.26f, 0.34f);
 
         private Sprite _whiteSprite;
-        private Font _font;
 
-        private Text _statusText;
-        private Text _turnText;
-        private Text _playerHealthText;
-        private Text _opponentHealthText;
-        private Text _weaponText;
-        private Text _powerText;
+        private TMP_Text _statusText;
+        private TMP_Text _turnText;
+        private TMP_Text _playerHealthText;
+        private TMP_Text _opponentHealthText;
+        private TMP_Text _weaponText;
+        private TMP_Text _powerText;
         private Image _playerHealthFill;
         private Image _opponentHealthFill;
         private Image _powerFill;
         private Button _fireButton;
-        private Text _fireButtonLabel;
+        private TMP_Text _fireButtonLabel;
         private GameObject _resultRoot;
-        private Text _resultTitleText;
-        private Text _resultSubtitleText;
-        private Text _resultOutcomeText;
-        private Text _resultRewardText;
-        private Text _resultUnlockText;
-        private Text _resultContinueNoteText;
+        private TMP_Text _resultTitleText;
+        private TMP_Text _resultSubtitleText;
+        private TMP_Text _resultOutcomeText;
+        private TMP_Text _resultRewardText;
+        private TMP_Text _resultUnlockText;
+        private TMP_Text _resultContinueNoteText;
         private Button _resultContinueButton;
-        private Text _resultRetryLabel;
-        private Text _resultContinueLabel;
+        private TMP_Text _resultRetryLabel;
+        private TMP_Text _resultContinueLabel;
 
         public event Action FireRequested;
         public event Action CancelRequested;
@@ -61,12 +62,6 @@ namespace Game.UI.Battle
         private void Awake()
         {
             _whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
-            _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (_font == null)
-            {
-                _font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            }
-
             EnsureEventSystem();
             BuildCanvas();
         }
@@ -79,15 +74,15 @@ namespace Game.UI.Battle
             }
 
             _statusText.text = state.Status;
-            _turnText.text = $"Хід {state.TurnNumber} — {state.ActiveTeam}";
+            _turnText.text = GameText.BattleTurn(state.TurnNumber, state.ActiveTeam);
 
-            _playerHealthText.text = $"Гравець {state.PlayerHealth}/{state.PlayerMaxHealth}";
-            _opponentHealthText.text = $"Суперник {state.OpponentHealth}/{state.OpponentMaxHealth}";
+            _playerHealthText.text = GameText.TeamHealth(GameText.PlayerTeam, state.PlayerHealth, state.PlayerMaxHealth);
+            _opponentHealthText.text = GameText.TeamHealth(GameText.OpponentTeam, state.OpponentHealth, state.OpponentMaxHealth);
             _playerHealthFill.fillAmount = state.PlayerHealthFraction;
             _opponentHealthFill.fillAmount = state.OpponentHealthFraction;
 
             _weaponText.text = $"{state.WeaponLabel}\n{state.AmmoLabel}";
-            _powerText.text = $"Сила {state.Power:0.0}";
+            _powerText.text = GameText.Power(state.Power);
             _powerFill.fillAmount = state.PowerFraction;
 
             _fireButton.interactable = state.CanFire;
@@ -140,17 +135,17 @@ namespace Game.UI.Battle
                 new Vector2(-2f * Margin, TopBarHeight), new Vector2(0f, -Margin), PanelColor);
 
             _statusText = CreateText("Status", bar, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0f),
-                new Vector2(-40f, -12f), new Vector2(20f, 6f), 34, TextAnchor.UpperLeft);
+                new Vector2(-40f, -12f), new Vector2(20f, 6f), 34, TextAlignmentOptions.TopLeft);
             _turnText = CreateText("Turn", bar, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0f),
-                new Vector2(-40f, -12f), new Vector2(20f, 6f), 30, TextAnchor.LowerLeft);
+                new Vector2(-40f, -12f), new Vector2(20f, 6f), 30, TextAlignmentOptions.BottomLeft);
 
             var restart = CreateButton("Restart", bar, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(176f, 72f), new Vector2(-16f, -16f), NeutralButtonColor, "Рестарт", 24,
+                new Vector2(176f, 72f), new Vector2(-16f, -16f), NeutralButtonColor, GameText.Restart, 24,
                 () => RestartRequested?.Invoke());
             _ = restart;
 
             var menu = CreateButton("Menu", bar, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(140f, 72f), new Vector2(-(16f + 176f + 12f), -16f), new Color(0.30f, 0.20f, 0.22f), "Меню", 24,
+                new Vector2(140f, 72f), new Vector2(-(16f + 176f + 12f), -16f), new Color(0.30f, 0.20f, 0.22f), GameText.Menu, 24,
                 () => MenuRequested?.Invoke());
             _ = menu;
         }
@@ -163,13 +158,13 @@ namespace Game.UI.Battle
                 new Vector2(Margin, topOffset), new Vector2(440f, 74f), BarBackColor);
             _playerHealthFill = CreateBarFill("Player HP Fill", playerBack, PlayerColor);
             _playerHealthText = CreateText("Player HP Text", playerBack, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-24f, 0f), Vector2.zero, 28, TextAnchor.MiddleLeft);
+                new Vector2(-24f, 0f), Vector2.zero, 28, TextAlignmentOptions.MidlineLeft);
 
             var opponentBack = CreateAnchoredPanel("Enemy HP", root, new Vector2(1f, 1f),
                 new Vector2(-Margin, topOffset), new Vector2(440f, 74f), BarBackColor);
             _opponentHealthFill = CreateBarFill("Enemy HP Fill", opponentBack, OpponentColor);
             _opponentHealthText = CreateText("Enemy HP Text", opponentBack, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-24f, 0f), Vector2.zero, 28, TextAnchor.MiddleRight);
+                new Vector2(-24f, 0f), Vector2.zero, 28, TextAlignmentOptions.MidlineRight);
         }
 
         private void BuildPowerMeter(Transform root)
@@ -178,25 +173,25 @@ namespace Game.UI.Battle
                 new Vector2(0f, Margin + ButtonHeight + 40f), new Vector2(680f, 56f), BarBackColor);
             _powerFill = CreateBarFill("Power Fill", back, PowerColor);
             _powerText = CreateText("Power Text", back, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, 28, TextAnchor.MiddleCenter);
+                Vector2.zero, Vector2.zero, 28, TextAlignmentOptions.Center);
         }
 
         private void BuildActionButtons(Transform root)
         {
             var weapon = CreateButton("Weapon", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
-                new Vector2(320f, ButtonHeight), new Vector2(Margin, Margin), NeutralButtonColor, "Зброя", 30,
+                new Vector2(320f, ButtonHeight), new Vector2(Margin, Margin), NeutralButtonColor, GameText.Weapon, 30,
                 () => NextWeaponRequested?.Invoke());
-            _weaponText = weapon.GetComponentInChildren<Text>();
+            _weaponText = weapon.GetComponentInChildren<TMP_Text>();
 
             var cancel = CreateButton("Cancel", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(240f, ButtonHeight), new Vector2(-(Margin + 320f + 20f), Margin), NeutralButtonColor, "Скинути", 28,
+                new Vector2(240f, ButtonHeight), new Vector2(-(Margin + 320f + 20f), Margin), NeutralButtonColor, GameText.CancelAim, 28,
                 () => CancelRequested?.Invoke());
             _ = cancel;
 
             _fireButton = CreateButton("Fire", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(320f, ButtonHeight), new Vector2(-Margin, Margin), FireColor, "ВОГОНЬ", 40,
+                new Vector2(320f, ButtonHeight), new Vector2(-Margin, Margin), FireColor, GameText.Fire, 40,
                 () => FireRequested?.Invoke());
-            _fireButtonLabel = _fireButton.GetComponentInChildren<Text>();
+            _fireButtonLabel = _fireButton.GetComponentInChildren<TMP_Text>();
         }
 
         private void BuildResultOverlay(Transform root)
@@ -209,27 +204,27 @@ namespace Game.UI.Battle
                 Vector2.zero, new Vector2(680f, 440f), new Color(0.08f, 0.11f, 0.16f, 0.92f));
 
             _resultTitleText = CreateText("Result Title", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(-56f, 64f), new Vector2(0f, -30f), 46, TextAnchor.MiddleCenter);
+                new Vector2(0.5f, 1f), new Vector2(-56f, 64f), new Vector2(0f, -30f), 46, TextAlignmentOptions.Center);
             _resultSubtitleText = CreateText("Result Subtitle", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(-56f, 48f), new Vector2(0f, -102f), 28, TextAnchor.MiddleCenter);
+                new Vector2(0.5f, 1f), new Vector2(-56f, 48f), new Vector2(0f, -102f), 28, TextAlignmentOptions.Center);
             _resultOutcomeText = CreateText("Result Outcome", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(-56f, 42f), new Vector2(0f, -158f), 26, TextAnchor.MiddleCenter);
+                new Vector2(0.5f, 1f), new Vector2(-56f, 42f), new Vector2(0f, -158f), 26, TextAlignmentOptions.Center);
             _resultRewardText = CreateText("Result Reward", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(-56f, 42f), new Vector2(0f, -204f), 26, TextAnchor.MiddleCenter);
+                new Vector2(0.5f, 1f), new Vector2(-56f, 42f), new Vector2(0f, -204f), 26, TextAlignmentOptions.Center);
             _resultUnlockText = CreateText("Result Unlock", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(-56f, 42f), new Vector2(0f, -250f), 24, TextAnchor.MiddleCenter);
+                new Vector2(0.5f, 1f), new Vector2(-56f, 42f), new Vector2(0f, -250f), 24, TextAlignmentOptions.Center);
             _resultContinueNoteText = CreateText("Result Continue Note", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(-56f, 36f), new Vector2(0f, -292f), 20, TextAnchor.MiddleCenter);
+                new Vector2(0.5f, 1f), new Vector2(-56f, 36f), new Vector2(0f, -292f), 20, TextAlignmentOptions.Center);
 
             var retry = CreateButton("Result Retry", panel.transform, new Vector2(0f, 0f), new Vector2(0f, 0f),
-                new Vector2(280f, 74f), new Vector2(36f, 34f), NeutralButtonColor, "Повторити", 30,
+                new Vector2(280f, 74f), new Vector2(36f, 34f), NeutralButtonColor, GameText.Restart, 30,
                 () => RestartRequested?.Invoke());
-            _resultRetryLabel = retry.GetComponentInChildren<Text>();
+            _resultRetryLabel = retry.GetComponentInChildren<TMP_Text>();
 
             _resultContinueButton = CreateButton("Result Continue", panel.transform, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(280f, 74f), new Vector2(-36f, 34f), FireColor, "Далі", 32,
+                new Vector2(280f, 74f), new Vector2(-36f, 34f), FireColor, GameText.Continue, 32,
                 () => ContinueRequested?.Invoke());
-            _resultContinueLabel = _resultContinueButton.GetComponentInChildren<Text>();
+            _resultContinueLabel = _resultContinueButton.GetComponentInChildren<TMP_Text>();
 
             _resultRoot.SetActive(false);
         }
@@ -252,7 +247,7 @@ namespace Game.UI.Battle
             _resultOutcomeText.text = state.ResultOutcome;
             _resultRewardText.text = state.ResultReward;
             _resultUnlockText.text = state.ResultUnlock;
-            _resultContinueNoteText.text = state.CanContinue ? "Наступну місію відкрито." : "Спробуй ще раз або повернись у меню.";
+            _resultContinueNoteText.text = state.CanContinue ? GameText.NextMissionUnlocked : GameText.RetryOrMenu;
             _resultRetryLabel.text = state.RetryLabel;
             _resultContinueLabel.text = state.ContinueLabel;
             // Right button always leaves the battle: continue (win) or back to menu (loss).
@@ -290,17 +285,16 @@ namespace Game.UI.Battle
             return image;
         }
 
-        private Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAnchor alignment)
+        private TMP_Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
+            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
-            var text = rect.gameObject.AddComponent<Text>();
-            text.font = _font;
+            var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
             text.fontSize = fontSize;
             text.color = Color.white;
             text.alignment = alignment;
-            text.horizontalOverflow = HorizontalWrapMode.Overflow;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.textWrappingMode = TextWrappingModes.Normal;
+            text.overflowMode = TextOverflowModes.Overflow;
             text.raycastTarget = false;
             return text;
         }
@@ -315,7 +309,7 @@ namespace Game.UI.Battle
             button.onClick.AddListener(() => onClick?.Invoke());
 
             var text = CreateText($"{name} Label", image.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, fontSize, TextAnchor.MiddleCenter);
+                Vector2.zero, Vector2.zero, fontSize, TextAlignmentOptions.Center);
             text.text = label;
             return button;
         }

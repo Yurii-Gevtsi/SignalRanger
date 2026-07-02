@@ -4,6 +4,7 @@
     "references": [
         "Game.Core",
         "Unity.InputSystem",
+        "Unity.TextMeshPro",
         "UnityEngine.UI"
     ],
     "includePlatforms": [],

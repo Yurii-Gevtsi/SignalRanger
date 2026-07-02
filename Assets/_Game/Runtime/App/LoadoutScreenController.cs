@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Game.Core.Localization;
 using Game.Gameplay.Battle.Weapons;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,12 +32,11 @@ namespace Game.App
             public bool Unlocked;
             public string BaseLabel;
             public Image Image;
-            public Text Label;
+            public TMP_Text Label;
         }
 
         private Sprite _whiteSprite;
-        private Font _font;
-        private Text _statusText;
+        private TMP_Text _statusText;
         private Action _onClosed;
 
         public static void Open(Action onClosed)
@@ -54,12 +55,6 @@ namespace Game.App
         private void Awake()
         {
             _whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
-            _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (_font == null)
-            {
-                _font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            }
-
             foreach (var id in AppServices.Inventory.SelectedLoadoutWeaponIds)
             {
                 _working.Add(id);
@@ -90,26 +85,53 @@ namespace Game.App
                 new Vector2(0.5f, 0.5f), new Vector2(840f, 1180f), Vector2.zero, PanelColor);
 
             CreateText("Title", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-80f, 80f), new Vector2(0f, -64f), 44, TextAnchor.MiddleLeft, "Спорядження");
+                new Vector2(-80f, 80f), new Vector2(0f, -64f), 44, TextAlignmentOptions.MidlineLeft, GameText.LoadoutTitle());
             CreateText("Hint", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-80f, 60f), new Vector2(0f, -132f), 24, TextAnchor.MiddleLeft,
-                "Обери зброю, яку береш у бій. Заблоковану треба спершу відкрити.");
+                new Vector2(-80f, 60f), new Vector2(0f, -132f), 24, TextAlignmentOptions.MidlineLeft,
+                GameText.LoadoutHint());
 
             var weapons = PrototypeWeaponLibrary.CreateAll();
-            var rowHeight = 118f;
-            var startY = -240f;
+            var rowHeight = 96f;
+            var rowSpacing = 12f;
+            var listViewport = CreatePanel("List Viewport", panel.transform,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(780f, 600f), new Vector2(0f, -220f), new Color(0f, 0f, 0f, 0.18f));
+            listViewport.gameObject.AddComponent<RectMask2D>();
+
+            var content = CreateRect("List Content", listViewport.transform,
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0f, weapons.Length * (rowHeight + rowSpacing) + 24f), Vector2.zero);
+
+            var scrollRect = listViewport.gameObject.AddComponent<ScrollRect>();
+            scrollRect.viewport = (RectTransform)listViewport.transform;
+            scrollRect.content = content;
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+            scrollRect.scrollSensitivity = 30f;
+
+            var startY = -12f;
             for (var i = 0; i < weapons.Length; i++)
             {
-                CreateWeaponRow(panel.transform, weapons[i], startY - i * (rowHeight + 16f), rowHeight);
+                CreateWeaponRow(content, weapons[i], startY - i * (rowHeight + rowSpacing), rowHeight);
             }
 
-            _statusText = CreateText("Status", panel.transform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(-80f, 60f), new Vector2(0f, 210f), 24, TextAnchor.MiddleCenter, DescribeCount());
+            var footer = CreatePanel("Footer", panel.transform,
+                new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(-40f, 250f), new Vector2(0f, 24f), new Color(0f, 0f, 0f, 0.16f));
 
-            CreateButton("Save", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(360f, 104f), new Vector2(-196f, 96f), SaveColor, "Зберегти", 34, Save);
-            CreateButton("Back", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(360f, 104f), new Vector2(196f, 96f), BackColor, "Назад", 34, Close);
+            CreateButton("Save", footer.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(340f, 86f), new Vector2(-184f, 126f), SaveColor, GameText.Save, 30, Save);
+            CreateButton("Back", footer.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(340f, 86f), new Vector2(184f, 126f), BackColor, GameText.Back, 30, Close);
+
+            _statusText = CreateText("Status", footer.transform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(-80f, 54f), new Vector2(0f, 34f), 24, TextAlignmentOptions.Center, DescribeCount());
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            CreateButton("Unlock All Test Weapons", footer.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(708f, 58f), new Vector2(0f, 206f), UnselectedColor, GameText.LoadoutUnlockAllForTest(), 24, UnlockAllForTesting);
+#endif
         }
 
         private void CreateWeaponRow(Transform parent, WeaponDefinition weapon, float y, float height)
@@ -121,7 +143,7 @@ namespace Game.App
                 new Vector2(0.5f, 1f), new Vector2(760f, height), new Vector2(0f, y), UnselectedColor);
 
             var label = CreateText($"Row Label {weaponId}", image.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-48f, 0f), Vector2.zero, 30, TextAnchor.MiddleLeft, string.Empty);
+                new Vector2(-48f, 0f), Vector2.zero, 28, TextAlignmentOptions.MidlineLeft, string.Empty);
 
             _rows.Add(new Row
             {
@@ -167,7 +189,7 @@ namespace Game.App
             var selected = _working.Contains(row.WeaponId);
             row.Image.color = !row.Unlocked ? LockedColor : selected ? SelectedColor : UnselectedColor;
 
-            var suffix = !row.Unlocked ? "  [заблоковано]" : selected ? "  ✓" : string.Empty;
+            var suffix = !row.Unlocked ? GameText.LoadoutLockedSuffix : selected ? GameText.LoadoutSelectedSuffix : string.Empty;
             row.Label.text = $"{row.BaseLabel}{suffix}";
         }
 
@@ -175,19 +197,39 @@ namespace Game.App
         {
             if (_working.Count == 0)
             {
-                SetStatus("Обери хоча б одну зброю.");
+                SetStatus(GameText.LoadoutChooseOne());
                 return;
             }
 
             if (!AppServices.Inventory.TrySetLoadout(_working))
             {
-                SetStatus("Не вдалося зберегти: перевір, що вся зброя відкрита.");
+                SetStatus(GameText.LoadoutSaveFailed());
                 return;
             }
 
             AppServices.SaveService.Save(AppServices.SaveService.Current);
             Close();
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private void UnlockAllForTesting()
+        {
+            foreach (var weapon in PrototypeWeaponLibrary.CreateAll())
+            {
+                if (weapon == null)
+                {
+                    continue;
+                }
+
+                AppServices.Inventory.UnlockWeapon(weapon.WeaponId);
+                _working.Add(weapon.WeaponId);
+            }
+
+            AppServices.Inventory.TrySetLoadout(_working);
+            AppServices.SaveService.Save(AppServices.SaveService.Current);
+            Close();
+        }
+#endif
 
         private void Close()
         {
@@ -199,7 +241,7 @@ namespace Game.App
 
         private string DescribeCount()
         {
-            return $"У спорядженні: {_working.Count} зброї.";
+            return GameText.LoadoutCount(_working.Count);
         }
 
         private void SetStatus(string message)
@@ -214,13 +256,13 @@ namespace Game.App
         {
             return role switch
             {
-                WeaponRole.DirectProjectile => "прямий",
-                WeaponRole.ArcingExplosive => "навісний",
-                WeaponRole.ShortRangeBurst => "ближній",
-                WeaponRole.CoverTool => "укриття",
-                WeaponRole.DefensiveTool => "захист",
-                WeaponRole.MovementTool => "маневр",
-                _ => "зброя"
+                WeaponRole.DirectProjectile => GameText.RoleDirect(),
+                WeaponRole.ArcingExplosive => GameText.RoleArc(),
+                WeaponRole.ShortRangeBurst => GameText.RoleBurst(),
+                WeaponRole.CoverTool => GameText.RoleCover(),
+                WeaponRole.DefensiveTool => GameText.RoleDefense(),
+                WeaponRole.MovementTool => GameText.RoleMovement(),
+                _ => GameText.RoleFallback()
             };
         }
 
@@ -234,17 +276,16 @@ namespace Game.App
             return image;
         }
 
-        private Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAnchor alignment, string value)
+        private TMP_Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
+            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
-            var text = rect.gameObject.AddComponent<Text>();
-            text.font = _font;
+            var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
             text.fontSize = fontSize;
             text.color = Color.white;
             text.alignment = alignment;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.textWrappingMode = TextWrappingModes.Normal;
+            text.overflowMode = TextOverflowModes.Overflow;
             text.text = value;
             text.raycastTarget = false;
             return text;
@@ -258,7 +299,7 @@ namespace Game.App
             button.targetGraphic = image;
             button.onClick.AddListener(() => onClick?.Invoke());
             CreateText($"{name} Label", image.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, fontSize, TextAnchor.MiddleCenter, label);
+                Vector2.zero, Vector2.zero, fontSize, TextAlignmentOptions.Center, label);
             return button;
         }
 

@@ -12,6 +12,7 @@
         "Game.Tutorial",
         "Game.UI",
         "Game.Infrastructure",
+        "Unity.TextMeshPro",
         "UnityEngine.UI",
         "Unity.InputSystem"
     ],

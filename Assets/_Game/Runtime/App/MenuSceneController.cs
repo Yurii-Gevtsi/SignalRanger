@@ -1,7 +1,9 @@
 using System;
 using Game.Core;
+using Game.Core.Localization;
 using Game.Data.Save;
 using Game.Progression.Missions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -17,8 +19,7 @@ namespace Game.App
         private static readonly Color SecondaryColor = new(0.18f, 0.25f, 0.31f);
 
         private Sprite _whiteSprite;
-        private Font _font;
-        private Text _statusText;
+        private TMP_Text _statusText;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void CreateForMenuScene()
@@ -46,11 +47,6 @@ namespace Game.App
         {
             AppServices.Initialize();
             _whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
-            _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (_font == null)
-            {
-                _font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            }
 
             BuildCamera();
             EnsureEventSystem();
@@ -102,30 +98,30 @@ namespace Game.App
             CreatePanel("Top Band", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(0f, 220f), Vector2.zero, new Color(0.05f, 0.08f, 0.10f, 0.92f));
             CreateText("Title", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-96f, 78f), new Vector2(0f, -58f), 48, TextAnchor.MiddleLeft, "Тактичний бій");
+                new Vector2(-96f, 78f), new Vector2(0f, -58f), 48, TextAlignmentOptions.MidlineLeft, GameText.MenuTitle());
             CreateText("Subtitle", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-96f, 64f), new Vector2(0f, -132f), 26, TextAnchor.MiddleLeft, "Короткі артилерійські дуелі. MVP build.");
+                new Vector2(-96f, 64f), new Vector2(0f, -132f), 26, TextAlignmentOptions.MidlineLeft, GameText.MenuSubtitle());
 
             // Mission info block, anchored under the top band.
             CreateText("Mission Label", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 42f), new Vector2(0f, -280f), 30, TextAnchor.MiddleLeft, "Наступна місія");
+                new Vector2(-120f, 42f), new Vector2(0f, -280f), 30, TextAlignmentOptions.MidlineLeft, GameText.NextMissionLabel());
             CreateText("Mission Name", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 60f), new Vector2(0f, -336f), 42, TextAnchor.MiddleLeft, DescribeMissionTitle(nextMission));
+                new Vector2(-120f, 60f), new Vector2(0f, -336f), 42, TextAlignmentOptions.MidlineLeft, DescribeMissionTitle(nextMission));
             CreateText("Mission Details", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 120f), new Vector2(0f, -430f), 25, TextAnchor.UpperLeft, DescribeMissionDetails(nextMission));
+                new Vector2(-120f, 120f), new Vector2(0f, -430f), 25, TextAlignmentOptions.TopLeft, DescribeMissionDetails(nextMission));
             CreateText("Profile Summary", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 120f), new Vector2(0f, -560f), 23, TextAnchor.UpperLeft, DescribeProfile(saveData, nextMission));
+                new Vector2(-120f, 120f), new Vector2(0f, -560f), 23, TextAlignmentOptions.TopLeft, DescribeProfile(saveData, nextMission));
 
             // Actions, anchored to the bottom edge so they never overlap the info above.
             CreateButton("Play Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(680f, 124f), new Vector2(0f, 250f), PrimaryColor, "Грати", 44, StartBattle);
+                new Vector2(680f, 124f), new Vector2(0f, 250f), PrimaryColor, GameText.Play, 44, StartBattle);
             CreateButton("Loadout Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(332f, 100f), new Vector2(-176f, 132f), SecondaryColor, "Спорядження", 28, OpenLoadout);
+                new Vector2(332f, 100f), new Vector2(-176f, 132f), SecondaryColor, GameText.Loadout, 28, OpenLoadout);
             CreateButton("Settings Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(332f, 100f), new Vector2(176f, 132f), SecondaryColor, "Налаштування", 28, OpenSettings);
+                new Vector2(332f, 100f), new Vector2(176f, 132f), SecondaryColor, GameText.Settings, 28, OpenSettings);
 
             _statusText = CreateText("Status", root, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(-96f, 44f), new Vector2(0f, 48f), 24, TextAnchor.MiddleCenter,
+                new Vector2(-96f, 44f), new Vector2(0f, 48f), 24, TextAlignmentOptions.Center,
                 DescribeMenuStatus(AppServices.LastSaveLoadResult, AppServices.LastMissionCompletionResult));
         }
 
@@ -137,12 +133,12 @@ namespace Game.App
 
         private void OpenLoadout()
         {
-            LoadoutScreenController.Open(() => SetStatus("Спорядження оновлено."));
+            LoadoutScreenController.Open(() => SetStatus(GameText.LoadoutUpdated()));
         }
 
         private void OpenSettings()
         {
-            SettingsScreenController.Open(() => SetStatus("Налаштування збережено."));
+            SettingsScreenController.Open(() => SetStatus(GameText.SettingsSaved()));
         }
 
         private void SetStatus(string message)
@@ -157,44 +153,42 @@ namespace Game.App
         {
             if (saveData == null)
             {
-                return "Профіль: локальні дані ще не готові.";
+                return GameText.ProfileUnavailable();
             }
 
             var reward = mission != null ? mission.Reward.softCurrency : 0;
-            return $"Профіль: {saveData.profile.playerName}\nМісія: {saveData.campaign.highestUnlockedMissionIndex + 1}\nМонети: {saveData.economy.softCurrency}\nНагорода: {reward} монет";
+            return GameText.ProfileSummary(
+                saveData.profile.playerName,
+                saveData.campaign.highestUnlockedMissionIndex + 1,
+                saveData.economy.softCurrency,
+                reward);
         }
 
         private static string DescribeMissionTitle(MissionDefinition mission)
         {
-            return mission != null ? mission.Title : "Тренувальна місія";
+            return mission != null ? mission.Title : GameText.DefaultMissionTitle();
         }
 
         private static string DescribeMissionDetails(MissionDefinition mission)
         {
             return mission != null
                 ? mission.Description
-                : "Наведи постріл перетягуванням, зафіксуй приціл і підтвердь постріл кнопкою.";
-        }
-
-        private static string DescribeLoadStatus(SaveLoadResult result)
-        {
-            return result.Status switch
-            {
-                SaveLoadStatus.CreatedNew => "Створено локальний профіль. Натисни «Грати», щоб перейти до першого бою.",
-                SaveLoadStatus.RecoveredFromCorrupt => "Save було відновлено з резервною копією. Можна грати далі.",
-                _ => "Локальний профіль завантажено. Натисни «Грати», щоб перейти до бою."
-            };
+                : GameText.DefaultMissionDetails();
         }
 
         private static string DescribeMenuStatus(SaveLoadResult loadResult, MissionCompletionResult completionResult)
         {
             if (completionResult.Applied)
             {
-                var unlock = completionResult.HasUnlock ? " Нове спорядження відкрито." : string.Empty;
-                return $"Місію завершено. +{completionResult.GrantedSoftCurrency} монет.{unlock}";
+                return GameText.MissionCompleted(completionResult.GrantedSoftCurrency, completionResult.HasUnlock);
             }
 
-            return DescribeLoadStatus(loadResult);
+            return loadResult.Status switch
+            {
+                SaveLoadStatus.CreatedNew => GameText.LoadStatusCreatedNew(),
+                SaveLoadStatus.RecoveredFromCorrupt => GameText.LoadStatusRecovered(),
+                _ => GameText.LoadStatusReady()
+            };
         }
 
         private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
@@ -207,17 +201,16 @@ namespace Game.App
             return image;
         }
 
-        private Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAnchor alignment, string value)
+        private TMP_Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
+            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
-            var text = rect.gameObject.AddComponent<Text>();
-            text.font = _font;
+            var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
             text.fontSize = fontSize;
             text.color = Color.white;
             text.alignment = alignment;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.textWrappingMode = TextWrappingModes.Normal;
+            text.overflowMode = TextOverflowModes.Overflow;
             text.text = value;
             text.raycastTarget = false;
             return text;
@@ -232,7 +225,7 @@ namespace Game.App
             button.onClick.AddListener(() => onClick?.Invoke());
 
             CreateText($"{name} Label", image.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, fontSize, TextAnchor.MiddleCenter, label);
+                Vector2.zero, Vector2.zero, fontSize, TextAlignmentOptions.Center, label);
             return button;
         }
 

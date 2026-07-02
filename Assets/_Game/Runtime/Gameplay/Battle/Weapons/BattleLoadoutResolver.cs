@@ -25,6 +25,17 @@ namespace Game.Gameplay.Battle.Weapons
             var allowed = Clean(missionAllowed);
             var all = Clean(allWeaponIds);
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (all.Count > 0 && loadout.Count >= all.Count)
+            {
+                var allSet = new HashSet<string>(all);
+                if (loadout.All(allSet.Contains))
+                {
+                    return loadout;
+                }
+            }
+#endif
+
             List<string> effective;
             if (allowed.Count > 0 && loadout.Count > 0)
             {

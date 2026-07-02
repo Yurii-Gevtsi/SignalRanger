@@ -1,5 +1,16 @@
 # Phase 14: Android Build, Performance, MVP Review Gate
 
+## MVP Closure Status
+
+Status: MVP feature scope is closed.
+
+Manual smoke notes:
+
+- Menu, loadout, settings, battle HUD, turn flow and result flow are working in the current playable build.
+- All eight runtime weapons are selectable through the test loadout path and have distinct tactical behavior for MVP testing.
+- Cover, guard, relay, close-range burst and multi-projectile weapons passed manual gameplay iteration.
+- Remaining work is outside MVP feature scope: final Unity test run, Android build, profiler pass and release-readiness review.
+
 Ця нотатка фіксує стан Phase 14 після автономного полірування і слугує чек-листом перед першим внутрішнім build'ом.
 
 ## 14.1. Android Settings
@@ -47,7 +58,7 @@
 - [x] No-op infrastructure interfaces — analytics/ads/IAP/remoteconfig/notifications.
 - [x] Core battle logic + save migration test coverage — EditMode тести + PlayMode smoke.
 
-Не в MVP-зрізі (свідомо, за roadmap):
+Не в MVP-зрізі (свідомо):
 
 - Real ads/IAP SDK, push notifications, backend login, ranked PvP, clans, complex crafting, багато валют, heavy live-ops.
 
