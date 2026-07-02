@@ -51,12 +51,17 @@ namespace Game.Gameplay.Battle.Weapons
 
         public ProjectileDefinition CreateProjectileDefinition()
         {
+            return CreateProjectileDefinition(Damage);
+        }
+
+        public ProjectileDefinition CreateProjectileDefinition(int damageOverride)
+        {
             return ProjectileDefinition.CreateRuntime(
                 $"projectile.{_weaponId}",
                 ProjectileRadius,
                 GravityScale,
                 TimeoutSeconds,
-                Damage,
+                UnityEngine.Mathf.Max(0, damageOverride),
                 ImpactRadius);
         }
 
