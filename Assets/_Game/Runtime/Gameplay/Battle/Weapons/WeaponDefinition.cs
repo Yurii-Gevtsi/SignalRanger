@@ -46,7 +46,7 @@ namespace Game.Gameplay.Battle.Weapons
 
         public AimSettings CreateAimSettings(AimSettings baseSettings)
         {
-            return new AimSettings(MinPower, MaxPower, baseSettings.PowerScale, baseSettings.MinInputDistance, baseSettings.FallbackDirection);
+            return new AimSettings(MinPower, MaxPower, baseSettings.MaxInputDistance, baseSettings.MinInputDistance, baseSettings.FallbackDirection);
         }
 
         public ProjectileDefinition CreateProjectileDefinition()

@@ -28,13 +28,37 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void Calculate_ClampsPower()
+        public void Calculate_ScalesPowerWithDragLength()
+        {
+            // minInput 0, maxInput 10, power range 0..10 => power equals drag distance.
+            var settings = new AimSettings(0f, 10f, 10f, 0f, Vector2.right);
+
+            var aim = AimCalculator.Calculate(Vector2.zero, new Vector2(5f, 0f), settings);
+
+            Assert.That(aim.Power, Is.EqualTo(5f).Within(0.001f));
+        }
+
+        [Test]
+        public void Calculate_ClampsPowerAtMaxInputDistance()
         {
             var settings = new AimSettings(5f, 10f, 10f, 0.1f, Vector2.right);
 
             var aim = AimCalculator.Calculate(Vector2.zero, new Vector2(100f, 0f), settings);
 
             Assert.AreEqual(10f, aim.Power);
+        }
+
+        [Test]
+        public void Calculate_PowerIsIndependentOfTargetDistanceBeyondMax()
+        {
+            var settings = new AimSettings(8f, 20f, 5f, 0.35f, Vector2.right);
+
+            var near = AimCalculator.Calculate(Vector2.zero, new Vector2(6f, 0f), settings);
+            var far = AimCalculator.Calculate(Vector2.zero, new Vector2(12f, 0f), settings);
+
+            // Both drags exceed MaxInputDistance, so both saturate to MaxPower.
+            Assert.AreEqual(20f, near.Power);
+            Assert.AreEqual(20f, far.Power);
         }
     }
 }
