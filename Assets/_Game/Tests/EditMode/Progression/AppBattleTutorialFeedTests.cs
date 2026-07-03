@@ -31,7 +31,7 @@ namespace Game.Tests.EditMode.Progression
         {
             var data = SaveData.CreateNew();
             data.EnsureDefaults();
-            var tutorial = new TutorialService(data, TutorialStepLibrary.CreateFirstBattleSteps());
+            var tutorial = new TutorialService(data, TutorialStepLibrary.CreateCampaignSteps());
             var save = new FakeSaveService(data);
             return (new AppBattleTutorialFeed(tutorial, save), tutorial, save);
         }
@@ -40,10 +40,14 @@ namespace Game.Tests.EditMode.Progression
         public void ReportTrigger_ReturnsMessageAndCompletesStep_OnFirstObservation()
         {
             var (feed, tutorial, save) = CreateFeed();
+            GameSessionContext.SelectMission(0, 0, "mission.training.01", "arena.training-meadow", null,
+                new[] { "tutorial.aim", "tutorial.fire", "tutorial.impact", "tutorial.turn", "tutorial.win" },
+                string.Empty, null, string.Empty, string.Empty, 0, string.Empty, 0);
 
-            var message = feed.ReportTrigger(BattleTutorialBridge.MissionStart);
+            var cue = feed.ReportTrigger(BattleTutorialBridge.MissionStart);
 
-            Assert.That(message, Is.Not.Empty);
+            Assert.That(cue.Message, Is.Not.Empty);
+            Assert.That(cue.UiTargetId, Is.EqualTo("battle.aim-area"));
             Assert.That(tutorial.IsCompleted("tutorial.aim"), Is.True);
             Assert.That(save.SaveCount, Is.EqualTo(1));
         }
@@ -52,22 +56,45 @@ namespace Game.Tests.EditMode.Progression
         public void ReportTrigger_ReturnsEmptyWhenAlreadyCompleted()
         {
             var (feed, _, _) = CreateFeed();
+            GameSessionContext.SelectMission(0, 0, "mission.training.01", "arena.training-meadow", null,
+                new[] { "tutorial.aim", "tutorial.fire", "tutorial.impact", "tutorial.turn", "tutorial.win" },
+                string.Empty, null, string.Empty, string.Empty, 0, string.Empty, 0);
             feed.ReportTrigger(BattleTutorialBridge.MissionStart);
 
             var second = feed.ReportTrigger(BattleTutorialBridge.MissionStart);
 
-            Assert.That(second, Is.Empty);
+            Assert.That(second.IsEmpty, Is.True);
         }
 
         [Test]
         public void ReportTrigger_ReturnsEmptyForUnknownKey()
         {
             var (feed, _, save) = CreateFeed();
+            GameSessionContext.SelectMission(0, 0, "mission.training.01", "arena.training-meadow", null,
+                new[] { "tutorial.aim", "tutorial.fire", "tutorial.impact", "tutorial.turn", "tutorial.win" },
+                string.Empty, null, string.Empty, string.Empty, 0, string.Empty, 0);
 
-            var message = feed.ReportTrigger("not-a-trigger");
+            var cue = feed.ReportTrigger("not-a-trigger");
 
-            Assert.That(message, Is.Empty);
+            Assert.That(cue.IsEmpty, Is.True);
             Assert.That(save.SaveCount, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ReportTrigger_UsesMissionSpecificTutorialSteps()
+        {
+            var (feed, tutorial, save) = CreateFeed();
+            GameSessionContext.SelectMission(1, 1, "mission.training.02", "arena.split-ridge", null,
+                new[] { "tutorial.arc", "tutorial.power" },
+                string.Empty, null, string.Empty, string.Empty, 0, string.Empty, 0);
+
+            var cue = feed.ReportTrigger(BattleTutorialBridge.MissionStart);
+
+            Assert.That(cue.Message, Is.Not.Empty);
+            Assert.That(cue.UiTargetId, Is.EqualTo("battle.aim-area"));
+            Assert.That(tutorial.IsCompleted("tutorial.arc"), Is.True);
+            Assert.That(tutorial.IsCompleted("tutorial.aim"), Is.False);
+            Assert.That(save.SaveCount, Is.EqualTo(1));
         }
     }
 }

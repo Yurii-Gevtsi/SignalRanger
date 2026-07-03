@@ -8,7 +8,9 @@ namespace Game.Gameplay.Battle.Runtime
         [SerializeField] private Transform firePoint;
         [SerializeField] private GameObject activeIndicator;
         [SerializeField] private Transform healthFill;
+        [SerializeField] private TextMesh healthLabel;
         [SerializeField] private Vector3 defeatedScale = new(0.9f, 0.35f, 1f);
+        [SerializeField] private bool preserveSpriteColor;
 
         private Color _baseColor = Color.white;
         private Vector3 _baseScale;
@@ -28,10 +30,35 @@ namespace Game.Gameplay.Battle.Runtime
         public void SetColor(Color color)
         {
             EnsureReferences();
-            _baseColor = color;
+            _baseColor = preserveSpriteColor ? Color.white : color;
             if (bodyRenderer != null)
             {
-                bodyRenderer.color = color;
+                bodyRenderer.color = _baseColor;
+            }
+        }
+
+        public void SetPreserveSpriteColor(bool preserve)
+        {
+            preserveSpriteColor = preserve;
+            if (preserveSpriteColor && bodyRenderer != null)
+            {
+                _baseColor = Color.white;
+                bodyRenderer.color = Color.white;
+            }
+        }
+
+        public void SetFacing(int facingDirectionX)
+        {
+            EnsureReferences();
+            var sign = facingDirectionX >= 0 ? 1f : -1f;
+            if (firePoint != null)
+            {
+                firePoint.localPosition = new Vector3(0.45f * sign, 0.2f, 0f);
+            }
+
+            if (bodyRenderer != null)
+            {
+                bodyRenderer.flipX = sign < 0f;
             }
         }
 
@@ -40,7 +67,7 @@ namespace Game.Gameplay.Battle.Runtime
             EnsureReferences();
             if (activeIndicator != null)
             {
-                activeIndicator.SetActive(isActive);
+                activeIndicator.SetActive(!preserveSpriteColor && isActive);
             }
         }
 
@@ -55,7 +82,12 @@ namespace Game.Gameplay.Battle.Runtime
                 healthFill.localPosition = new Vector3(-0.5f + healthRatio * 0.5f, healthFill.localPosition.y, healthFill.localPosition.z);
             }
 
-            if (bodyRenderer != null && health > 0)
+            if (healthLabel != null)
+            {
+                healthLabel.text = $"{health}/{maxHealth}";
+            }
+
+            if (bodyRenderer != null && health > 0 && !preserveSpriteColor)
             {
                 bodyRenderer.color = Color.Lerp(Color.red, _baseColor, healthRatio);
             }
@@ -126,6 +158,21 @@ namespace Game.Gameplay.Battle.Runtime
                 fillRenderer.color = new Color(0.2f, 0.95f, 0.25f, 0.95f);
                 fillRenderer.sortingOrder = 32;
                 healthFill = fill.transform;
+
+                var label = new GameObject("Health Label");
+                label.transform.SetParent(healthRoot.transform);
+                label.transform.localPosition = new Vector3(0f, 0.28f, 0f);
+                label.transform.localScale = new Vector3(0.16f, 0.16f, 1f);
+                healthLabel = label.AddComponent<TextMesh>();
+                healthLabel.alignment = TextAlignment.Center;
+                healthLabel.anchor = TextAnchor.MiddleCenter;
+                healthLabel.fontSize = 38;
+                healthLabel.color = Color.white;
+                var labelRenderer = label.GetComponent<MeshRenderer>();
+                if (labelRenderer != null)
+                {
+                    labelRenderer.sortingOrder = 33;
+                }
             }
         }
     }

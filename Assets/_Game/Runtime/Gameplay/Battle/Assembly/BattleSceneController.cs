@@ -11,6 +11,7 @@ using Game.Gameplay.Battle.Projectiles;
 using Game.Gameplay.Battle.Results;
 using Game.Gameplay.Battle.Runtime;
 using Game.Gameplay.Battle.Units;
+using Game.Gameplay.Battle.Visuals;
 using Game.Gameplay.Battle.Weapons;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -46,11 +47,21 @@ namespace Game.Gameplay.Battle.Assembly
 
     public sealed class BattleSceneController : MonoBehaviour, IProjectileSpawner
     {
+        private const float WalkMinStep = 0.005f;
+        private const float GroundRayStartHeight = 3.5f;
+        private const float GroundRayDistance = 8f;
+        private const float OccupiedRadius = 0.72f;
+        private const float JumpAnimationDuration = 0.34f;
+        private const float JumpCollisionRadius = 0.34f;
+        private const float FallDeathY = -6.2f;
+        private const float PlayerTurnDurationSeconds = 30f;
+
         private readonly Color _playerColor = new(0.18f, 0.56f, 0.96f);
         private readonly Color _opponentColor = new(0.95f, 0.28f, 0.22f);
         private readonly List<BattleUnitPresenter> _unitPresenters = new();
         private readonly List<GameObject> _arenaObjects = new();
         private readonly Dictionary<string, WeaponDefinition> _weaponsById = new(System.StringComparer.Ordinal);
+        private readonly Dictionary<string, Sprite> _spriteResourceCache = new(System.StringComparer.Ordinal);
 
         private ArenaDefinition[] _arenas;
         private int _arenaIndex;
@@ -78,10 +89,28 @@ namespace Game.Gameplay.Battle.Assembly
         private AiDifficulty _aiDifficulty;
         private CharacterArchetype _playerArchetype;
         private CharacterArchetype _opponentArchetype;
+        private BattleVisualTheme _visualTheme;
+        private VisualSurfaceSampler _visualSurfaceSampler;
+        private FirstBattleGuideState _firstBattleGuide;
         private float _aiDecisionTimer;
         private string _coachMessage = string.Empty;
+        private string _coachTargetId = string.Empty;
         private float _coachTimer;
         private bool _aimHadInput;
+        private TurnMovementState _playerMovement;
+        private int _uiWalkInputDirection;
+        private int _keyboardWalkInputDirection;
+        private bool _jumpInProgress;
+        private BattleUnitPresenter _jumpPresenter;
+        private Vector2 _jumpStart;
+        private Vector2 _jumpTarget;
+        private Vector2 _jumpLastSafePosition;
+        private float _jumpArcHeight;
+        private float _jumpTimer;
+        private string _jumpStatus = string.Empty;
+        private bool _jumpFallsOffMap;
+        private bool _jumpRequiresTerrainBlock;
+        private bool _resolvingMovementFall;
         private bool HasProjectilesInFlight => _projectilesInFlight > 0;
 
         private void Awake()
@@ -109,6 +138,7 @@ namespace Game.Gameplay.Battle.Assembly
             _aiDifficulty = MapDifficulty(GameSessionContext.SelectedAiDifficulty);
             _inventory = new WeaponInventoryRuntime(CreateMissionWeapons(allWeapons), 1);
             _opponentInventory = new WeaponInventoryRuntime(CreateOpponentWeapons(allWeapons), 1);
+            _firstBattleGuide = new FirstBattleGuideState(GameSessionContext.SelectedMissionId);
             SelectWeapon(_inventory.SelectedIndex);
 
             LoadArena(GameSessionContext.SelectedArenaIndex);
@@ -139,7 +169,11 @@ namespace Game.Gameplay.Battle.Assembly
                 .Where(weapon => weapon != null)
                 .ToDictionary(weapon => weapon.WeaponId);
 
-            return new[] { "weapon.steady-orb", "weapon.pulse-shell" }
+            var selectedIds = GameSessionContext.SelectedOpponentWeaponIds != null && GameSessionContext.SelectedOpponentWeaponIds.Length > 0
+                ? GameSessionContext.SelectedOpponentWeaponIds
+                : new[] { "weapon.steady-orb", "weapon.pulse-shell" };
+
+            return selectedIds
                 .Where(byId.ContainsKey)
                 .Select(id => byId[id])
                 .ToArray();
@@ -157,6 +191,12 @@ namespace Game.Gameplay.Battle.Assembly
             _hud.FireRequested += Fire;
             _hud.CancelRequested += CancelAim;
             _hud.NextWeaponRequested += () => SelectWeapon(_inventory.SelectedIndex + 1);
+            _hud.MoveLeftStarted += () => SetWalkInput(-1);
+            _hud.MoveLeftStopped += StopWalkInput;
+            _hud.MoveRightStarted += () => SetWalkInput(1);
+            _hud.MoveRightStopped += StopWalkInput;
+            _hud.JumpForwardRequested += () => TryStartJump(true);
+            _hud.JumpBackwardRequested += () => TryStartJump(false);
             _hud.RestartRequested += RestartScene;
             _hud.ContinueRequested += ContinueFromResult;
             _hud.MenuRequested += ExitToMenu;
@@ -193,9 +233,24 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            if (UpdatePlayerTurnTimer())
+            {
+                return;
+            }
+
+            if (_jumpInProgress)
+            {
+                UpdateJumpAnimation();
+                return;
+            }
+
             if (!HasProjectilesInFlight && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
-                CancelAim();
+                if (!IsCancelBlockedByGuide())
+                {
+                    CancelAim();
+                }
+
                 return;
             }
 
@@ -207,7 +262,11 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (!HasProjectilesInFlight && Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
             {
-                SelectWeapon(_inventory.SelectedIndex + 1);
+                if (!IsWeaponSwitchBlockedByGuide())
+                {
+                    SelectWeapon(_inventory.SelectedIndex + 1);
+                }
+
                 return;
             }
 
@@ -217,11 +276,40 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+                {
+                    SetKeyboardWalkInput(-1);
+                }
+                else if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+                {
+                    SetKeyboardWalkInput(1);
+                }
+                else
+                {
+                    SetKeyboardWalkInput(0);
+                }
+
+                if (!HasProjectilesInFlight && Keyboard.current.qKey.wasPressedThisFrame)
+                {
+                    TryStartJump(false);
+                    return;
+                }
+
+                if (!HasProjectilesInFlight && Keyboard.current.eKey.wasPressedThisFrame)
+                {
+                    TryStartJump(true);
+                    return;
+                }
+            }
+
             if (HasProjectilesInFlight)
             {
                 return;
             }
 
+            UpdateWalking();
             UpdateAim();
             DrawAim();
             DrawTrajectoryPreview();
@@ -271,6 +359,10 @@ namespace Game.Gameplay.Battle.Assembly
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
             _aimHadInput = false;
+            _uiWalkInputDirection = 0;
+            _keyboardWalkInputDirection = 0;
+            _jumpInProgress = false;
+            ResetPlayerMovementTurn();
             RefreshUnitViews();
             ReportTutorial(BattleTutorialBridge.MissionStart);
         }
@@ -299,24 +391,35 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void BuildWorld(ArenaDefinition arena)
         {
+            _visualTheme = BattleVisualThemeLibrary.ForArena(arena);
+            _visualSurfaceSampler = null;
+            AddVisualLayer("Arena Background", _visualTheme?.Background);
+
             foreach (var block in arena.TerrainBlocks)
             {
-                var blockObject = CreateBox(block.BlockId, block.Position, block.Size, block.Color, block.Solid, block.SortingOrder);
+                var showProceduralBlock = _visualTheme == null || !_visualTheme.HideProceduralTerrain;
+                var solidProceduralBlock = block.Solid && (_visualTheme == null || _visualTheme.UseProceduralTerrainColliders);
+                var blockObject = CreateBox(block.BlockId, block.Position, block.Size, block.Color, solidProceduralBlock, block.SortingOrder, showProceduralBlock);
                 _arenaObjects.Add(blockObject);
             }
+
+            AddVisualLayer("Arena Foreground", _visualTheme?.Foreground);
         }
 
         private void BuildBattleState(ArenaDefinition arena)
         {
             _playerArchetype = PrototypeArchetypeLibrary.PlayerArchetype;
-            _opponentArchetype = PrototypeArchetypeLibrary.ForDifficulty(_aiDifficulty);
+            _opponentArchetype = ResolveOpponentArchetype(GameSessionContext.SelectedOpponentArchetypeId, _aiDifficulty);
 
-            var playerUnit = new BattleUnitState($"player.{_playerArchetype.Id}.01", BattleTeamId.Player, arena.PlayerSpawn, _playerArchetype.MaxHealth);
-            var opponentUnit = new BattleUnitState($"opponent.{_opponentArchetype.Id}.01", BattleTeamId.Opponent, arena.OpponentSpawn, _opponentArchetype.MaxHealth);
+            var playerSpawn = ResolveUnitLandingPosition(arena.PlayerSpawn, BattleTeamId.Player);
+            var opponentSpawn = ResolveUnitLandingPosition(arena.OpponentSpawn, BattleTeamId.Opponent);
+            var playerUnit = new BattleUnitState($"player.{_playerArchetype.Id}.01", BattleTeamId.Player, playerSpawn, _playerArchetype.MaxHealth, 1);
+            var opponentUnit = new BattleUnitState($"opponent.{_opponentArchetype.Id}.01", BattleTeamId.Opponent, opponentSpawn, _opponentArchetype.MaxHealth, -1);
 
             var playerTeam = new BattleTeamState(BattleTeamId.Player, new[] { playerUnit });
             var opponentTeam = new BattleTeamState(BattleTeamId.Opponent, new[] { opponentUnit });
             _battleState = new BattleState(new[] { playerTeam, opponentTeam }, new TurnState(BattleTeamId.None, string.Empty, 0, false));
+            _playerMovement = new TurnMovementState(PlayerTurnDurationSeconds);
         }
 
         private CharacterArchetype ArchetypeFor(BattleTeamId teamId)
@@ -367,11 +470,30 @@ namespace Game.Gameplay.Battle.Assembly
             var bodyHeight = ArchetypeFor(state.TeamId).BodyHeight;
             var unitObject = new GameObject(state.UnitId);
             unitObject.transform.position = state.Position;
-            unitObject.transform.localScale = new Vector3(0.72f, bodyHeight, 1f);
 
-            var renderer = unitObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = _circleSprite;
-            renderer.sortingOrder = 20;
+            var skin = GetUnitSkin(state.TeamId);
+            if (skin == null)
+            {
+                unitObject.transform.localScale = new Vector3(0.72f, bodyHeight, 1f);
+
+                var renderer = unitObject.AddComponent<SpriteRenderer>();
+                renderer.sprite = _circleSprite;
+                renderer.sortingOrder = 20;
+            }
+            else
+            {
+                var bodyObject = new GameObject("Body Visual");
+                bodyObject.transform.SetParent(unitObject.transform);
+                var spriteOffset = _visualTheme != null ? _visualTheme.UnitSpriteOffset : Vector2.zero;
+                var spriteScale = _visualTheme != null ? _visualTheme.UnitSpriteScale : Vector2.one;
+                bodyObject.transform.localPosition = new Vector3(spriteOffset.x, spriteOffset.y, 0f);
+                bodyObject.transform.localScale = new Vector3(spriteScale.x, spriteScale.y, 1f);
+
+                var renderer = bodyObject.AddComponent<SpriteRenderer>();
+                renderer.sprite = skin;
+                renderer.color = Color.white;
+                renderer.sortingOrder = 20;
+            }
 
             var collider = unitObject.AddComponent<CapsuleCollider2D>();
             collider.size = new Vector2(0.72f, bodyHeight + 0.05f);
@@ -379,7 +501,9 @@ namespace Game.Gameplay.Battle.Assembly
             var body = unitObject.AddComponent<Rigidbody2D>();
             body.bodyType = RigidbodyType2D.Kinematic;
 
-            return unitObject.AddComponent<BattleUnitView>();
+            var view = unitObject.AddComponent<BattleUnitView>();
+            view.SetPreserveSpriteColor(skin != null);
+            return view;
         }
 
         private void BuildAimRenderers()
@@ -397,6 +521,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _aimState = AimCalculator.Calculate(activePresenter.View.FirePoint.position, pointerWorld, _aimSettings);
+            _firstBattleGuide?.ObserveAimState(_aimState.HasInput);
             if (_aimState.HasInput && !_aimHadInput)
             {
                 ReportTutorial(BattleTutorialBridge.AimStarted);
@@ -416,12 +541,20 @@ namespace Game.Gameplay.Battle.Assembly
             };
         }
 
+        private static CharacterArchetype ResolveOpponentArchetype(string archetypeId, AiDifficulty fallbackDifficulty)
+        {
+            return PrototypeArchetypeLibrary.TryGetById(archetypeId, out var archetype)
+                ? archetype
+                : PrototypeArchetypeLibrary.ForDifficulty(fallbackDifficulty);
+        }
+
         private void ReportTutorial(string triggerKey)
         {
-            var message = BattleTutorialBridge.Report(triggerKey);
-            if (!string.IsNullOrEmpty(message))
+            var cue = BattleTutorialBridge.Report(triggerKey);
+            if (!cue.IsEmpty)
             {
-                _coachMessage = message;
+                _coachMessage = cue.Message;
+                _coachTargetId = cue.UiTargetId;
                 _coachTimer = 4.5f;
             }
         }
@@ -496,6 +629,14 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            if (activePresenter.State.TeamId == BattleTeamId.Player
+                && _playerMovement != null
+                && !_playerMovement.HasTimeRemaining)
+            {
+                EndPlayerTurnFromTimer();
+                return;
+            }
+
             if (!_aimState.HasInput)
             {
                 _status = GameText.AimRequired();
@@ -537,10 +678,16 @@ namespace Game.Gameplay.Battle.Assembly
 
             _activeShotWeapon = weapon;
             _projectilesInFlight = Mathf.Max(1, _projectilesInFlight);
+            ClearWalkInput();
             _turnService.SpendAction(_battleState);
             _status = GameText.ShotStatus(DescribeTeam(activePresenter.State.TeamId), DescribeWeapon(weapon));
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
+            if (activePresenter.State.TeamId == BattleTeamId.Player)
+            {
+                _firstBattleGuide?.ObservePlayerShotFired();
+            }
+
             EmitFeedback(BattleFeedbackEventType.ShotFired);
 
             if (activePresenter.State.TeamId == BattleTeamId.Player)
@@ -638,6 +785,12 @@ namespace Game.Gameplay.Battle.Assembly
             ResolveImpact(impact, impactWeapon);
             RefreshUnitViews();
             ReportTutorial(BattleTutorialBridge.ProjectileImpact);
+            if (!string.IsNullOrWhiteSpace(impact.OwnerUnitId)
+                && impact.OwnerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
+            {
+                _firstBattleGuide?.ObserveProjectileImpact();
+            }
+
             EmitFeedback(BattleFeedbackEventType.ProjectileImpact);
 
             if (HasProjectilesInFlight)
@@ -657,13 +810,17 @@ namespace Game.Gameplay.Battle.Assembly
                     ReportTutorial(BattleTutorialBridge.BattleWon);
                 }
 
+                _firstBattleGuide?.ObserveBattleFinished();
+
                 return;
             }
 
             _turnService.AdvanceTurn(_battleState);
+            _firstBattleGuide?.ObserveTurnAdvanced(_battleState.Turn.ActiveTeam);
             ApplyAimSettingsForActiveTeam();
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _aiDecisionTimer = 0f;
+            ResetPlayerMovementTurn();
             _aimLine.enabled = false;
             _trajectoryLine.enabled = false;
             _status = GameText.TurnStatus(DescribeTeam(_battleState.Turn.ActiveTeam));
@@ -732,6 +889,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _activeShotWeapon = weapon;
+            ClearWalkInput();
             _turnService.SpendAction(_battleState);
             if (weapon.Role == WeaponRole.CoverTool)
             {
@@ -758,6 +916,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _activeShotWeapon = weapon;
+            ClearWalkInput();
             _turnService.SpendAction(_battleState);
 
             var origin = (Vector2)activePresenter.View.FirePoint.position;
@@ -805,13 +964,16 @@ namespace Game.Gameplay.Battle.Assembly
                 EmitFeedback(BattleFeedbackEventType.BattleFinished);
                 _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
                 _status = GameText.ResultPrompt(_resultScreenState.Title);
+                _firstBattleGuide?.ObserveBattleFinished();
                 return;
             }
 
             _turnService.AdvanceTurn(_battleState);
+            _firstBattleGuide?.ObserveTurnAdvanced(_battleState.Turn.ActiveTeam);
             ApplyAimSettingsForActiveTeam();
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _aiDecisionTimer = 0f;
+            ResetPlayerMovementTurn();
             _status = $"{actionStatus} {GameText.TurnStatus(DescribeTeam(_battleState.Turn.ActiveTeam))}";
             RefreshUnitViews();
         }
@@ -884,14 +1046,423 @@ namespace Game.Gameplay.Battle.Assembly
 
         private Vector2 ResolveUnitLandingPosition(Vector2 desiredPoint, BattleTeamId teamId)
         {
+            return TryResolveGroundPosition(desiredPoint, teamId, out var landingPosition)
+                ? landingPosition
+                : desiredPoint;
+        }
+
+        private bool TryResolveGroundPosition(Vector2 desiredPoint, BattleTeamId teamId, out Vector2 landingPosition)
+        {
+            landingPosition = desiredPoint;
             var bodyHeight = ArchetypeFor(teamId).BodyHeight;
-            var hit = Physics2D.Raycast(desiredPoint + Vector2.up * 3f, Vector2.down, 8f);
-            if (hit.collider != null)
+            if (_visualSurfaceSampler != null && _visualSurfaceSampler.TryGetLanding(desiredPoint.x, bodyHeight, out landingPosition))
             {
-                return hit.point + Vector2.up * (bodyHeight * 0.5f);
+                return true;
             }
 
-            return desiredPoint;
+            var origin = new Vector2(desiredPoint.x, Mathf.Max(desiredPoint.y + GroundRayStartHeight, bodyHeight + GroundRayStartHeight));
+            var hits = Physics2D.RaycastAll(origin, Vector2.down, GroundRayDistance);
+            foreach (var hit in hits)
+            {
+                if (hit.collider == null || hit.collider.isTrigger)
+                {
+                    continue;
+                }
+
+                if (hit.collider.GetComponent<BattleUnitView>() != null)
+                {
+                    continue;
+                }
+
+                landingPosition = hit.point + Vector2.up * (bodyHeight * 0.5f);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ResetPlayerMovementTurn()
+        {
+            _uiWalkInputDirection = 0;
+            _keyboardWalkInputDirection = 0;
+            _jumpInProgress = false;
+            _jumpPresenter = null;
+            _jumpTimer = 0f;
+            _jumpStatus = string.Empty;
+            _jumpFallsOffMap = false;
+            _jumpRequiresTerrainBlock = false;
+            _resolvingMovementFall = false;
+            _playerMovement?.Reset(PlayerTurnDurationSeconds);
+        }
+
+        private bool UpdatePlayerTurnTimer()
+        {
+            if (_playerMovement == null
+                || _battleState.Turn.ActiveTeam != BattleTeamId.Player
+                || _battleState.Turn.ActionSpent
+                || HasProjectilesInFlight
+                || _battleResult.IsFinished)
+            {
+                return false;
+            }
+
+            _playerMovement.Tick(Time.deltaTime);
+            if (_playerMovement.HasTimeRemaining || _jumpInProgress)
+            {
+                return false;
+            }
+
+            EndPlayerTurnFromTimer();
+            return true;
+        }
+
+        private void EndPlayerTurnFromTimer()
+        {
+            ClearWalkInput();
+            _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
+            _aimLine.enabled = false;
+            _trajectoryLine.enabled = false;
+            _turnService.AdvanceTurn(_battleState);
+            _firstBattleGuide?.ObserveTurnAdvanced(_battleState.Turn.ActiveTeam);
+            ApplyAimSettingsForActiveTeam();
+            _aiDecisionTimer = 0f;
+            ResetPlayerMovementTurn();
+            _status = GameText.TurnStatus(DescribeTeam(_battleState.Turn.ActiveTeam));
+            RefreshUnitViews();
+        }
+
+        private void SetWalkInput(int direction)
+        {
+            if (!CanUseMovement())
+            {
+                _uiWalkInputDirection = 0;
+                if (IsMovementBlockedByGuide())
+                {
+                    _status = GameText.MovementGuideBlocked();
+                }
+
+                return;
+            }
+
+            _uiWalkInputDirection = NormalizeDirection(direction);
+        }
+
+        private void StopWalkInput()
+        {
+            _uiWalkInputDirection = 0;
+        }
+
+        private void SetKeyboardWalkInput(int direction)
+        {
+            _keyboardWalkInputDirection = CanUseMovement() ? NormalizeDirection(direction) : 0;
+        }
+
+        private static int NormalizeDirection(int direction)
+        {
+            return direction < 0 ? -1 : direction > 0 ? 1 : 0;
+        }
+
+        private bool CanUseMovement()
+        {
+            return IsBattleReady()
+                && !_battleResult.IsFinished
+                && !HasProjectilesInFlight
+                && !_jumpInProgress
+                && _battleState.Turn.ActiveTeam == BattleTeamId.Player
+                && !_battleState.Turn.ActionSpent
+                && (_playerMovement == null || _playerMovement.HasTimeRemaining)
+                && !IsMovementBlockedByGuide();
+        }
+
+        private bool IsMovementBlockedByGuide()
+        {
+            return _firstBattleGuide != null && _firstBattleGuide.IsActive;
+        }
+
+        private void UpdateWalking()
+        {
+            var walkDirection = _keyboardWalkInputDirection != 0 ? _keyboardWalkInputDirection : _uiWalkInputDirection;
+            if (!CanUseMovement() || walkDirection == 0)
+            {
+                return;
+            }
+
+            var presenter = GetActivePresenter();
+            if (presenter == null || presenter.State.TeamId != BattleTeamId.Player || _playerMovement == null)
+            {
+                return;
+            }
+
+            var archetype = ArchetypeFor(BattleTeamId.Player);
+            var requestedDistance = archetype.WalkSpeed * Time.deltaTime;
+            if (requestedDistance <= 0.0001f)
+            {
+                return;
+            }
+
+            var desiredX = presenter.State.Position.x + (walkDirection * requestedDistance);
+            if (!TryResolveWalkTarget(presenter.State, desiredX, out var target))
+            {
+                ClearWalkInput();
+                if (_resolvingMovementFall)
+                {
+                    ResolveMovementFallDefeat(presenter.State, new Vector2(desiredX, FallDeathY));
+                }
+
+                return;
+            }
+
+            var traveled = Mathf.Abs(target.x - presenter.State.Position.x);
+            if (traveled < WalkMinStep)
+            {
+                ClearWalkInput();
+                return;
+            }
+
+            presenter.State.SetFacing(walkDirection);
+            presenter.State.MoveTo(target);
+            presenter.Refresh(true);
+            _status = GameText.Moved(DescribeTeam(BattleTeamId.Player));
+        }
+
+        private void ClearWalkInput()
+        {
+            _uiWalkInputDirection = 0;
+            _keyboardWalkInputDirection = 0;
+        }
+
+        private bool TryResolveWalkTarget(BattleUnitState unit, float desiredX, out Vector2 target)
+        {
+            target = unit.Position;
+            _resolvingMovementFall = false;
+            if (!TryResolveGroundPosition(new Vector2(desiredX, unit.Position.y), unit.TeamId, out var landing))
+            {
+                _resolvingMovementFall = true;
+                return false;
+            }
+
+            var rise = landing.y - unit.Position.y;
+            if (rise > ArchetypeFor(unit.TeamId).WalkStepHeight)
+            {
+                _status = GameText.MovementBlocked();
+                return false;
+            }
+
+            target = landing;
+            return true;
+        }
+
+        private void TryStartJump(bool forward)
+        {
+            if (!CanUseMovement())
+            {
+                if (IsMovementBlockedByGuide())
+                {
+                    _status = GameText.MovementGuideBlocked();
+                }
+
+                return;
+            }
+
+            if (_playerMovement == null || !_playerMovement.HasTimeRemaining)
+            {
+                return;
+            }
+
+            var presenter = GetActivePresenter();
+            if (presenter == null || presenter.State.TeamId != BattleTeamId.Player)
+            {
+                return;
+            }
+
+            StartJumpAttempt(presenter, forward);
+        }
+
+        private void StartJumpAttempt(BattleUnitPresenter presenter, bool forward)
+        {
+            var archetype = ArchetypeFor(presenter.State.TeamId);
+            var direction = presenter.State.FacingDirectionX;
+            var horizontalDistance = forward ? archetype.FrontJumpDistance : -archetype.BackJumpDistance;
+            var desiredX = presenter.State.Position.x + (direction * horizontalDistance);
+            var maxRise = forward ? archetype.FrontJumpHeight : archetype.BackJumpHeight;
+            var arcHeight = Mathf.Max(maxRise + 0.2f, 0.8f + Mathf.Abs(horizontalDistance) * 0.18f);
+            var hasLanding = TryResolveGroundPosition(new Vector2(desiredX, presenter.State.Position.y), presenter.State.TeamId, out var landing);
+            var target = hasLanding
+                ? landing
+                : new Vector2(desiredX, FallDeathY);
+            var requiresTerrainBlock = false;
+
+            if (hasLanding && landing.y - presenter.State.Position.y > maxRise)
+            {
+                target = new Vector2(desiredX, presenter.State.Position.y);
+                requiresTerrainBlock = true;
+            }
+
+            StartJumpAnimation(presenter, target, arcHeight, forward, !hasLanding, requiresTerrainBlock);
+        }
+
+        private void StartJumpAnimation(BattleUnitPresenter presenter, Vector2 target, float arcHeight, bool forward, bool fallsOffMap, bool requiresTerrainBlock)
+        {
+            _jumpInProgress = true;
+            _jumpPresenter = presenter;
+            _jumpStart = presenter.State.Position;
+            _jumpTarget = target;
+            _jumpLastSafePosition = _jumpStart;
+            _jumpArcHeight = arcHeight;
+            _jumpTimer = 0f;
+            _jumpFallsOffMap = fallsOffMap;
+            _jumpRequiresTerrainBlock = requiresTerrainBlock;
+            _jumpStatus = forward
+                ? GameText.FrontJumped(DescribeTeam(presenter.State.TeamId))
+                : GameText.BackJumped(DescribeTeam(presenter.State.TeamId));
+        }
+
+        private void UpdateJumpAnimation()
+        {
+            if (!_jumpInProgress || _jumpPresenter == null)
+            {
+                _jumpInProgress = false;
+                return;
+            }
+
+            _jumpTimer += Time.deltaTime;
+            var progress = Mathf.Clamp01(_jumpTimer / JumpAnimationDuration);
+            var position = Vector2.Lerp(_jumpStart, _jumpTarget, progress);
+            position.y += Mathf.Sin(progress * Mathf.PI) * _jumpArcHeight;
+
+            if (TryResolveJumpCollision(_jumpPresenter.State, position, progress, out var blockedPosition))
+            {
+                _jumpPresenter.State.MoveTo(blockedPosition);
+                _jumpPresenter.Refresh(true);
+                _jumpInProgress = false;
+                _jumpStatus = GameText.JumpBlocked();
+                _status = _jumpStatus;
+                _jumpPresenter = null;
+                _jumpFallsOffMap = false;
+                _jumpRequiresTerrainBlock = false;
+                return;
+            }
+
+            _jumpPresenter.View.transform.position = position;
+            _jumpLastSafePosition = position;
+
+            if (progress < 1f)
+            {
+                return;
+            }
+
+            if (_jumpFallsOffMap)
+            {
+                ResolveJumpFallDefeat(_jumpPresenter.State);
+            }
+            else
+            {
+                _jumpPresenter.State.MoveTo(_jumpTarget);
+                _jumpPresenter.Refresh(true);
+                _status = _jumpStatus;
+            }
+
+            _jumpInProgress = false;
+            _jumpPresenter = null;
+            _jumpFallsOffMap = false;
+            _jumpRequiresTerrainBlock = false;
+        }
+
+        private bool TryResolveJumpCollision(BattleUnitState mover, Vector2 proposedPosition, float progress, out Vector2 blockedPosition)
+        {
+            blockedPosition = proposedPosition;
+            if (progress < 0.08f)
+            {
+                return false;
+            }
+
+            var travelDirection = Mathf.Sign(_jumpTarget.x - _jumpStart.x);
+            if (!_jumpFallsOffMap
+                && _visualSurfaceSampler != null
+                && _visualSurfaceSampler.TryGetLanding(proposedPosition.x, ArchetypeFor(mover.TeamId).BodyHeight, out var terrainLanding)
+                && proposedPosition.y < terrainLanding.y - 0.06f
+                && (_jumpRequiresTerrainBlock || progress < 0.82f || Mathf.Abs(proposedPosition.x - _jumpTarget.x) > 0.22f))
+            {
+                var stopX = proposedPosition.x - travelDirection * JumpCollisionRadius;
+                blockedPosition = TryResolveGroundPosition(new Vector2(stopX, mover.Position.y), mover.TeamId, out var ground)
+                    ? ground
+                    : _jumpLastSafePosition;
+                return true;
+            }
+
+            foreach (var unit in _battleState.Teams.SelectMany(team => team.Units))
+            {
+                if (unit == null || unit.IsDefeated || unit.UnitId == mover.UnitId)
+                {
+                    continue;
+                }
+
+                var horizontalOverlap = Mathf.Abs(unit.Position.x - proposedPosition.x) < OccupiedRadius;
+                var verticalOverlap = Mathf.Abs(unit.Position.y - proposedPosition.y) < ArchetypeFor(unit.TeamId).BodyHeight * 0.55f;
+                if (horizontalOverlap && verticalOverlap)
+                {
+                    var stopX = unit.Position.x - travelDirection * OccupiedRadius;
+                    if (TryResolveGroundPosition(new Vector2(stopX, mover.Position.y), mover.TeamId, out var ground))
+                    {
+                        blockedPosition = ground;
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void ResolveJumpFallDefeat(BattleUnitState unit)
+        {
+            if (unit == null || unit.IsDefeated)
+            {
+                return;
+            }
+
+            unit.MoveTo(_jumpTarget);
+            unit.ApplyDamage(unit.MaxHealth, "jump.fall");
+            _battleResult = BattleResultEvaluator.Evaluate(_battleState);
+            RefreshUnitViews();
+            EmitFeedback(BattleFeedbackEventType.UnitDefeated);
+            if (_battleResult.IsFinished)
+            {
+                EmitFeedback(BattleFeedbackEventType.BattleFinished);
+                _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
+                _status = GameText.ResultPrompt(_resultScreenState.Title);
+                _firstBattleGuide?.ObserveBattleFinished();
+            }
+            else
+            {
+                _status = GameText.JumpBlocked();
+            }
+        }
+
+        private void ResolveMovementFallDefeat(BattleUnitState unit, Vector2 fallTarget)
+        {
+            if (unit == null || unit.IsDefeated)
+            {
+                return;
+            }
+
+            unit.MoveTo(fallTarget);
+            unit.ApplyDamage(unit.MaxHealth, "movement.fall");
+            _resolvingMovementFall = false;
+            _battleResult = BattleResultEvaluator.Evaluate(_battleState);
+            RefreshUnitViews();
+            EmitFeedback(BattleFeedbackEventType.UnitDefeated);
+            if (_battleResult.IsFinished)
+            {
+                EmitFeedback(BattleFeedbackEventType.BattleFinished);
+                _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
+                _status = GameText.ResultPrompt(_resultScreenState.Title);
+                _firstBattleGuide?.ObserveBattleFinished();
+            }
+            else
+            {
+                _status = GameText.MovementBlocked();
+            }
         }
 
         private void RefreshUnitViews()
@@ -921,6 +1492,18 @@ namespace Game.Gameplay.Battle.Assembly
                 presenter.State.TeamId == BattleTeamId.Player && !presenter.State.IsDefeated);
             if (activePresenter == null || targetPresenter == null)
             {
+                return;
+            }
+
+            if (!_opponentInventory.TrySelectNextUsable())
+            {
+                _turnService.AdvanceTurn(_battleState);
+                ApplyAimSettingsForActiveTeam();
+                _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
+                _aiDecisionTimer = 0f;
+                ResetPlayerMovementTurn();
+                _status = GameText.TurnStatus(DescribeTeam(_battleState.Turn.ActiveTeam));
+                RefreshUnitViews();
                 return;
             }
 
@@ -961,9 +1544,10 @@ namespace Game.Gameplay.Battle.Assembly
                 return state;
             }
 
-            var unlockText = string.IsNullOrWhiteSpace(GameSessionContext.SelectedMissionRewardUnlockWeaponId)
+            var hasUnlock = !string.IsNullOrWhiteSpace(GameSessionContext.SelectedMissionRewardUnlockWeaponId);
+            var unlockText = !hasUnlock
                 ? string.Empty
-                : GameText.UnlockAfterBattle();
+                : GameText.UnlockAfterBattle(DescribeWeaponId(GameSessionContext.SelectedMissionRewardUnlockWeaponId));
 
             return new BattleResultScreenState(
                 result,
@@ -971,7 +1555,7 @@ namespace Game.Gameplay.Battle.Assembly
                 state.Subtitle,
                 new BattleRewardPreview(GameSessionContext.SelectedMissionRewardSoftCurrency, unlockText),
                 state.RetryLabel,
-                state.ContinueLabel);
+                hasUnlock ? GameText.ContinueToLoadout() : state.ContinueLabel);
         }
 
         private BattleUnitPresenter GetActivePresenter()
@@ -994,9 +1578,15 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var origin = activePresenter.View.FirePoint.position;
-            var end = origin + (Vector3)(_aimState.Direction * Mathf.Lerp(1.2f, 2.5f, Mathf.InverseLerp(_aimSettings.MinPower, _aimSettings.MaxPower, _aimState.Power)));
+            var power01 = Mathf.InverseLerp(_aimSettings.MinPower, _aimSettings.MaxPower, _aimState.Power);
+            var end = origin + (Vector3)(_aimState.Direction * Mathf.Lerp(0.85f, 3.35f, power01));
+            var powerColor = Color.Lerp(new Color(1f, 1f, 1f, 0.9f), new Color(1f, 0.34f, 0.12f, 0.98f), power01);
 
             _aimLine.enabled = true;
+            _aimLine.startColor = powerColor;
+            _aimLine.endColor = powerColor;
+            _aimLine.startWidth = Mathf.Lerp(0.055f, 0.13f, power01);
+            _aimLine.endWidth = Mathf.Lerp(0.035f, 0.09f, power01);
             _aimLine.SetPosition(0, origin);
             _aimLine.SetPosition(1, end);
         }
@@ -1098,16 +1688,19 @@ namespace Game.Gameplay.Battle.Assembly
             Destroy(flash, 0.25f);
         }
 
-        private GameObject CreateBox(string objectName, Vector2 position, Vector2 size, Color color, bool solid, int sortingOrder)
+        private GameObject CreateBox(string objectName, Vector2 position, Vector2 size, Color color, bool solid, int sortingOrder, bool visible = true)
         {
             var box = new GameObject(objectName);
             box.transform.position = position;
             box.transform.localScale = size;
 
-            var renderer = box.AddComponent<SpriteRenderer>();
-            renderer.sprite = _boxSprite;
-            renderer.color = color;
-            renderer.sortingOrder = sortingOrder;
+            if (visible)
+            {
+                var renderer = box.AddComponent<SpriteRenderer>();
+                renderer.sprite = _boxSprite;
+                renderer.color = color;
+                renderer.sortingOrder = sortingOrder;
+            }
 
             if (solid)
             {
@@ -1115,6 +1708,94 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             return box;
+        }
+
+        private void AddVisualLayer(string objectName, BattleVisualLayer? layer)
+        {
+            if (layer == null || !layer.Value.HasSprite)
+            {
+                return;
+            }
+
+            var sprite = LoadSpriteResource(layer.Value.ResourcePath);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            var visual = new GameObject(objectName);
+            visual.transform.position = new Vector3(layer.Value.Position.x, layer.Value.Position.y, 0f);
+            visual.transform.localScale = new Vector3(layer.Value.Scale.x, layer.Value.Scale.y, 1f);
+
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.sortingOrder = layer.Value.SortingOrder;
+
+            if (layer.Value.CoverCamera)
+            {
+                ScaleSpriteToCoverCamera(visual.transform, sprite);
+            }
+
+            if (layer.Value.Solid)
+            {
+                visual.AddComponent<PolygonCollider2D>();
+                _visualSurfaceSampler = VisualSurfaceSampler.TryCreate(sprite, visual.transform);
+            }
+
+            _arenaObjects.Add(visual);
+        }
+
+        private void ScaleSpriteToCoverCamera(Transform visual, Sprite sprite)
+        {
+            if (_camera == null || visual == null || sprite == null)
+            {
+                return;
+            }
+
+            var spriteSize = sprite.bounds.size;
+            if (spriteSize.x <= 0f || spriteSize.y <= 0f)
+            {
+                return;
+            }
+
+            var cameraHeight = _camera.orthographicSize * 2f;
+            var cameraWidth = cameraHeight * _camera.aspect;
+            var scale = Mathf.Max(cameraWidth / spriteSize.x, cameraHeight / spriteSize.y);
+            visual.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        private Sprite GetUnitSkin(BattleTeamId teamId)
+        {
+            if (_visualTheme == null)
+            {
+                return null;
+            }
+
+            var resourcePath = teamId == BattleTeamId.Player
+                ? _visualTheme.PlayerSkinResourcePath
+                : _visualTheme.OpponentSkinResourcePath;
+            return LoadSpriteResource(resourcePath);
+        }
+
+        private Sprite LoadSpriteResource(string resourcePath)
+        {
+            if (string.IsNullOrWhiteSpace(resourcePath))
+            {
+                return null;
+            }
+
+            if (_spriteResourceCache.TryGetValue(resourcePath, out var cached))
+            {
+                return cached;
+            }
+
+            var sprite = Resources.Load<Sprite>(resourcePath);
+            if (sprite != null)
+            {
+                _spriteResourceCache.Add(resourcePath, sprite);
+            }
+
+            return sprite;
         }
 
         private LineRenderer CreateLine(string objectName, float width, Color color)
@@ -1211,8 +1892,29 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var weapon = _inventory.Selected;
-            var canFire = !_battleResult.IsFinished && !HasProjectilesInFlight && _inventory.CanFireSelected && _aimState.HasInput;
-            var status = _coachTimer > 0f && !string.IsNullOrEmpty(_coachMessage) ? _coachMessage : _status;
+            var playerHasTime = _playerMovement == null || _playerMovement.HasTimeRemaining;
+            var canFire = !_battleResult.IsFinished
+                && !HasProjectilesInFlight
+                && !_jumpInProgress
+                && playerHasTime
+                && _inventory.CanFireSelected
+                && _aimState.HasInput;
+            var guideActive = _firstBattleGuide != null && _firstBattleGuide.IsActive;
+            var status = guideActive
+                ? _firstBattleGuide.Message
+                : _coachTimer > 0f && !string.IsNullOrEmpty(_coachMessage) ? _coachMessage : _status;
+            var tutorialTargetId = guideActive
+                ? _firstBattleGuide.TargetId
+                : _coachTimer > 0f ? _coachTargetId : string.Empty;
+            var canUseMovement = !_battleResult.IsFinished
+                && !HasProjectilesInFlight
+                && !_jumpInProgress
+                && _battleState.Turn.ActiveTeam == BattleTeamId.Player
+                && !_battleState.Turn.ActionSpent
+                && (_playerMovement == null || _playerMovement.HasTimeRemaining);
+            var mobilityLabel = _playerMovement != null
+                ? GameText.MobilityLabel(_playerMovement.RemainingTurnSeconds)
+                : string.Empty;
 
             var state = new BattleHudState(
                 status,
@@ -1223,11 +1925,22 @@ namespace Game.Gameplay.Battle.Assembly
                 GetTeamHealth(BattleTeamId.Opponent),
                 GetTeamMaxHealth(BattleTeamId.Opponent),
                 GameText.WeaponSlot(DescribeWeapon(weapon), _inventory.SelectedIndex + 1, _inventory.Count),
+                WeaponPresentationText.DescribeRole(weapon),
                 DescribeAmmo(_inventory),
+                WeaponPresentationText.DescribeBattleHint(weapon),
+                mobilityLabel,
+                tutorialTargetId,
+                guideActive && _firstBattleGuide.BlocksWeaponSwitch,
+                guideActive && _firstBattleGuide.BlocksCancelAim,
+                guideActive,
                 _aimState.Power,
                 _aimSettings.MinPower,
                 _aimSettings.MaxPower,
                 canFire,
+                canUseMovement,
+                canUseMovement,
+                canUseMovement,
+                canUseMovement,
                 _battleResult.IsFinished,
                 _resultScreenState.Title,
                 _resultScreenState.Subtitle,
@@ -1239,6 +1952,16 @@ namespace Game.Gameplay.Battle.Assembly
                 _resultScreenState.CanContinue ? _resultScreenState.ContinueLabel : GameText.Menu);
 
             _hud.Render(state);
+        }
+
+        private bool IsWeaponSwitchBlockedByGuide()
+        {
+            return _firstBattleGuide != null && _firstBattleGuide.IsActive && _firstBattleGuide.BlocksWeaponSwitch;
+        }
+
+        private bool IsCancelBlockedByGuide()
+        {
+            return _firstBattleGuide != null && _firstBattleGuide.IsActive && _firstBattleGuide.BlocksCancelAim;
         }
 
         private static bool IsPointerOverUi()
@@ -1298,6 +2021,11 @@ namespace Game.Gameplay.Battle.Assembly
             return weapon == null ? GameText.UnknownWeapon : WeaponDisplayNames.Get(weapon.WeaponId);
         }
 
+        private static string DescribeWeaponId(string weaponId)
+        {
+            return string.IsNullOrWhiteSpace(weaponId) ? GameText.UnknownWeapon : WeaponDisplayNames.Get(weaponId);
+        }
+
         private int GetTeamHealth(BattleTeamId teamId)
         {
             return _battleState.GetTeam(teamId).Units.Sum(unit => unit.Health);
@@ -1322,6 +2050,130 @@ namespace Game.Gameplay.Battle.Assembly
                 && _turnService != null
                 && _aimLine != null
                 && _trajectoryLine != null;
+        }
+
+        private sealed class VisualSurfaceSampler
+        {
+            private readonly float _minX;
+            private readonly float _maxX;
+            private readonly float[] _surfaceYByColumn;
+
+            private VisualSurfaceSampler(float minX, float maxX, float[] surfaceYByColumn)
+            {
+                _minX = minX;
+                _maxX = maxX;
+                _surfaceYByColumn = surfaceYByColumn;
+            }
+
+            public static VisualSurfaceSampler TryCreate(Sprite sprite, Transform transform)
+            {
+                if (sprite == null || transform == null)
+                {
+                    return null;
+                }
+
+                var texture = sprite.texture;
+                if (texture == null)
+                {
+                    return null;
+                }
+
+                var rect = sprite.rect;
+                var width = Mathf.RoundToInt(rect.width);
+                var height = Mathf.RoundToInt(rect.height);
+                if (width <= 1 || height <= 1)
+                {
+                    return null;
+                }
+
+                Color32[] pixels;
+                try
+                {
+                    pixels = texture.GetPixels32();
+                }
+                catch (UnityException)
+                {
+                    return null;
+                }
+
+                var rectX = Mathf.RoundToInt(rect.x);
+                var rectY = Mathf.RoundToInt(rect.y);
+                var pivot = sprite.pivot;
+                var pixelsPerUnit = sprite.pixelsPerUnit;
+                var scale = transform.lossyScale;
+                var origin = transform.position;
+                var surface = new float[width];
+                var minX = origin.x + ((0f - pivot.x) / pixelsPerUnit) * scale.x;
+                var maxX = origin.x + (((width - 1f) - pivot.x) / pixelsPerUnit) * scale.x;
+
+                for (var x = 0; x < width; x++)
+                {
+                    surface[x] = float.NaN;
+                    for (var y = height - 1; y >= 0; y--)
+                    {
+                        var tx = rectX + x;
+                        var ty = rectY + y;
+                        var pixelIndex = ty * texture.width + tx;
+                        if (pixelIndex < 0 || pixelIndex >= pixels.Length || pixels[pixelIndex].a < 96)
+                        {
+                            continue;
+                        }
+
+                        surface[x] = origin.y + ((y - pivot.y) / pixelsPerUnit) * scale.y;
+                        break;
+                    }
+                }
+
+                return new VisualSurfaceSampler(Mathf.Min(minX, maxX), Mathf.Max(minX, maxX), surface);
+            }
+
+            public bool TryGetLanding(float worldX, float bodyHeight, out Vector2 landing)
+            {
+                landing = default;
+                if (_surfaceYByColumn == null || _surfaceYByColumn.Length == 0 || worldX < _minX || worldX > _maxX)
+                {
+                    return false;
+                }
+
+                var t = Mathf.InverseLerp(_minX, _maxX, worldX);
+                var exactIndex = t * (_surfaceYByColumn.Length - 1);
+                var leftIndex = Mathf.Clamp(Mathf.FloorToInt(exactIndex), 0, _surfaceYByColumn.Length - 1);
+                var rightIndex = Mathf.Clamp(leftIndex + 1, 0, _surfaceYByColumn.Length - 1);
+                var leftY = FindNearestSurface(leftIndex, -1, 8);
+                var rightY = FindNearestSurface(rightIndex, 1, 8);
+                if (float.IsNaN(leftY) && float.IsNaN(rightY))
+                {
+                    return false;
+                }
+
+                var surfaceY = float.IsNaN(leftY)
+                    ? rightY
+                    : float.IsNaN(rightY)
+                        ? leftY
+                        : Mathf.Lerp(leftY, rightY, exactIndex - leftIndex);
+                landing = new Vector2(worldX, surfaceY + bodyHeight * 0.5f);
+                return true;
+            }
+
+            private float FindNearestSurface(int startIndex, int direction, int maxSteps)
+            {
+                for (var step = 0; step <= maxSteps; step++)
+                {
+                    var index = startIndex + direction * step;
+                    if (index < 0 || index >= _surfaceYByColumn.Length)
+                    {
+                        return float.NaN;
+                    }
+
+                    var surfaceY = _surfaceYByColumn[index];
+                    if (!float.IsNaN(surfaceY))
+                    {
+                        return surfaceY;
+                    }
+                }
+
+                return float.NaN;
+            }
         }
     }
 }

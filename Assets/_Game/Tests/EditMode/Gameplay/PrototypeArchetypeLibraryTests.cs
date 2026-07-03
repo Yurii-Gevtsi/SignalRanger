@@ -18,6 +18,10 @@ namespace Game.Tests.EditMode.Gameplay
             {
                 Assert.That(archetype.MaxHealth, Is.GreaterThanOrEqualTo(1));
                 Assert.That(archetype.BodyHeight, Is.GreaterThan(0f));
+                Assert.That(archetype.WalkBudget, Is.GreaterThan(0f));
+                Assert.That(archetype.WalkSpeed, Is.GreaterThan(0f));
+                Assert.That(archetype.FrontJumpDistance, Is.GreaterThan(archetype.BackJumpDistance));
+                Assert.That(archetype.BackJumpHeight, Is.GreaterThanOrEqualTo(archetype.FrontJumpHeight));
                 Assert.That(archetype.DisplayName, Is.Not.Empty);
             }
         }
@@ -31,6 +35,19 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.That(easy.MaxHealth, Is.LessThan(normal.MaxHealth));
             Assert.That(normal.MaxHealth, Is.LessThan(hard.MaxHealth));
+        }
+
+        [Test]
+        public void CreateAll_MobilityProfilesDifferentiateRoles()
+        {
+            var striker = PrototypeArchetypeLibrary.Striker;
+            var skirmisher = PrototypeArchetypeLibrary.Skirmisher;
+            var bulwark = PrototypeArchetypeLibrary.Bulwark;
+
+            Assert.That(skirmisher.WalkBudget, Is.GreaterThan(striker.WalkBudget));
+            Assert.That(striker.WalkBudget, Is.GreaterThan(bulwark.WalkBudget));
+            Assert.That(skirmisher.FrontJumpDistance, Is.GreaterThan(bulwark.FrontJumpDistance));
+            Assert.That(bulwark.BackJumpHeight, Is.LessThan(skirmisher.BackJumpHeight));
         }
     }
 }

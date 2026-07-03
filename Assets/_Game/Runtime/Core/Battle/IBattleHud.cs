@@ -11,6 +11,12 @@ namespace Game.Core.Battle
         event Action FireRequested;
         event Action CancelRequested;
         event Action NextWeaponRequested;
+        event Action MoveLeftStarted;
+        event Action MoveLeftStopped;
+        event Action MoveRightStarted;
+        event Action MoveRightStopped;
+        event Action JumpForwardRequested;
+        event Action JumpBackwardRequested;
         event Action RestartRequested;
         event Action ContinueRequested;
         event Action MenuRequested;

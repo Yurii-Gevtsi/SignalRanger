@@ -18,6 +18,10 @@ namespace Game.Tests.EditMode.Gameplay
             {
                 Assert.That(weapon.IsValid, Is.True);
                 Assert.That(weapon.DisplayKey, Is.Not.Empty);
+                Assert.That(weapon.DescriptionKey, Is.Not.Empty);
+                Assert.That(weapon.IconId, Is.Not.Empty);
+                Assert.That(weapon.VfxId, Is.Not.Empty);
+                Assert.That(weapon.SfxId, Is.Not.Empty);
                 Assert.That(weapon.MaxPower, Is.GreaterThanOrEqualTo(weapon.MinPower));
             }
         }

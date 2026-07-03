@@ -59,6 +59,32 @@ namespace Game.Gameplay.Battle.Weapons
 
         public void SelectPrevious() => Select(_selectedIndex - 1);
 
+        public bool TrySelectNextUsable()
+        {
+            if (_weapons.Count == 0)
+            {
+                return false;
+            }
+
+            if (CanFireSelected)
+            {
+                return true;
+            }
+
+            var startIndex = _selectedIndex;
+            for (var offset = 1; offset < _weapons.Count + 1; offset++)
+            {
+                Select(startIndex + offset);
+                if (CanFireSelected)
+                {
+                    return true;
+                }
+            }
+
+            Select(startIndex);
+            return false;
+        }
+
         public int GetRemainingAmmo(WeaponDefinition weapon)
         {
             if (weapon == null || !_remainingAmmo.TryGetValue(weapon.WeaponId, out var ammo))

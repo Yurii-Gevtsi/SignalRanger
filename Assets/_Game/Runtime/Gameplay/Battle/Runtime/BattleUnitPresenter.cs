@@ -21,12 +21,14 @@ namespace Game.Gameplay.Battle.Runtime
         {
             _view.transform.position = _state.Position;
             _view.SetColor(teamColor);
+            _view.SetFacing(_state.FacingDirectionX);
             Refresh(false);
         }
 
         public void Refresh(bool isActive)
         {
             _view.transform.position = _state.Position;
+            _view.SetFacing(_state.FacingDirectionX);
             _view.SetHealth(_state.Health, _state.MaxHealth);
             _view.SetDefeated(_state.IsDefeated);
             _view.SetActiveTurn(isActive && !_state.IsDefeated);

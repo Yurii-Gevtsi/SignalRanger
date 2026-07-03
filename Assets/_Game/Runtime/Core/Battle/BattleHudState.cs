@@ -17,11 +17,22 @@ namespace Game.Core.Battle
             int opponentHealth,
             int opponentMaxHealth,
             string weaponLabel,
+            string weaponRoleLabel,
             string ammoLabel,
+            string weaponHint,
+            string mobilityLabel,
+            string tutorialTargetId,
+            bool tutorialBlocksWeaponSwitch,
+            bool tutorialBlocksCancel,
+            bool tutorialBlocksMovement,
             float power,
             float minPower,
             float maxPower,
             bool canFire,
+            bool canMoveLeft,
+            bool canMoveRight,
+            bool canJumpForward,
+            bool canJumpBackward,
             bool showResult,
             string resultTitle,
             string resultSubtitle,
@@ -40,11 +51,22 @@ namespace Game.Core.Battle
             OpponentHealth = opponentHealth;
             OpponentMaxHealth = opponentMaxHealth;
             WeaponLabel = weaponLabel;
+            WeaponRoleLabel = weaponRoleLabel ?? string.Empty;
             AmmoLabel = ammoLabel;
+            WeaponHint = weaponHint ?? string.Empty;
+            MobilityLabel = mobilityLabel ?? string.Empty;
+            TutorialTargetId = tutorialTargetId ?? string.Empty;
+            TutorialBlocksWeaponSwitch = tutorialBlocksWeaponSwitch;
+            TutorialBlocksCancel = tutorialBlocksCancel;
+            TutorialBlocksMovement = tutorialBlocksMovement;
             Power = power;
             MinPower = minPower;
             MaxPower = maxPower;
             CanFire = canFire;
+            CanMoveLeft = canMoveLeft;
+            CanMoveRight = canMoveRight;
+            CanJumpForward = canJumpForward;
+            CanJumpBackward = canJumpBackward;
             ShowResult = showResult;
             ResultTitle = resultTitle ?? string.Empty;
             ResultSubtitle = resultSubtitle ?? string.Empty;
@@ -64,11 +86,22 @@ namespace Game.Core.Battle
         public int OpponentHealth { get; }
         public int OpponentMaxHealth { get; }
         public string WeaponLabel { get; }
+        public string WeaponRoleLabel { get; }
         public string AmmoLabel { get; }
+        public string WeaponHint { get; }
+        public string MobilityLabel { get; }
+        public string TutorialTargetId { get; }
+        public bool TutorialBlocksWeaponSwitch { get; }
+        public bool TutorialBlocksCancel { get; }
+        public bool TutorialBlocksMovement { get; }
         public float Power { get; }
         public float MinPower { get; }
         public float MaxPower { get; }
         public bool CanFire { get; }
+        public bool CanMoveLeft { get; }
+        public bool CanMoveRight { get; }
+        public bool CanJumpForward { get; }
+        public bool CanJumpBackward { get; }
         public bool ShowResult { get; }
         public string ResultTitle { get; }
         public string ResultSubtitle { get; }

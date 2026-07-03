@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Game.Data.Save;
 
@@ -23,10 +24,17 @@ namespace Game.Tutorial
                 && _saveData.tutorial.completedStepIds.Contains(stepId);
         }
 
-        public TutorialStepDefinition FindNext(TutorialStepTrigger trigger)
+        public bool HasAnyProgress()
         {
+            return _saveData.tutorial.completedStepIds.Count > 0;
+        }
+
+        public TutorialStepDefinition FindNext(TutorialStepTrigger trigger, IEnumerable<string> allowedStepIds = null)
+        {
+            var allowed = ToAllowedSet(allowedStepIds);
             return _steps.FirstOrDefault(step =>
                 step.Trigger == trigger
+                && (allowed == null || allowed.Contains(step.StepId))
                 && !IsCompleted(step.StepId)
                 && step.RequiredCompletedStepIds.All(IsCompleted));
         }
@@ -42,15 +50,26 @@ namespace Game.Tutorial
             return true;
         }
 
-        public bool CompleteForTrigger(TutorialStepTrigger trigger)
+        public bool CompleteForTrigger(TutorialStepTrigger trigger, IEnumerable<string> allowedStepIds = null)
         {
-            var step = FindNext(trigger);
+            var step = FindNext(trigger, allowedStepIds);
             if (step == null || step.CompletionType == TutorialCompletionType.Manual)
             {
                 return false;
             }
 
             return Complete(step.StepId);
+        }
+
+        private static HashSet<string> ToAllowedSet(IEnumerable<string> allowedStepIds)
+        {
+            if (allowedStepIds == null)
+            {
+                return null;
+            }
+
+            var set = new HashSet<string>(allowedStepIds.Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.Ordinal);
+            return set.Count > 0 ? set : null;
         }
     }
 }

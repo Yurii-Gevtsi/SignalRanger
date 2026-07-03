@@ -4,13 +4,14 @@ namespace Game.Gameplay.Battle.Domain
 {
     public sealed class BattleUnitState
     {
-        public BattleUnitState(string unitId, BattleTeamId teamId, Vector2 position, int maxHealth)
+        public BattleUnitState(string unitId, BattleTeamId teamId, Vector2 position, int maxHealth, int facingDirectionX = 1)
         {
             UnitId = unitId;
             TeamId = teamId;
             Position = position;
             MaxHealth = Mathf.Max(1, maxHealth);
             Health = MaxHealth;
+            FacingDirectionX = facingDirectionX >= 0 ? 1 : -1;
         }
 
         public string UnitId { get; }
@@ -18,11 +19,17 @@ namespace Game.Gameplay.Battle.Domain
         public Vector2 Position { get; private set; }
         public int MaxHealth { get; }
         public int Health { get; private set; }
+        public int FacingDirectionX { get; private set; }
         public bool IsDefeated => Health <= 0;
 
         public void MoveTo(Vector2 position)
         {
             Position = position;
+        }
+
+        public void SetFacing(int facingDirectionX)
+        {
+            FacingDirectionX = facingDirectionX >= 0 ? 1 : -1;
         }
 
         public DamageEvent ApplyDamage(int amount, string sourceId)

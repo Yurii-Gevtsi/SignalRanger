@@ -5,7 +5,13 @@ namespace Game.Core
         public static int SelectedMissionIndex { get; private set; }
         public static int SelectedArenaIndex { get; private set; }
         public static string SelectedMissionId { get; private set; } = string.Empty;
+        public static string SelectedArenaId { get; private set; } = string.Empty;
         public static string[] SelectedAllowedWeaponIds { get; private set; } = System.Array.Empty<string>();
+        public static string[] SelectedTutorialStepIds { get; private set; } = System.Array.Empty<string>();
+        public static string SelectedEnemyLoadoutId { get; private set; } = string.Empty;
+        public static string[] SelectedOpponentWeaponIds { get; private set; } = System.Array.Empty<string>();
+        public static string SelectedDifficultyProfileId { get; private set; } = string.Empty;
+        public static string SelectedOpponentArchetypeId { get; private set; } = string.Empty;
         public static string[] SelectedLoadoutWeaponIds { get; private set; } = System.Array.Empty<string>();
         public static int SelectedMissionRewardSoftCurrency { get; private set; }
         public static string SelectedMissionRewardUnlockWeaponId { get; private set; } = string.Empty;
@@ -17,7 +23,13 @@ namespace Game.Core
             int missionIndex,
             int arenaIndex,
             string missionId,
+            string arenaId,
             string[] allowedWeaponIds,
+            string[] tutorialStepIds,
+            string enemyLoadoutId,
+            string[] opponentWeaponIds,
+            string difficultyProfileId,
+            string opponentArchetypeId,
             int rewardSoftCurrency,
             string rewardUnlockWeaponId,
             int aiDifficulty)
@@ -25,7 +37,13 @@ namespace Game.Core
             SelectedMissionIndex = missionIndex < 0 ? 0 : missionIndex;
             SelectedArenaIndex = arenaIndex < 0 ? 0 : arenaIndex;
             SelectedMissionId = missionId ?? string.Empty;
+            SelectedArenaId = arenaId ?? string.Empty;
             SelectedAllowedWeaponIds = allowedWeaponIds ?? System.Array.Empty<string>();
+            SelectedTutorialStepIds = tutorialStepIds ?? System.Array.Empty<string>();
+            SelectedEnemyLoadoutId = enemyLoadoutId ?? string.Empty;
+            SelectedOpponentWeaponIds = opponentWeaponIds ?? System.Array.Empty<string>();
+            SelectedDifficultyProfileId = difficultyProfileId ?? string.Empty;
+            SelectedOpponentArchetypeId = opponentArchetypeId ?? string.Empty;
             SelectedMissionRewardSoftCurrency = rewardSoftCurrency < 0 ? 0 : rewardSoftCurrency;
             SelectedMissionRewardUnlockWeaponId = rewardUnlockWeaponId ?? string.Empty;
             SelectedAiDifficulty = aiDifficulty < 0 ? 0 : aiDifficulty > 2 ? 2 : aiDifficulty;

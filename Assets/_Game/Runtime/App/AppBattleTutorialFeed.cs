@@ -1,6 +1,8 @@
 using Game.Core;
+using Game.Core.Battle;
 using Game.Data.Save;
 using Game.Tutorial;
+using System.Linq;
 
 namespace Game.App
 {
@@ -20,26 +22,27 @@ namespace Game.App
             _saveService = saveService;
         }
 
-        public string ReportTrigger(string triggerKey)
+        public BattleTutorialCue ReportTrigger(string triggerKey)
         {
             if (_tutorial == null || !TryMap(triggerKey, out var trigger))
             {
-                return string.Empty;
+                return BattleTutorialCue.Empty;
             }
 
-            var step = _tutorial.FindNext(trigger);
+            var activeStepIds = GameSessionContext.SelectedTutorialStepIds?.Where(stepId => !string.IsNullOrWhiteSpace(stepId));
+            var step = _tutorial.FindNext(trigger, activeStepIds);
             if (step == null)
             {
-                return string.Empty;
+                return BattleTutorialCue.Empty;
             }
 
-            var message = step.Message;
-            if (_tutorial.CompleteForTrigger(trigger))
+            var cue = new BattleTutorialCue(step.Message, step.UiTargetId);
+            if (_tutorial.CompleteForTrigger(trigger, activeStepIds))
             {
                 _saveService?.Save(_saveService.Current);
             }
 
-            return message;
+            return cue;
         }
 
         private static bool TryMap(string triggerKey, out TutorialStepTrigger trigger)

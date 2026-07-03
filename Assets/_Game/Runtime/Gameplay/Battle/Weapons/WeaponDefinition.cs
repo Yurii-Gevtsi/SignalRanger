@@ -10,8 +10,12 @@ namespace Game.Gameplay.Battle.Weapons
     {
         [SerializeField] private string _weaponId = "weapon.basic";
         [SerializeField] private string _displayKey = "weapon.basic.name";
+        [SerializeField] private string _descriptionKey = "weapon.basic.description";
         [SerializeField] private WeaponRole _role = WeaponRole.ArcingExplosive;
         [SerializeField] private Sprite _icon;
+        [SerializeField] private string _iconId = "weapon.basic.icon";
+        [SerializeField] private string _vfxId = "weapon.basic.vfx";
+        [SerializeField] private string _sfxId = "weapon.basic.sfx";
         [SerializeField] private int _damage = 40;
         [SerializeField] private float _impactRadius = 1.5f;
         [SerializeField] private float _projectileRadius = 0.13f;
@@ -25,8 +29,12 @@ namespace Game.Gameplay.Battle.Weapons
 
         public string WeaponId => _weaponId;
         public string DisplayKey => _displayKey;
+        public string DescriptionKey => _descriptionKey;
         public WeaponRole Role => _role;
         public Sprite Icon => _icon;
+        public string IconId => _iconId;
+        public string VfxId => _vfxId;
+        public string SfxId => _sfxId;
         public int Damage => Mathf.Max(0, _damage);
         public float ImpactRadius => Mathf.Max(0.01f, _impactRadius);
         public float ProjectileRadius => Mathf.Max(0.01f, _projectileRadius);
@@ -41,6 +49,10 @@ namespace Game.Gameplay.Battle.Weapons
 
         public bool IsValid => !string.IsNullOrWhiteSpace(_weaponId)
             && !string.IsNullOrWhiteSpace(_displayKey)
+            && !string.IsNullOrWhiteSpace(_descriptionKey)
+            && !string.IsNullOrWhiteSpace(_iconId)
+            && !string.IsNullOrWhiteSpace(_vfxId)
+            && !string.IsNullOrWhiteSpace(_sfxId)
             && MaxPower > 0f
             && Damage >= 0;
 
@@ -78,12 +90,22 @@ namespace Game.Gameplay.Battle.Weapons
             float maxPower,
             int ammoCount,
             string tutorialHintKey,
-            string[] tags)
+            string[] tags,
+            string descriptionKey = "",
+            string iconId = "",
+            string vfxId = "",
+            string sfxId = "")
         {
             var definition = CreateInstance<WeaponDefinition>();
             definition._weaponId = weaponId;
             definition._displayKey = displayKey;
+            definition._descriptionKey = string.IsNullOrWhiteSpace(descriptionKey)
+                ? $"{weaponId}.description"
+                : descriptionKey;
             definition._role = role;
+            definition._iconId = string.IsNullOrWhiteSpace(iconId) ? $"{weaponId}.icon" : iconId;
+            definition._vfxId = string.IsNullOrWhiteSpace(vfxId) ? $"{weaponId}.vfx" : vfxId;
+            definition._sfxId = string.IsNullOrWhiteSpace(sfxId) ? $"{weaponId}.sfx" : sfxId;
             definition._damage = damage;
             definition._impactRadius = impactRadius;
             definition._projectileRadius = projectileRadius;

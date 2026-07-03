@@ -14,14 +14,14 @@ namespace Game.Tests.EditMode.Gameplay
         };
 
         [Test]
-        public void Resolve_IntersectsLoadoutWithMissionAllowed()
+        public void Resolve_PrefersFullSavedLoadoutOverMissionAllowed()
         {
             var loadout = new[] { "weapon.steady-orb", "weapon.pulse-shell", "weapon.long-lance" };
             var allowed = new[] { "weapon.pulse-shell", "weapon.long-lance", "weapon.close-pop" };
 
             var result = BattleLoadoutResolver.Resolve(loadout, allowed, All);
 
-            Assert.That(result, Is.EqualTo(new[] { "weapon.pulse-shell", "weapon.long-lance" }));
+            Assert.That(result, Is.EqualTo(loadout));
         }
 
         [Test]
@@ -35,12 +35,22 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void Resolve_FallsBackToAllowedWhenLoadoutHasNoOverlap()
+        public void Resolve_StillUsesSavedLoadoutWhenMissionAllowedIsDifferent()
         {
             var loadout = new[] { "weapon.steady-orb" };
             var allowed = new[] { "weapon.long-lance", "weapon.scatter-arc" };
 
             var result = BattleLoadoutResolver.Resolve(loadout, allowed, All);
+
+            Assert.That(result, Is.EqualTo(loadout));
+        }
+
+        [Test]
+        public void Resolve_FallsBackToAllowedWhenLoadoutMissing()
+        {
+            var allowed = new[] { "weapon.long-lance", "weapon.scatter-arc" };
+
+            var result = BattleLoadoutResolver.Resolve(null, allowed, All);
 
             Assert.That(result, Is.EqualTo(allowed));
         }

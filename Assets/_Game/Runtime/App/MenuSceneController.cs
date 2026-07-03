@@ -1,7 +1,9 @@
 using System;
+using Game.App.Content;
 using Game.Core;
 using Game.Core.Localization;
 using Game.Data.Save;
+using Game.Gameplay.Battle.Weapons;
 using Game.Progression.Missions;
 using TMPro;
 using UnityEngine;
@@ -53,6 +55,21 @@ namespace Game.App
             BuildMenu();
         }
 
+        private void Start()
+        {
+            if (AppServices.TryConsumeFirstSessionAutoStart())
+            {
+                StartBattle();
+                return;
+            }
+
+            if (AppServices.TryConsumePendingLoadoutReview())
+            {
+                var unlockedWeaponName = DescribeUnlockedWeaponName(AppServices.LastMissionCompletionResult);
+                LoadoutScreenController.Open(() => SetStatus(GameText.LoadoutReviewUnlocked(unlockedWeaponName)));
+            }
+        }
+
         private static void EnsureEventSystem()
         {
             if (FindAnyObjectByType<EventSystem>() != null)
@@ -80,6 +97,9 @@ namespace Game.App
         {
             var saveData = AppServices.SaveService.Current;
             var nextMission = AppServices.Campaign.GetNextMission();
+            var nextChapter = nextMission != null && AppServices.Content != null && AppServices.Content.TryGetChapter(nextMission.ChapterId, out var chapter)
+                ? chapter
+                : null;
             var canvasObject = new GameObject("Menu Canvas");
             var canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -102,15 +122,23 @@ namespace Game.App
             CreateText("Subtitle", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-96f, 64f), new Vector2(0f, -132f), 26, TextAlignmentOptions.MidlineLeft, GameText.MenuSubtitle());
 
-            // Mission info block, anchored under the top band.
+            // Campaign chapter block, anchored under the top band.
+            CreateText("Chapter Label", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(-120f, 42f), new Vector2(0f, -248f), 28, TextAlignmentOptions.MidlineLeft, GameText.ChapterLabel());
+            CreateText("Chapter Name", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(-120f, 52f), new Vector2(0f, -300f), 36, TextAlignmentOptions.MidlineLeft, DescribeChapterTitle(nextChapter));
+            CreateText("Chapter Summary", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(-120f, 84f), new Vector2(0f, -378f), 24, TextAlignmentOptions.TopLeft, DescribeChapterSummary(nextChapter));
+
+            // Mission info block, anchored under the chapter block.
             CreateText("Mission Label", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 42f), new Vector2(0f, -280f), 30, TextAlignmentOptions.MidlineLeft, GameText.NextMissionLabel());
+                new Vector2(-120f, 42f), new Vector2(0f, -484f), 30, TextAlignmentOptions.MidlineLeft, DescribeMissionLabel());
             CreateText("Mission Name", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 60f), new Vector2(0f, -336f), 42, TextAlignmentOptions.MidlineLeft, DescribeMissionTitle(nextMission));
+                new Vector2(-120f, 60f), new Vector2(0f, -540f), 42, TextAlignmentOptions.MidlineLeft, DescribeMissionTitle(nextMission));
             CreateText("Mission Details", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 120f), new Vector2(0f, -430f), 25, TextAlignmentOptions.TopLeft, DescribeMissionDetails(nextMission));
+                new Vector2(-120f, 120f), new Vector2(0f, -634f), 25, TextAlignmentOptions.TopLeft, DescribeMissionDetails(nextMission));
             CreateText("Profile Summary", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 120f), new Vector2(0f, -560f), 23, TextAlignmentOptions.TopLeft, DescribeProfile(saveData, nextMission));
+                new Vector2(-120f, 120f), new Vector2(0f, -764f), 23, TextAlignmentOptions.TopLeft, DescribeProfile(saveData, nextMission));
 
             // Actions, anchored to the bottom edge so they never overlap the info above.
             CreateButton("Play Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
@@ -169,6 +197,13 @@ namespace Game.App
             return mission != null ? mission.Title : GameText.DefaultMissionTitle();
         }
 
+        private static string DescribeMissionLabel()
+        {
+            return AppServices.Campaign != null
+                ? GameText.MissionProgress(AppServices.Session.SelectedMissionIndex + 1, AppServices.Campaign.MissionCount)
+                : GameText.NextMissionLabel();
+        }
+
         private static string DescribeMissionDetails(MissionDefinition mission)
         {
             return mission != null
@@ -176,11 +211,22 @@ namespace Game.App
                 : GameText.DefaultMissionDetails();
         }
 
+        private static string DescribeChapterTitle(CampaignChapterDefinition chapter)
+        {
+            return chapter != null ? chapter.DisplayName : GameText.ChapterFallbackTitle();
+        }
+
+        private static string DescribeChapterSummary(CampaignChapterDefinition chapter)
+        {
+            return chapter != null ? chapter.Summary : GameText.ChapterFallbackSummary();
+        }
+
         private static string DescribeMenuStatus(SaveLoadResult loadResult, MissionCompletionResult completionResult)
         {
             if (completionResult.Applied)
             {
-                return GameText.MissionCompleted(completionResult.GrantedSoftCurrency, completionResult.HasUnlock);
+                var unlockedWeaponName = DescribeUnlockedWeaponName(completionResult);
+                return GameText.MissionCompleted(completionResult.GrantedSoftCurrency, unlockedWeaponName);
             }
 
             return loadResult.Status switch
@@ -189,6 +235,13 @@ namespace Game.App
                 SaveLoadStatus.RecoveredFromCorrupt => GameText.LoadStatusRecovered(),
                 _ => GameText.LoadStatusReady()
             };
+        }
+
+        private static string DescribeUnlockedWeaponName(MissionCompletionResult completionResult)
+        {
+            return completionResult.HasUnlock
+                ? WeaponDisplayNames.Get(completionResult.UnlockedWeaponId)
+                : string.Empty;
         }
 
         private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,

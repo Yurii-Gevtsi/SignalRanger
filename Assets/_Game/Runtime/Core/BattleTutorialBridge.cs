@@ -1,5 +1,7 @@
 namespace Game.Core
 {
+    using Game.Core.Battle;
+
     /// <summary>
     /// Feed that turns battle events into coaching messages. Implemented in the app
     /// layer over the tutorial service; the battle scene only knows this Core contract,
@@ -7,8 +9,8 @@ namespace Game.Core
     /// </summary>
     public interface IBattleTutorialFeed
     {
-        /// <summary>Reports a battle event; returns a coaching message to show, or empty.</summary>
-        string ReportTrigger(string triggerKey);
+        /// <summary>Reports a battle event; returns a coaching cue to show, or empty.</summary>
+        BattleTutorialCue ReportTrigger(string triggerKey);
     }
 
     /// <summary>
@@ -25,9 +27,9 @@ namespace Game.Core
 
         public static IBattleTutorialFeed Feed { get; set; }
 
-        public static string Report(string triggerKey)
+        public static BattleTutorialCue Report(string triggerKey)
         {
-            return Feed?.ReportTrigger(triggerKey) ?? string.Empty;
+            return Feed?.ReportTrigger(triggerKey) ?? BattleTutorialCue.Empty;
         }
     }
 }

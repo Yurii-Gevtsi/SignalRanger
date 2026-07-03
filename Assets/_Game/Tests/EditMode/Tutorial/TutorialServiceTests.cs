@@ -43,5 +43,17 @@ namespace Game.Tests.EditMode.Tutorial
             Assert.That(service.Complete("tutorial.aim"), Is.False);
             Assert.That(saveData.tutorial.completedStepIds, Has.Count.EqualTo(1));
         }
+
+        [Test]
+        public void FindNext_RespectsAllowedMissionStepIds()
+        {
+            var saveData = SaveData.CreateNew();
+            var service = new TutorialService(saveData, TutorialStepLibrary.CreateCampaignSteps());
+
+            var step = service.FindNext(TutorialStepTrigger.OnMissionStart, new[] { "tutorial.arc", "tutorial.power" });
+
+            Assert.That(step, Is.Not.Null);
+            Assert.That(step.StepId, Is.EqualTo("tutorial.arc"));
+        }
     }
 }

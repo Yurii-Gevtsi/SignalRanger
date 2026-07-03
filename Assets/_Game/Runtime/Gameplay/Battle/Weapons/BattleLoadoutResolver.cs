@@ -9,8 +9,10 @@ namespace Game.Gameplay.Battle.Weapons
     /// </summary>
     /// <remarks>
     /// Rules, in order:
-    ///  - Prefer the player's loadout, restricted to the mission's allowed weapons.
-    ///  - Never return empty: fall back to mission-allowed, then to every weapon,
+    ///  - Prefer the player's saved loadout exactly as chosen.
+    ///  - Use mission-allowed weapons only as a fallback/default when the player
+    ///    has not configured a loadout yet.
+    ///  - Never return empty: fall back to every weapon,
     ///    so a mission is always playable even with an incompatible loadout.
     ///  - Output order follows the preferred source so the HUD is stable.
     /// </remarks>
@@ -36,24 +38,11 @@ namespace Game.Gameplay.Battle.Weapons
             }
 #endif
 
-            List<string> effective;
-            if (allowed.Count > 0 && loadout.Count > 0)
-            {
-                var allowedSet = new HashSet<string>(allowed);
-                effective = loadout.Where(allowedSet.Contains).ToList();
-            }
-            else if (loadout.Count > 0)
-            {
-                effective = loadout;
-            }
-            else
-            {
-                effective = allowed;
-            }
+            var effective = loadout.Count > 0 ? loadout : allowed;
 
             if (effective.Count == 0)
             {
-                effective = allowed.Count > 0 ? allowed : all;
+                effective = all;
             }
 
             return effective;

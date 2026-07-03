@@ -1,4 +1,5 @@
 using Game.Audio;
+using Game.App.Content;
 using Game.Core;
 using Game.Data.Save;
 using Game.Economy;
@@ -11,11 +12,15 @@ namespace Game.App
 {
     public static class AppServices
     {
+        private static bool _firstSessionAutoStartConsumed;
+        private static bool _pendingLoadoutReviewConsumed;
+
         public static bool IsInitialized { get; private set; }
         public static ISceneLoadingService SceneLoader { get; private set; }
         public static GameSessionService Session { get; private set; }
         public static ISaveService SaveService { get; private set; }
         public static SaveLoadResult LastSaveLoadResult { get; private set; }
+        public static RuntimeGameContentCatalog Content { get; private set; }
         public static MissionDefinition[] Missions { get; private set; }
         public static CampaignProgressionService Campaign { get; private set; }
         public static TutorialService Tutorial { get; private set; }
@@ -47,15 +52,64 @@ namespace Game.App
             Purchases = new NoOpPurchaseService();
             RemoteConfig = new NoOpRemoteConfigService();
             Notifications = new NoOpNotificationService();
-            Missions = MvpMissionLibrary.CreateAll();
+            Content = DefaultGameContentCatalog.Create();
+            Missions = Content.Missions;
             Campaign = new CampaignProgressionService(SaveService.Current, Missions);
-            Tutorial = new TutorialService(SaveService.Current, TutorialStepLibrary.CreateFirstBattleSteps());
+            Tutorial = new TutorialService(SaveService.Current, TutorialStepLibrary.CreateCampaignSteps());
             Game.Core.BattleTutorialBridge.Feed = new AppBattleTutorialFeed(Tutorial, SaveService);
             Game.Core.BattleFeedbackBridge.Sink = new AppBattleFeedbackSink(Audio);
             Game.Core.Battle.BattleHudFactoryBridge.Factory = new Game.UI.Battle.BattleHudViewFactory();
-            Session = new GameSessionService(SaveService.Current, Campaign);
+            Session = new GameSessionService(SaveService.Current, Campaign, Content);
             LastMissionCompletionResult = default;
             IsInitialized = true;
+        }
+
+        public static bool TryConsumeFirstSessionAutoStart()
+        {
+            if (_firstSessionAutoStartConsumed)
+            {
+                return false;
+            }
+
+            var saveData = SaveService?.Current;
+            if (LastSaveLoadResult.Status != SaveLoadStatus.CreatedNew
+                || saveData?.campaign == null
+                || saveData.tutorial == null)
+            {
+                return false;
+            }
+
+            var shouldAutoStart = saveData.campaign.completedMissionIds.Count == 0
+                && saveData.campaign.highestUnlockedMissionIndex == 0
+                && saveData.tutorial.completedStepIds.Count == 0;
+            if (!shouldAutoStart)
+            {
+                return false;
+            }
+
+            _firstSessionAutoStartConsumed = true;
+            return true;
+        }
+
+        public static bool TryConsumePendingLoadoutReview()
+        {
+            if (_pendingLoadoutReviewConsumed)
+            {
+                return false;
+            }
+
+            if (!LastMissionCompletionResult.Applied || !LastMissionCompletionResult.HasUnlock)
+            {
+                return false;
+            }
+
+            _pendingLoadoutReviewConsumed = true;
+            return true;
+        }
+
+        public static void MarkPendingLoadoutReview(bool pending)
+        {
+            _pendingLoadoutReviewConsumed = !pending;
         }
     }
 }

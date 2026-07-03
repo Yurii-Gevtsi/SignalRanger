@@ -154,14 +154,8 @@ These items are not MVP feature work; they are build/release-readiness checks:
 - Economy is intentionally simple.
 - Balance is suitable for MVP testing, not production tuning.
 
-## Suggested Post-MVP Backlog
+## Next Iteration
 
-- Replace placeholder visuals with a coherent art direction.
-- Add real projectile/impact VFX and audio.
-- Add destructible terrain or terrain deformation if it improves the core loop.
-- Expand arena variety.
-- Add weapon upgrade/mastery only after balance is stable.
-- Improve AI weapon choice and tactical positioning.
-- Add first Android build pipeline and device matrix.
-- Add analytics only around key funnels after privacy/SDK decisions.
-- Consider ads/IAP only through service wrappers and without competitive combat advantage.
+Next active planning document:
+
+- [Iteration 1: Soft Launch Foundation](iteration-1-soft-launch-foundation.md)

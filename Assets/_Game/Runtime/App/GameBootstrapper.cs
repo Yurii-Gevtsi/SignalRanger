@@ -67,6 +67,7 @@ namespace Game.App
             var missionIndex = GameSessionContext.ConsumePendingMissionCompletion();
             var result = AppServices.Campaign.CompleteMission(missionIndex);
             AppServices.LastMissionCompletionResult = result;
+            AppServices.MarkPendingLoadoutReview(result.Applied && result.HasUnlock);
             if (result.Applied)
             {
                 AppServices.SaveService.Save(AppServices.SaveService.Current);

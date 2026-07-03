@@ -76,5 +76,31 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.That(inventory.Count, Is.EqualTo(1));
         }
+
+        [Test]
+        public void TrySelectNextUsable_SkipsDepletedWeapon()
+        {
+            var empty = LimitedWeapon("weapon.test.empty", 0);
+            var loaded = LimitedWeapon("weapon.test.loaded", 2);
+            var inventory = new WeaponInventoryRuntime(new[] { empty, loaded });
+
+            var result = inventory.TrySelectNextUsable();
+
+            Assert.That(result, Is.True);
+            Assert.That(inventory.Selected, Is.EqualTo(loaded));
+        }
+
+        [Test]
+        public void TrySelectNextUsable_ReturnsFalseWhenNothingCanFire()
+        {
+            var first = LimitedWeapon("weapon.test.first", 0);
+            var second = LimitedWeapon("weapon.test.second", 0);
+            var inventory = new WeaponInventoryRuntime(new[] { first, second });
+
+            var result = inventory.TrySelectNextUsable();
+
+            Assert.That(result, Is.False);
+            Assert.That(inventory.Selected, Is.EqualTo(first));
+        }
     }
 }

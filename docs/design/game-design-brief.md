@@ -338,21 +338,25 @@ Monetization should not punish playing.
 - hidden formulas that make losses feel fake;
 - progression that buries the fun.
 
-## Найближча implementation target
+## Поточний implementation target
 
-Build `Milestone 1: Fair Shot Prototype`.
+MVP feature scope closed. The next active target is:
 
-Acceptance criteria:
+```text
+Iteration 1: Soft Launch Foundation
+```
 
-- project opens in Unity;
-- battle scene playable in editor;
-- player can aim deliberately;
-- player can fire one projectile;
-- projectile arc is readable;
-- hit detection works;
-- damage updates health;
-- turns alternate;
-- match ends with win/loss;
-- restart works;
-- no external SDK required.
+Goal:
 
+- make the first Android build;
+- move content toward definitions/catalogs/validation;
+- expand the first campaign slice;
+- improve onboarding and first 10 minutes;
+- add basic visual/audio feedback;
+- add analytics through service boundaries;
+- prepare a closed-test-ready build.
+
+Source of truth:
+
+- `docs/architecture/mvp-implementation-summary.md`
+- `docs/architecture/iteration-1-soft-launch-foundation.md`
