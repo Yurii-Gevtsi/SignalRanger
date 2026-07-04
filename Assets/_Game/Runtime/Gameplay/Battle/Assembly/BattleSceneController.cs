@@ -55,6 +55,7 @@ namespace Game.Gameplay.Battle.Assembly
         private const float JumpCollisionRadius = 0.34f;
         private const float FallDeathY = -6.2f;
         private const float PlayerTurnDurationSeconds = 30f;
+        private const int TrajectoryDotCount = 13;
 
         private readonly Color _playerColor = new(0.18f, 0.56f, 0.96f);
         private readonly Color _opponentColor = new(0.95f, 0.28f, 0.22f);
@@ -80,6 +81,7 @@ namespace Game.Gameplay.Battle.Assembly
         private Sprite _circleSprite;
         private LineRenderer _aimLine;
         private LineRenderer _trajectoryLine;
+        private readonly List<SpriteRenderer> _trajectoryDots = new();
         private int _projectilesInFlight;
         private BattleResult _battleResult;
         private BattleResultScreenState _resultScreenState;
@@ -357,7 +359,7 @@ namespace Game.Gameplay.Battle.Assembly
             _aiDecisionTimer = 0f;
             _status = GameText.BattleIntro(DescribeArena(_currentArena));
             _aimLine.enabled = false;
-            _trajectoryLine.enabled = false;
+            HideTrajectoryPreview();
             _aimHadInput = false;
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
@@ -510,6 +512,21 @@ namespace Game.Gameplay.Battle.Assembly
         {
             _aimLine = CreateLine("Aim Line", 0.08f, Color.white);
             _trajectoryLine = CreateLine("Trajectory Preview", 0.035f, new Color(1f, 1f, 1f, 0.55f));
+            BuildTrajectoryDots();
+        }
+
+        private void BuildTrajectoryDots()
+        {
+            for (var i = 0; i < TrajectoryDotCount; i++)
+            {
+                var dotObject = new GameObject($"Trajectory Dot {i + 1}");
+                var renderer = dotObject.AddComponent<SpriteRenderer>();
+                renderer.sprite = _circleSprite;
+                renderer.sortingOrder = 52;
+                renderer.color = Color.clear;
+                renderer.enabled = false;
+                _trajectoryDots.Add(renderer);
+            }
         }
 
         private void UpdateAim()
@@ -626,6 +643,7 @@ namespace Game.Gameplay.Battle.Assembly
             var activePresenter = GetActivePresenter();
             if (activePresenter == null)
             {
+                HideTrajectoryPreview();
                 return;
             }
 
@@ -682,7 +700,7 @@ namespace Game.Gameplay.Battle.Assembly
             _turnService.SpendAction(_battleState);
             _status = GameText.ShotStatus(DescribeTeam(activePresenter.State.TeamId), DescribeWeapon(weapon));
             _aimLine.enabled = false;
-            _trajectoryLine.enabled = false;
+            HideTrajectoryPreview();
             if (activePresenter.State.TeamId == BattleTeamId.Player)
             {
                 _firstBattleGuide?.ObservePlayerShotFired();
@@ -822,7 +840,7 @@ namespace Game.Gameplay.Battle.Assembly
             _aiDecisionTimer = 0f;
             ResetPlayerMovementTurn();
             _aimLine.enabled = false;
-            _trajectoryLine.enabled = false;
+            HideTrajectoryPreview();
             _status = GameText.TurnStatus(DescribeTeam(_battleState.Turn.ActiveTeam));
             RefreshUnitViews();
         }
@@ -902,7 +920,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _aimLine.enabled = false;
-            _trajectoryLine.enabled = false;
+            HideTrajectoryPreview();
             EmitFeedback(BattleFeedbackEventType.ShotFired);
             CompleteInstantAction(_status);
         }
@@ -944,7 +962,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             SpawnImpactFlash(origin + direction * Mathf.Min(range, 0.95f), new Color(1f, 0.62f, 0.24f, 0.85f), 0.95f);
             _aimLine.enabled = false;
-            _trajectoryLine.enabled = false;
+            HideTrajectoryPreview();
             EmitFeedback(BattleFeedbackEventType.ShotFired);
             if (hitCount > 0)
             {
@@ -1121,7 +1139,7 @@ namespace Game.Gameplay.Battle.Assembly
             ClearWalkInput();
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _aimLine.enabled = false;
-            _trajectoryLine.enabled = false;
+            HideTrajectoryPreview();
             _turnService.AdvanceTurn(_battleState);
             _firstBattleGuide?.ObserveTurnAdvanced(_battleState.Turn.ActiveTeam);
             ApplyAimSettingsForActiveTeam();
@@ -1565,55 +1583,33 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void DrawAim()
         {
-            if (!_aimState.HasInput)
-            {
-                _aimLine.enabled = false;
-                return;
-            }
-
-            var activePresenter = GetActivePresenter();
-            if (activePresenter == null)
-            {
-                return;
-            }
-
-            var origin = activePresenter.View.FirePoint.position;
-            var power01 = Mathf.InverseLerp(_aimSettings.MinPower, _aimSettings.MaxPower, _aimState.Power);
-            var end = origin + (Vector3)(_aimState.Direction * Mathf.Lerp(0.85f, 3.35f, power01));
-            var powerColor = Color.Lerp(new Color(1f, 1f, 1f, 0.9f), new Color(1f, 0.34f, 0.12f, 0.98f), power01);
-
-            _aimLine.enabled = true;
-            _aimLine.startColor = powerColor;
-            _aimLine.endColor = powerColor;
-            _aimLine.startWidth = Mathf.Lerp(0.055f, 0.13f, power01);
-            _aimLine.endWidth = Mathf.Lerp(0.035f, 0.09f, power01);
-            _aimLine.SetPosition(0, origin);
-            _aimLine.SetPosition(1, end);
+            _aimLine.enabled = false;
         }
 
         private void DrawTrajectoryPreview()
         {
             if (!_aimState.HasInput)
             {
-                _trajectoryLine.enabled = false;
+                HideTrajectoryPreview();
                 return;
             }
 
             var activePresenter = GetActivePresenter();
             if (activePresenter == null)
             {
+                HideTrajectoryPreview();
                 return;
             }
 
             if (_inventory.Selected.Role == WeaponRole.DefensiveTool)
             {
-                _trajectoryLine.enabled = false;
+                HideTrajectoryPreview();
                 return;
             }
 
             if (_inventory.Selected.Role == WeaponRole.ShortRangeBurst)
             {
-                _trajectoryLine.enabled = false;
+                HideTrajectoryPreview();
                 return;
             }
 
@@ -1625,7 +1621,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (IsInstantUtility(_inventory.Selected.Role))
             {
-                _trajectoryLine.enabled = false;
+                HideTrajectoryPreview();
                 return;
             }
 
@@ -1634,31 +1630,80 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void DrawBallisticTrajectory(Vector2 firePoint, WeaponDefinition weapon)
         {
-            const int steps = 24;
-            _trajectoryLine.enabled = true;
-            _trajectoryLine.positionCount = steps;
-            for (var i = 0; i < steps; i++)
+            _trajectoryLine.enabled = false;
+
+            var power01 = Mathf.InverseLerp(_aimSettings.MinPower, _aimSettings.MaxPower, _aimState.Power);
+            var previewLength = Mathf.Lerp(1.45f, 3.85f, power01);
+            var previewEndTime = FindTrajectoryPreviewEndTime(firePoint, weapon, previewLength);
+            var dotColor = Color.Lerp(new Color(1f, 0.86f, 0.12f, 0.95f), new Color(0.58f, 0.04f, 0.02f, 0.98f), power01);
+
+            for (var i = 0; i < _trajectoryDots.Count; i++)
             {
-                _trajectoryLine.SetPosition(i, GetTrajectoryPreviewPoint(firePoint, weapon, i));
+                var dot = _trajectoryDots[i];
+                var t01 = _trajectoryDots.Count <= 1 ? 0f : (float)i / (_trajectoryDots.Count - 1);
+                var point = GetTrajectoryPreviewPointAtTime(firePoint, weapon, previewEndTime * t01);
+                var scale = Mathf.Lerp(0.18f, 0.055f, t01);
+                var alpha = Mathf.Lerp(0.96f, 0.28f, t01);
+
+                dot.enabled = true;
+                dot.transform.position = new Vector3(point.x, point.y, -0.18f);
+                dot.transform.localScale = new Vector3(scale, scale, 1f);
+                dot.color = new Color(dotColor.r, dotColor.g, dotColor.b, alpha);
             }
         }
 
-        private Vector2 GetTrajectoryPreviewPoint(Vector2 firePoint, WeaponDefinition weapon, int stepIndex)
+        private float FindTrajectoryPreviewEndTime(Vector2 firePoint, WeaponDefinition weapon, float targetLength)
         {
-            const float stepTime = 0.085f;
+            const float sampleStepTime = 0.018f;
+            const int maxSamples = 120;
+
+            var distance = 0f;
+            var previous = GetTrajectoryPreviewPointAtTime(firePoint, weapon, 0f);
+            for (var i = 1; i <= maxSamples; i++)
+            {
+                var t = i * sampleStepTime;
+                var current = GetTrajectoryPreviewPointAtTime(firePoint, weapon, t);
+                distance += Vector2.Distance(previous, current);
+                if (distance >= targetLength)
+                {
+                    return t;
+                }
+
+                previous = current;
+            }
+
+            return maxSamples * sampleStepTime;
+        }
+
+        private Vector2 GetTrajectoryPreviewPointAtTime(Vector2 firePoint, WeaponDefinition weapon, float time)
+        {
             var start = firePoint + (_aimState.Direction * 0.45f);
             var velocity = _aimState.Direction * _aimState.Power;
             var gravity = Physics2D.gravity * weapon.GravityScale;
-            var t = stepIndex * stepTime;
-            return start + velocity * t + 0.5f * gravity * (t * t);
+            return start + velocity * time + 0.5f * gravity * (time * time);
         }
 
         private void DrawCoverPlacementPreview(Vector2 firePoint)
         {
+            HideTrajectoryDots();
             _trajectoryLine.enabled = true;
             _trajectoryLine.positionCount = 2;
             _trajectoryLine.SetPosition(0, firePoint);
             _trajectoryLine.SetPosition(1, GetCoverPlacementPoint(firePoint));
+        }
+
+        private void HideTrajectoryPreview()
+        {
+            _trajectoryLine.enabled = false;
+            HideTrajectoryDots();
+        }
+
+        private void HideTrajectoryDots()
+        {
+            for (var i = 0; i < _trajectoryDots.Count; i++)
+            {
+                _trajectoryDots[i].enabled = false;
+            }
         }
 
         private Vector2 GetCoverPlacementPoint(Vector2 firePoint)
@@ -1880,7 +1925,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _aimLine.enabled = false;
-            _trajectoryLine.enabled = false;
+            HideTrajectoryPreview();
             _status = GameText.AimReset();
         }
 
