@@ -93,6 +93,7 @@ namespace Game.Gameplay.Battle.Assembly
         private CharacterArchetype _opponentArchetype;
         private BattleVisualTheme _visualTheme;
         private VisualSurfaceSampler _visualSurfaceSampler;
+        private DestructibleVisualTerrain _destructibleTerrain;
         private FirstBattleGuideState _firstBattleGuide;
         private float _aiDecisionTimer;
         private string _coachMessage = string.Empty;
@@ -395,6 +396,7 @@ namespace Game.Gameplay.Battle.Assembly
         {
             _visualTheme = BattleVisualThemeLibrary.ForArena(arena);
             _visualSurfaceSampler = null;
+            _destructibleTerrain = null;
             AddVisualLayer("Arena Background", _visualTheme?.Background);
 
             foreach (var block in arena.TerrainBlocks)
@@ -442,6 +444,10 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void ClearArenaRuntime()
         {
+            _destructibleTerrain?.Dispose();
+            _destructibleTerrain = null;
+            _visualSurfaceSampler = null;
+
             foreach (var presenter in _unitPresenters)
             {
                 if (presenter.View != null)
@@ -892,10 +898,61 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void ResolveDamageImpact(ProjectileImpact impact, WeaponDefinition impactWeapon)
         {
+            ApplyTerrainDestruction(impact.Point, impactWeapon);
+
             var allUnits = _battleState.Teams.SelectMany(team => team.Units).ToList();
             var selfDamageMultiplier = impactWeapon.Role == WeaponRole.ShortRangeBurst ? 0f : 0.65f;
             var settings = new RadialDamageSettings(impact.Damage, impact.ImpactRadius, selfDamageMultiplier);
             DamageResolver.ResolveRadialDamage(allUnits, impact.Point, impact.OwnerUnitId, impact.ProjectileId, settings);
+        }
+
+        private void ApplyTerrainDestruction(Vector2 impactPoint, WeaponDefinition impactWeapon)
+        {
+            if (_destructibleTerrain == null || impactWeapon == null)
+            {
+                return;
+            }
+
+            var craterRadius = Mathf.Clamp(impactWeapon.ImpactRadius * 0.62f, 0.38f, 1.55f);
+            if (!_destructibleTerrain.ApplyCrater(impactPoint, craterRadius))
+            {
+                return;
+            }
+
+            _visualSurfaceSampler = _destructibleTerrain.CreateSurfaceSampler();
+            ResolveTerrainSupportAfterDestruction(impactPoint, craterRadius);
+        }
+
+        private void ResolveTerrainSupportAfterDestruction(Vector2 impactPoint, float craterRadius)
+        {
+            if (_visualSurfaceSampler == null || _battleState == null)
+            {
+                return;
+            }
+
+            var affectedHalfWidth = craterRadius + 0.62f;
+            foreach (var unit in _battleState.Teams.SelectMany(team => team.Units))
+            {
+                if (unit == null || unit.IsDefeated || Mathf.Abs(unit.Position.x - impactPoint.x) > affectedHalfWidth)
+                {
+                    continue;
+                }
+
+                var bodyHeight = ArchetypeFor(unit.TeamId).BodyHeight;
+                if (_visualSurfaceSampler.TryGetLanding(unit.Position.x, bodyHeight, out var landing))
+                {
+                    if (Mathf.Abs(landing.y - unit.Position.y) > 0.035f && landing.y < unit.Position.y + 0.35f)
+                    {
+                        unit.MoveTo(landing);
+                    }
+
+                    continue;
+                }
+
+                unit.MoveTo(new Vector2(unit.Position.x, FallDeathY));
+                unit.ApplyDamage(unit.MaxHealth, "terrain.fall");
+                EmitFeedback(BattleFeedbackEventType.UnitDefeated);
+            }
         }
 
         private void UseInstantUtility(BattleUnitPresenter activePresenter, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
@@ -960,7 +1017,9 @@ namespace Game.Gameplay.Battle.Assembly
                 hitCount++;
             }
 
-            SpawnImpactFlash(origin + direction * Mathf.Min(range, 0.95f), new Color(1f, 0.62f, 0.24f, 0.85f), 0.95f);
+            var burstPoint = origin + direction * Mathf.Min(range, 0.95f);
+            ApplyTerrainDestruction(burstPoint, weapon);
+            SpawnImpactFlash(burstPoint, new Color(1f, 0.62f, 0.24f, 0.85f), 0.95f);
             _aimLine.enabled = false;
             HideTrajectoryPreview();
             EmitFeedback(BattleFeedbackEventType.ShotFired);
@@ -1783,8 +1842,11 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (layer.Value.Solid)
             {
-                visual.AddComponent<PolygonCollider2D>();
-                _visualSurfaceSampler = VisualSurfaceSampler.TryCreate(sprite, visual.transform);
+                var collider = visual.AddComponent<PolygonCollider2D>();
+                _destructibleTerrain = DestructibleVisualTerrain.TryCreate(renderer, collider, sprite);
+                _visualSurfaceSampler = _destructibleTerrain != null
+                    ? _destructibleTerrain.CreateSurfaceSampler()
+                    : VisualSurfaceSampler.TryCreate(sprite, visual.transform);
             }
 
             _arenaObjects.Add(visual);
@@ -2097,6 +2159,256 @@ namespace Game.Gameplay.Battle.Assembly
                 && _trajectoryLine != null;
         }
 
+        private sealed class DestructibleVisualTerrain
+        {
+            private const byte SolidAlpha = 96;
+            private const int SurfaceSampleStep = 3;
+
+            private readonly SpriteRenderer _renderer;
+            private readonly Transform _transform;
+            private readonly Texture2D _texture;
+            private readonly Sprite _sprite;
+            private readonly Rect _rect;
+            private readonly Vector2 _pivot;
+            private readonly float _pixelsPerUnit;
+            private readonly int _width;
+            private readonly int _height;
+            private readonly int _rectX;
+            private readonly int _rectY;
+            private readonly Color32[] _pixels;
+            private readonly List<EdgeCollider2D> _edgeColliders = new();
+
+            private DestructibleVisualTerrain(
+                SpriteRenderer renderer,
+                Transform transform,
+                Texture2D texture,
+                Sprite sprite,
+                Color32[] pixels)
+            {
+                _renderer = renderer;
+                _transform = transform;
+                _texture = texture;
+                _sprite = sprite;
+                _rect = sprite.rect;
+                _pivot = sprite.pivot;
+                _pixelsPerUnit = sprite.pixelsPerUnit;
+                _width = Mathf.RoundToInt(_rect.width);
+                _height = Mathf.RoundToInt(_rect.height);
+                _rectX = Mathf.RoundToInt(_rect.x);
+                _rectY = Mathf.RoundToInt(_rect.y);
+                _pixels = pixels;
+            }
+
+            public static DestructibleVisualTerrain TryCreate(SpriteRenderer renderer, PolygonCollider2D polygonCollider, Sprite sourceSprite)
+            {
+                if (renderer == null || sourceSprite == null || sourceSprite.texture == null)
+                {
+                    return null;
+                }
+
+                var sourceTexture = sourceSprite.texture;
+                Color32[] sourcePixels;
+                try
+                {
+                    sourcePixels = sourceTexture.GetPixels32();
+                }
+                catch (UnityException)
+                {
+                    return null;
+                }
+
+                var runtimeTexture = new Texture2D(sourceTexture.width, sourceTexture.height, TextureFormat.RGBA32, false);
+                runtimeTexture.filterMode = sourceTexture.filterMode;
+                runtimeTexture.wrapMode = TextureWrapMode.Clamp;
+                runtimeTexture.SetPixels32(sourcePixels);
+                runtimeTexture.Apply();
+
+                var runtimeSprite = Sprite.Create(
+                    runtimeTexture,
+                    sourceSprite.rect,
+                    new Vector2(sourceSprite.pivot.x / sourceSprite.rect.width, sourceSprite.pivot.y / sourceSprite.rect.height),
+                    sourceSprite.pixelsPerUnit,
+                    0,
+                    SpriteMeshType.FullRect);
+
+                renderer.sprite = runtimeSprite;
+                if (polygonCollider != null)
+                {
+                    polygonCollider.enabled = false;
+                }
+
+                var terrain = new DestructibleVisualTerrain(renderer, renderer.transform, runtimeTexture, runtimeSprite, runtimeTexture.GetPixels32());
+                terrain.RebuildSurfaceColliders();
+                return terrain;
+            }
+
+            public bool ApplyCrater(Vector2 worldPoint, float worldRadius)
+            {
+                if (worldRadius <= 0f)
+                {
+                    return false;
+                }
+
+                var localPoint = _transform.InverseTransformPoint(worldPoint);
+                var centerX = localPoint.x * _pixelsPerUnit + _pivot.x;
+                var centerY = localPoint.y * _pixelsPerUnit + _pivot.y;
+                var lossyScale = _transform.lossyScale;
+                var radiusX = worldRadius / Mathf.Max(0.01f, Mathf.Abs(lossyScale.x)) * _pixelsPerUnit;
+                var radiusY = worldRadius / Mathf.Max(0.01f, Mathf.Abs(lossyScale.y)) * _pixelsPerUnit;
+                var minX = Mathf.Clamp(Mathf.FloorToInt(centerX - radiusX - 2f), 0, _width - 1);
+                var maxX = Mathf.Clamp(Mathf.CeilToInt(centerX + radiusX + 2f), 0, _width - 1);
+                var minY = Mathf.Clamp(Mathf.FloorToInt(centerY - radiusY - 2f), 0, _height - 1);
+                var maxY = Mathf.Clamp(Mathf.CeilToInt(centerY + radiusY + 2f), 0, _height - 1);
+                var changed = false;
+
+                for (var y = minY; y <= maxY; y++)
+                {
+                    var normalizedY = (y - centerY) / Mathf.Max(1f, radiusY);
+                    for (var x = minX; x <= maxX; x++)
+                    {
+                        var normalizedX = (x - centerX) / Mathf.Max(1f, radiusX);
+                        var distance01 = Mathf.Sqrt(normalizedX * normalizedX + normalizedY * normalizedY);
+                        if (distance01 > 1f)
+                        {
+                            continue;
+                        }
+
+                        var pixelIndex = ToTexturePixelIndex(x, y);
+                        if (pixelIndex < 0 || pixelIndex >= _pixels.Length || _pixels[pixelIndex].a == 0)
+                        {
+                            continue;
+                        }
+
+                        var feather = Mathf.InverseLerp(1f, 0.82f, distance01);
+                        var alphaMultiplier = Mathf.Clamp01(1f - feather);
+                        var pixel = _pixels[pixelIndex];
+                        var newAlpha = (byte)Mathf.RoundToInt(pixel.a * alphaMultiplier);
+                        if (newAlpha >= pixel.a)
+                        {
+                            continue;
+                        }
+
+                        pixel.a = newAlpha;
+                        _pixels[pixelIndex] = pixel;
+                        changed = true;
+                    }
+                }
+
+                if (!changed)
+                {
+                    return false;
+                }
+
+                _texture.SetPixels32(_pixels);
+                _texture.Apply();
+                RebuildSurfaceColliders();
+                return true;
+            }
+
+            public VisualSurfaceSampler CreateSurfaceSampler()
+            {
+                return VisualSurfaceSampler.TryCreate(_sprite, _transform, _pixels);
+            }
+
+            public void Dispose()
+            {
+                if (_sprite != null)
+                {
+                    Object.Destroy(_sprite);
+                }
+
+                if (_texture != null)
+                {
+                    Object.Destroy(_texture);
+                }
+            }
+
+            private void RebuildSurfaceColliders()
+            {
+                var segments = BuildSurfaceSegments();
+                while (_edgeColliders.Count < segments.Count)
+                {
+                    var edge = _renderer.gameObject.AddComponent<EdgeCollider2D>();
+                    edge.edgeRadius = 0.025f;
+                    _edgeColliders.Add(edge);
+                }
+
+                for (var i = 0; i < _edgeColliders.Count; i++)
+                {
+                    var edge = _edgeColliders[i];
+                    if (i >= segments.Count)
+                    {
+                        edge.enabled = false;
+                        continue;
+                    }
+
+                    edge.enabled = true;
+                    edge.points = segments[i].ToArray();
+                }
+            }
+
+            private List<List<Vector2>> BuildSurfaceSegments()
+            {
+                var segments = new List<List<Vector2>>();
+                var current = new List<Vector2>();
+                var missingRun = 0;
+
+                for (var x = 0; x < _width; x += SurfaceSampleStep)
+                {
+                    if (TryFindTopSolidY(x, out var y))
+                    {
+                        if (missingRun > 1 && current.Count >= 2)
+                        {
+                            segments.Add(current);
+                            current = new List<Vector2>();
+                        }
+
+                        missingRun = 0;
+                        current.Add(PixelToLocalPoint(x, y));
+                    }
+                    else
+                    {
+                        missingRun++;
+                    }
+                }
+
+                if (current.Count >= 2)
+                {
+                    segments.Add(current);
+                }
+
+                return segments;
+            }
+
+            private bool TryFindTopSolidY(int x, out int surfaceY)
+            {
+                for (var y = _height - 1; y >= 0; y--)
+                {
+                    var pixelIndex = ToTexturePixelIndex(x, y);
+                    if (pixelIndex >= 0 && pixelIndex < _pixels.Length && _pixels[pixelIndex].a >= SolidAlpha)
+                    {
+                        surfaceY = y;
+                        return true;
+                    }
+                }
+
+                surfaceY = 0;
+                return false;
+            }
+
+            private Vector2 PixelToLocalPoint(int x, int y)
+            {
+                return new Vector2((x - _pivot.x) / _pixelsPerUnit, (y - _pivot.y) / _pixelsPerUnit);
+            }
+
+            private int ToTexturePixelIndex(int spriteX, int spriteY)
+            {
+                var tx = _rectX + spriteX;
+                var ty = _rectY + spriteY;
+                return ty * _texture.width + tx;
+            }
+        }
+
         private sealed class VisualSurfaceSampler
         {
             private readonly float _minX;
@@ -2111,6 +2423,11 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             public static VisualSurfaceSampler TryCreate(Sprite sprite, Transform transform)
+            {
+                return TryCreate(sprite, transform, null);
+            }
+
+            public static VisualSurfaceSampler TryCreate(Sprite sprite, Transform transform, Color32[] overridePixels)
             {
                 if (sprite == null || transform == null)
                 {
@@ -2131,14 +2448,17 @@ namespace Game.Gameplay.Battle.Assembly
                     return null;
                 }
 
-                Color32[] pixels;
-                try
+                Color32[] pixels = overridePixels;
+                if (pixels == null)
                 {
-                    pixels = texture.GetPixels32();
-                }
-                catch (UnityException)
-                {
-                    return null;
+                    try
+                    {
+                        pixels = texture.GetPixels32();
+                    }
+                    catch (UnityException)
+                    {
+                        return null;
+                    }
                 }
 
                 var rectX = Mathf.RoundToInt(rect.x);
