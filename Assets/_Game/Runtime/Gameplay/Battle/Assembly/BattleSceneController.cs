@@ -53,6 +53,13 @@ namespace Game.Gameplay.Battle.Assembly
         private const float OccupiedRadius = 0.72f;
         private const float JumpAnimationDuration = 0.34f;
         private const float JumpCollisionRadius = 0.34f;
+        private const float KnockbackMaxDuration = 1.65f;
+        private const float KnockbackHardTimeout = 2.35f;
+        private const float KnockbackStuckResolveSeconds = 0.2f;
+        private const float KnockbackSubstepSeconds = 0.016f;
+        private const float KnockbackGravity = -8.6f;
+        private const float KnockbackLandingSearchPadding = 0.46f;
+        private const float UnitCollisionHalfWidth = 0.34f;
         private const float FallDeathY = -6.2f;
         private const float PlayerTurnDurationSeconds = 30f;
         private const int TrajectoryDotCount = 13;
@@ -61,6 +68,7 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Color _opponentColor = new(0.95f, 0.28f, 0.22f);
         private readonly List<BattleUnitPresenter> _unitPresenters = new();
         private readonly List<GameObject> _arenaObjects = new();
+        private readonly List<ExplosionKnockbackMotion> _knockbackMotions = new();
         private readonly Dictionary<string, WeaponDefinition> _weaponsById = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, Sprite> _spriteResourceCache = new(System.StringComparer.Ordinal);
 
@@ -114,6 +122,7 @@ namespace Game.Gameplay.Battle.Assembly
         private bool _jumpFallsOffMap;
         private bool _jumpRequiresTerrainBlock;
         private bool _resolvingMovementFall;
+        private bool HasKnockbackMotions => _knockbackMotions.Count > 0;
         private bool HasProjectilesInFlight => _projectilesInFlight > 0;
 
         private void Awake()
@@ -227,6 +236,12 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (_battleResult.IsFinished)
             {
+                return;
+            }
+
+            if (HasKnockbackMotions)
+            {
+                UpdateExplosionKnockbacks();
                 return;
             }
 
@@ -365,6 +380,7 @@ namespace Game.Gameplay.Battle.Assembly
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
             _jumpInProgress = false;
+            _knockbackMotions.Clear();
             ResetPlayerMovementTurn();
             RefreshUnitViews();
             ReportTutorial(BattleTutorialBridge.MissionStart);
@@ -447,6 +463,7 @@ namespace Game.Gameplay.Battle.Assembly
             _destructibleTerrain?.Dispose();
             _destructibleTerrain = null;
             _visualSurfaceSampler = null;
+            _knockbackMotions.Clear();
 
             foreach (var presenter in _unitPresenters)
             {
@@ -641,7 +658,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void Fire()
         {
-            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight)
+            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight || HasKnockbackMotions)
             {
                 return;
             }
@@ -726,9 +743,12 @@ namespace Game.Gameplay.Battle.Assembly
             var projectileObject = new GameObject("Production Shell");
             _arenaObjects.Add(projectileObject);
             projectileObject.transform.position = request.Position;
-            ApplyProjectileVisualTransform(projectileObject.transform, request);
 
-            var renderer = projectileObject.AddComponent<SpriteRenderer>();
+            var visualObject = new GameObject("Visual");
+            visualObject.transform.SetParent(projectileObject.transform, false);
+            ApplyProjectileVisualTransform(visualObject.transform, request);
+
+            var renderer = visualObject.AddComponent<SpriteRenderer>();
             renderer.sprite = _circleSprite;
             renderer.color = ResolveProjectileVisualColor(request);
             renderer.sortingOrder = 30;
@@ -898,61 +918,121 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void ResolveDamageImpact(ProjectileImpact impact, WeaponDefinition impactWeapon)
         {
-            ApplyTerrainDestruction(impact.Point, impactWeapon);
+            var terrainChanged = ApplyTerrainDestruction(impact.Point, impactWeapon);
 
             var allUnits = _battleState.Teams.SelectMany(team => team.Units).ToList();
             var selfDamageMultiplier = impactWeapon.Role == WeaponRole.ShortRangeBurst ? 0f : 0.65f;
             var settings = new RadialDamageSettings(impact.Damage, impact.ImpactRadius, selfDamageMultiplier);
             DamageResolver.ResolveRadialDamage(allUnits, impact.Point, impact.OwnerUnitId, impact.ProjectileId, settings);
+            ApplyExplosionKnockback(impact.Point, impact.Velocity, impactWeapon, terrainChanged);
         }
 
-        private void ApplyTerrainDestruction(Vector2 impactPoint, WeaponDefinition impactWeapon)
+        private bool ApplyTerrainDestruction(Vector2 impactPoint, WeaponDefinition impactWeapon)
         {
             if (_destructibleTerrain == null || impactWeapon == null)
             {
-                return;
+                return false;
             }
 
             var craterRadius = Mathf.Clamp(impactWeapon.ImpactRadius * 0.62f, 0.38f, 1.55f);
             if (!_destructibleTerrain.ApplyCrater(impactPoint, craterRadius))
             {
-                return;
+                return false;
             }
 
             _visualSurfaceSampler = _destructibleTerrain.CreateSurfaceSampler();
-            ResolveTerrainSupportAfterDestruction(impactPoint, craterRadius);
+            return true;
         }
 
-        private void ResolveTerrainSupportAfterDestruction(Vector2 impactPoint, float craterRadius)
+        private void ApplyExplosionKnockback(Vector2 impactPoint, Vector2 impactVelocity, WeaponDefinition impactWeapon, bool terrainChanged)
         {
-            if (_visualSurfaceSampler == null || _battleState == null)
+            if (_battleState == null || impactWeapon == null)
             {
                 return;
             }
 
-            var affectedHalfWidth = craterRadius + 0.62f;
-            foreach (var unit in _battleState.Teams.SelectMany(team => team.Units))
+            var radius = Mathf.Max(0.65f, impactWeapon.ImpactRadius + KnockbackLandingSearchPadding);
+            var radiusScale = Mathf.InverseLerp(0.75f, 2.4f, impactWeapon.ImpactRadius);
+            var incoming = impactVelocity.sqrMagnitude > 0.01f ? impactVelocity.normalized : Vector2.zero;
+            var downwardImpact01 = Mathf.InverseLerp(-0.15f, -0.85f, incoming.y);
+
+            foreach (var presenter in _unitPresenters)
             {
-                if (unit == null || unit.IsDefeated || Mathf.Abs(unit.Position.x - impactPoint.x) > affectedHalfWidth)
+                var unit = presenter.State;
+                if (unit == null || unit.IsDefeated || Mathf.Abs(unit.Position.x - impactPoint.x) > radius)
                 {
                     continue;
                 }
 
-                var bodyHeight = ArchetypeFor(unit.TeamId).BodyHeight;
-                if (_visualSurfaceSampler.TryGetLanding(unit.Position.x, bodyHeight, out var landing))
+                var offset = unit.Position - impactPoint;
+                var distance = offset.magnitude;
+                if (distance > radius)
                 {
-                    if (Mathf.Abs(landing.y - unit.Position.y) > 0.035f && landing.y < unit.Position.y + 0.35f)
-                    {
-                        unit.MoveTo(landing);
-                    }
-
                     continue;
                 }
 
-                unit.MoveTo(new Vector2(unit.Position.x, FallDeathY));
-                unit.ApplyDamage(unit.MaxHealth, "terrain.fall");
-                EmitFeedback(BattleFeedbackEventType.UnitDefeated);
+                var falloff = Mathf.Clamp01(1f - (distance / radius));
+                falloff = Mathf.SmoothStep(0f, 1f, falloff);
+                if (falloff <= 0.03f && !terrainChanged)
+                {
+                    continue;
+                }
+
+                var radial = offset.sqrMagnitude > 0.0001f ? offset.normalized : Vector2.up;
+                var side = Mathf.Abs(radial.x) > 0.08f
+                    ? Mathf.Sign(radial.x)
+                    : (Mathf.Abs(incoming.x) > 0.08f ? Mathf.Sign(incoming.x) : unit.FacingDirectionX);
+                var horizontalSpeed = Mathf.Lerp(1.05f, 3.65f, falloff) * Mathf.Lerp(0.86f, 1.16f, radiusScale);
+                var verticalFromBlast = Mathf.Clamp(radial.y, -0.52f, Mathf.Lerp(0.72f, 0.22f, downwardImpact01));
+                var verticalSpeed = verticalFromBlast
+                    * Mathf.Lerp(0.65f, 2.55f, falloff)
+                    * Mathf.Lerp(0.88f, 1.08f, radiusScale);
+                if (verticalSpeed > 0f)
+                {
+                    verticalSpeed *= Mathf.Lerp(1f, 0.28f, downwardImpact01);
+                }
+
+                var velocity = new Vector2(side * horizontalSpeed, verticalSpeed);
+                if (incoming.sqrMagnitude > 0.01f)
+                {
+                    velocity.x += incoming.x * Mathf.Lerp(0.08f, 0.45f, falloff);
+                }
+
+                if (velocity.sqrMagnitude < 0.02f)
+                {
+                    continue;
+                }
+
+                QueueExplosionKnockback(presenter, velocity);
             }
+        }
+
+        private void QueueExplosionKnockback(BattleUnitPresenter presenter, Vector2 velocity)
+        {
+            for (var i = _knockbackMotions.Count - 1; i >= 0; i--)
+            {
+                if (_knockbackMotions[i].Presenter != presenter)
+                {
+                    continue;
+                }
+
+                _knockbackMotions.RemoveAt(i);
+            }
+
+            _knockbackMotions.Add(new ExplosionKnockbackMotion(
+                presenter,
+                (Vector2)presenter.View.transform.position,
+                velocity));
+        }
+
+        private bool TryResolveKnockbackLanding(BattleUnitState unit, float targetX, float bodyHeight, out Vector2 target)
+        {
+            if (_visualSurfaceSampler != null)
+            {
+                return _visualSurfaceSampler.TryGetLanding(targetX, bodyHeight, out target);
+            }
+
+            return TryResolveGroundPosition(new Vector2(targetX, unit.Position.y), unit.TeamId, out target);
         }
 
         private void UseInstantUtility(BattleUnitPresenter activePresenter, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
@@ -1018,7 +1098,8 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var burstPoint = origin + direction * Mathf.Min(range, 0.95f);
-            ApplyTerrainDestruction(burstPoint, weapon);
+            var terrainChanged = ApplyTerrainDestruction(burstPoint, weapon);
+            ApplyExplosionKnockback(burstPoint, direction * 8f, weapon, terrainChanged);
             SpawnImpactFlash(burstPoint, new Color(1f, 0.62f, 0.24f, 0.85f), 0.95f);
             _aimLine.enabled = false;
             HideTrajectoryPreview();
@@ -1244,6 +1325,7 @@ namespace Game.Gameplay.Battle.Assembly
             return IsBattleReady()
                 && !_battleResult.IsFinished
                 && !HasProjectilesInFlight
+                && !HasKnockbackMotions
                 && !_jumpInProgress
                 && _battleState.Turn.ActiveTeam == BattleTeamId.Player
                 && !_battleState.Turn.ActionSpent
@@ -1392,6 +1474,323 @@ namespace Game.Gameplay.Battle.Assembly
             _jumpStatus = forward
                 ? GameText.FrontJumped(DescribeTeam(presenter.State.TeamId))
                 : GameText.BackJumped(DescribeTeam(presenter.State.TeamId));
+        }
+
+        private void UpdateExplosionKnockbacks()
+        {
+            for (var i = _knockbackMotions.Count - 1; i >= 0; i--)
+            {
+                var motion = _knockbackMotions[i];
+                if (motion.Presenter == null || motion.Presenter.State == null || motion.Presenter.State.IsDefeated)
+                {
+                    _knockbackMotions.RemoveAt(i);
+                    continue;
+                }
+
+                var remainingTime = Mathf.Min(Time.deltaTime, 0.08f);
+                var completed = false;
+                var defeatedByFall = false;
+                var finalPosition = (Vector2)motion.Presenter.View.transform.position;
+                while (remainingTime > 0f)
+                {
+                    var step = Mathf.Min(KnockbackSubstepSeconds, remainingTime);
+                    var currentPosition = (Vector2)motion.Presenter.View.transform.position;
+                    var nextPosition = currentPosition
+                        + motion.Velocity * step
+                        + Vector2.up * (0.5f * KnockbackGravity * step * step);
+                    motion.Velocity += Vector2.up * (KnockbackGravity * step);
+                    motion.Timer += step;
+
+                    if (TryResolveExplosionKnockbackCollision(motion, currentPosition, nextPosition, out var resolvedPosition, out completed))
+                    {
+                        finalPosition = resolvedPosition;
+                        motion.Presenter.View.transform.position = resolvedPosition;
+                        motion.LastSafePosition = resolvedPosition;
+                        if (completed)
+                        {
+                            break;
+                        }
+
+                        motion.BlockedTimer += step;
+                        if (motion.BlockedTimer >= KnockbackStuckResolveSeconds
+                            && TryResolveStuckKnockback(motion, resolvedPosition, out finalPosition, out defeatedByFall))
+                        {
+                            completed = true;
+                            break;
+                        }
+
+                        remainingTime -= step;
+                        continue;
+                    }
+
+                    finalPosition = nextPosition;
+                    motion.Presenter.View.transform.position = nextPosition;
+                    motion.LastSafePosition = nextPosition;
+                    motion.BlockedTimer = 0f;
+
+                    if (nextPosition.y <= FallDeathY)
+                    {
+                        completed = true;
+                        defeatedByFall = true;
+                        break;
+                    }
+
+                    if (motion.Timer >= KnockbackHardTimeout)
+                    {
+                        completed = true;
+                        if (!TryFindSafeKnockbackLanding(nextPosition, ArchetypeFor(motion.Presenter.State.TeamId).BodyHeight, out finalPosition))
+                        {
+                            finalPosition = new Vector2(nextPosition.x, FallDeathY);
+                            defeatedByFall = true;
+                        }
+
+                        break;
+                    }
+
+                    if (motion.Timer >= KnockbackMaxDuration)
+                    {
+                        motion.Velocity = new Vector2(motion.Velocity.x * 0.72f, Mathf.Min(motion.Velocity.y, -1.05f));
+                        if (nextPosition.y <= FallDeathY + 0.85f)
+                        {
+                            finalPosition = new Vector2(nextPosition.x, FallDeathY);
+                            defeatedByFall = true;
+                            completed = true;
+                            break;
+                        }
+
+                        remainingTime = 0f;
+                        break;
+                    }
+
+                    remainingTime -= step;
+                }
+
+                if (!completed)
+                {
+                    continue;
+                }
+
+                motion.Presenter.State.MoveTo(finalPosition);
+                if (defeatedByFall)
+                {
+                    motion.Presenter.State.ApplyDamage(motion.Presenter.State.MaxHealth, "explosion.fall");
+                    EmitFeedback(BattleFeedbackEventType.UnitDefeated);
+                }
+
+                motion.Presenter.Refresh(motion.Presenter.State.UnitId == _battleState.Turn.ActiveUnitId);
+                _knockbackMotions.RemoveAt(i);
+            }
+
+            if (HasKnockbackMotions)
+            {
+                return;
+            }
+
+            ResolveBattleAfterExplosionKnockback();
+        }
+
+        private bool TryResolveExplosionKnockbackCollision(
+            ExplosionKnockbackMotion motion,
+            Vector2 previousPosition,
+            Vector2 candidatePosition,
+            out Vector2 resolvedPosition,
+            out bool completed)
+        {
+            resolvedPosition = candidatePosition;
+            completed = false;
+            if (motion == null || motion.Presenter == null)
+            {
+                return false;
+            }
+
+            var unit = motion.Presenter.State;
+            var bodyHeight = ArchetypeFor(unit.TeamId).BodyHeight;
+            var halfHeight = bodyHeight * 0.5f;
+            if (TryGetKnockbackSurfaceHit(candidatePosition, bodyHeight, out var landing, out var surfaceY))
+            {
+                var previousBottom = previousPosition.y - halfHeight;
+                var candidateBottom = candidatePosition.y - halfHeight;
+                var landedFromAbove = motion.Velocity.y <= 0.08f
+                    && previousBottom >= surfaceY - 0.045f
+                    && candidateBottom <= surfaceY + 0.035f;
+                if (landedFromAbove)
+                {
+                    resolvedPosition = landing;
+                    completed = true;
+                    return true;
+                }
+            }
+
+            if (!IsKnockbackBodyOverlappingSolid(candidatePosition, bodyHeight))
+            {
+                return false;
+            }
+
+            var verticalOnlyPosition = new Vector2(previousPosition.x, candidatePosition.y);
+            if (!IsKnockbackBodyOverlappingSolid(verticalOnlyPosition, bodyHeight))
+            {
+                resolvedPosition = verticalOnlyPosition;
+                motion.Velocity = new Vector2(motion.Velocity.x * 0.16f, motion.Velocity.y);
+                return true;
+            }
+
+            var horizontalOnlyPosition = new Vector2(candidatePosition.x, previousPosition.y);
+            if (!IsKnockbackBodyOverlappingSolid(horizontalOnlyPosition, bodyHeight))
+            {
+                resolvedPosition = horizontalOnlyPosition;
+                motion.Velocity = new Vector2(motion.Velocity.x, Mathf.Min(motion.Velocity.y, -0.5f));
+                return true;
+            }
+
+            resolvedPosition = previousPosition;
+            motion.Velocity = new Vector2(motion.Velocity.x * 0.12f, Mathf.Min(motion.Velocity.y, -0.6f));
+            return true;
+        }
+
+        private bool TryGetKnockbackSurfaceHit(Vector2 centerPosition, float bodyHeight, out Vector2 landing, out float surfaceY)
+        {
+            landing = default;
+            surfaceY = 0f;
+            if (_visualSurfaceSampler == null)
+            {
+                return false;
+            }
+
+            var bottom = centerPosition.y - bodyHeight * 0.5f;
+            var maxFootPenetration = Mathf.Min(0.22f, bodyHeight * 0.26f);
+            var sampleOffsets = new[] { 0f, -UnitCollisionHalfWidth * 0.72f, UnitCollisionHalfWidth * 0.72f, -UnitCollisionHalfWidth, UnitCollisionHalfWidth };
+            var hasHit = false;
+            var highestSurfaceY = float.NegativeInfinity;
+            foreach (var offset in sampleOffsets)
+            {
+                if (!_visualSurfaceSampler.TryGetSurfaceY(centerPosition.x + offset, out var candidateSurfaceY))
+                {
+                    continue;
+                }
+
+                var penetration = candidateSurfaceY - bottom;
+                if (penetration < -0.025f || penetration > maxFootPenetration)
+                {
+                    continue;
+                }
+
+                if (!hasHit || candidateSurfaceY > highestSurfaceY)
+                {
+                    highestSurfaceY = candidateSurfaceY;
+                    hasHit = true;
+                }
+            }
+
+            if (!hasHit)
+            {
+                return false;
+            }
+
+            surfaceY = highestSurfaceY;
+            landing = new Vector2(centerPosition.x, highestSurfaceY + bodyHeight * 0.5f);
+            return true;
+        }
+
+        private bool IsKnockbackBodyOverlappingSolid(Vector2 centerPosition, float bodyHeight)
+        {
+            if (_visualSurfaceSampler == null)
+            {
+                return false;
+            }
+
+            var halfHeight = bodyHeight * 0.5f;
+            return _visualSurfaceSampler.OverlapsSolid(
+                centerPosition,
+                UnitCollisionHalfWidth,
+                Mathf.Max(0.28f, halfHeight * 0.92f));
+        }
+
+        private bool TryResolveStuckKnockback(
+            ExplosionKnockbackMotion motion,
+            Vector2 currentPosition,
+            out Vector2 finalPosition,
+            out bool defeatedByFall)
+        {
+            defeatedByFall = false;
+            var bodyHeight = ArchetypeFor(motion.Presenter.State.TeamId).BodyHeight;
+            if (TryFindSafeKnockbackLanding(currentPosition, bodyHeight, out finalPosition))
+            {
+                return true;
+            }
+
+            if (currentPosition.y <= FallDeathY + 1.1f)
+            {
+                finalPosition = new Vector2(currentPosition.x, FallDeathY);
+                defeatedByFall = true;
+                return true;
+            }
+
+            finalPosition = currentPosition + Vector2.down * 0.08f;
+            motion.Velocity = new Vector2(0f, -1.25f);
+            motion.BlockedTimer = 0f;
+            return false;
+        }
+
+        private bool TryFindSafeKnockbackLanding(Vector2 currentPosition, float bodyHeight, out Vector2 landing)
+        {
+            landing = default;
+            if (_visualSurfaceSampler == null)
+            {
+                return false;
+            }
+
+            var bestScore = float.PositiveInfinity;
+            var maxLandingY = currentPosition.y + 0.22f;
+            for (var i = -8; i <= 8; i++)
+            {
+                var x = currentPosition.x + i * 0.08f;
+                if (!_visualSurfaceSampler.TryGetSurfaceY(x, out var surfaceY))
+                {
+                    continue;
+                }
+
+                var candidate = new Vector2(x, surfaceY + bodyHeight * 0.5f);
+                if (candidate.y > maxLandingY)
+                {
+                    continue;
+                }
+
+                var score = Mathf.Abs(i) * 0.16f + Mathf.Abs(candidate.y - currentPosition.y);
+                if (score >= bestScore)
+                {
+                    continue;
+                }
+
+                bestScore = score;
+                landing = candidate;
+            }
+
+            return !float.IsPositiveInfinity(bestScore);
+        }
+
+        private void ResolveBattleAfterExplosionKnockback()
+        {
+            if (_battleState == null || _battleResult.IsFinished)
+            {
+                return;
+            }
+
+            _battleResult = BattleResultEvaluator.Evaluate(_battleState);
+            RefreshUnitViews();
+            if (!_battleResult.IsFinished)
+            {
+                return;
+            }
+
+            EmitFeedback(BattleFeedbackEventType.BattleFinished);
+            _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
+            _status = GameText.ResultPrompt(_resultScreenState.Title);
+            if (_battleResult.Outcome == BattleOutcome.PlayerWon)
+            {
+                ReportTutorial(BattleTutorialBridge.BattleWon);
+            }
+
+            _firstBattleGuide?.ObserveBattleFinished();
         }
 
         private void UpdateJumpAnimation()
@@ -1692,17 +2091,22 @@ namespace Game.Gameplay.Battle.Assembly
             _trajectoryLine.enabled = false;
 
             var power01 = Mathf.InverseLerp(_aimSettings.MinPower, _aimSettings.MaxPower, _aimState.Power);
-            var previewLength = Mathf.Lerp(1.45f, 3.85f, power01);
+            var previewLength = Mathf.Lerp(2.15f, 4.15f, Mathf.Sqrt(power01));
             var previewEndTime = FindTrajectoryPreviewEndTime(firePoint, weapon, previewLength);
-            var dotColor = Color.Lerp(new Color(1f, 0.86f, 0.12f, 0.95f), new Color(0.58f, 0.04f, 0.02f, 0.98f), power01);
+            var upwardAim01 = Mathf.InverseLerp(0.12f, 0.86f, _aimState.Direction.y);
+            var weakShot01 = 1f - power01;
+            var minimumArcTime = Mathf.Lerp(0.34f, 0.78f, upwardAim01 * weakShot01);
+            previewEndTime = Mathf.Max(previewEndTime, minimumArcTime);
+            var dotColor = Color.Lerp(new Color(0.28f, 1f, 0.12f, 0.98f), new Color(0.98f, 0.05f, 0.02f, 0.98f), power01);
 
             for (var i = 0; i < _trajectoryDots.Count; i++)
             {
                 var dot = _trajectoryDots[i];
                 var t01 = _trajectoryDots.Count <= 1 ? 0f : (float)i / (_trajectoryDots.Count - 1);
-                var point = GetTrajectoryPreviewPointAtTime(firePoint, weapon, previewEndTime * t01);
-                var scale = Mathf.Lerp(0.18f, 0.055f, t01);
-                var alpha = Mathf.Lerp(0.96f, 0.28f, t01);
+                var time01 = Mathf.Pow(t01, 0.86f);
+                var point = GetTrajectoryPreviewPointAtTime(firePoint, weapon, previewEndTime * time01);
+                var scale = Mathf.Lerp(0.24f, 0.115f, t01);
+                var alpha = Mathf.Lerp(1f, 0.62f, t01);
 
                 dot.enabled = true;
                 dot.transform.position = new Vector3(point.x, point.y, -0.18f);
@@ -1980,7 +2384,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void CancelAim()
         {
-            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight)
+            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight || HasKnockbackMotions)
             {
                 return;
             }
@@ -2002,6 +2406,7 @@ namespace Game.Gameplay.Battle.Assembly
             var playerHasTime = _playerMovement == null || _playerMovement.HasTimeRemaining;
             var canFire = !_battleResult.IsFinished
                 && !HasProjectilesInFlight
+                && !HasKnockbackMotions
                 && !_jumpInProgress
                 && playerHasTime
                 && _inventory.CanFireSelected
@@ -2015,6 +2420,7 @@ namespace Game.Gameplay.Battle.Assembly
                 : _coachTimer > 0f ? _coachTargetId : string.Empty;
             var canUseMovement = !_battleResult.IsFinished
                 && !HasProjectilesInFlight
+                && !HasKnockbackMotions
                 && !_jumpInProgress
                 && _battleState.Turn.ActiveTeam == BattleTeamId.Player
                 && !_battleState.Turn.ActionSpent
@@ -2159,6 +2565,27 @@ namespace Game.Gameplay.Battle.Assembly
                 && _trajectoryLine != null;
         }
 
+        private sealed class ExplosionKnockbackMotion
+        {
+            public ExplosionKnockbackMotion(
+                BattleUnitPresenter presenter,
+                Vector2 start,
+                Vector2 velocity)
+            {
+                Presenter = presenter;
+                Start = start;
+                LastSafePosition = start;
+                Velocity = velocity;
+            }
+
+            public BattleUnitPresenter Presenter { get; }
+            public Vector2 Start { get; }
+            public Vector2 LastSafePosition { get; set; }
+            public Vector2 Velocity { get; set; }
+            public float BlockedTimer { get; set; }
+            public float Timer { get; set; }
+        }
+
         private sealed class DestructibleVisualTerrain
         {
             private const byte SolidAlpha = 96;
@@ -2279,16 +2706,8 @@ namespace Game.Gameplay.Battle.Assembly
                             continue;
                         }
 
-                        var feather = Mathf.InverseLerp(1f, 0.82f, distance01);
-                        var alphaMultiplier = Mathf.Clamp01(1f - feather);
                         var pixel = _pixels[pixelIndex];
-                        var newAlpha = (byte)Mathf.RoundToInt(pixel.a * alphaMultiplier);
-                        if (newAlpha >= pixel.a)
-                        {
-                            continue;
-                        }
-
-                        pixel.a = newAlpha;
+                        pixel.a = 0;
                         _pixels[pixelIndex] = pixel;
                         changed = true;
                     }
@@ -2413,13 +2832,23 @@ namespace Game.Gameplay.Battle.Assembly
         {
             private readonly float _minX;
             private readonly float _maxX;
+            private readonly float _minY;
+            private readonly float _maxY;
             private readonly float[] _surfaceYByColumn;
+            private readonly bool[] _solidMask;
+            private readonly int _width;
+            private readonly int _height;
 
-            private VisualSurfaceSampler(float minX, float maxX, float[] surfaceYByColumn)
+            private VisualSurfaceSampler(float minX, float maxX, float minY, float maxY, float[] surfaceYByColumn, bool[] solidMask, int width, int height)
             {
                 _minX = minX;
                 _maxX = maxX;
+                _minY = minY;
+                _maxY = maxY;
                 _surfaceYByColumn = surfaceYByColumn;
+                _solidMask = solidMask;
+                _width = width;
+                _height = height;
             }
 
             public static VisualSurfaceSampler TryCreate(Sprite sprite, Transform transform)
@@ -2468,8 +2897,11 @@ namespace Game.Gameplay.Battle.Assembly
                 var scale = transform.lossyScale;
                 var origin = transform.position;
                 var surface = new float[width];
+                var solidMask = new bool[width * height];
                 var minX = origin.x + ((0f - pivot.x) / pixelsPerUnit) * scale.x;
                 var maxX = origin.x + (((width - 1f) - pivot.x) / pixelsPerUnit) * scale.x;
+                var minY = origin.y + ((0f - pivot.y) / pixelsPerUnit) * scale.y;
+                var maxY = origin.y + (((height - 1f) - pivot.y) / pixelsPerUnit) * scale.y;
 
                 for (var x = 0; x < width; x++)
                 {
@@ -2479,22 +2911,46 @@ namespace Game.Gameplay.Battle.Assembly
                         var tx = rectX + x;
                         var ty = rectY + y;
                         var pixelIndex = ty * texture.width + tx;
-                        if (pixelIndex < 0 || pixelIndex >= pixels.Length || pixels[pixelIndex].a < 96)
+                        var isSolid = pixelIndex >= 0 && pixelIndex < pixels.Length && pixels[pixelIndex].a >= 96;
+                        solidMask[y * width + x] = isSolid;
+                        if (!isSolid)
                         {
                             continue;
                         }
 
-                        surface[x] = origin.y + ((y - pivot.y) / pixelsPerUnit) * scale.y;
-                        break;
+                        if (float.IsNaN(surface[x]))
+                        {
+                            surface[x] = origin.y + ((y - pivot.y) / pixelsPerUnit) * scale.y;
+                        }
                     }
                 }
 
-                return new VisualSurfaceSampler(Mathf.Min(minX, maxX), Mathf.Max(minX, maxX), surface);
+                return new VisualSurfaceSampler(
+                    Mathf.Min(minX, maxX),
+                    Mathf.Max(minX, maxX),
+                    Mathf.Min(minY, maxY),
+                    Mathf.Max(minY, maxY),
+                    surface,
+                    solidMask,
+                    width,
+                    height);
             }
 
             public bool TryGetLanding(float worldX, float bodyHeight, out Vector2 landing)
             {
                 landing = default;
+                if (!TryGetSurfaceY(worldX, out var surfaceY))
+                {
+                    return false;
+                }
+
+                landing = new Vector2(worldX, surfaceY + bodyHeight * 0.5f);
+                return true;
+            }
+
+            public bool TryGetSurfaceY(float worldX, out float surfaceY)
+            {
+                surfaceY = 0f;
                 if (_surfaceYByColumn == null || _surfaceYByColumn.Length == 0 || worldX < _minX || worldX > _maxX)
                 {
                     return false;
@@ -2511,13 +2967,48 @@ namespace Game.Gameplay.Battle.Assembly
                     return false;
                 }
 
-                var surfaceY = float.IsNaN(leftY)
+                surfaceY = float.IsNaN(leftY)
                     ? rightY
                     : float.IsNaN(rightY)
                         ? leftY
                         : Mathf.Lerp(leftY, rightY, exactIndex - leftIndex);
-                landing = new Vector2(worldX, surfaceY + bodyHeight * 0.5f);
                 return true;
+            }
+
+            public bool OverlapsSolid(Vector2 center, float halfWidth, float halfHeight)
+            {
+                if (_solidMask == null || _solidMask.Length == 0)
+                {
+                    return false;
+                }
+
+                var xOffsets = new[] { 0f, -halfWidth, halfWidth, -halfWidth * 0.55f, halfWidth * 0.55f };
+                var yOffsets = new[] { -halfHeight, -halfHeight * 0.5f, 0f, halfHeight * 0.5f, halfHeight };
+                foreach (var yOffset in yOffsets)
+                {
+                    foreach (var xOffset in xOffsets)
+                    {
+                        if (IsSolidAtWorld(center.x + xOffset, center.y + yOffset))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            private bool IsSolidAtWorld(float worldX, float worldY)
+            {
+                if (worldX < _minX || worldX > _maxX || worldY < _minY || worldY > _maxY)
+                {
+                    return false;
+                }
+
+                var x = Mathf.Clamp(Mathf.RoundToInt(Mathf.InverseLerp(_minX, _maxX, worldX) * (_width - 1)), 0, _width - 1);
+                var y = Mathf.Clamp(Mathf.RoundToInt(Mathf.InverseLerp(_minY, _maxY, worldY) * (_height - 1)), 0, _height - 1);
+                var index = y * _width + x;
+                return index >= 0 && index < _solidMask.Length && _solidMask[index];
             }
 
             private float FindNearestSurface(int startIndex, int direction, int maxSteps)
