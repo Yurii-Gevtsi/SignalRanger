@@ -55,7 +55,8 @@ namespace Game.Gameplay.Battle.Assembly
         private const float JumpCollisionRadius = 0.34f;
         private const float KnockbackMaxDuration = 1.65f;
         private const float KnockbackHardTimeout = 2.35f;
-        private const float KnockbackStuckResolveSeconds = 0.2f;
+        private const float KnockbackStuckResolveSeconds = 0.045f;
+        private const float KnockbackStuckSlideStep = 0.035f;
         private const float KnockbackSubstepSeconds = 0.016f;
         private const float KnockbackGravity = -8.6f;
         private const float KnockbackLandingSearchPadding = 0.46f;
@@ -1715,7 +1716,17 @@ namespace Game.Gameplay.Battle.Assembly
             var bodyHeight = ArchetypeFor(motion.Presenter.State.TeamId).BodyHeight;
             if (TryFindSafeKnockbackLanding(currentPosition, bodyHeight, out finalPosition))
             {
-                return true;
+                if (Vector2.Distance(currentPosition, finalPosition) <= 0.045f)
+                {
+                    return true;
+                }
+
+                finalPosition = Vector2.MoveTowards(currentPosition, finalPosition, KnockbackStuckSlideStep);
+                motion.Presenter.View.transform.position = finalPosition;
+                motion.LastSafePosition = finalPosition;
+                motion.Velocity = new Vector2(motion.Velocity.x * 0.18f, -0.9f);
+                motion.BlockedTimer = 0f;
+                return false;
             }
 
             if (currentPosition.y <= FallDeathY + 1.1f)
@@ -1725,8 +1736,10 @@ namespace Game.Gameplay.Battle.Assembly
                 return true;
             }
 
-            finalPosition = currentPosition + Vector2.down * 0.08f;
-            motion.Velocity = new Vector2(0f, -1.25f);
+            finalPosition = currentPosition + Vector2.down * KnockbackStuckSlideStep;
+            motion.Presenter.View.transform.position = finalPosition;
+            motion.LastSafePosition = finalPosition;
+            motion.Velocity = new Vector2(0f, -1.05f);
             motion.BlockedTimer = 0f;
             return false;
         }
