@@ -121,19 +121,19 @@ view лише відображає). Це готує ґрунт для дете�
 - [x] Роадмап у `docs/architecture/battle-physics-rework.md`.
 
 ### Етап 1 — земля
-- [ ] `TerrainGrid`: маска, побудова з пікселів/блоків, CarveCircle,
+- [x] `TerrainGrid`: маска, побудова з пікселів/блоків, CarveCircle,
       StampRect, IsSolid, TryFindSurfaceBelow, поклітинний Raycast.
-- [ ] `BattleTerrain`: біндинг runtime-текстури руйнівного шару,
+- [x] `BattleTerrain`: біндинг runtime-текстури руйнівного шару,
       dirty-rect оновлення візуалу, фабрика з арени
       (текстура + процедурні блоки).
-- [ ] EditMode-тести на маску (кратер, штамп, пошук поверхні, raycast).
+- [x] EditMode-тести на маску (кратер, штамп, пошук поверхні, raycast).
 
 ### Етап 2 — рух юніта
-- [ ] `UnitMotionProfile` (з `CharacterArchetype` + константи фізики в
+- [x] `UnitMotionProfile` (з `CharacterArchetype` + константи фізики в
       одному місці).
-- [ ] `UnitMotor`: Step із поклітинною інтеграцією, AddImpulse, Walk,
+- [x] `UnitMotor`: Step із поклітинною інтеграцією, AddImpulse, Walk,
       StartJump, події приземлення/падіння/виходу за межі.
-- [ ] EditMode-тести: приземлення без тунелінгу на великій швидкості,
+- [x] EditMode-тести: приземлення без тунелінгу на великій швидкості,
       crawl-up біля навісу (не «зависає головою»), ходьба в яму →
       плавне падіння, стрибок через прірву.
 
