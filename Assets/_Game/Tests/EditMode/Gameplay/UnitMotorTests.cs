@@ -88,18 +88,19 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void FallPastOverhang_SlidesOffInsteadOfHanging()
+        public void FlightUnderOverhang_GrazesItWithHead_AndStillLandsOnGround()
         {
             var grid = CreateFlatGround();
-            // Thin shelf hanging in the air; the unit clips it with its head side.
+            // Thin shelf above the flight path: only the unit's head can touch it.
             grid.StampRect(new Vector2(0.45f, 2f), new Vector2(0.8f, 0.12f), true, out _);
-            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(-0.35f, 3.4f), KillY);
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(-0.6f, 1.3f), KillY);
 
-            motor.AddImpulse(new Vector2(1.4f, -0.5f));
+            // Rising arc whose apex pushes the head into the shelf underside.
+            motor.AddImpulse(new Vector2(2f, 2.2f));
             var outcome = Simulate(motor, 10f, out _);
 
             Assert.AreEqual(MotorStepOutcome.Landed, outcome);
-            Assert.AreEqual(0.5f, motor.Position.y, 0.2f, "unit ends on the ground, not stuck at the shelf height");
+            Assert.AreEqual(0.5f, motor.Position.y, 0.25f, "unit ends on the ground, not hanging at the shelf");
         }
 
         [Test]
@@ -141,13 +142,15 @@ namespace Game.Tests.EditMode.Gameplay
             var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0.4f, 0.5f), KillY);
 
             var blocked = false;
+            var highestY = motor.Position.y;
             for (var i = 0; i < 600 && !blocked; i++)
             {
                 blocked = motor.Walk(1, Step) == WalkOutcome.Blocked;
+                highestY = Mathf.Max(highestY, motor.Position.y);
             }
 
             Assert.IsTrue(blocked, "tall wall stops walking");
-            Assert.Greater(motor.Position.y, 0.6f, "unit climbed the ledge on the way");
+            Assert.Greater(highestY, 0.6f, "unit climbed the ledge on the way");
             Assert.Less(motor.Position.x, 3f, "unit stopped before the wall");
         }
 

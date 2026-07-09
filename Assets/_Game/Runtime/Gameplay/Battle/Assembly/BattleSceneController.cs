@@ -7,9 +7,11 @@ using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.AI;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Feedback;
+using Game.Gameplay.Battle.Motion;
 using Game.Gameplay.Battle.Projectiles;
 using Game.Gameplay.Battle.Results;
 using Game.Gameplay.Battle.Runtime;
+using Game.Gameplay.Battle.Terrain;
 using Game.Gameplay.Battle.Units;
 using Game.Gameplay.Battle.Visuals;
 using Game.Gameplay.Battle.Weapons;
@@ -45,23 +47,16 @@ namespace Game.Gameplay.Battle.Assembly
         }
     }
 
-    public sealed class BattleSceneController : MonoBehaviour, IProjectileSpawner
+    public sealed class BattleSceneController : MonoBehaviour, IProjectileSpawner, IProjectileWorld
     {
-        private const float WalkMinStep = 0.005f;
         private const float GroundRayStartHeight = 3.5f;
         private const float GroundRayDistance = 8f;
         private const float OccupiedRadius = 0.72f;
-        private const float JumpAnimationDuration = 0.34f;
-        private const float JumpCollisionRadius = 0.34f;
-        private const float KnockbackMaxDuration = 1.65f;
-        private const float KnockbackHardTimeout = 2.35f;
-        private const float KnockbackStuckResolveSeconds = 0.045f;
-        private const float KnockbackStuckSlideStep = 0.035f;
-        private const float KnockbackSubstepSeconds = 0.016f;
-        private const float KnockbackGravity = -8.6f;
         private const float KnockbackLandingSearchPadding = 0.46f;
         private const float UnitCollisionHalfWidth = 0.34f;
+        private const float UnitCrawlHeight = 0.3f;
         private const float FallDeathY = -6.2f;
+        private const float SimulationTickSeconds = 1f / 120f;
         private const float PlayerTurnDurationSeconds = 30f;
         private const int TrajectoryDotCount = 13;
 
@@ -69,7 +64,7 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Color _opponentColor = new(0.95f, 0.28f, 0.22f);
         private readonly List<BattleUnitPresenter> _unitPresenters = new();
         private readonly List<GameObject> _arenaObjects = new();
-        private readonly List<ExplosionKnockbackMotion> _knockbackMotions = new();
+        private readonly Dictionary<string, UnitMotor> _unitMotors = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, WeaponDefinition> _weaponsById = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, Sprite> _spriteResourceCache = new(System.StringComparer.Ordinal);
 
@@ -101,8 +96,7 @@ namespace Game.Gameplay.Battle.Assembly
         private CharacterArchetype _playerArchetype;
         private CharacterArchetype _opponentArchetype;
         private BattleVisualTheme _visualTheme;
-        private VisualSurfaceSampler _visualSurfaceSampler;
-        private DestructibleVisualTerrain _destructibleTerrain;
+        private BattleTerrain _battleTerrain;
         private FirstBattleGuideState _firstBattleGuide;
         private float _aiDecisionTimer;
         private string _coachMessage = string.Empty;
@@ -112,19 +106,29 @@ namespace Game.Gameplay.Battle.Assembly
         private TurnMovementState _playerMovement;
         private int _uiWalkInputDirection;
         private int _keyboardWalkInputDirection;
-        private bool _jumpInProgress;
-        private BattleUnitPresenter _jumpPresenter;
-        private Vector2 _jumpStart;
-        private Vector2 _jumpTarget;
-        private Vector2 _jumpLastSafePosition;
-        private float _jumpArcHeight;
-        private float _jumpTimer;
-        private string _jumpStatus = string.Empty;
-        private bool _jumpFallsOffMap;
-        private bool _jumpRequiresTerrainBlock;
-        private bool _resolvingMovementFall;
-        private bool HasKnockbackMotions => _knockbackMotions.Count > 0;
+        private float _simulationAccumulator;
         private bool HasProjectilesInFlight => _projectilesInFlight > 0;
+
+        private bool HasActiveMotion
+        {
+            get
+            {
+                foreach (var presenter in _unitPresenters)
+                {
+                    if (presenter.State.IsDefeated)
+                    {
+                        continue;
+                    }
+
+                    if (_unitMotors.TryGetValue(presenter.State.UnitId, out var motor) && !motor.IsStable)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
 
         private void Awake()
         {
@@ -240,9 +244,9 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (HasKnockbackMotions)
+            if (HasActiveMotion)
             {
-                UpdateExplosionKnockbacks();
+                UpdateUnitPhysics();
                 return;
             }
 
@@ -254,12 +258,6 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (UpdatePlayerTurnTimer())
             {
-                return;
-            }
-
-            if (_jumpInProgress)
-            {
-                UpdateJumpAnimation();
                 return;
             }
 
@@ -380,8 +378,7 @@ namespace Game.Gameplay.Battle.Assembly
             _aimHadInput = false;
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
-            _jumpInProgress = false;
-            _knockbackMotions.Clear();
+            _simulationAccumulator = 0f;
             ResetPlayerMovementTurn();
             RefreshUnitViews();
             ReportTutorial(BattleTutorialBridge.MissionStart);
@@ -412,19 +409,54 @@ namespace Game.Gameplay.Battle.Assembly
         private void BuildWorld(ArenaDefinition arena)
         {
             _visualTheme = BattleVisualThemeLibrary.ForArena(arena);
-            _visualSurfaceSampler = null;
-            _destructibleTerrain = null;
-            AddVisualLayer("Arena Background", _visualTheme?.Background);
+            _battleTerrain = null;
+
+            var solidLayer = AddVisualLayer("Arena Background", _visualTheme?.Background, null);
+            var solidBlocks = new List<ArenaTerrainBlock>();
 
             foreach (var block in arena.TerrainBlocks)
             {
                 var showProceduralBlock = _visualTheme == null || !_visualTheme.HideProceduralTerrain;
                 var solidProceduralBlock = block.Solid && (_visualTheme == null || _visualTheme.UseProceduralTerrainColliders);
-                var blockObject = CreateBox(block.BlockId, block.Position, block.Size, block.Color, solidProceduralBlock, block.SortingOrder, showProceduralBlock);
+                var blockObject = CreateBox(block.BlockId, block.Position, block.Size, block.Color, block.SortingOrder, showProceduralBlock);
                 _arenaObjects.Add(blockObject);
+                if (solidProceduralBlock)
+                {
+                    solidBlocks.Add(block);
+                }
             }
 
-            AddVisualLayer("Arena Foreground", _visualTheme?.Foreground);
+            solidLayer = AddVisualLayer("Arena Foreground", _visualTheme?.Foreground, solidLayer);
+
+            var bounds = ComputeArenaBounds(arena);
+            if (solidLayer != null)
+            {
+                _battleTerrain = BattleTerrain.CreateFromSprite(solidLayer, solidLayer.sprite, bounds);
+                if (_battleTerrain == null)
+                {
+                    Debug.LogWarning($"Destructible layer texture for arena '{arena.ArenaId}' is not readable; falling back to procedural terrain.");
+                }
+            }
+
+            _battleTerrain ??= BattleTerrain.CreateProcedural(bounds);
+
+            foreach (var block in solidBlocks)
+            {
+                _battleTerrain.StampSolidRect(block.Position, block.Size);
+            }
+        }
+
+        private Rect ComputeArenaBounds(ArenaDefinition arena)
+        {
+            var cameraHeight = arena.CameraSize * 2f;
+            var aspect = _camera != null ? _camera.aspect : 16f / 9f;
+            var cameraWidth = cameraHeight * aspect;
+            const float margin = 3f;
+            var minX = arena.CameraPosition.x - cameraWidth * 0.5f - margin;
+            var maxX = arena.CameraPosition.x + cameraWidth * 0.5f + margin;
+            var maxY = arena.CameraPosition.y + cameraHeight * 0.5f + margin;
+            var minY = Mathf.Min(arena.CameraPosition.y - cameraHeight * 0.5f, FallDeathY) - margin;
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
 
         private void BuildBattleState(ArenaDefinition arena)
@@ -456,15 +488,37 @@ namespace Game.Gameplay.Battle.Assembly
                 var presenter = new BattleUnitPresenter(unit, view);
                 presenter.Initialize(unit.TeamId == BattleTeamId.Player ? _playerColor : _opponentColor);
                 _unitPresenters.Add(presenter);
+                _unitMotors[unit.UnitId] = new UnitMotor(
+                    _battleTerrain.Grid,
+                    CreateMotionProfile(ArchetypeFor(unit.TeamId)),
+                    unit.Position,
+                    FallDeathY);
             }
+        }
+
+        private static UnitMotionProfile CreateMotionProfile(CharacterArchetype archetype)
+        {
+            return new UnitMotionProfile(
+                halfWidth: UnitCollisionHalfWidth,
+                halfHeight: archetype.BodyHeight * 0.5f,
+                crawlHeight: UnitCrawlHeight,
+                walkStepHeight: archetype.WalkStepHeight,
+                walkSpeed: archetype.WalkSpeed);
+        }
+
+        private UnitMotor GetMotor(BattleUnitPresenter presenter)
+        {
+            return presenter != null && _unitMotors.TryGetValue(presenter.State.UnitId, out var motor)
+                ? motor
+                : null;
         }
 
         private void ClearArenaRuntime()
         {
-            _destructibleTerrain?.Dispose();
-            _destructibleTerrain = null;
-            _visualSurfaceSampler = null;
-            _knockbackMotions.Clear();
+            _battleTerrain?.Dispose();
+            _battleTerrain = null;
+            _unitMotors.Clear();
+            _simulationAccumulator = 0f;
 
             foreach (var presenter in _unitPresenters)
             {
@@ -520,12 +574,6 @@ namespace Game.Gameplay.Battle.Assembly
                 renderer.color = Color.white;
                 renderer.sortingOrder = 20;
             }
-
-            var collider = unitObject.AddComponent<CapsuleCollider2D>();
-            collider.size = new Vector2(0.72f, bodyHeight + 0.05f);
-
-            var body = unitObject.AddComponent<Rigidbody2D>();
-            body.bodyType = RigidbodyType2D.Kinematic;
 
             var view = unitObject.AddComponent<BattleUnitView>();
             view.SetPreserveSpriteColor(skin != null);
@@ -659,7 +707,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void Fire()
         {
-            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight || HasKnockbackMotions)
+            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight || HasActiveMotion)
             {
                 return;
             }
@@ -754,16 +802,13 @@ namespace Game.Gameplay.Battle.Assembly
             renderer.color = ResolveProjectileVisualColor(request);
             renderer.sortingOrder = 30;
 
-            projectileObject.AddComponent<CircleCollider2D>();
-            projectileObject.AddComponent<Rigidbody2D>();
-
             var projectile = projectileObject.AddComponent<ProjectileController>();
             projectile.Impacted += OnProjectileImpacted;
             projectile.Launch(
                 request.Definition,
                 request.OwnerUnitId,
                 request.Velocity,
-                request.IgnoredOwnerCollider);
+                this);
         }
 
         private void ApplyProjectileVisualTransform(Transform projectileTransform, ProjectileSpawnRequest request)
@@ -930,19 +975,13 @@ namespace Game.Gameplay.Battle.Assembly
 
         private bool ApplyTerrainDestruction(Vector2 impactPoint, WeaponDefinition impactWeapon)
         {
-            if (_destructibleTerrain == null || impactWeapon == null)
+            if (_battleTerrain == null || impactWeapon == null)
             {
                 return false;
             }
 
             var craterRadius = Mathf.Clamp(impactWeapon.ImpactRadius * 0.62f, 0.38f, 1.55f);
-            if (!_destructibleTerrain.ApplyCrater(impactPoint, craterRadius))
-            {
-                return false;
-            }
-
-            _visualSurfaceSampler = _destructibleTerrain.CreateSurfaceSampler();
-            return true;
+            return _battleTerrain.ApplyCrater(impactPoint, craterRadius);
         }
 
         private void ApplyExplosionKnockback(Vector2 impactPoint, Vector2 impactVelocity, WeaponDefinition impactWeapon, bool terrainChanged)
@@ -1004,36 +1043,23 @@ namespace Game.Gameplay.Battle.Assembly
                     continue;
                 }
 
-                QueueExplosionKnockback(presenter, velocity);
+                GetMotor(presenter)?.AddImpulse(velocity);
             }
-        }
 
-        private void QueueExplosionKnockback(BattleUnitPresenter presenter, Vector2 velocity)
-        {
-            for (var i = _knockbackMotions.Count - 1; i >= 0; i--)
+            if (!terrainChanged)
             {
-                if (_knockbackMotions[i].Presenter != presenter)
+                return;
+            }
+
+            // The crater may have removed the ground under units the blast
+            // itself barely touched — let them re-check their footing.
+            foreach (var presenter in _unitPresenters)
+            {
+                if (!presenter.State.IsDefeated)
                 {
-                    continue;
+                    GetMotor(presenter)?.WakeIfUnsupported();
                 }
-
-                _knockbackMotions.RemoveAt(i);
             }
-
-            _knockbackMotions.Add(new ExplosionKnockbackMotion(
-                presenter,
-                (Vector2)presenter.View.transform.position,
-                velocity));
-        }
-
-        private bool TryResolveKnockbackLanding(BattleUnitState unit, float targetX, float bodyHeight, out Vector2 target)
-        {
-            if (_visualSurfaceSampler != null)
-            {
-                return _visualSurfaceSampler.TryGetLanding(targetX, bodyHeight, out target);
-            }
-
-            return TryResolveGroundPosition(new Vector2(targetX, unit.Position.y), unit.TeamId, out target);
         }
 
         private void UseInstantUtility(BattleUnitPresenter activePresenter, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
@@ -1147,9 +1173,9 @@ namespace Game.Gameplay.Battle.Assembly
                 position,
                 new Vector2(width, height),
                 ProjectileWeaponEffect.GetProjectileColor(impactWeapon.Role),
-                true,
                 18);
             _arenaObjects.Add(cover);
+            _battleTerrain?.StampSolidRect(position, new Vector2(width, height));
             _status = GameText.CoverDeployed(DescribeWeapon(impactWeapon));
         }
 
@@ -1199,6 +1225,11 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             owner.MoveTo(ResolveUnitLandingPosition(new Vector2(owner.Position.x + deltaX, target.y), owner.TeamId));
+            if (_unitMotors.TryGetValue(owner.UnitId, out var ownerMotor))
+            {
+                ownerMotor.Teleport(owner.Position);
+            }
+
             SpawnImpactFlash(owner.Position, new Color(0.66f, 0.42f, 0.96f, 0.8f), 1.05f);
             _status = GameText.Repositioned(DescribeTeam(owner.TeamId));
         }
@@ -1213,44 +1244,31 @@ namespace Game.Gameplay.Battle.Assembly
         private bool TryResolveGroundPosition(Vector2 desiredPoint, BattleTeamId teamId, out Vector2 landingPosition)
         {
             landingPosition = desiredPoint;
+            if (_battleTerrain == null)
+            {
+                return false;
+            }
+
             var bodyHeight = ArchetypeFor(teamId).BodyHeight;
-            if (_visualSurfaceSampler != null && _visualSurfaceSampler.TryGetLanding(desiredPoint.x, bodyHeight, out landingPosition))
+            var scanTop = Mathf.Max(desiredPoint.y + GroundRayStartHeight, bodyHeight + GroundRayStartHeight);
+            if (!_battleTerrain.Grid.TryFindSurfaceBelow(desiredPoint.x, scanTop, GroundRayDistance + GroundRayStartHeight, out var surfaceY))
             {
-                return true;
+                return false;
             }
 
-            var origin = new Vector2(desiredPoint.x, Mathf.Max(desiredPoint.y + GroundRayStartHeight, bodyHeight + GroundRayStartHeight));
-            var hits = Physics2D.RaycastAll(origin, Vector2.down, GroundRayDistance);
-            foreach (var hit in hits)
-            {
-                if (hit.collider == null || hit.collider.isTrigger)
-                {
-                    continue;
-                }
-
-                if (hit.collider.GetComponent<BattleUnitView>() != null)
-                {
-                    continue;
-                }
-
-                landingPosition = hit.point + Vector2.up * (bodyHeight * 0.5f);
-                return true;
-            }
-
-            return false;
+            landingPosition = new Vector2(desiredPoint.x, surfaceY + bodyHeight * 0.5f);
+            return true;
         }
 
         private void ResetPlayerMovementTurn()
         {
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
-            _jumpInProgress = false;
-            _jumpPresenter = null;
-            _jumpTimer = 0f;
-            _jumpStatus = string.Empty;
-            _jumpFallsOffMap = false;
-            _jumpRequiresTerrainBlock = false;
-            _resolvingMovementFall = false;
+            foreach (var motor in _unitMotors.Values)
+            {
+                motor.ResetWalk();
+            }
+
             _playerMovement?.Reset(PlayerTurnDurationSeconds);
         }
 
@@ -1266,7 +1284,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _playerMovement.Tick(Time.deltaTime);
-            if (_playerMovement.HasTimeRemaining || _jumpInProgress)
+            if (_playerMovement.HasTimeRemaining || HasActiveMotion)
             {
                 return false;
             }
@@ -1326,8 +1344,7 @@ namespace Game.Gameplay.Battle.Assembly
             return IsBattleReady()
                 && !_battleResult.IsFinished
                 && !HasProjectilesInFlight
-                && !HasKnockbackMotions
-                && !_jumpInProgress
+                && !HasActiveMotion
                 && _battleState.Turn.ActiveTeam == BattleTeamId.Player
                 && !_battleState.Turn.ActionSpent
                 && (_playerMovement == null || _playerMovement.HasTimeRemaining)
@@ -1353,63 +1370,42 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            var archetype = ArchetypeFor(BattleTeamId.Player);
-            var requestedDistance = archetype.WalkSpeed * Time.deltaTime;
-            if (requestedDistance <= 0.0001f)
+            var motor = GetMotor(presenter);
+            if (motor == null)
             {
                 return;
             }
 
-            var desiredX = presenter.State.Position.x + (walkDirection * requestedDistance);
-            if (!TryResolveWalkTarget(presenter.State, desiredX, out var target))
+            var outcome = motor.Walk(walkDirection, Time.deltaTime);
+            if (outcome == WalkOutcome.None)
             {
-                ClearWalkInput();
-                if (_resolvingMovementFall)
-                {
-                    ResolveMovementFallDefeat(presenter.State, new Vector2(desiredX, FallDeathY));
-                }
-
-                return;
-            }
-
-            var traveled = Mathf.Abs(target.x - presenter.State.Position.x);
-            if (traveled < WalkMinStep)
-            {
-                ClearWalkInput();
                 return;
             }
 
             presenter.State.SetFacing(walkDirection);
-            presenter.State.MoveTo(target);
+            presenter.State.MoveTo(motor.Position);
             presenter.Refresh(true);
-            _status = GameText.Moved(DescribeTeam(BattleTeamId.Player));
+
+            switch (outcome)
+            {
+                case WalkOutcome.Moved:
+                    _status = GameText.Moved(DescribeTeam(BattleTeamId.Player));
+                    break;
+                case WalkOutcome.Blocked:
+                    _status = GameText.MovementBlocked();
+                    ClearWalkInput();
+                    break;
+                case WalkOutcome.StartedFalling:
+                    // Regular physics takes over from here (HasActiveMotion).
+                    ClearWalkInput();
+                    break;
+            }
         }
 
         private void ClearWalkInput()
         {
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
-        }
-
-        private bool TryResolveWalkTarget(BattleUnitState unit, float desiredX, out Vector2 target)
-        {
-            target = unit.Position;
-            _resolvingMovementFall = false;
-            if (!TryResolveGroundPosition(new Vector2(desiredX, unit.Position.y), unit.TeamId, out var landing))
-            {
-                _resolvingMovementFall = true;
-                return false;
-            }
-
-            var rise = landing.y - unit.Position.y;
-            if (rise > ArchetypeFor(unit.TeamId).WalkStepHeight)
-            {
-                _status = GameText.MovementBlocked();
-                return false;
-            }
-
-            target = landing;
-            return true;
         }
 
         private void TryStartJump(bool forward)
@@ -1440,348 +1436,98 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void StartJumpAttempt(BattleUnitPresenter presenter, bool forward)
         {
-            var archetype = ArchetypeFor(presenter.State.TeamId);
-            var direction = presenter.State.FacingDirectionX;
-            var horizontalDistance = forward ? archetype.FrontJumpDistance : -archetype.BackJumpDistance;
-            var desiredX = presenter.State.Position.x + (direction * horizontalDistance);
-            var maxRise = forward ? archetype.FrontJumpHeight : archetype.BackJumpHeight;
-            var arcHeight = Mathf.Max(maxRise + 0.2f, 0.8f + Mathf.Abs(horizontalDistance) * 0.18f);
-            var hasLanding = TryResolveGroundPosition(new Vector2(desiredX, presenter.State.Position.y), presenter.State.TeamId, out var landing);
-            var target = hasLanding
-                ? landing
-                : new Vector2(desiredX, FallDeathY);
-            var requiresTerrainBlock = false;
-
-            if (hasLanding && landing.y - presenter.State.Position.y > maxRise)
-            {
-                target = new Vector2(desiredX, presenter.State.Position.y);
-                requiresTerrainBlock = true;
-            }
-
-            StartJumpAnimation(presenter, target, arcHeight, forward, !hasLanding, requiresTerrainBlock);
-        }
-
-        private void StartJumpAnimation(BattleUnitPresenter presenter, Vector2 target, float arcHeight, bool forward, bool fallsOffMap, bool requiresTerrainBlock)
-        {
-            _jumpInProgress = true;
-            _jumpPresenter = presenter;
-            _jumpStart = presenter.State.Position;
-            _jumpTarget = target;
-            _jumpLastSafePosition = _jumpStart;
-            _jumpArcHeight = arcHeight;
-            _jumpTimer = 0f;
-            _jumpFallsOffMap = fallsOffMap;
-            _jumpRequiresTerrainBlock = requiresTerrainBlock;
-            _jumpStatus = forward
-                ? GameText.FrontJumped(DescribeTeam(presenter.State.TeamId))
-                : GameText.BackJumped(DescribeTeam(presenter.State.TeamId));
-        }
-
-        private void UpdateExplosionKnockbacks()
-        {
-            for (var i = _knockbackMotions.Count - 1; i >= 0; i--)
-            {
-                var motion = _knockbackMotions[i];
-                if (motion.Presenter == null || motion.Presenter.State == null || motion.Presenter.State.IsDefeated)
-                {
-                    _knockbackMotions.RemoveAt(i);
-                    continue;
-                }
-
-                var remainingTime = Mathf.Min(Time.deltaTime, 0.08f);
-                var completed = false;
-                var defeatedByFall = false;
-                var finalPosition = (Vector2)motion.Presenter.View.transform.position;
-                while (remainingTime > 0f)
-                {
-                    var step = Mathf.Min(KnockbackSubstepSeconds, remainingTime);
-                    var currentPosition = (Vector2)motion.Presenter.View.transform.position;
-                    var nextPosition = currentPosition
-                        + motion.Velocity * step
-                        + Vector2.up * (0.5f * KnockbackGravity * step * step);
-                    motion.Velocity += Vector2.up * (KnockbackGravity * step);
-                    motion.Timer += step;
-
-                    if (TryResolveExplosionKnockbackCollision(motion, currentPosition, nextPosition, out var resolvedPosition, out completed))
-                    {
-                        finalPosition = resolvedPosition;
-                        motion.Presenter.View.transform.position = resolvedPosition;
-                        motion.LastSafePosition = resolvedPosition;
-                        if (completed)
-                        {
-                            break;
-                        }
-
-                        motion.BlockedTimer += step;
-                        if (motion.BlockedTimer >= KnockbackStuckResolveSeconds
-                            && TryResolveStuckKnockback(motion, resolvedPosition, out finalPosition, out defeatedByFall))
-                        {
-                            completed = true;
-                            break;
-                        }
-
-                        remainingTime -= step;
-                        continue;
-                    }
-
-                    finalPosition = nextPosition;
-                    motion.Presenter.View.transform.position = nextPosition;
-                    motion.LastSafePosition = nextPosition;
-                    motion.BlockedTimer = 0f;
-
-                    if (nextPosition.y <= FallDeathY)
-                    {
-                        completed = true;
-                        defeatedByFall = true;
-                        break;
-                    }
-
-                    if (motion.Timer >= KnockbackHardTimeout)
-                    {
-                        completed = true;
-                        if (!TryFindSafeKnockbackLanding(nextPosition, ArchetypeFor(motion.Presenter.State.TeamId).BodyHeight, out finalPosition))
-                        {
-                            finalPosition = new Vector2(nextPosition.x, FallDeathY);
-                            defeatedByFall = true;
-                        }
-
-                        break;
-                    }
-
-                    if (motion.Timer >= KnockbackMaxDuration)
-                    {
-                        motion.Velocity = new Vector2(motion.Velocity.x * 0.72f, Mathf.Min(motion.Velocity.y, -1.05f));
-                        if (nextPosition.y <= FallDeathY + 0.85f)
-                        {
-                            finalPosition = new Vector2(nextPosition.x, FallDeathY);
-                            defeatedByFall = true;
-                            completed = true;
-                            break;
-                        }
-
-                        remainingTime = 0f;
-                        break;
-                    }
-
-                    remainingTime -= step;
-                }
-
-                if (!completed)
-                {
-                    continue;
-                }
-
-                motion.Presenter.State.MoveTo(finalPosition);
-                if (defeatedByFall)
-                {
-                    motion.Presenter.State.ApplyDamage(motion.Presenter.State.MaxHealth, "explosion.fall");
-                    EmitFeedback(BattleFeedbackEventType.UnitDefeated);
-                }
-
-                motion.Presenter.Refresh(motion.Presenter.State.UnitId == _battleState.Turn.ActiveUnitId);
-                _knockbackMotions.RemoveAt(i);
-            }
-
-            if (HasKnockbackMotions)
+            var motor = GetMotor(presenter);
+            if (motor == null || !motor.IsStable)
             {
                 return;
             }
 
-            ResolveBattleAfterExplosionKnockback();
+            var archetype = ArchetypeFor(presenter.State.TeamId);
+            var direction = presenter.State.FacingDirectionX;
+            var horizontalDistance = (forward ? archetype.FrontJumpDistance : -archetype.BackJumpDistance) * direction;
+            var apexHeight = (forward ? archetype.FrontJumpHeight : archetype.BackJumpHeight) + 0.2f;
+            motor.StartJump(horizontalDistance, apexHeight);
+            _status = forward
+                ? GameText.FrontJumped(DescribeTeam(presenter.State.TeamId))
+                : GameText.BackJumped(DescribeTeam(presenter.State.TeamId));
         }
 
-        private bool TryResolveExplosionKnockbackCollision(
-            ExplosionKnockbackMotion motion,
-            Vector2 previousPosition,
-            Vector2 candidatePosition,
-            out Vector2 resolvedPosition,
-            out bool completed)
+        private void UpdateUnitPhysics()
         {
-            resolvedPosition = candidatePosition;
-            completed = false;
-            if (motion == null || motion.Presenter == null)
+            _simulationAccumulator += Mathf.Min(Time.deltaTime, 0.1f);
+            while (_simulationAccumulator >= SimulationTickSeconds)
             {
-                return false;
-            }
-
-            var unit = motion.Presenter.State;
-            var bodyHeight = ArchetypeFor(unit.TeamId).BodyHeight;
-            var halfHeight = bodyHeight * 0.5f;
-            if (TryGetKnockbackSurfaceHit(candidatePosition, bodyHeight, out var landing, out var surfaceY))
-            {
-                var previousBottom = previousPosition.y - halfHeight;
-                var candidateBottom = candidatePosition.y - halfHeight;
-                var landedFromAbove = motion.Velocity.y <= 0.08f
-                    && previousBottom >= surfaceY - 0.045f
-                    && candidateBottom <= surfaceY + 0.035f;
-                if (landedFromAbove)
+                _simulationAccumulator -= SimulationTickSeconds;
+                foreach (var presenter in _unitPresenters)
                 {
-                    resolvedPosition = landing;
-                    completed = true;
-                    return true;
+                    var unit = presenter.State;
+                    if (unit.IsDefeated || !_unitMotors.TryGetValue(unit.UnitId, out var motor) || motor.IsStable)
+                    {
+                        continue;
+                    }
+
+                    var outcome = motor.Step(SimulationTickSeconds);
+                    unit.MoveTo(motor.Position);
+                    if (outcome == MotorStepOutcome.FellOutOfBounds)
+                    {
+                        unit.MoveTo(new Vector2(motor.Position.x, FallDeathY));
+                        motor.Teleport(unit.Position);
+                        unit.ApplyDamage(unit.MaxHealth, "fall.out-of-bounds");
+                        EmitFeedback(BattleFeedbackEventType.UnitDefeated);
+                    }
+                    else if (outcome == MotorStepOutcome.Landed)
+                    {
+                        NudgeApartFromOthers(presenter, motor);
+                    }
                 }
             }
 
-            if (!IsKnockbackBodyOverlappingSolid(candidatePosition, bodyHeight))
+            foreach (var presenter in _unitPresenters)
             {
-                return false;
+                presenter.Refresh(presenter.State.UnitId == _battleState.Turn.ActiveUnitId);
             }
 
-            var verticalOnlyPosition = new Vector2(previousPosition.x, candidatePosition.y);
-            if (!IsKnockbackBodyOverlappingSolid(verticalOnlyPosition, bodyHeight))
+            if (HasActiveMotion)
             {
-                resolvedPosition = verticalOnlyPosition;
-                motion.Velocity = new Vector2(motion.Velocity.x * 0.16f, motion.Velocity.y);
-                return true;
+                return;
             }
 
-            var horizontalOnlyPosition = new Vector2(candidatePosition.x, previousPosition.y);
-            if (!IsKnockbackBodyOverlappingSolid(horizontalOnlyPosition, bodyHeight))
-            {
-                resolvedPosition = horizontalOnlyPosition;
-                motion.Velocity = new Vector2(motion.Velocity.x, Mathf.Min(motion.Velocity.y, -0.5f));
-                return true;
-            }
-
-            resolvedPosition = previousPosition;
-            motion.Velocity = new Vector2(motion.Velocity.x * 0.12f, Mathf.Min(motion.Velocity.y, -0.6f));
-            return true;
+            _simulationAccumulator = 0f;
+            ResolveBattleAfterMotion();
         }
 
-        private bool TryGetKnockbackSurfaceHit(Vector2 centerPosition, float bodyHeight, out Vector2 landing, out float surfaceY)
+        private void NudgeApartFromOthers(BattleUnitPresenter presenter, UnitMotor motor)
         {
-            landing = default;
-            surfaceY = 0f;
-            if (_visualSurfaceSampler == null)
+            foreach (var other in _unitPresenters)
             {
-                return false;
-            }
-
-            var bottom = centerPosition.y - bodyHeight * 0.5f;
-            var maxFootPenetration = Mathf.Min(0.22f, bodyHeight * 0.26f);
-            var sampleOffsets = new[] { 0f, -UnitCollisionHalfWidth * 0.72f, UnitCollisionHalfWidth * 0.72f, -UnitCollisionHalfWidth, UnitCollisionHalfWidth };
-            var hasHit = false;
-            var highestSurfaceY = float.NegativeInfinity;
-            foreach (var offset in sampleOffsets)
-            {
-                if (!_visualSurfaceSampler.TryGetSurfaceY(centerPosition.x + offset, out var candidateSurfaceY))
+                var otherUnit = other.State;
+                if (other == presenter || otherUnit.IsDefeated)
                 {
                     continue;
                 }
 
-                var penetration = candidateSurfaceY - bottom;
-                if (penetration < -0.025f || penetration > maxFootPenetration)
+                var deltaX = motor.Position.x - otherUnit.Position.x;
+                var verticalOverlap = Mathf.Abs(motor.Position.y - otherUnit.Position.y)
+                    < ArchetypeFor(otherUnit.TeamId).BodyHeight * 0.55f;
+                if (Mathf.Abs(deltaX) >= OccupiedRadius || !verticalOverlap)
                 {
                     continue;
                 }
 
-                if (!hasHit || candidateSurfaceY > highestSurfaceY)
+                var pushDirection = deltaX >= 0f ? 1f : -1f;
+                var desiredX = otherUnit.Position.x + pushDirection * OccupiedRadius;
+                if (TryResolveGroundPosition(new Vector2(desiredX, motor.Position.y), presenter.State.TeamId, out var freeSpot)
+                    && Mathf.Abs(freeSpot.y - motor.Position.y) <= 0.6f)
                 {
-                    highestSurfaceY = candidateSurfaceY;
-                    hasHit = true;
+                    motor.Teleport(freeSpot);
+                    presenter.State.MoveTo(freeSpot);
                 }
-            }
 
-            if (!hasHit)
-            {
-                return false;
+                return;
             }
-
-            surfaceY = highestSurfaceY;
-            landing = new Vector2(centerPosition.x, highestSurfaceY + bodyHeight * 0.5f);
-            return true;
         }
 
-        private bool IsKnockbackBodyOverlappingSolid(Vector2 centerPosition, float bodyHeight)
-        {
-            if (_visualSurfaceSampler == null)
-            {
-                return false;
-            }
-
-            var halfHeight = bodyHeight * 0.5f;
-            return _visualSurfaceSampler.OverlapsSolid(
-                centerPosition,
-                UnitCollisionHalfWidth,
-                Mathf.Max(0.28f, halfHeight * 0.92f));
-        }
-
-        private bool TryResolveStuckKnockback(
-            ExplosionKnockbackMotion motion,
-            Vector2 currentPosition,
-            out Vector2 finalPosition,
-            out bool defeatedByFall)
-        {
-            defeatedByFall = false;
-            var bodyHeight = ArchetypeFor(motion.Presenter.State.TeamId).BodyHeight;
-            if (TryFindSafeKnockbackLanding(currentPosition, bodyHeight, out finalPosition))
-            {
-                if (Vector2.Distance(currentPosition, finalPosition) <= 0.045f)
-                {
-                    return true;
-                }
-
-                finalPosition = Vector2.MoveTowards(currentPosition, finalPosition, KnockbackStuckSlideStep);
-                motion.Presenter.View.transform.position = finalPosition;
-                motion.LastSafePosition = finalPosition;
-                motion.Velocity = new Vector2(motion.Velocity.x * 0.18f, -0.9f);
-                motion.BlockedTimer = 0f;
-                return false;
-            }
-
-            if (currentPosition.y <= FallDeathY + 1.1f)
-            {
-                finalPosition = new Vector2(currentPosition.x, FallDeathY);
-                defeatedByFall = true;
-                return true;
-            }
-
-            finalPosition = currentPosition + Vector2.down * KnockbackStuckSlideStep;
-            motion.Presenter.View.transform.position = finalPosition;
-            motion.LastSafePosition = finalPosition;
-            motion.Velocity = new Vector2(0f, -1.05f);
-            motion.BlockedTimer = 0f;
-            return false;
-        }
-
-        private bool TryFindSafeKnockbackLanding(Vector2 currentPosition, float bodyHeight, out Vector2 landing)
-        {
-            landing = default;
-            if (_visualSurfaceSampler == null)
-            {
-                return false;
-            }
-
-            var bestScore = float.PositiveInfinity;
-            var maxLandingY = currentPosition.y + 0.22f;
-            for (var i = -8; i <= 8; i++)
-            {
-                var x = currentPosition.x + i * 0.08f;
-                if (!_visualSurfaceSampler.TryGetSurfaceY(x, out var surfaceY))
-                {
-                    continue;
-                }
-
-                var candidate = new Vector2(x, surfaceY + bodyHeight * 0.5f);
-                if (candidate.y > maxLandingY)
-                {
-                    continue;
-                }
-
-                var score = Mathf.Abs(i) * 0.16f + Mathf.Abs(candidate.y - currentPosition.y);
-                if (score >= bestScore)
-                {
-                    continue;
-                }
-
-                bestScore = score;
-                landing = candidate;
-            }
-
-            return !float.IsPositiveInfinity(bestScore);
-        }
-
-        private void ResolveBattleAfterExplosionKnockback()
+        private void ResolveBattleAfterMotion()
         {
             if (_battleState == null || _battleResult.IsFinished)
             {
@@ -1804,154 +1550,6 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _firstBattleGuide?.ObserveBattleFinished();
-        }
-
-        private void UpdateJumpAnimation()
-        {
-            if (!_jumpInProgress || _jumpPresenter == null)
-            {
-                _jumpInProgress = false;
-                return;
-            }
-
-            _jumpTimer += Time.deltaTime;
-            var progress = Mathf.Clamp01(_jumpTimer / JumpAnimationDuration);
-            var position = Vector2.Lerp(_jumpStart, _jumpTarget, progress);
-            position.y += Mathf.Sin(progress * Mathf.PI) * _jumpArcHeight;
-
-            if (TryResolveJumpCollision(_jumpPresenter.State, position, progress, out var blockedPosition))
-            {
-                _jumpPresenter.State.MoveTo(blockedPosition);
-                _jumpPresenter.Refresh(true);
-                _jumpInProgress = false;
-                _jumpStatus = GameText.JumpBlocked();
-                _status = _jumpStatus;
-                _jumpPresenter = null;
-                _jumpFallsOffMap = false;
-                _jumpRequiresTerrainBlock = false;
-                return;
-            }
-
-            _jumpPresenter.View.transform.position = position;
-            _jumpLastSafePosition = position;
-
-            if (progress < 1f)
-            {
-                return;
-            }
-
-            if (_jumpFallsOffMap)
-            {
-                ResolveJumpFallDefeat(_jumpPresenter.State);
-            }
-            else
-            {
-                _jumpPresenter.State.MoveTo(_jumpTarget);
-                _jumpPresenter.Refresh(true);
-                _status = _jumpStatus;
-            }
-
-            _jumpInProgress = false;
-            _jumpPresenter = null;
-            _jumpFallsOffMap = false;
-            _jumpRequiresTerrainBlock = false;
-        }
-
-        private bool TryResolveJumpCollision(BattleUnitState mover, Vector2 proposedPosition, float progress, out Vector2 blockedPosition)
-        {
-            blockedPosition = proposedPosition;
-            if (progress < 0.08f)
-            {
-                return false;
-            }
-
-            var travelDirection = Mathf.Sign(_jumpTarget.x - _jumpStart.x);
-            if (!_jumpFallsOffMap
-                && _visualSurfaceSampler != null
-                && _visualSurfaceSampler.TryGetLanding(proposedPosition.x, ArchetypeFor(mover.TeamId).BodyHeight, out var terrainLanding)
-                && proposedPosition.y < terrainLanding.y - 0.06f
-                && (_jumpRequiresTerrainBlock || progress < 0.82f || Mathf.Abs(proposedPosition.x - _jumpTarget.x) > 0.22f))
-            {
-                var stopX = proposedPosition.x - travelDirection * JumpCollisionRadius;
-                blockedPosition = TryResolveGroundPosition(new Vector2(stopX, mover.Position.y), mover.TeamId, out var ground)
-                    ? ground
-                    : _jumpLastSafePosition;
-                return true;
-            }
-
-            foreach (var unit in _battleState.Teams.SelectMany(team => team.Units))
-            {
-                if (unit == null || unit.IsDefeated || unit.UnitId == mover.UnitId)
-                {
-                    continue;
-                }
-
-                var horizontalOverlap = Mathf.Abs(unit.Position.x - proposedPosition.x) < OccupiedRadius;
-                var verticalOverlap = Mathf.Abs(unit.Position.y - proposedPosition.y) < ArchetypeFor(unit.TeamId).BodyHeight * 0.55f;
-                if (horizontalOverlap && verticalOverlap)
-                {
-                    var stopX = unit.Position.x - travelDirection * OccupiedRadius;
-                    if (TryResolveGroundPosition(new Vector2(stopX, mover.Position.y), mover.TeamId, out var ground))
-                    {
-                        blockedPosition = ground;
-                    }
-
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void ResolveJumpFallDefeat(BattleUnitState unit)
-        {
-            if (unit == null || unit.IsDefeated)
-            {
-                return;
-            }
-
-            unit.MoveTo(_jumpTarget);
-            unit.ApplyDamage(unit.MaxHealth, "jump.fall");
-            _battleResult = BattleResultEvaluator.Evaluate(_battleState);
-            RefreshUnitViews();
-            EmitFeedback(BattleFeedbackEventType.UnitDefeated);
-            if (_battleResult.IsFinished)
-            {
-                EmitFeedback(BattleFeedbackEventType.BattleFinished);
-                _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
-                _status = GameText.ResultPrompt(_resultScreenState.Title);
-                _firstBattleGuide?.ObserveBattleFinished();
-            }
-            else
-            {
-                _status = GameText.JumpBlocked();
-            }
-        }
-
-        private void ResolveMovementFallDefeat(BattleUnitState unit, Vector2 fallTarget)
-        {
-            if (unit == null || unit.IsDefeated)
-            {
-                return;
-            }
-
-            unit.MoveTo(fallTarget);
-            unit.ApplyDamage(unit.MaxHealth, "movement.fall");
-            _resolvingMovementFall = false;
-            _battleResult = BattleResultEvaluator.Evaluate(_battleState);
-            RefreshUnitViews();
-            EmitFeedback(BattleFeedbackEventType.UnitDefeated);
-            if (_battleResult.IsFinished)
-            {
-                EmitFeedback(BattleFeedbackEventType.BattleFinished);
-                _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
-                _status = GameText.ResultPrompt(_resultScreenState.Title);
-                _firstBattleGuide?.ObserveBattleFinished();
-            }
-            else
-            {
-                _status = GameText.MovementBlocked();
-            }
         }
 
         private void RefreshUnitViews()
@@ -2209,7 +1807,7 @@ namespace Game.Gameplay.Battle.Assembly
             Destroy(flash, 0.25f);
         }
 
-        private GameObject CreateBox(string objectName, Vector2 position, Vector2 size, Color color, bool solid, int sortingOrder, bool visible = true)
+        private GameObject CreateBox(string objectName, Vector2 position, Vector2 size, Color color, int sortingOrder, bool visible = true)
         {
             var box = new GameObject(objectName);
             box.transform.position = position;
@@ -2223,25 +1821,20 @@ namespace Game.Gameplay.Battle.Assembly
                 renderer.sortingOrder = sortingOrder;
             }
 
-            if (solid)
-            {
-                box.AddComponent<BoxCollider2D>();
-            }
-
             return box;
         }
 
-        private void AddVisualLayer(string objectName, BattleVisualLayer? layer)
+        private SpriteRenderer AddVisualLayer(string objectName, BattleVisualLayer? layer, SpriteRenderer currentSolidLayer)
         {
             if (layer == null || !layer.Value.HasSprite)
             {
-                return;
+                return currentSolidLayer;
             }
 
             var sprite = LoadSpriteResource(layer.Value.ResourcePath);
             if (sprite == null)
             {
-                return;
+                return currentSolidLayer;
             }
 
             var visual = new GameObject(objectName);
@@ -2257,16 +1850,8 @@ namespace Game.Gameplay.Battle.Assembly
                 ScaleSpriteToCoverCamera(visual.transform, sprite);
             }
 
-            if (layer.Value.Solid)
-            {
-                var collider = visual.AddComponent<PolygonCollider2D>();
-                _destructibleTerrain = DestructibleVisualTerrain.TryCreate(renderer, collider, sprite);
-                _visualSurfaceSampler = _destructibleTerrain != null
-                    ? _destructibleTerrain.CreateSurfaceSampler()
-                    : VisualSurfaceSampler.TryCreate(sprite, visual.transform);
-            }
-
             _arenaObjects.Add(visual);
+            return layer.Value.Solid ? renderer : currentSolidLayer;
         }
 
         private void ScaleSpriteToCoverCamera(Transform visual, Sprite sprite)
@@ -2397,7 +1982,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void CancelAim()
         {
-            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight || HasKnockbackMotions)
+            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight || HasActiveMotion)
             {
                 return;
             }
@@ -2419,8 +2004,7 @@ namespace Game.Gameplay.Battle.Assembly
             var playerHasTime = _playerMovement == null || _playerMovement.HasTimeRemaining;
             var canFire = !_battleResult.IsFinished
                 && !HasProjectilesInFlight
-                && !HasKnockbackMotions
-                && !_jumpInProgress
+                && !HasActiveMotion
                 && playerHasTime
                 && _inventory.CanFireSelected
                 && _aimState.HasInput;
@@ -2433,8 +2017,7 @@ namespace Game.Gameplay.Battle.Assembly
                 : _coachTimer > 0f ? _coachTargetId : string.Empty;
             var canUseMovement = !_battleResult.IsFinished
                 && !HasProjectilesInFlight
-                && !HasKnockbackMotions
-                && !_jumpInProgress
+                && !HasActiveMotion
                 && _battleState.Turn.ActiveTeam == BattleTeamId.Player
                 && !_battleState.Turn.ActionSpent
                 && (_playerMovement == null || _playerMovement.HasTimeRemaining);
@@ -2578,471 +2161,34 @@ namespace Game.Gameplay.Battle.Assembly
                 && _trajectoryLine != null;
         }
 
-        private sealed class ExplosionKnockbackMotion
-        {
-            public ExplosionKnockbackMotion(
-                BattleUnitPresenter presenter,
-                Vector2 start,
-                Vector2 velocity)
-            {
-                Presenter = presenter;
-                Start = start;
-                LastSafePosition = start;
-                Velocity = velocity;
-            }
+        float IProjectileWorld.KillY => FallDeathY - 2f;
 
-            public BattleUnitPresenter Presenter { get; }
-            public Vector2 Start { get; }
-            public Vector2 LastSafePosition { get; set; }
-            public Vector2 Velocity { get; set; }
-            public float BlockedTimer { get; set; }
-            public float Timer { get; set; }
+        bool IProjectileWorld.IsSolid(Vector2 point)
+        {
+            return _battleTerrain != null && _battleTerrain.Grid.IsSolidWorld(point);
         }
 
-        private sealed class DestructibleVisualTerrain
+        bool IProjectileWorld.TryHitUnit(Vector2 point, float radius, string ignoredUnitId, out Vector2 hitPoint)
         {
-            private const byte SolidAlpha = 96;
-            private const int SurfaceSampleStep = 3;
-
-            private readonly SpriteRenderer _renderer;
-            private readonly Transform _transform;
-            private readonly Texture2D _texture;
-            private readonly Sprite _sprite;
-            private readonly Rect _rect;
-            private readonly Vector2 _pivot;
-            private readonly float _pixelsPerUnit;
-            private readonly int _width;
-            private readonly int _height;
-            private readonly int _rectX;
-            private readonly int _rectY;
-            private readonly Color32[] _pixels;
-            private readonly List<EdgeCollider2D> _edgeColliders = new();
-
-            private DestructibleVisualTerrain(
-                SpriteRenderer renderer,
-                Transform transform,
-                Texture2D texture,
-                Sprite sprite,
-                Color32[] pixels)
+            hitPoint = point;
+            foreach (var presenter in _unitPresenters)
             {
-                _renderer = renderer;
-                _transform = transform;
-                _texture = texture;
-                _sprite = sprite;
-                _rect = sprite.rect;
-                _pivot = sprite.pivot;
-                _pixelsPerUnit = sprite.pixelsPerUnit;
-                _width = Mathf.RoundToInt(_rect.width);
-                _height = Mathf.RoundToInt(_rect.height);
-                _rectX = Mathf.RoundToInt(_rect.x);
-                _rectY = Mathf.RoundToInt(_rect.y);
-                _pixels = pixels;
-            }
-
-            public static DestructibleVisualTerrain TryCreate(SpriteRenderer renderer, PolygonCollider2D polygonCollider, Sprite sourceSprite)
-            {
-                if (renderer == null || sourceSprite == null || sourceSprite.texture == null)
+                var unit = presenter.State;
+                if (unit.IsDefeated || unit.UnitId == ignoredUnitId)
                 {
-                    return null;
+                    continue;
                 }
 
-                var sourceTexture = sourceSprite.texture;
-                Color32[] sourcePixels;
-                try
+                var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
+                if (Mathf.Abs(point.x - unit.Position.x) <= UnitCollisionHalfWidth + radius
+                    && Mathf.Abs(point.y - unit.Position.y) <= halfHeight + radius)
                 {
-                    sourcePixels = sourceTexture.GetPixels32();
-                }
-                catch (UnityException)
-                {
-                    return null;
-                }
-
-                var runtimeTexture = new Texture2D(sourceTexture.width, sourceTexture.height, TextureFormat.RGBA32, false);
-                runtimeTexture.filterMode = sourceTexture.filterMode;
-                runtimeTexture.wrapMode = TextureWrapMode.Clamp;
-                runtimeTexture.SetPixels32(sourcePixels);
-                runtimeTexture.Apply();
-
-                var runtimeSprite = Sprite.Create(
-                    runtimeTexture,
-                    sourceSprite.rect,
-                    new Vector2(sourceSprite.pivot.x / sourceSprite.rect.width, sourceSprite.pivot.y / sourceSprite.rect.height),
-                    sourceSprite.pixelsPerUnit,
-                    0,
-                    SpriteMeshType.FullRect);
-
-                renderer.sprite = runtimeSprite;
-                if (polygonCollider != null)
-                {
-                    polygonCollider.enabled = false;
-                }
-
-                var terrain = new DestructibleVisualTerrain(renderer, renderer.transform, runtimeTexture, runtimeSprite, runtimeTexture.GetPixels32());
-                terrain.RebuildSurfaceColliders();
-                return terrain;
-            }
-
-            public bool ApplyCrater(Vector2 worldPoint, float worldRadius)
-            {
-                if (worldRadius <= 0f)
-                {
-                    return false;
-                }
-
-                var localPoint = _transform.InverseTransformPoint(worldPoint);
-                var centerX = localPoint.x * _pixelsPerUnit + _pivot.x;
-                var centerY = localPoint.y * _pixelsPerUnit + _pivot.y;
-                var lossyScale = _transform.lossyScale;
-                var radiusX = worldRadius / Mathf.Max(0.01f, Mathf.Abs(lossyScale.x)) * _pixelsPerUnit;
-                var radiusY = worldRadius / Mathf.Max(0.01f, Mathf.Abs(lossyScale.y)) * _pixelsPerUnit;
-                var minX = Mathf.Clamp(Mathf.FloorToInt(centerX - radiusX - 2f), 0, _width - 1);
-                var maxX = Mathf.Clamp(Mathf.CeilToInt(centerX + radiusX + 2f), 0, _width - 1);
-                var minY = Mathf.Clamp(Mathf.FloorToInt(centerY - radiusY - 2f), 0, _height - 1);
-                var maxY = Mathf.Clamp(Mathf.CeilToInt(centerY + radiusY + 2f), 0, _height - 1);
-                var changed = false;
-
-                for (var y = minY; y <= maxY; y++)
-                {
-                    var normalizedY = (y - centerY) / Mathf.Max(1f, radiusY);
-                    for (var x = minX; x <= maxX; x++)
-                    {
-                        var normalizedX = (x - centerX) / Mathf.Max(1f, radiusX);
-                        var distance01 = Mathf.Sqrt(normalizedX * normalizedX + normalizedY * normalizedY);
-                        if (distance01 > 1f)
-                        {
-                            continue;
-                        }
-
-                        var pixelIndex = ToTexturePixelIndex(x, y);
-                        if (pixelIndex < 0 || pixelIndex >= _pixels.Length || _pixels[pixelIndex].a == 0)
-                        {
-                            continue;
-                        }
-
-                        var pixel = _pixels[pixelIndex];
-                        pixel.a = 0;
-                        _pixels[pixelIndex] = pixel;
-                        changed = true;
-                    }
-                }
-
-                if (!changed)
-                {
-                    return false;
-                }
-
-                _texture.SetPixels32(_pixels);
-                _texture.Apply();
-                RebuildSurfaceColliders();
-                return true;
-            }
-
-            public VisualSurfaceSampler CreateSurfaceSampler()
-            {
-                return VisualSurfaceSampler.TryCreate(_sprite, _transform, _pixels);
-            }
-
-            public void Dispose()
-            {
-                if (_sprite != null)
-                {
-                    Object.Destroy(_sprite);
-                }
-
-                if (_texture != null)
-                {
-                    Object.Destroy(_texture);
+                    hitPoint = unit.Position + (point - unit.Position) * 0.5f;
+                    return true;
                 }
             }
 
-            private void RebuildSurfaceColliders()
-            {
-                var segments = BuildSurfaceSegments();
-                while (_edgeColliders.Count < segments.Count)
-                {
-                    var edge = _renderer.gameObject.AddComponent<EdgeCollider2D>();
-                    edge.edgeRadius = 0.025f;
-                    _edgeColliders.Add(edge);
-                }
-
-                for (var i = 0; i < _edgeColliders.Count; i++)
-                {
-                    var edge = _edgeColliders[i];
-                    if (i >= segments.Count)
-                    {
-                        edge.enabled = false;
-                        continue;
-                    }
-
-                    edge.enabled = true;
-                    edge.points = segments[i].ToArray();
-                }
-            }
-
-            private List<List<Vector2>> BuildSurfaceSegments()
-            {
-                var segments = new List<List<Vector2>>();
-                var current = new List<Vector2>();
-                var missingRun = 0;
-
-                for (var x = 0; x < _width; x += SurfaceSampleStep)
-                {
-                    if (TryFindTopSolidY(x, out var y))
-                    {
-                        if (missingRun > 1 && current.Count >= 2)
-                        {
-                            segments.Add(current);
-                            current = new List<Vector2>();
-                        }
-
-                        missingRun = 0;
-                        current.Add(PixelToLocalPoint(x, y));
-                    }
-                    else
-                    {
-                        missingRun++;
-                    }
-                }
-
-                if (current.Count >= 2)
-                {
-                    segments.Add(current);
-                }
-
-                return segments;
-            }
-
-            private bool TryFindTopSolidY(int x, out int surfaceY)
-            {
-                for (var y = _height - 1; y >= 0; y--)
-                {
-                    var pixelIndex = ToTexturePixelIndex(x, y);
-                    if (pixelIndex >= 0 && pixelIndex < _pixels.Length && _pixels[pixelIndex].a >= SolidAlpha)
-                    {
-                        surfaceY = y;
-                        return true;
-                    }
-                }
-
-                surfaceY = 0;
-                return false;
-            }
-
-            private Vector2 PixelToLocalPoint(int x, int y)
-            {
-                return new Vector2((x - _pivot.x) / _pixelsPerUnit, (y - _pivot.y) / _pixelsPerUnit);
-            }
-
-            private int ToTexturePixelIndex(int spriteX, int spriteY)
-            {
-                var tx = _rectX + spriteX;
-                var ty = _rectY + spriteY;
-                return ty * _texture.width + tx;
-            }
-        }
-
-        private sealed class VisualSurfaceSampler
-        {
-            private readonly float _minX;
-            private readonly float _maxX;
-            private readonly float _minY;
-            private readonly float _maxY;
-            private readonly float[] _surfaceYByColumn;
-            private readonly bool[] _solidMask;
-            private readonly int _width;
-            private readonly int _height;
-
-            private VisualSurfaceSampler(float minX, float maxX, float minY, float maxY, float[] surfaceYByColumn, bool[] solidMask, int width, int height)
-            {
-                _minX = minX;
-                _maxX = maxX;
-                _minY = minY;
-                _maxY = maxY;
-                _surfaceYByColumn = surfaceYByColumn;
-                _solidMask = solidMask;
-                _width = width;
-                _height = height;
-            }
-
-            public static VisualSurfaceSampler TryCreate(Sprite sprite, Transform transform)
-            {
-                return TryCreate(sprite, transform, null);
-            }
-
-            public static VisualSurfaceSampler TryCreate(Sprite sprite, Transform transform, Color32[] overridePixels)
-            {
-                if (sprite == null || transform == null)
-                {
-                    return null;
-                }
-
-                var texture = sprite.texture;
-                if (texture == null)
-                {
-                    return null;
-                }
-
-                var rect = sprite.rect;
-                var width = Mathf.RoundToInt(rect.width);
-                var height = Mathf.RoundToInt(rect.height);
-                if (width <= 1 || height <= 1)
-                {
-                    return null;
-                }
-
-                Color32[] pixels = overridePixels;
-                if (pixels == null)
-                {
-                    try
-                    {
-                        pixels = texture.GetPixels32();
-                    }
-                    catch (UnityException)
-                    {
-                        return null;
-                    }
-                }
-
-                var rectX = Mathf.RoundToInt(rect.x);
-                var rectY = Mathf.RoundToInt(rect.y);
-                var pivot = sprite.pivot;
-                var pixelsPerUnit = sprite.pixelsPerUnit;
-                var scale = transform.lossyScale;
-                var origin = transform.position;
-                var surface = new float[width];
-                var solidMask = new bool[width * height];
-                var minX = origin.x + ((0f - pivot.x) / pixelsPerUnit) * scale.x;
-                var maxX = origin.x + (((width - 1f) - pivot.x) / pixelsPerUnit) * scale.x;
-                var minY = origin.y + ((0f - pivot.y) / pixelsPerUnit) * scale.y;
-                var maxY = origin.y + (((height - 1f) - pivot.y) / pixelsPerUnit) * scale.y;
-
-                for (var x = 0; x < width; x++)
-                {
-                    surface[x] = float.NaN;
-                    for (var y = height - 1; y >= 0; y--)
-                    {
-                        var tx = rectX + x;
-                        var ty = rectY + y;
-                        var pixelIndex = ty * texture.width + tx;
-                        var isSolid = pixelIndex >= 0 && pixelIndex < pixels.Length && pixels[pixelIndex].a >= 96;
-                        solidMask[y * width + x] = isSolid;
-                        if (!isSolid)
-                        {
-                            continue;
-                        }
-
-                        if (float.IsNaN(surface[x]))
-                        {
-                            surface[x] = origin.y + ((y - pivot.y) / pixelsPerUnit) * scale.y;
-                        }
-                    }
-                }
-
-                return new VisualSurfaceSampler(
-                    Mathf.Min(minX, maxX),
-                    Mathf.Max(minX, maxX),
-                    Mathf.Min(minY, maxY),
-                    Mathf.Max(minY, maxY),
-                    surface,
-                    solidMask,
-                    width,
-                    height);
-            }
-
-            public bool TryGetLanding(float worldX, float bodyHeight, out Vector2 landing)
-            {
-                landing = default;
-                if (!TryGetSurfaceY(worldX, out var surfaceY))
-                {
-                    return false;
-                }
-
-                landing = new Vector2(worldX, surfaceY + bodyHeight * 0.5f);
-                return true;
-            }
-
-            public bool TryGetSurfaceY(float worldX, out float surfaceY)
-            {
-                surfaceY = 0f;
-                if (_surfaceYByColumn == null || _surfaceYByColumn.Length == 0 || worldX < _minX || worldX > _maxX)
-                {
-                    return false;
-                }
-
-                var t = Mathf.InverseLerp(_minX, _maxX, worldX);
-                var exactIndex = t * (_surfaceYByColumn.Length - 1);
-                var leftIndex = Mathf.Clamp(Mathf.FloorToInt(exactIndex), 0, _surfaceYByColumn.Length - 1);
-                var rightIndex = Mathf.Clamp(leftIndex + 1, 0, _surfaceYByColumn.Length - 1);
-                var leftY = FindNearestSurface(leftIndex, -1, 8);
-                var rightY = FindNearestSurface(rightIndex, 1, 8);
-                if (float.IsNaN(leftY) && float.IsNaN(rightY))
-                {
-                    return false;
-                }
-
-                surfaceY = float.IsNaN(leftY)
-                    ? rightY
-                    : float.IsNaN(rightY)
-                        ? leftY
-                        : Mathf.Lerp(leftY, rightY, exactIndex - leftIndex);
-                return true;
-            }
-
-            public bool OverlapsSolid(Vector2 center, float halfWidth, float halfHeight)
-            {
-                if (_solidMask == null || _solidMask.Length == 0)
-                {
-                    return false;
-                }
-
-                var xOffsets = new[] { 0f, -halfWidth, halfWidth, -halfWidth * 0.55f, halfWidth * 0.55f };
-                var yOffsets = new[] { -halfHeight, -halfHeight * 0.5f, 0f, halfHeight * 0.5f, halfHeight };
-                foreach (var yOffset in yOffsets)
-                {
-                    foreach (var xOffset in xOffsets)
-                    {
-                        if (IsSolidAtWorld(center.x + xOffset, center.y + yOffset))
-                        {
-                            return true;
-                        }
-                    }
-                }
-
-                return false;
-            }
-
-            private bool IsSolidAtWorld(float worldX, float worldY)
-            {
-                if (worldX < _minX || worldX > _maxX || worldY < _minY || worldY > _maxY)
-                {
-                    return false;
-                }
-
-                var x = Mathf.Clamp(Mathf.RoundToInt(Mathf.InverseLerp(_minX, _maxX, worldX) * (_width - 1)), 0, _width - 1);
-                var y = Mathf.Clamp(Mathf.RoundToInt(Mathf.InverseLerp(_minY, _maxY, worldY) * (_height - 1)), 0, _height - 1);
-                var index = y * _width + x;
-                return index >= 0 && index < _solidMask.Length && _solidMask[index];
-            }
-
-            private float FindNearestSurface(int startIndex, int direction, int maxSteps)
-            {
-                for (var step = 0; step <= maxSteps; step++)
-                {
-                    var index = startIndex + direction * step;
-                    if (index < 0 || index >= _surfaceYByColumn.Length)
-                    {
-                        return float.NaN;
-                    }
-
-                    var surfaceY = _surfaceYByColumn[index];
-                    if (!float.IsNaN(surfaceY))
-                    {
-                        return surfaceY;
-                    }
-                }
-
-                return float.NaN;
-            }
+            return false;
         }
     }
 }

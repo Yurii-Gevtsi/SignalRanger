@@ -240,6 +240,25 @@ namespace Game.Gameplay.Battle.Motion
         private MotorStepOutcome ResolveCollision(Vector2 previous)
         {
             var falling = Velocity.y <= 0f;
+            if (!falling && IsBottomBlocked(Position) && !IsTopBlocked(Position))
+            {
+                // Launching with feet still clipped into the surface (jump or
+                // knockback from a slope): surface out and keep flying.
+                var surfaced = Position;
+                var surfaceLift = 0f;
+                while (surfaceLift <= _profile.CrawlHeight && IsBodyBlocked(surfaced))
+                {
+                    surfaced.y += _terrain.CellSize.y;
+                    surfaceLift += _terrain.CellSize.y;
+                }
+
+                if (!IsBodyBlocked(surfaced))
+                {
+                    Position = surfaced;
+                    return MotorStepOutcome.Airborne;
+                }
+            }
+
             if (falling && IsBottomBlocked(Position))
             {
                 // Soft ground contact: crawl up out of the surface and settle.

@@ -132,11 +132,19 @@ namespace Game.Gameplay.Battle.Terrain
             dirtyCells = default;
             var halfSize = worldSize * 0.5f;
             var min = WorldToCell(worldCenter - halfSize);
-            var max = WorldToCell(worldCenter + halfSize);
+            // The max edge is exclusive: a rect ending exactly on a cell
+            // boundary must not claim the next cell.
+            var maxX = Mathf.CeilToInt((worldCenter.x + halfSize.x - Origin.x) / CellSize.x) - 1;
+            var maxY = Mathf.CeilToInt((worldCenter.y + halfSize.y - Origin.y) / CellSize.y) - 1;
+            if (maxX < min.x || maxY < min.y)
+            {
+                return false;
+            }
+
             var minX = Mathf.Clamp(min.x, 0, Width - 1);
-            var maxX = Mathf.Clamp(max.x, 0, Width - 1);
+            maxX = Mathf.Clamp(maxX, 0, Width - 1);
             var minY = Mathf.Clamp(min.y, 0, Height - 1);
-            var maxY = Mathf.Clamp(max.y, 0, Height - 1);
+            maxY = Mathf.Clamp(maxY, 0, Height - 1);
             var changed = false;
 
             for (var y = minY; y <= maxY; y++)
