@@ -48,7 +48,7 @@ namespace Game.Gameplay.Battle.Assembly
         }
     }
 
-    public sealed class BattleSceneController : MonoBehaviour, IProjectileSpawner, IProjectileWorld
+    public sealed class BattleSceneController : MonoBehaviour
     {
         private const float GroundRayStartHeight = 3.5f;
         private const float GroundRayDistance = 8f;
@@ -68,6 +68,7 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Dictionary<string, UnitMotor> _unitMotors = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, WeaponDefinition> _weaponsById = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, Sprite> _spriteResourceCache = new(System.StringComparer.Ordinal);
+        private readonly Dictionary<int, GameObject> _projectileVisuals = new();
 
         private ArenaDefinition[] _arenas;
         private int _arenaIndex;
@@ -232,7 +233,7 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (HasActiveMotion)
+            if (HasActiveMotion || HasProjectilesInFlight)
             {
                 _simulation.Tick(Time.deltaTime);
                 return;
@@ -309,11 +310,6 @@ namespace Game.Gameplay.Battle.Assembly
                 }
             }
 
-            if (HasProjectilesInFlight)
-            {
-                return;
-            }
-
             UpdateWalking();
             UpdateAim();
             DrawAim();
@@ -362,7 +358,6 @@ namespace Game.Gameplay.Battle.Assembly
                 _weaponExecutor,
                 Physics2D.gravity,
                 _simulationSettings,
-                this,
                 _weaponsById,
                 _playerArchetype,
                 _opponentArchetype);
@@ -391,6 +386,8 @@ namespace Game.Gameplay.Battle.Assembly
             simulation.CoverDeployed += OnSimulationCoverDeployed;
             simulation.HealthRestored += OnSimulationHealthRestored;
             simulation.OwnerRepositioned += OnSimulationOwnerRepositioned;
+            simulation.ProjectileSpawned += OnSimulationProjectileSpawned;
+            simulation.ProjectileExploded += OnSimulationProjectileExploded;
             simulation.UnitsMoved += OnSimulationUnitsMoved;
         }
 
@@ -521,6 +518,7 @@ namespace Game.Gameplay.Battle.Assembly
             _battleTerrain = null;
             _unitMotors.Clear();
             _simulation = null;
+            _projectileVisuals.Clear();
 
             foreach (var presenter in _unitPresenters)
             {
@@ -746,34 +744,44 @@ namespace Game.Gameplay.Battle.Assembly
             }
         }
 
-        void IProjectileSpawner.Spawn(in ProjectileSpawnRequest request)
+        private void OnSimulationProjectileSpawned(SimProjectile projectile)
         {
             var projectileObject = new GameObject("Production Shell");
             _arenaObjects.Add(projectileObject);
-            projectileObject.transform.position = request.Position;
+            _projectileVisuals[projectile.Id] = projectileObject;
+            projectileObject.transform.position = projectile.Position;
 
             var visualObject = new GameObject("Visual");
             visualObject.transform.SetParent(projectileObject.transform, false);
-            ApplyProjectileVisualTransform(visualObject.transform, request);
+            ApplyProjectileVisualTransform(visualObject.transform, projectile);
 
             var renderer = visualObject.AddComponent<SpriteRenderer>();
             renderer.sprite = _circleSprite;
-            renderer.color = ResolveProjectileVisualColor(request);
+            renderer.color = ResolveProjectileVisualColor(projectile);
             renderer.sortingOrder = 30;
-
-            var projectile = projectileObject.AddComponent<ProjectileController>();
-            projectile.Impacted += OnProjectileImpacted;
-            projectile.Launch(
-                request.Definition,
-                request.OwnerUnitId,
-                request.Velocity,
-                this);
         }
 
-        private void ApplyProjectileVisualTransform(Transform projectileTransform, ProjectileSpawnRequest request)
+        private void OnSimulationProjectileExploded(int projectileId, ProjectileImpact impact)
         {
-            var weapon = ResolveWeaponFromProjectileId(request.Definition.ProjectileId);
-            var diameter = request.VisualDiameter;
+            if (_projectileVisuals.TryGetValue(projectileId, out var projectileObject))
+            {
+                _projectileVisuals.Remove(projectileId);
+                _arenaObjects.Remove(projectileObject);
+                Destroy(projectileObject);
+            }
+
+            SpawnImpactFlash(impact.Point);
+            if (!string.IsNullOrWhiteSpace(impact.OwnerUnitId)
+                && impact.OwnerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
+            {
+                _firstBattleGuide?.ObserveProjectileImpact();
+            }
+        }
+
+        private void ApplyProjectileVisualTransform(Transform projectileTransform, SimProjectile projectile)
+        {
+            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
+            var diameter = projectile.Definition.Radius * 2f;
             if (weapon == null)
             {
                 projectileTransform.localScale = Vector3.one * diameter;
@@ -784,7 +792,7 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 case "weapon.long-lance":
                     projectileTransform.localScale = new Vector3(diameter * 2.6f, diameter * 0.55f, 1f);
-                    projectileTransform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(request.Velocity.y, request.Velocity.x) * Mathf.Rad2Deg);
+                    projectileTransform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg);
                     break;
                 case "weapon.pulse-shell":
                     projectileTransform.localScale = Vector3.one * (diameter * 1.25f);
@@ -794,7 +802,7 @@ namespace Game.Gameplay.Battle.Assembly
                     break;
                 case "weapon.rampart-kit":
                     projectileTransform.localScale = new Vector3(diameter * 2.15f, diameter * 0.7f, 1f);
-                    projectileTransform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(request.Velocity.y, request.Velocity.x) * Mathf.Rad2Deg);
+                    projectileTransform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg);
                     break;
                 case "weapon.relay-step":
                     projectileTransform.localScale = Vector3.one * (diameter * 0.9f);
@@ -805,12 +813,12 @@ namespace Game.Gameplay.Battle.Assembly
             }
         }
 
-        private Color ResolveProjectileVisualColor(ProjectileSpawnRequest request)
+        private Color ResolveProjectileVisualColor(SimProjectile projectile)
         {
-            var weapon = ResolveWeaponFromProjectileId(request.Definition.ProjectileId);
+            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
             if (weapon == null)
             {
-                return request.Color;
+                return Color.black;
             }
 
             return weapon.WeaponId switch
@@ -821,7 +829,7 @@ namespace Game.Gameplay.Battle.Assembly
                 "weapon.scatter-arc" => new Color(1f, 0.84f, 0.32f, 0.94f),
                 "weapon.rampart-kit" => new Color(0.54f, 0.9f, 0.55f, 0.96f),
                 "weapon.relay-step" => new Color(0.68f, 0.46f, 1f, 0.94f),
-                _ => request.Color
+                _ => ProjectileWeaponEffect.GetProjectileColor(weapon.Role)
             };
         }
 
@@ -840,16 +848,6 @@ namespace Game.Gameplay.Battle.Assembly
             return null;
         }
 
-        private void OnProjectileImpacted(ProjectileImpact impact)
-        {
-            _simulation.NotifyProjectileImpact(impact);
-            if (!string.IsNullOrWhiteSpace(impact.OwnerUnitId)
-                && impact.OwnerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
-            {
-                _firstBattleGuide?.ObserveProjectileImpact();
-            }
-        }
-
         private void OnSimulationShotFired(BattleTeamId team, WeaponDefinition weapon, bool setsShotStatus)
         {
             ClearWalkInput();
@@ -865,7 +863,6 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void OnSimulationImpactResolved(ImpactResolvedEvent impact)
         {
-            SpawnImpactFlash(impact.Point);
             ReportTutorial(BattleTutorialBridge.ProjectileImpact);
             EmitFeedback(BattleFeedbackEventType.ProjectileImpact);
         }
@@ -940,6 +937,23 @@ namespace Game.Gameplay.Battle.Assembly
         private void OnSimulationUnitsMoved()
         {
             RefreshUnitViews();
+            SyncProjectileVisuals();
+        }
+
+        private void SyncProjectileVisuals()
+        {
+            if (_simulation == null)
+            {
+                return;
+            }
+
+            foreach (var projectile in _simulation.Projectiles)
+            {
+                if (_projectileVisuals.TryGetValue(projectile.Id, out var projectileObject) && projectileObject != null)
+                {
+                    projectileObject.transform.position = projectile.Position;
+                }
+            }
         }
 
         private Vector2 ResolveUnitLandingPosition(Vector2 desiredPoint, BattleTeamId teamId)
@@ -1659,34 +1673,5 @@ namespace Game.Gameplay.Battle.Assembly
                 && _trajectoryLine != null;
         }
 
-        float IProjectileWorld.KillY => FallDeathY - 2f;
-
-        bool IProjectileWorld.IsSolid(Vector2 point)
-        {
-            return _battleTerrain != null && _battleTerrain.Grid.IsSolidWorld(point);
-        }
-
-        bool IProjectileWorld.TryHitUnit(Vector2 point, float radius, string ignoredUnitId, out Vector2 hitPoint)
-        {
-            hitPoint = point;
-            foreach (var presenter in _unitPresenters)
-            {
-                var unit = presenter.State;
-                if (unit.IsDefeated || unit.UnitId == ignoredUnitId)
-                {
-                    continue;
-                }
-
-                var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
-                if (Mathf.Abs(point.x - unit.Position.x) <= UnitCollisionHalfWidth + radius
-                    && Mathf.Abs(point.y - unit.Position.y) <= halfHeight + radius)
-                {
-                    hitPoint = unit.Position + (point - unit.Position) * 0.5f;
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 }

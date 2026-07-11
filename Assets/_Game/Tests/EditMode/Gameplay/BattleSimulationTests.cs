@@ -13,23 +13,12 @@ namespace Game.Tests.EditMode.Gameplay
 {
     public sealed class BattleSimulationTests
     {
-        private sealed class RecordingSpawner : IProjectileSpawner
-        {
-            public List<ProjectileSpawnRequest> Requests { get; } = new();
-
-            public void Spawn(in ProjectileSpawnRequest request)
-            {
-                Requests.Add(request);
-            }
-        }
-
         private sealed class Harness
         {
             public BattleState State;
             public BattleSimulation Simulation;
             public BattleTerrain Terrain;
             public Dictionary<string, UnitMotor> Motors;
-            public RecordingSpawner Spawner;
         }
 
         private static CharacterArchetype CreateArchetype(string id)
@@ -42,11 +31,13 @@ namespace Game.Tests.EditMode.Gameplay
             WeaponRole role = WeaponRole.ArcingExplosive,
             int damage = 60,
             float impactRadius = 2.5f,
-            int ammo = -1)
+            int ammo = -1,
+            float gravityScale = 1f,
+            float timeoutSeconds = 8f)
         {
             return WeaponDefinition.CreateRuntime(
                 id, id + ".name", role,
-                damage, impactRadius, 0.14f, 1f, 6f, 8f, 20f, ammo, null, null);
+                damage, impactRadius, 0.14f, gravityScale, timeoutSeconds, 6f, 20f, ammo, null, null);
         }
 
         private static Harness CreateHarness(WeaponDefinition playerWeapon, WeaponDefinition opponentWeapon = null)
@@ -75,7 +66,6 @@ namespace Game.Tests.EditMode.Gameplay
             var playerInventory = new WeaponInventoryRuntime(new[] { playerWeapon });
             var opponentInventory = new WeaponInventoryRuntime(new[] { resolvedOpponentWeapon });
             var executor = new WeaponExecutor();
-            var spawner = new RecordingSpawner();
             var weaponsById = new Dictionary<string, WeaponDefinition>(System.StringComparer.Ordinal)
             {
                 [playerWeapon.WeaponId] = playerWeapon,
@@ -105,7 +95,6 @@ namespace Game.Tests.EditMode.Gameplay
                 executor,
                 Physics2D.gravity,
                 settings,
-                spawner,
                 weaponsById,
                 playerArchetype,
                 opponentArchetype);
@@ -115,40 +104,45 @@ namespace Game.Tests.EditMode.Gameplay
                 State = state,
                 Simulation = simulation,
                 Terrain = terrain,
-                Motors = motors,
-                Spawner = spawner
+                Motors = motors
             };
         }
 
         [Test]
-        public void Fire_ThenImpact_DamagesAndKnocksBackTarget_AndAdvancesTurn()
+        public void Fire_TicksProjectile_DamagesAndKnocksBackTarget_AndAdvancesTurn()
         {
-            var weapon = CreateWeapon("weapon.test.arc");
+            var weapon = CreateWeapon("weapon.test.arc", gravityScale: 0f);
             var harness = CreateHarness(weapon);
             var opponent = harness.State.GetUnit("opponent.test.01");
             var opponentMotor = harness.Motors["opponent.test.01"];
             var startHealth = opponent.Health;
 
-            var aim = new AimState(new Vector2(-3f, 1f), new Vector2(1f, 0.15f), 14f, true);
-            var fireResult = harness.Simulation.TryFire(aim);
-
-            Assert.AreEqual(BattleFireOutcome.Fired, fireResult.Outcome);
-            Assert.AreEqual(1, harness.Spawner.Requests.Count, "default weapon fire spawns exactly one projectile");
-
+            var spawned = false;
+            var exploded = false;
             var turnAdvanced = false;
             var turnAdvanceReason = TurnAdvanceReason.PlayerTimerExpired;
+            harness.Simulation.ProjectileSpawned += projectile => spawned = true;
+            harness.Simulation.ProjectileExploded += (projectileId, impact) => exploded = true;
             harness.Simulation.TurnAdvanced += (team, reason) =>
             {
                 turnAdvanced = true;
                 turnAdvanceReason = reason;
             };
 
-            var impactPoint = opponent.Position + new Vector2(0.3f, 0f);
-            var projectileId = weapon.CreateProjectileDefinition().ProjectileId;
-            var impact = new ProjectileImpact(projectileId, "player.test.01", impactPoint, new Vector2(6f, 1f), weapon.Damage, weapon.ImpactRadius);
-            var outcome = harness.Simulation.NotifyProjectileImpact(impact);
+            var aim = new AimState(new Vector2(-3f, 0f), Vector2.right, 20f, true);
+            var fireResult = harness.Simulation.TryFire(aim);
 
-            Assert.IsFalse(outcome.BattleFinished);
+            Assert.AreEqual(BattleFireOutcome.Fired, fireResult.Outcome);
+            Assert.IsTrue(spawned, "default weapon fire spawns a simulation projectile");
+            Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight);
+
+            for (var i = 0; i < 240 && !turnAdvanced; i++)
+            {
+                harness.Simulation.Tick(1f / 60f);
+            }
+
+            Assert.IsTrue(exploded, "projectile resolves inside the simulation");
+            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight);
             Assert.Less(opponent.Health, startHealth, "radial damage reduced the target's health");
             Assert.IsFalse(opponentMotor.IsStable, "explosion knockback pushed the target off its feet");
             Assert.IsTrue(turnAdvanced, "turn advances once the last in-flight shot resolves");
@@ -228,6 +222,48 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsTrue(coverDeployed);
             Assert.IsTrue(harness.Terrain.Grid.IsSolidWorld(coverPosition), "cover placement stamped solid into the terrain mask");
             Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam, "instant utility actions still spend the turn");
+        }
+
+        [Test]
+        public void ProjectileTimeout_ExplodesAndAdvancesTurn()
+        {
+            var weapon = CreateWeapon("weapon.test.timeout", gravityScale: 0f, timeoutSeconds: 0.12f);
+            var harness = CreateHarness(weapon);
+
+            var exploded = false;
+            var advanced = false;
+            harness.Simulation.ProjectileExploded += (projectileId, impact) => exploded = true;
+            harness.Simulation.TurnAdvanced += (team, reason) => advanced = true;
+
+            var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true));
+            Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
+
+            for (var i = 0; i < 60 && !advanced; i++)
+            {
+                harness.Simulation.Tick(1f / 60f);
+            }
+
+            Assert.IsTrue(exploded, "projectile timeout resolves without a scene object");
+            Assert.IsTrue(advanced, "timeout of the last projectile advances the turn");
+            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight);
+        }
+
+        [Test]
+        public void ProjectileIgnoresOwnerDuringLaunch()
+        {
+            var weapon = CreateWeapon("weapon.test.owner-skip", gravityScale: 0f);
+            var harness = CreateHarness(weapon);
+
+            var exploded = false;
+            harness.Simulation.ProjectileExploded += (projectileId, impact) => exploded = true;
+
+            var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 1f, true));
+            Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
+
+            harness.Simulation.Tick(1f / 120f);
+
+            Assert.IsFalse(exploded, "projectile does not collide with its owner at launch");
+            Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight);
         }
     }
 }

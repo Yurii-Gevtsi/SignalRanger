@@ -75,18 +75,6 @@ namespace Game.Gameplay.Battle.Simulation
         Jumped
     }
 
-    public readonly struct ProjectileImpactOutcome
-    {
-        public ProjectileImpactOutcome(bool battleFinished, BattleResult result)
-        {
-            BattleFinished = battleFinished;
-            Result = result;
-        }
-
-        public bool BattleFinished { get; }
-        public BattleResult Result { get; }
-    }
-
     public readonly struct ImpactResolvedEvent
     {
         public ImpactResolvedEvent(Vector2 point, WeaponDefinition weapon, bool terrainChanged)

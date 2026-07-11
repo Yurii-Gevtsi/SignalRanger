@@ -15,8 +15,10 @@ namespace Game.Gameplay.Battle.Simulation
     /// integration. No scene, no input, no status text - the scene controller
     /// drives this through commands and reacts to its events.
     /// </summary>
-    public sealed class BattleSimulation
+    public sealed class BattleSimulation : IProjectileSpawner
     {
+        private const float ProjectileSubStepLength = 0.04f;
+
         private readonly BattleState _state;
         private readonly TurnService _turnService;
         private readonly BattleTerrain _terrain;
@@ -26,14 +28,14 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly WeaponExecutor _weaponExecutor;
         private readonly Vector2 _projectileGravityPerScale;
         private readonly BattleSimulationSettings _settings;
-        private readonly IProjectileSpawner _spawner;
         private readonly IReadOnlyDictionary<string, WeaponDefinition> _weaponsById;
         private readonly CharacterArchetype _playerArchetype;
         private readonly CharacterArchetype _opponentArchetype;
         private readonly TurnMovementState _playerMovement;
+        private readonly List<SimProjectile> _projectiles = new();
 
         private WeaponDefinition _activeShotWeapon;
-        private int _projectilesInFlight;
+        private int _nextProjectileId;
         private float _simulationAccumulator;
 
         public static BattleSimulation CreatePlayerFirst(
@@ -45,7 +47,6 @@ namespace Game.Gameplay.Battle.Simulation
             WeaponExecutor weaponExecutor,
             Vector2 projectileGravityPerScale,
             BattleSimulationSettings settings,
-            IProjectileSpawner spawner,
             IReadOnlyDictionary<string, WeaponDefinition> weaponsById,
             CharacterArchetype playerArchetype,
             CharacterArchetype opponentArchetype)
@@ -62,7 +63,6 @@ namespace Game.Gameplay.Battle.Simulation
                 weaponExecutor,
                 projectileGravityPerScale,
                 settings,
-                spawner,
                 weaponsById,
                 playerArchetype,
                 opponentArchetype);
@@ -78,7 +78,6 @@ namespace Game.Gameplay.Battle.Simulation
             WeaponExecutor weaponExecutor,
             Vector2 projectileGravityPerScale,
             BattleSimulationSettings settings,
-            IProjectileSpawner spawner,
             IReadOnlyDictionary<string, WeaponDefinition> weaponsById,
             CharacterArchetype playerArchetype,
             CharacterArchetype opponentArchetype)
@@ -92,7 +91,6 @@ namespace Game.Gameplay.Battle.Simulation
             _weaponExecutor = weaponExecutor;
             _projectileGravityPerScale = projectileGravityPerScale;
             _settings = settings;
-            _spawner = new CountingProjectileSpawner(this, spawner);
             _weaponsById = weaponsById;
             _playerArchetype = playerArchetype;
             _opponentArchetype = opponentArchetype;
@@ -107,13 +105,16 @@ namespace Game.Gameplay.Battle.Simulation
         public event Action<CoverDeployedEvent> CoverDeployed;
         public event Action<HealthRestoredEvent> HealthRestored;
         public event Action<string> OwnerRepositioned;
+        public event Action<SimProjectile> ProjectileSpawned;
+        public event Action<int, ProjectileImpact> ProjectileExploded;
         public event Action UnitsMoved;
 
         public BattleState State => _state;
         public BattleTerrain Terrain => _terrain;
         public BattleResult Result { get; private set; } = BattleResult.InProgress;
-        public int ProjectilesInFlight => _projectilesInFlight;
-        public bool HasProjectilesInFlight => _projectilesInFlight > 0;
+        public IReadOnlyList<SimProjectile> Projectiles => _projectiles;
+        public int ProjectilesInFlight => _projectiles.Count;
+        public bool HasProjectilesInFlight => _projectiles.Count > 0;
         public float MovementTimeRemaining => _playerMovement.RemainingTurnSeconds;
 
         public WeaponInventoryRuntime ActiveInventory => GetInventoryFor(_state.Turn.ActiveTeam);
@@ -191,7 +192,7 @@ namespace Game.Gameplay.Battle.Simulation
                 return UseInstantUtility(unit, activeInventory, weapon, aim);
             }
 
-            var context = new WeaponFireContext(weapon, unit.UnitId, aim.Origin, aim.Direction, aim.Power, _spawner);
+            var context = new WeaponFireContext(weapon, unit.UnitId, aim.Origin, aim.Direction, aim.Power, this);
             var fireResult = _weaponExecutor.TryFireSelected(activeInventory, context);
             if (fireResult != WeaponFireResult.Fired)
             {
@@ -305,12 +306,13 @@ namespace Game.Gameplay.Battle.Simulation
             while (_simulationAccumulator >= _settings.SimulationTickSeconds)
             {
                 _simulationAccumulator -= _settings.SimulationTickSeconds;
+                StepProjectiles(_settings.SimulationTickSeconds);
                 StepUnits();
             }
 
             UnitsMoved?.Invoke();
 
-            if (HasActiveMotion)
+            if (HasProjectilesInFlight || HasActiveMotion)
             {
                 return;
             }
@@ -319,10 +321,8 @@ namespace Game.Gameplay.Battle.Simulation
             ResolveBattleAfterMotion();
         }
 
-        public ProjectileImpactOutcome NotifyProjectileImpact(ProjectileImpact impact)
+        private void ResolveProjectileImpact(ProjectileImpact impact)
         {
-            _projectilesInFlight = Mathf.Max(0, _projectilesInFlight - 1);
-
             var impactWeapon = ResolveImpactWeapon(impact);
             var terrainChanged = ResolveImpact(impact, impactWeapon);
             ImpactResolved?.Invoke(new ImpactResolvedEvent(impact.Point, impactWeapon, terrainChanged));
@@ -330,7 +330,7 @@ namespace Game.Gameplay.Battle.Simulation
 
             if (HasProjectilesInFlight)
             {
-                return new ProjectileImpactOutcome(false, Result);
+                return;
             }
 
             Result = BattleResultEvaluator.Evaluate(_state);
@@ -338,14 +338,13 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 UnitDefeated?.Invoke(new UnitDefeatedEvent(string.Empty, "battle-finished"));
                 BattleFinished?.Invoke(Result, BattleFinishReason.ProjectileImpactResolved);
-                return new ProjectileImpactOutcome(true, Result);
+                return;
             }
 
             _turnService.AdvanceTurn(_state);
             ResetMotionForNewTurn();
             TurnAdvanced?.Invoke(_state.Turn.ActiveTeam, TurnAdvanceReason.ProjectileImpactResolved);
             UnitsMoved?.Invoke();
-            return new ProjectileImpactOutcome(false, Result);
         }
 
         private BattleUnitState GetActiveUnitOrNull()
@@ -695,6 +694,116 @@ namespace Game.Gameplay.Battle.Simulation
             UnitsMoved?.Invoke();
         }
 
+        public void Spawn(in ProjectileSpawnRequest request)
+        {
+            if (request.Definition == null)
+            {
+                return;
+            }
+
+            var projectile = new SimProjectile(
+                ++_nextProjectileId,
+                request.Definition,
+                request.OwnerUnitId,
+                request.Position,
+                request.Velocity,
+                request.Definition.TimeoutSeconds);
+            _projectiles.Add(projectile);
+            ProjectileSpawned?.Invoke(projectile);
+        }
+
+        private void StepProjectiles(float deltaTime)
+        {
+            for (var i = _projectiles.Count - 1; i >= 0; i--)
+            {
+                var projectile = _projectiles[i];
+                projectile.ReduceLifetime(deltaTime);
+                if (projectile.RemainingLifetime <= 0f)
+                {
+                    ResolveProjectileAt(i, projectile.Position);
+                    continue;
+                }
+
+                var velocity = projectile.Velocity + _projectileGravityPerScale * projectile.Definition.GravityScale * deltaTime;
+                projectile.SetVelocity(velocity);
+
+                var position = projectile.Position;
+                var displacement = velocity * deltaTime;
+                var stepCount = Mathf.Max(1, Mathf.CeilToInt(displacement.magnitude / ProjectileSubStepLength));
+                var step = displacement / stepCount;
+
+                for (var stepIndex = 0; stepIndex < stepCount; stepIndex++)
+                {
+                    position += step;
+
+                    if (position.y < _settings.FallDeathY - 2f)
+                    {
+                        ResolveProjectileAt(i, position);
+                        break;
+                    }
+
+                    if (_terrain != null && _terrain.Grid.IsSolidWorld(position))
+                    {
+                        ResolveProjectileAt(i, position);
+                        break;
+                    }
+
+                    if (TryHitUnit(position, projectile.Definition.Radius, projectile.OwnerUnitId, out var hitPoint))
+                    {
+                        ResolveProjectileAt(i, hitPoint);
+                        break;
+                    }
+
+                    if (stepIndex == stepCount - 1)
+                    {
+                        projectile.MoveTo(position);
+                    }
+                }
+            }
+        }
+
+        private void ResolveProjectileAt(int projectileIndex, Vector2 point)
+        {
+            var projectile = _projectiles[projectileIndex];
+            _projectiles.RemoveAt(projectileIndex);
+
+            var impact = new ProjectileImpact(
+                projectile.Definition.ProjectileId,
+                projectile.OwnerUnitId,
+                point,
+                projectile.Velocity,
+                projectile.Definition.Damage,
+                projectile.Definition.ImpactRadius);
+
+            ProjectileExploded?.Invoke(projectile.Id, impact);
+            ResolveProjectileImpact(impact);
+        }
+
+        private bool TryHitUnit(Vector2 point, float radius, string ignoredUnitId, out Vector2 hitPoint)
+        {
+            hitPoint = point;
+            foreach (var team in _state.Teams)
+            {
+                foreach (var unit in team.Units)
+                {
+                    if (unit.IsDefeated || unit.UnitId == ignoredUnitId)
+                    {
+                        continue;
+                    }
+
+                    var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
+                    if (Mathf.Abs(point.x - unit.Position.x) <= _settings.UnitCollisionHalfWidth + radius
+                        && Mathf.Abs(point.y - unit.Position.y) <= halfHeight + radius)
+                    {
+                        hitPoint = unit.Position + (point - unit.Position) * 0.5f;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         private void StepUnits()
         {
             foreach (var team in _state.Teams)
@@ -792,29 +901,6 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             return null;
-        }
-
-        private void TrackProjectileSpawned()
-        {
-            _projectilesInFlight++;
-        }
-
-        private sealed class CountingProjectileSpawner : IProjectileSpawner
-        {
-            private readonly BattleSimulation _simulation;
-            private readonly IProjectileSpawner _inner;
-
-            public CountingProjectileSpawner(BattleSimulation simulation, IProjectileSpawner inner)
-            {
-                _simulation = simulation;
-                _inner = inner;
-            }
-
-            public void Spawn(in ProjectileSpawnRequest request)
-            {
-                _simulation.TrackProjectileSpawned();
-                _inner?.Spawn(request);
-            }
         }
     }
 }

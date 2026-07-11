@@ -139,30 +139,30 @@ BattleSceneController (залишається MonoBehaviour):
 
 ## Етап B — снаряди всередину симуляції
 
-- [ ] `SimProjectile` (дані: id, definition, ownerUnitId, position,
+- [x] `SimProjectile` (дані: id, definition, ownerUnitId, position,
       velocity, remainingLifetime). Сим веде `List<SimProjectile>`,
       інтегрує їх у своєму `Tick` тими самими субкроками
       (`SubStepLength = 0.04`), hit-test по масці + юнітам (логіка з
       поточного `ProjectileController.Update` і
       `IProjectileWorld.TryHitUnit` переїжджає в сим). Сим реалізує
       `IProjectileSpawner` (для `WeaponExecutor`).
-- [ ] Події: `ProjectileSpawned(SimProjectile)`,
+- [x] Події: `ProjectileSpawned(SimProjectile)`,
       `ProjectileExploded(projectileId, impact)`. Контролер тримає
       `Dictionary<int, GameObject>` візуалів: створює за
       `ProjectileSpawned` (нинішні `Spawn`-візуали:
       `ApplyProjectileVisualTransform`, `ResolveProjectileVisualColor`),
       після кожного кадру копіює позиції з `sim.Projectiles`, видаляє й
       малює спалах за `ProjectileExploded`.
-- [ ] Видалити `ProjectileController.cs` (MonoBehaviour) і
+- [x] Видалити `ProjectileController.cs` (MonoBehaviour) і
       `IProjectileWorld.cs` разом з .meta; `NotifyProjectileImpact`
       прибрати з API сим.
-- [ ] Наслідок для черги: снаряд тепер тікає тим самим фіксованим кроком,
+- [x] Наслідок для черги: снаряд тепер тікає тим самим фіксованим кроком,
       що і юніти — прибрати окремий стан «снаряд у польоті поза тіком»
       (`_projectilesInFlight` живе в сим і оновлюється в `Tick`).
-- [ ] Тести: постріл через сим → снаряд летить → кратер + відкидання без
+- [x] Тести: постріл через сим → снаряд летить → кратер + відкидання без
       жодного GameObject; таймаут снаряда; постріл повз юніта-власника
       не влучає у власника.
-- [ ] Критерій: у бойовій симуляції немає MonoBehaviour; тести зелені; коміт.
+- [x] Критерій: у бойовій симуляції немає MonoBehaviour; тести зелені; коміт.
 
 ## Етап C — детермінізм-ґрунтовка (не fixed-point!)
 
