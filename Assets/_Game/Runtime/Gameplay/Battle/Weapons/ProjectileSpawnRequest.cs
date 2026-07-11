@@ -15,8 +15,7 @@ namespace Game.Gameplay.Battle.Weapons
             Vector2 position,
             Vector2 velocity,
             float visualDiameter,
-            Color color,
-            Collider2D ignoredOwnerCollider)
+            Color color)
         {
             Definition = definition;
             OwnerUnitId = ownerUnitId;
@@ -24,7 +23,6 @@ namespace Game.Gameplay.Battle.Weapons
             Velocity = velocity;
             VisualDiameter = visualDiameter;
             Color = color;
-            IgnoredOwnerCollider = ignoredOwnerCollider;
         }
 
         public ProjectileDefinition Definition { get; }
@@ -33,6 +31,5 @@ namespace Game.Gameplay.Battle.Weapons
         public Vector2 Velocity { get; }
         public float VisualDiameter { get; }
         public Color Color { get; }
-        public Collider2D IgnoredOwnerCollider { get; }
     }
 }

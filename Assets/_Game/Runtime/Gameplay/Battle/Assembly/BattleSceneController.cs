@@ -11,6 +11,7 @@ using Game.Gameplay.Battle.Motion;
 using Game.Gameplay.Battle.Projectiles;
 using Game.Gameplay.Battle.Results;
 using Game.Gameplay.Battle.Runtime;
+using Game.Gameplay.Battle.Simulation;
 using Game.Gameplay.Battle.Terrain;
 using Game.Gameplay.Battle.Units;
 using Game.Gameplay.Battle.Visuals;
@@ -74,9 +75,9 @@ namespace Game.Gameplay.Battle.Assembly
         private WeaponInventoryRuntime _inventory;
         private WeaponInventoryRuntime _opponentInventory;
         private WeaponExecutor _weaponExecutor;
-        private WeaponDefinition _activeShotWeapon;
         private BattleState _battleState;
-        private TurnService _turnService;
+        private BattleSimulation _simulation;
+        private BattleSimulationSettings _simulationSettings;
         private AimSettings _baseAimSettings;
         private AimSettings _aimSettings;
         private AimState _aimState;
@@ -86,8 +87,6 @@ namespace Game.Gameplay.Battle.Assembly
         private LineRenderer _aimLine;
         private LineRenderer _trajectoryLine;
         private readonly List<SpriteRenderer> _trajectoryDots = new();
-        private int _projectilesInFlight;
-        private BattleResult _battleResult;
         private BattleResultScreenState _resultScreenState;
         private string _status;
         private IBattleHud _hud;
@@ -103,32 +102,12 @@ namespace Game.Gameplay.Battle.Assembly
         private string _coachTargetId = string.Empty;
         private float _coachTimer;
         private bool _aimHadInput;
-        private TurnMovementState _playerMovement;
         private int _uiWalkInputDirection;
         private int _keyboardWalkInputDirection;
-        private float _simulationAccumulator;
-        private bool HasProjectilesInFlight => _projectilesInFlight > 0;
 
-        private bool HasActiveMotion
-        {
-            get
-            {
-                foreach (var presenter in _unitPresenters)
-                {
-                    if (presenter.State.IsDefeated)
-                    {
-                        continue;
-                    }
+        private bool HasProjectilesInFlight => _simulation != null && _simulation.HasProjectilesInFlight;
 
-                    if (_unitMotors.TryGetValue(presenter.State.UnitId, out var motor) && !motor.IsStable)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
+        private bool HasActiveMotion => _simulation != null && _simulation.HasActiveMotion;
 
         private void Awake()
         {
@@ -156,6 +135,15 @@ namespace Game.Gameplay.Battle.Assembly
             _inventory = new WeaponInventoryRuntime(CreateMissionWeapons(allWeapons), 1);
             _opponentInventory = new WeaponInventoryRuntime(CreateOpponentWeapons(allWeapons), 1);
             _firstBattleGuide = new FirstBattleGuideState(GameSessionContext.SelectedMissionId);
+            _simulationSettings = new BattleSimulationSettings(
+                FallDeathY,
+                SimulationTickSeconds,
+                PlayerTurnDurationSeconds,
+                OccupiedRadius,
+                UnitCollisionHalfWidth,
+                KnockbackLandingSearchPadding,
+                GroundRayStartHeight,
+                GroundRayDistance);
             SelectWeapon(_inventory.SelectedIndex);
 
             LoadArena(GameSessionContext.SelectedArenaIndex);
@@ -239,14 +227,14 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (_battleResult.IsFinished)
+            if (_simulation.Result.IsFinished)
             {
                 return;
             }
 
             if (HasActiveMotion)
             {
-                UpdateUnitPhysics();
+                _simulation.Tick(Time.deltaTime);
                 return;
             }
 
@@ -256,7 +244,7 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (UpdatePlayerTurnTimer())
+            if (_simulation.TickPlayerTurnTimer(Time.deltaTime))
             {
                 return;
             }
@@ -287,7 +275,7 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (!_battleResult.IsFinished && !HasProjectilesInFlight && Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+            if (!_simulation.Result.IsFinished && !HasProjectilesInFlight && Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 Fire();
                 return;
@@ -365,12 +353,23 @@ namespace Game.Gameplay.Battle.Assembly
             BuildBattleState(_currentArena);
             BuildUnits();
 
-            _turnService = new TurnService();
-            _turnService.StartFirstTurn(_battleState, BattleTeamId.Player);
+            _simulation = BattleSimulation.CreatePlayerFirst(
+                _battleState,
+                _battleTerrain,
+                _unitMotors,
+                _inventory,
+                _opponentInventory,
+                _weaponExecutor,
+                Physics2D.gravity,
+                _simulationSettings,
+                this,
+                _weaponsById,
+                _playerArchetype,
+                _opponentArchetype);
+            SubscribeToSimulation(_simulation);
+
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
-            _battleResult = BattleResult.InProgress;
             _resultScreenState = default;
-            _projectilesInFlight = 0;
             _aiDecisionTimer = 0f;
             _status = GameText.BattleIntro(DescribeArena(_currentArena));
             _aimLine.enabled = false;
@@ -378,10 +377,21 @@ namespace Game.Gameplay.Battle.Assembly
             _aimHadInput = false;
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
-            _simulationAccumulator = 0f;
-            ResetPlayerMovementTurn();
             RefreshUnitViews();
             ReportTutorial(BattleTutorialBridge.MissionStart);
+        }
+
+        private void SubscribeToSimulation(BattleSimulation simulation)
+        {
+            simulation.ShotFired += OnSimulationShotFired;
+            simulation.ImpactResolved += OnSimulationImpactResolved;
+            simulation.UnitDefeated += OnSimulationUnitDefeated;
+            simulation.TurnAdvanced += OnSimulationTurnAdvanced;
+            simulation.BattleFinished += OnSimulationBattleFinished;
+            simulation.CoverDeployed += OnSimulationCoverDeployed;
+            simulation.HealthRestored += OnSimulationHealthRestored;
+            simulation.OwnerRepositioned += OnSimulationOwnerRepositioned;
+            simulation.UnitsMoved += OnSimulationUnitsMoved;
         }
 
         private void SelectWeapon(int weaponIndex)
@@ -472,7 +482,6 @@ namespace Game.Gameplay.Battle.Assembly
             var playerTeam = new BattleTeamState(BattleTeamId.Player, new[] { playerUnit });
             var opponentTeam = new BattleTeamState(BattleTeamId.Opponent, new[] { opponentUnit });
             _battleState = new BattleState(new[] { playerTeam, opponentTeam }, new TurnState(BattleTeamId.None, string.Empty, 0, false));
-            _playerMovement = new TurnMovementState(PlayerTurnDurationSeconds);
         }
 
         private CharacterArchetype ArchetypeFor(BattleTeamId teamId)
@@ -506,19 +515,12 @@ namespace Game.Gameplay.Battle.Assembly
                 walkSpeed: archetype.WalkSpeed);
         }
 
-        private UnitMotor GetMotor(BattleUnitPresenter presenter)
-        {
-            return presenter != null && _unitMotors.TryGetValue(presenter.State.UnitId, out var motor)
-                ? motor
-                : null;
-        }
-
         private void ClearArenaRuntime()
         {
             _battleTerrain?.Dispose();
             _battleTerrain = null;
             _unitMotors.Clear();
-            _simulationAccumulator = 0f;
+            _simulation = null;
 
             foreach (var presenter in _unitPresenters)
             {
@@ -540,9 +542,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             _arenaObjects.Clear();
             _battleState = null;
-            _battleResult = BattleResult.InProgress;
             _resultScreenState = default;
-            _projectilesInFlight = 0;
         }
 
         private BattleUnitView CreateUnitView(BattleUnitState state)
@@ -707,88 +707,47 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void Fire()
         {
-            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight || HasActiveMotion)
+            if (!IsBattleReady())
             {
                 return;
             }
 
-            var activePresenter = GetActivePresenter();
-            if (activePresenter == null)
+            var result = _simulation.TryFire(_aimState);
+            switch (result.Outcome)
             {
-                HideTrajectoryPreview();
-                return;
-            }
+                case BattleFireOutcome.NoActiveUnit:
+                    HideTrajectoryPreview();
+                    break;
+                case BattleFireOutcome.AimRequired:
+                    _status = GameText.AimRequired();
+                    break;
+                case BattleFireOutcome.OutOfAmmo:
+                    _status = GameText.AmmoDepleted(DescribeWeapon(result.Weapon));
+                    break;
+                case BattleFireOutcome.NoWeaponSelected:
+                    _status = GameText.NoWeaponSelected();
+                    break;
+                case BattleFireOutcome.Fired:
+                    if (result.Team == BattleTeamId.Player)
+                    {
+                        _firstBattleGuide?.ObservePlayerShotFired();
+                        ReportTutorial(BattleTutorialBridge.ShotFired);
+                    }
 
-            if (activePresenter.State.TeamId == BattleTeamId.Player
-                && _playerMovement != null
-                && !_playerMovement.HasTimeRemaining)
-            {
-                EndPlayerTurnFromTimer();
-                return;
-            }
+                    break;
+                case BattleFireOutcome.BurstFired:
+                    SpawnImpactFlash(result.EffectPoint, new Color(1f, 0.62f, 0.24f, 0.85f), 0.95f);
+                    if (result.HitCount > 0)
+                    {
+                        EmitFeedback(BattleFeedbackEventType.DamageResolved);
+                    }
 
-            if (!_aimState.HasInput)
-            {
-                _status = GameText.AimRequired();
-                return;
-            }
-
-            var activeInventory = GetInventoryFor(activePresenter.State.TeamId);
-            var weapon = activeInventory.Selected;
-            if (weapon.Role == WeaponRole.ShortRangeBurst)
-            {
-                UseCloseRangeBurst(activePresenter, activeInventory, weapon);
-                return;
-            }
-
-            var isUtilityWeapon = IsInstantUtility(weapon.Role);
-            if (isUtilityWeapon)
-            {
-                UseInstantUtility(activePresenter, activeInventory, weapon);
-                return;
-            }
-
-            var context = new WeaponFireContext(
-                weapon,
-                activePresenter.State.UnitId,
-                activePresenter.View.FirePoint.position,
-                _aimState.Direction,
-                _aimState.Power,
-                activePresenter.View.GetComponent<Collider2D>(),
-                this);
-
-            var result = _weaponExecutor.TryFireSelected(activeInventory, context);
-            if (result != WeaponFireResult.Fired)
-            {
-                _status = result == WeaponFireResult.OutOfAmmo
-                    ? GameText.AmmoDepleted(DescribeWeapon(weapon))
-                    : GameText.NoWeaponSelected();
-                return;
-            }
-
-            _activeShotWeapon = weapon;
-            _projectilesInFlight = Mathf.Max(1, _projectilesInFlight);
-            ClearWalkInput();
-            _turnService.SpendAction(_battleState);
-            _status = GameText.ShotStatus(DescribeTeam(activePresenter.State.TeamId), DescribeWeapon(weapon));
-            _aimLine.enabled = false;
-            HideTrajectoryPreview();
-            if (activePresenter.State.TeamId == BattleTeamId.Player)
-            {
-                _firstBattleGuide?.ObservePlayerShotFired();
-            }
-
-            EmitFeedback(BattleFeedbackEventType.ShotFired);
-
-            if (activePresenter.State.TeamId == BattleTeamId.Player)
-            {
-                ReportTutorial(BattleTutorialBridge.ShotFired);
+                    break;
             }
         }
 
         void IProjectileSpawner.Spawn(in ProjectileSpawnRequest request)
         {
-            _projectilesInFlight++;
             var projectileObject = new GameObject("Production Shell");
             _arenaObjects.Add(projectileObject);
             projectileObject.transform.position = request.Position;
@@ -866,63 +825,6 @@ namespace Game.Gameplay.Battle.Assembly
             };
         }
 
-        private void OnProjectileImpacted(ProjectileImpact impact)
-        {
-            _projectilesInFlight = Mathf.Max(0, _projectilesInFlight - 1);
-            SpawnImpactFlash(impact.Point);
-
-            var impactWeapon = ResolveImpactWeapon(impact);
-            ResolveImpact(impact, impactWeapon);
-            RefreshUnitViews();
-            ReportTutorial(BattleTutorialBridge.ProjectileImpact);
-            if (!string.IsNullOrWhiteSpace(impact.OwnerUnitId)
-                && impact.OwnerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
-            {
-                _firstBattleGuide?.ObserveProjectileImpact();
-            }
-
-            EmitFeedback(BattleFeedbackEventType.ProjectileImpact);
-
-            if (HasProjectilesInFlight)
-            {
-                return;
-            }
-
-            _battleResult = BattleResultEvaluator.Evaluate(_battleState);
-            if (_battleResult.IsFinished)
-            {
-                EmitFeedback(BattleFeedbackEventType.UnitDefeated);
-                EmitFeedback(BattleFeedbackEventType.BattleFinished);
-                _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
-                _status = GameText.ResultPrompt(_resultScreenState.Title);
-                if (_battleResult.Outcome == BattleOutcome.PlayerWon)
-                {
-                    ReportTutorial(BattleTutorialBridge.BattleWon);
-                }
-
-                _firstBattleGuide?.ObserveBattleFinished();
-
-                return;
-            }
-
-            _turnService.AdvanceTurn(_battleState);
-            _firstBattleGuide?.ObserveTurnAdvanced(_battleState.Turn.ActiveTeam);
-            ApplyAimSettingsForActiveTeam();
-            _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
-            _aiDecisionTimer = 0f;
-            ResetPlayerMovementTurn();
-            _aimLine.enabled = false;
-            HideTrajectoryPreview();
-            _status = GameText.TurnStatus(DescribeTeam(_battleState.Turn.ActiveTeam));
-            RefreshUnitViews();
-        }
-
-        private WeaponDefinition ResolveImpactWeapon(ProjectileImpact impact)
-        {
-            var weaponFromProjectile = ResolveWeaponFromProjectileId(impact.ProjectileId);
-            return weaponFromProjectile ?? _activeShotWeapon ?? _inventory.Selected;
-        }
-
         private WeaponDefinition ResolveWeaponFromProjectileId(string projectileId)
         {
             if (!string.IsNullOrWhiteSpace(projectileId)
@@ -938,300 +840,106 @@ namespace Game.Gameplay.Battle.Assembly
             return null;
         }
 
-        private void ResolveImpact(ProjectileImpact impact, WeaponDefinition impactWeapon)
+        private void OnProjectileImpacted(ProjectileImpact impact)
         {
-            if (impactWeapon == null)
+            _simulation.NotifyProjectileImpact(impact);
+            if (!string.IsNullOrWhiteSpace(impact.OwnerUnitId)
+                && impact.OwnerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
             {
-                return;
-            }
-
-            switch (impactWeapon.Role)
-            {
-                case WeaponRole.CoverTool:
-                    DeployCover(impact.Point, impactWeapon);
-                    break;
-                case WeaponRole.DefensiveTool:
-                    RestoreFriendlyHealth(impact.Point, impact.OwnerUnitId, impactWeapon);
-                    break;
-                case WeaponRole.MovementTool:
-                    RepositionOwner(impact.Point, impact.OwnerUnitId, impactWeapon);
-                    break;
-                default:
-                    ResolveDamageImpact(impact, impactWeapon);
-                    break;
+                _firstBattleGuide?.ObserveProjectileImpact();
             }
         }
 
-        private void ResolveDamageImpact(ProjectileImpact impact, WeaponDefinition impactWeapon)
+        private void OnSimulationShotFired(BattleTeamId team, WeaponDefinition weapon, bool setsShotStatus)
         {
-            var terrainChanged = ApplyTerrainDestruction(impact.Point, impactWeapon);
-
-            var allUnits = _battleState.Teams.SelectMany(team => team.Units).ToList();
-            var selfDamageMultiplier = impactWeapon.Role == WeaponRole.ShortRangeBurst ? 0f : 0.65f;
-            var settings = new RadialDamageSettings(impact.Damage, impact.ImpactRadius, selfDamageMultiplier);
-            DamageResolver.ResolveRadialDamage(allUnits, impact.Point, impact.OwnerUnitId, impact.ProjectileId, settings);
-            ApplyExplosionKnockback(impact.Point, impact.Velocity, impactWeapon, terrainChanged);
-        }
-
-        private bool ApplyTerrainDestruction(Vector2 impactPoint, WeaponDefinition impactWeapon)
-        {
-            if (_battleTerrain == null || impactWeapon == null)
-            {
-                return false;
-            }
-
-            var craterRadius = Mathf.Clamp(impactWeapon.ImpactRadius * 0.62f, 0.38f, 1.55f);
-            return _battleTerrain.ApplyCrater(impactPoint, craterRadius);
-        }
-
-        private void ApplyExplosionKnockback(Vector2 impactPoint, Vector2 impactVelocity, WeaponDefinition impactWeapon, bool terrainChanged)
-        {
-            if (_battleState == null || impactWeapon == null)
-            {
-                return;
-            }
-
-            var radius = Mathf.Max(0.65f, impactWeapon.ImpactRadius + KnockbackLandingSearchPadding);
-            var radiusScale = Mathf.InverseLerp(0.75f, 2.4f, impactWeapon.ImpactRadius);
-            var incoming = impactVelocity.sqrMagnitude > 0.01f ? impactVelocity.normalized : Vector2.zero;
-            var downwardImpact01 = Mathf.InverseLerp(-0.15f, -0.85f, incoming.y);
-
-            foreach (var presenter in _unitPresenters)
-            {
-                var unit = presenter.State;
-                if (unit == null || unit.IsDefeated || Mathf.Abs(unit.Position.x - impactPoint.x) > radius)
-                {
-                    continue;
-                }
-
-                var offset = unit.Position - impactPoint;
-                var distance = offset.magnitude;
-                if (distance > radius)
-                {
-                    continue;
-                }
-
-                var falloff = Mathf.Clamp01(1f - (distance / radius));
-                falloff = Mathf.SmoothStep(0f, 1f, falloff);
-                if (falloff <= 0.03f && !terrainChanged)
-                {
-                    continue;
-                }
-
-                var radial = offset.sqrMagnitude > 0.0001f ? offset.normalized : Vector2.up;
-                var side = Mathf.Abs(radial.x) > 0.08f
-                    ? Mathf.Sign(radial.x)
-                    : (Mathf.Abs(incoming.x) > 0.08f ? Mathf.Sign(incoming.x) : unit.FacingDirectionX);
-                var horizontalSpeed = Mathf.Lerp(1.05f, 3.65f, falloff) * Mathf.Lerp(0.86f, 1.16f, radiusScale);
-                var verticalFromBlast = Mathf.Clamp(radial.y, -0.52f, Mathf.Lerp(0.72f, 0.22f, downwardImpact01));
-                var verticalSpeed = verticalFromBlast
-                    * Mathf.Lerp(0.65f, 2.55f, falloff)
-                    * Mathf.Lerp(0.88f, 1.08f, radiusScale);
-                if (verticalSpeed > 0f)
-                {
-                    verticalSpeed *= Mathf.Lerp(1f, 0.28f, downwardImpact01);
-                }
-
-                var velocity = new Vector2(side * horizontalSpeed, verticalSpeed);
-                if (incoming.sqrMagnitude > 0.01f)
-                {
-                    velocity.x += incoming.x * Mathf.Lerp(0.08f, 0.45f, falloff);
-                }
-
-                if (velocity.sqrMagnitude < 0.02f)
-                {
-                    continue;
-                }
-
-                GetMotor(presenter)?.AddImpulse(velocity);
-            }
-
-            if (!terrainChanged)
-            {
-                return;
-            }
-
-            // The crater may have removed the ground under units the blast
-            // itself barely touched — let them re-check their footing.
-            foreach (var presenter in _unitPresenters)
-            {
-                if (!presenter.State.IsDefeated)
-                {
-                    GetMotor(presenter)?.WakeIfUnsupported();
-                }
-            }
-        }
-
-        private void UseInstantUtility(BattleUnitPresenter activePresenter, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
-        {
-            if (!inventory.TryConsumeSelectedAmmo())
-            {
-                _status = GameText.AmmoDepleted(DescribeWeapon(weapon));
-                return;
-            }
-
-            _activeShotWeapon = weapon;
             ClearWalkInput();
-            _turnService.SpendAction(_battleState);
-            if (weapon.Role == WeaponRole.CoverTool)
+            if (setsShotStatus)
             {
-                var origin = (Vector2)activePresenter.View.FirePoint.position;
-                DeployCover(GetCoverPlacementPoint(origin), weapon);
-            }
-            else if (weapon.Role == WeaponRole.DefensiveTool)
-            {
-                RestoreFriendlyHealth(activePresenter.State.Position, activePresenter.State.UnitId, weapon);
+                _status = GameText.ShotStatus(DescribeTeam(team), DescribeWeapon(weapon));
             }
 
             _aimLine.enabled = false;
             HideTrajectoryPreview();
             EmitFeedback(BattleFeedbackEventType.ShotFired);
-            CompleteInstantAction(_status);
         }
 
-        private void UseCloseRangeBurst(BattleUnitPresenter activePresenter, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
+        private void OnSimulationImpactResolved(ImpactResolvedEvent impact)
         {
-            if (!inventory.TryConsumeSelectedAmmo())
-            {
-                _status = GameText.AmmoDepleted(DescribeWeapon(weapon));
-                return;
-            }
-
-            _activeShotWeapon = weapon;
-            ClearWalkInput();
-            _turnService.SpendAction(_battleState);
-
-            var origin = (Vector2)activePresenter.View.FirePoint.position;
-            var direction = _aimState.Direction.sqrMagnitude > 0.01f ? _aimState.Direction.normalized : Vector2.right;
-            var range = Mathf.Max(1.2f, weapon.ImpactRadius * 1.75f);
-            var hitCount = 0;
-            var targetTeam = activePresenter.State.TeamId == BattleTeamId.Player ? BattleTeamId.Opponent : BattleTeamId.Player;
-
-            foreach (var unit in _battleState.GetTeam(targetTeam).Units)
-            {
-                if (unit == null || unit.IsDefeated)
-                {
-                    continue;
-                }
-
-                var toUnit = unit.Position - origin;
-                if (toUnit.magnitude > range || Vector2.Dot(direction, toUnit.normalized) < 0.25f)
-                {
-                    continue;
-                }
-
-                unit.ApplyDamage(weapon.Damage, weapon.WeaponId);
-                hitCount++;
-            }
-
-            var burstPoint = origin + direction * Mathf.Min(range, 0.95f);
-            var terrainChanged = ApplyTerrainDestruction(burstPoint, weapon);
-            ApplyExplosionKnockback(burstPoint, direction * 8f, weapon, terrainChanged);
-            SpawnImpactFlash(burstPoint, new Color(1f, 0.62f, 0.24f, 0.85f), 0.95f);
-            _aimLine.enabled = false;
-            HideTrajectoryPreview();
-            EmitFeedback(BattleFeedbackEventType.ShotFired);
-            if (hitCount > 0)
-            {
-                EmitFeedback(BattleFeedbackEventType.DamageResolved);
-            }
-
-            _status = GameText.ShotStatus(DescribeTeam(activePresenter.State.TeamId), DescribeWeapon(weapon));
-            CompleteInstantAction(_status);
+            SpawnImpactFlash(impact.Point);
+            ReportTutorial(BattleTutorialBridge.ProjectileImpact);
+            EmitFeedback(BattleFeedbackEventType.ProjectileImpact);
         }
 
-        private void CompleteInstantAction(string actionStatus)
+        private void OnSimulationUnitDefeated(UnitDefeatedEvent defeat)
         {
-            RefreshUnitViews();
-            _battleResult = BattleResultEvaluator.Evaluate(_battleState);
-            if (_battleResult.IsFinished)
+            EmitFeedback(BattleFeedbackEventType.UnitDefeated);
+        }
+
+        private void OnSimulationTurnAdvanced(BattleTeamId newActiveTeam, TurnAdvanceReason reason)
+        {
+            if (reason != TurnAdvanceReason.OpponentSkippedNoUsableWeapon)
             {
-                EmitFeedback(BattleFeedbackEventType.BattleFinished);
-                _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
-                _status = GameText.ResultPrompt(_resultScreenState.Title);
-                _firstBattleGuide?.ObserveBattleFinished();
-                return;
+                _firstBattleGuide?.ObserveTurnAdvanced(newActiveTeam);
             }
 
-            _turnService.AdvanceTurn(_battleState);
-            _firstBattleGuide?.ObserveTurnAdvanced(_battleState.Turn.ActiveTeam);
             ApplyAimSettingsForActiveTeam();
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _aiDecisionTimer = 0f;
-            ResetPlayerMovementTurn();
-            _status = $"{actionStatus} {GameText.TurnStatus(DescribeTeam(_battleState.Turn.ActiveTeam))}";
-            RefreshUnitViews();
+            ClearWalkInput();
+            _aimLine.enabled = false;
+            HideTrajectoryPreview();
+
+            var turnText = GameText.TurnStatus(DescribeTeam(newActiveTeam));
+            _status = reason == TurnAdvanceReason.InstantActionCompleted ? $"{_status} {turnText}" : turnText;
         }
 
-        private void DeployCover(Vector2 impactPoint, WeaponDefinition impactWeapon)
+        private void OnSimulationBattleFinished(BattleResult result, BattleFinishReason reason)
         {
-            var width = Mathf.Clamp(impactWeapon.ImpactRadius * 1.2f, 1.15f, 2.1f);
-            const float height = 0.6f;
-            var position = impactPoint + Vector2.up * (height * 0.5f);
-            var cover = CreateBox(
-                $"Cover {impactWeapon.WeaponId}",
-                position,
-                new Vector2(width, height),
-                ProjectileWeaponEffect.GetProjectileColor(impactWeapon.Role),
+            _resultScreenState = CreateResultScreenState(result, _battleState.Turn.TurnNumber);
+            _status = GameText.ResultPrompt(_resultScreenState.Title);
+            if (result.Outcome == BattleOutcome.PlayerWon && reason != BattleFinishReason.InstantActionCompleted)
+            {
+                ReportTutorial(BattleTutorialBridge.BattleWon);
+            }
+
+            _firstBattleGuide?.ObserveBattleFinished();
+            EmitFeedback(BattleFeedbackEventType.BattleFinished);
+        }
+
+        private void OnSimulationCoverDeployed(CoverDeployedEvent cover)
+        {
+            var box = CreateBox(
+                $"Cover {cover.Weapon.WeaponId}",
+                cover.Position,
+                cover.Size,
+                ProjectileWeaponEffect.GetProjectileColor(cover.Weapon.Role),
                 18);
-            _arenaObjects.Add(cover);
-            _battleTerrain?.StampSolidRect(position, new Vector2(width, height));
-            _status = GameText.CoverDeployed(DescribeWeapon(impactWeapon));
+            _arenaObjects.Add(box);
+            _status = GameText.CoverDeployed(DescribeWeapon(cover.Weapon));
         }
 
-        private void RestoreFriendlyHealth(Vector2 impactPoint, string ownerUnitId, WeaponDefinition impactWeapon)
+        private void OnSimulationHealthRestored(HealthRestoredEvent heal)
         {
-            if (string.IsNullOrWhiteSpace(ownerUnitId))
-            {
-                return;
-            }
-
-            var owner = _battleState.GetUnit(ownerUnitId);
-            var restoredHealth = 0;
-            foreach (var unit in _battleState.GetTeam(owner.TeamId).Units)
-            {
-                if (unit == null || unit.IsDefeated)
-                {
-                    continue;
-                }
-
-                if (Vector2.Distance(unit.Position, impactPoint) > impactWeapon.ImpactRadius)
-                {
-                    continue;
-                }
-
-                restoredHealth += unit.RestoreHealth(impactWeapon.Damage);
-            }
-
-            SpawnImpactFlash(impactPoint, new Color(0.26f, 0.84f, 0.62f, 0.85f), 1.45f);
-            _status = GameText.ShieldPulse(DescribeTeam(owner.TeamId), restoredHealth);
+            SpawnImpactFlash(heal.Point, new Color(0.26f, 0.84f, 0.62f, 0.85f), 1.45f);
+            _status = GameText.ShieldPulse(DescribeTeam(heal.Team), heal.Amount);
         }
 
-        private void RepositionOwner(Vector2 impactPoint, string ownerUnitId, WeaponDefinition impactWeapon)
+        private void OnSimulationOwnerRepositioned(string unitId)
         {
-            if (string.IsNullOrWhiteSpace(ownerUnitId))
-            {
-                return;
-            }
-
-            var owner = _battleState.GetUnit(ownerUnitId);
-            var target = ResolveUnitLandingPosition(impactPoint, owner.TeamId);
-            var maxDistance = impactWeapon.Role == WeaponRole.MovementTool ? float.PositiveInfinity : impactWeapon.ImpactRadius;
-            var deltaX = Mathf.Clamp(target.x - owner.Position.x, -maxDistance, maxDistance);
-            if (Mathf.Abs(deltaX) < 0.1f)
+            if (string.IsNullOrEmpty(unitId))
             {
                 _status = GameText.RepositionFailed();
                 return;
             }
 
-            owner.MoveTo(ResolveUnitLandingPosition(new Vector2(owner.Position.x + deltaX, target.y), owner.TeamId));
-            if (_unitMotors.TryGetValue(owner.UnitId, out var ownerMotor))
-            {
-                ownerMotor.Teleport(owner.Position);
-            }
-
+            var owner = _battleState.GetUnit(unitId);
             SpawnImpactFlash(owner.Position, new Color(0.66f, 0.42f, 0.96f, 0.8f), 1.05f);
             _status = GameText.Repositioned(DescribeTeam(owner.TeamId));
+        }
+
+        private void OnSimulationUnitsMoved()
+        {
+            RefreshUnitViews();
         }
 
         private Vector2 ResolveUnitLandingPosition(Vector2 desiredPoint, BattleTeamId teamId)
@@ -1260,57 +968,9 @@ namespace Game.Gameplay.Battle.Assembly
             return true;
         }
 
-        private void ResetPlayerMovementTurn()
-        {
-            _uiWalkInputDirection = 0;
-            _keyboardWalkInputDirection = 0;
-            foreach (var motor in _unitMotors.Values)
-            {
-                motor.ResetWalk();
-            }
-
-            _playerMovement?.Reset(PlayerTurnDurationSeconds);
-        }
-
-        private bool UpdatePlayerTurnTimer()
-        {
-            if (_playerMovement == null
-                || _battleState.Turn.ActiveTeam != BattleTeamId.Player
-                || _battleState.Turn.ActionSpent
-                || HasProjectilesInFlight
-                || _battleResult.IsFinished)
-            {
-                return false;
-            }
-
-            _playerMovement.Tick(Time.deltaTime);
-            if (_playerMovement.HasTimeRemaining || HasActiveMotion)
-            {
-                return false;
-            }
-
-            EndPlayerTurnFromTimer();
-            return true;
-        }
-
-        private void EndPlayerTurnFromTimer()
-        {
-            ClearWalkInput();
-            _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
-            _aimLine.enabled = false;
-            HideTrajectoryPreview();
-            _turnService.AdvanceTurn(_battleState);
-            _firstBattleGuide?.ObserveTurnAdvanced(_battleState.Turn.ActiveTeam);
-            ApplyAimSettingsForActiveTeam();
-            _aiDecisionTimer = 0f;
-            ResetPlayerMovementTurn();
-            _status = GameText.TurnStatus(DescribeTeam(_battleState.Turn.ActiveTeam));
-            RefreshUnitViews();
-        }
-
         private void SetWalkInput(int direction)
         {
-            if (!CanUseMovement())
+            if (!CanPlayerUseMovement())
             {
                 _uiWalkInputDirection = 0;
                 if (IsMovementBlockedByGuide())
@@ -1331,7 +991,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void SetKeyboardWalkInput(int direction)
         {
-            _keyboardWalkInputDirection = CanUseMovement() ? NormalizeDirection(direction) : 0;
+            _keyboardWalkInputDirection = CanPlayerUseMovement() ? NormalizeDirection(direction) : 0;
         }
 
         private static int NormalizeDirection(int direction)
@@ -1339,16 +999,11 @@ namespace Game.Gameplay.Battle.Assembly
             return direction < 0 ? -1 : direction > 0 ? 1 : 0;
         }
 
-        private bool CanUseMovement()
+        private bool CanPlayerUseMovement()
         {
             return IsBattleReady()
-                && !_battleResult.IsFinished
-                && !HasProjectilesInFlight
-                && !HasActiveMotion
-                && _battleState.Turn.ActiveTeam == BattleTeamId.Player
-                && !_battleState.Turn.ActionSpent
-                && (_playerMovement == null || _playerMovement.HasTimeRemaining)
-                && !IsMovementBlockedByGuide();
+                && !IsMovementBlockedByGuide()
+                && _simulation.CanUseMovement();
         }
 
         private bool IsMovementBlockedByGuide()
@@ -1359,43 +1014,22 @@ namespace Game.Gameplay.Battle.Assembly
         private void UpdateWalking()
         {
             var walkDirection = _keyboardWalkInputDirection != 0 ? _keyboardWalkInputDirection : _uiWalkInputDirection;
-            if (!CanUseMovement() || walkDirection == 0)
+            if (walkDirection == 0 || !CanPlayerUseMovement())
             {
                 return;
             }
 
-            var presenter = GetActivePresenter();
-            if (presenter == null || presenter.State.TeamId != BattleTeamId.Player || _playerMovement == null)
-            {
-                return;
-            }
-
-            var motor = GetMotor(presenter);
-            if (motor == null)
-            {
-                return;
-            }
-
-            var outcome = motor.Walk(walkDirection, Time.deltaTime);
-            if (outcome == WalkOutcome.None)
-            {
-                return;
-            }
-
-            presenter.State.SetFacing(walkDirection);
-            presenter.State.MoveTo(motor.Position);
-            presenter.Refresh(true);
-
+            var outcome = _simulation.Walk(walkDirection, Time.deltaTime);
             switch (outcome)
             {
-                case WalkOutcome.Moved:
+                case BattleWalkOutcome.Moved:
                     _status = GameText.Moved(DescribeTeam(BattleTeamId.Player));
                     break;
-                case WalkOutcome.Blocked:
+                case BattleWalkOutcome.Blocked:
                     _status = GameText.MovementBlocked();
                     ClearWalkInput();
                     break;
-                case WalkOutcome.StartedFalling:
+                case BattleWalkOutcome.StartedFalling:
                     // Regular physics takes over from here (HasActiveMotion).
                     ClearWalkInput();
                     break;
@@ -1410,7 +1044,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void TryStartJump(bool forward)
         {
-            if (!CanUseMovement())
+            if (!CanPlayerUseMovement())
             {
                 if (IsMovementBlockedByGuide())
                 {
@@ -1420,136 +1054,13 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (_playerMovement == null || !_playerMovement.HasTimeRemaining)
+            var outcome = _simulation.TryStartJump(forward);
+            if (outcome == BattleJumpOutcome.Jumped)
             {
-                return;
+                _status = forward
+                    ? GameText.FrontJumped(DescribeTeam(BattleTeamId.Player))
+                    : GameText.BackJumped(DescribeTeam(BattleTeamId.Player));
             }
-
-            var presenter = GetActivePresenter();
-            if (presenter == null || presenter.State.TeamId != BattleTeamId.Player)
-            {
-                return;
-            }
-
-            StartJumpAttempt(presenter, forward);
-        }
-
-        private void StartJumpAttempt(BattleUnitPresenter presenter, bool forward)
-        {
-            var motor = GetMotor(presenter);
-            if (motor == null || !motor.IsStable)
-            {
-                return;
-            }
-
-            var archetype = ArchetypeFor(presenter.State.TeamId);
-            var direction = presenter.State.FacingDirectionX;
-            var horizontalDistance = (forward ? archetype.FrontJumpDistance : -archetype.BackJumpDistance) * direction;
-            var apexHeight = (forward ? archetype.FrontJumpHeight : archetype.BackJumpHeight) + 0.2f;
-            motor.StartJump(horizontalDistance, apexHeight);
-            _status = forward
-                ? GameText.FrontJumped(DescribeTeam(presenter.State.TeamId))
-                : GameText.BackJumped(DescribeTeam(presenter.State.TeamId));
-        }
-
-        private void UpdateUnitPhysics()
-        {
-            _simulationAccumulator += Mathf.Min(Time.deltaTime, 0.1f);
-            while (_simulationAccumulator >= SimulationTickSeconds)
-            {
-                _simulationAccumulator -= SimulationTickSeconds;
-                foreach (var presenter in _unitPresenters)
-                {
-                    var unit = presenter.State;
-                    if (unit.IsDefeated || !_unitMotors.TryGetValue(unit.UnitId, out var motor) || motor.IsStable)
-                    {
-                        continue;
-                    }
-
-                    var outcome = motor.Step(SimulationTickSeconds);
-                    unit.MoveTo(motor.Position);
-                    if (outcome == MotorStepOutcome.FellOutOfBounds)
-                    {
-                        unit.MoveTo(new Vector2(motor.Position.x, FallDeathY));
-                        motor.Teleport(unit.Position);
-                        unit.ApplyDamage(unit.MaxHealth, "fall.out-of-bounds");
-                        EmitFeedback(BattleFeedbackEventType.UnitDefeated);
-                    }
-                    else if (outcome == MotorStepOutcome.Landed)
-                    {
-                        NudgeApartFromOthers(presenter, motor);
-                    }
-                }
-            }
-
-            foreach (var presenter in _unitPresenters)
-            {
-                presenter.Refresh(presenter.State.UnitId == _battleState.Turn.ActiveUnitId);
-            }
-
-            if (HasActiveMotion)
-            {
-                return;
-            }
-
-            _simulationAccumulator = 0f;
-            ResolveBattleAfterMotion();
-        }
-
-        private void NudgeApartFromOthers(BattleUnitPresenter presenter, UnitMotor motor)
-        {
-            foreach (var other in _unitPresenters)
-            {
-                var otherUnit = other.State;
-                if (other == presenter || otherUnit.IsDefeated)
-                {
-                    continue;
-                }
-
-                var deltaX = motor.Position.x - otherUnit.Position.x;
-                var verticalOverlap = Mathf.Abs(motor.Position.y - otherUnit.Position.y)
-                    < ArchetypeFor(otherUnit.TeamId).BodyHeight * 0.55f;
-                if (Mathf.Abs(deltaX) >= OccupiedRadius || !verticalOverlap)
-                {
-                    continue;
-                }
-
-                var pushDirection = deltaX >= 0f ? 1f : -1f;
-                var desiredX = otherUnit.Position.x + pushDirection * OccupiedRadius;
-                if (TryResolveGroundPosition(new Vector2(desiredX, motor.Position.y), presenter.State.TeamId, out var freeSpot)
-                    && Mathf.Abs(freeSpot.y - motor.Position.y) <= 0.6f)
-                {
-                    motor.Teleport(freeSpot);
-                    presenter.State.MoveTo(freeSpot);
-                }
-
-                return;
-            }
-        }
-
-        private void ResolveBattleAfterMotion()
-        {
-            if (_battleState == null || _battleResult.IsFinished)
-            {
-                return;
-            }
-
-            _battleResult = BattleResultEvaluator.Evaluate(_battleState);
-            RefreshUnitViews();
-            if (!_battleResult.IsFinished)
-            {
-                return;
-            }
-
-            EmitFeedback(BattleFeedbackEventType.BattleFinished);
-            _resultScreenState = CreateResultScreenState(_battleResult, _battleState.Turn.TurnNumber);
-            _status = GameText.ResultPrompt(_resultScreenState.Title);
-            if (_battleResult.Outcome == BattleOutcome.PlayerWon)
-            {
-                ReportTutorial(BattleTutorialBridge.BattleWon);
-            }
-
-            _firstBattleGuide?.ObserveBattleFinished();
         }
 
         private void RefreshUnitViews()
@@ -1584,13 +1095,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (!_opponentInventory.TrySelectNextUsable())
             {
-                _turnService.AdvanceTurn(_battleState);
-                ApplyAimSettingsForActiveTeam();
-                _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
-                _aiDecisionTimer = 0f;
-                ResetPlayerMovementTurn();
-                _status = GameText.TurnStatus(DescribeTeam(_battleState.Turn.ActiveTeam));
-                RefreshUnitViews();
+                _simulation.AdvanceTurnDueToNoUsableWeapon();
                 return;
             }
 
@@ -1605,20 +1110,9 @@ namespace Game.Gameplay.Battle.Assembly
             _aiDecisionTimer = 0f;
         }
 
-        private WeaponInventoryRuntime GetInventoryFor(BattleTeamId teamId)
-        {
-            return teamId == BattleTeamId.Opponent ? _opponentInventory : _inventory;
-        }
-
-        private static bool IsInstantUtility(WeaponRole role)
-        {
-            return role == WeaponRole.CoverTool
-                || role == WeaponRole.DefensiveTool;
-        }
-
         private void ApplyAimSettingsForActiveTeam()
         {
-            var activeInventory = GetInventoryFor(_battleState.Turn.ActiveTeam);
+            var activeInventory = _simulation.ActiveInventory;
             var weapon = activeInventory?.Selected ?? _inventory.Selected;
             _aimSettings = weapon.CreateAimSettings(_baseAimSettings);
         }
@@ -1695,6 +1189,12 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             DrawBallisticTrajectory(activePresenter.View.FirePoint.position, _inventory.Selected);
+        }
+
+        private static bool IsInstantUtility(WeaponRole role)
+        {
+            return role == WeaponRole.CoverTool
+                || role == WeaponRole.DefensiveTool;
         }
 
         private void DrawBallisticTrajectory(Vector2 firePoint, WeaponDefinition weapon)
@@ -1961,13 +1461,13 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void ContinueFromResult()
         {
-            if (!IsBattleReady() || !_battleResult.IsFinished)
+            if (!IsBattleReady() || !_simulation.Result.IsFinished)
             {
                 return;
             }
 
             // Win: report completion so the menu advances. Loss: just return to menu.
-            if (_battleResult.Outcome == BattleOutcome.PlayerWon)
+            if (_simulation.Result.Outcome == BattleOutcome.PlayerWon)
             {
                 GameSessionContext.ReportMissionCompleted();
             }
@@ -1982,7 +1482,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void CancelAim()
         {
-            if (!IsBattleReady() || _battleResult.IsFinished || HasProjectilesInFlight || HasActiveMotion)
+            if (!IsBattleReady() || _simulation.Result.IsFinished || HasProjectilesInFlight || HasActiveMotion)
             {
                 return;
             }
@@ -2001,8 +1501,8 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var weapon = _inventory.Selected;
-            var playerHasTime = _playerMovement == null || _playerMovement.HasTimeRemaining;
-            var canFire = !_battleResult.IsFinished
+            var playerHasTime = _simulation.MovementTimeRemaining > 0f;
+            var canFire = !_simulation.Result.IsFinished
                 && !HasProjectilesInFlight
                 && !HasActiveMotion
                 && playerHasTime
@@ -2015,15 +1515,13 @@ namespace Game.Gameplay.Battle.Assembly
             var tutorialTargetId = guideActive
                 ? _firstBattleGuide.TargetId
                 : _coachTimer > 0f ? _coachTargetId : string.Empty;
-            var canUseMovement = !_battleResult.IsFinished
+            var canUseMovement = !_simulation.Result.IsFinished
                 && !HasProjectilesInFlight
                 && !HasActiveMotion
                 && _battleState.Turn.ActiveTeam == BattleTeamId.Player
                 && !_battleState.Turn.ActionSpent
-                && (_playerMovement == null || _playerMovement.HasTimeRemaining);
-            var mobilityLabel = _playerMovement != null
-                ? GameText.MobilityLabel(_playerMovement.RemainingTurnSeconds)
-                : string.Empty;
+                && playerHasTime;
+            var mobilityLabel = GameText.MobilityLabel(_simulation.MovementTimeRemaining);
 
             var state = new BattleHudState(
                 status,
@@ -2050,14 +1548,14 @@ namespace Game.Gameplay.Battle.Assembly
                 canUseMovement,
                 canUseMovement,
                 canUseMovement,
-                _battleResult.IsFinished,
+                _simulation.Result.IsFinished,
                 _resultScreenState.Title,
                 _resultScreenState.Subtitle,
-                _battleResult.IsFinished ? DescribeOutcome(_resultScreenState.Result.Outcome) : string.Empty,
-                _battleResult.IsFinished ? GameText.Reward(_resultScreenState.RewardPreview.SoftCurrency) : string.Empty,
-                _battleResult.IsFinished && _resultScreenState.RewardPreview.HasUnlock ? _resultScreenState.RewardPreview.UnlockText : GameText.NoUnlocks,
-                _battleResult.IsFinished && _resultScreenState.CanContinue,
-                _battleResult.IsFinished ? _resultScreenState.RetryLabel : GameText.Restart,
+                _simulation.Result.IsFinished ? DescribeOutcome(_resultScreenState.Result.Outcome) : string.Empty,
+                _simulation.Result.IsFinished ? GameText.Reward(_resultScreenState.RewardPreview.SoftCurrency) : string.Empty,
+                _simulation.Result.IsFinished && _resultScreenState.RewardPreview.HasUnlock ? _resultScreenState.RewardPreview.UnlockText : GameText.NoUnlocks,
+                _simulation.Result.IsFinished && _resultScreenState.CanContinue,
+                _simulation.Result.IsFinished ? _resultScreenState.RetryLabel : GameText.Restart,
                 _resultScreenState.CanContinue ? _resultScreenState.ContinueLabel : GameText.Menu);
 
             _hud.Render(state);
@@ -2156,7 +1654,7 @@ namespace Game.Gameplay.Battle.Assembly
                 && _arenas != null
                 && _arenas.Length > 0
                 && _battleState != null
-                && _turnService != null
+                && _simulation != null
                 && _aimLine != null
                 && _trajectoryLine != null;
         }

@@ -47,8 +47,7 @@ namespace Game.Gameplay.Battle.Weapons
                     context.Origin + direction * MuzzleOffset,
                     direction * context.Power,
                     weapon.ProjectileRadius * 2f,
-                    color,
-                    context.OwnerCollider);
+                    color);
 
                 context.Spawner.Spawn(request);
             }

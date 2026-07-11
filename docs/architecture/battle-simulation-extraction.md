@@ -81,7 +81,7 @@ BattleSceneController (залишається MonoBehaviour):
 
 ## Етап A — BattleSimulation (правила бою)
 
-- [ ] Створити `Simulation/BattleSimulation.cs` (чиста C#). Конструктор:
+- [x] Створити `Simulation/BattleSimulation.cs` (чиста C#). Конструктор:
       `(BattleState state, TurnService turnService, BattleTerrain terrain,
       IReadOnlyDictionary<string, UnitMotor> motors,
       WeaponInventoryRuntime playerInventory,
@@ -93,7 +93,7 @@ BattleSceneController (залишається MonoBehaviour):
       `PlayerTurnDurationSeconds`, `OccupiedRadius`,
       `UnitCollisionHalfWidth`, `KnockbackLandingSearchPadding`,
       `GroundRayStartHeight`, `GroundRayDistance`.
-- [ ] Перенести в сим (пойменований move-map зі списку «Поточний стан»,
+- [x] Перенести в сим (пойменований move-map зі списку «Поточний стан»,
       логіка 1:1): валідацію пострілу з `Fire()` (без вводу/прев'ю),
       `UseCloseRangeBurst`, `UseInstantUtility`, `ResolveImpact`,
       `ResolveDamageImpact`, `ApplyTerrainDestruction`,
@@ -105,14 +105,14 @@ BattleSceneController (залишається MonoBehaviour):
       `ResolveUnitLandingPosition`, `CompleteInstantAction`,
       `EndPlayerTurnFromTimer`, `_playerMovement` і
       `UpdatePlayerTurnTimer`-логіку.
-- [ ] Публічний API сим (команди повертають результат-enum, а не пишуть
+- [x] Публічний API сим (команди повертають результат-enum, а не пишуть
       статус-тексти): `TryFire(AimState aim)`, `Walk(int dir, float dt)`,
       `TryStartJump(bool forward)`, `Tick(float dt)` (внутрішній
       акумулятор 1/120), `NotifyProjectileImpact(ProjectileImpact)`
       (тимчасово, до етапу B), властивості: `State`, `Result`,
       `HasActiveMotion`, `ProjectilesInFlight`, `Terrain`,
       `ActiveInventory`, `MovementTimeRemaining`.
-- [ ] Події сим у `BattleSimulationEvents.cs` (C# `event`):
+- [x] Події сим у `BattleSimulationEvents.cs` (C# `event`):
       `ShotFired`, `ImpactResolved(point, weapon, terrainChanged)`,
       `UnitDefeated(unitId, reason)`, `TurnAdvanced(team)`,
       `BattleFinished(result)`, `CoverDeployed(position, size, weapon)`,
@@ -120,20 +120,20 @@ BattleSceneController (залишається MonoBehaviour):
       `UnitsMoved` (раз на кадр після тіку — сигнал контролеру
       синхронізувати view). Усі статусні рядки (`GameText.*`) формує
       контролер у обробниках подій — у сим текстів немає.
-- [ ] Контролер: залишає собі ввід, візуали, HUD, туторіал, AI;
+- [x] Контролер: залишає собі ввід, візуали, HUD, туторіал, AI;
       усі виклики правил замінити на команди сим; підписки на події;
       `IProjectileWorld` поки що реалізує контролер (юніти бере з
       `sim.State`).
-- [ ] `WeaponFireContext`: прибрати параметр `Collider2D` (мертвий після
+- [x] `WeaponFireContext`: прибрати параметр `Collider2D` (мертвий після
       фізичного рефакторингу). Оновити `ProjectileWeaponEffect`,
       `BurstProjectileEffect`, `ProjectileSpawnRequest`
       (поле `IgnoredOwnerCollider` видалити) і місця створення.
-- [ ] EditMode-тести `Tests/EditMode/Gameplay/BattleSimulationTests.cs`
+- [x] EditMode-тести `Tests/EditMode/Gameplay/BattleSimulationTests.cs`
       (сцена не потрібна — процедурний `BattleTerrain.CreateProcedural`,
       два юніти): постріл → імпакт → шкода + відкидання → зміна ходу;
       падіння за межі → поразка → `BattleFinished`; таймер ходу
       вичерпано → хід переходить; cover штампується в маску.
-- [ ] Критерій: контролер не містить жодного виклику
+- [x] Критерій: контролер не містить жодного виклику
       `DamageResolver`/`TurnService`/`BattleResultEvaluator` напряму;
       всі 82+ Gameplay-тести зелені; коміт.
 

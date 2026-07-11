@@ -33,7 +33,6 @@ namespace Game.Tests.EditMode.Gameplay
                 Vector2.zero,
                 Vector2.right,
                 12f,
-                null,
                 spawner);
         }
 

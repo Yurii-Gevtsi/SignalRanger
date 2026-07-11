@@ -31,7 +31,7 @@ namespace Game.Tests.EditMode.Gameplay
         {
             var spawner = new RecordingSpawner();
             var effect = new BurstProjectileEffect(shotCount: 3);
-            var context = new WeaponFireContext(Weapon(), "unit.player.01", Vector2.zero, Vector2.right, 12f, null, spawner);
+            var context = new WeaponFireContext(Weapon(), "unit.player.01", Vector2.zero, Vector2.right, 12f, spawner);
 
             effect.Fire(context);
 
@@ -43,7 +43,7 @@ namespace Game.Tests.EditMode.Gameplay
         {
             var spawner = new RecordingSpawner();
             var effect = new BurstProjectileEffect(shotCount: 3, spreadDegrees: 30f);
-            var context = new WeaponFireContext(Weapon(), "unit.player.01", Vector2.zero, Vector2.right, 10f, null, spawner);
+            var context = new WeaponFireContext(Weapon(), "unit.player.01", Vector2.zero, Vector2.right, 10f, spawner);
 
             effect.Fire(context);
 
@@ -60,7 +60,7 @@ namespace Game.Tests.EditMode.Gameplay
         {
             var spawner = new RecordingSpawner();
             var effect = new BurstProjectileEffect(shotCount: 0);
-            var context = new WeaponFireContext(Weapon(), "unit.player.01", Vector2.zero, Vector2.right, 10f, null, spawner);
+            var context = new WeaponFireContext(Weapon(), "unit.player.01", Vector2.zero, Vector2.right, 10f, spawner);
 
             effect.Fire(context);
 
@@ -72,7 +72,7 @@ namespace Game.Tests.EditMode.Gameplay
         {
             var spawner = new RecordingSpawner();
             var effect = new BurstProjectileEffect(shotCount: 3);
-            var context = new WeaponFireContext(Weapon(), "unit.player.01", Vector2.zero, Vector2.right, 10f, null, spawner);
+            var context = new WeaponFireContext(Weapon(), "unit.player.01", Vector2.zero, Vector2.right, 10f, spawner);
 
             effect.Fire(context);
 

@@ -25,8 +25,7 @@ namespace Game.Gameplay.Battle.Weapons
                 context.Origin + context.Direction * MuzzleOffset,
                 context.Direction * context.Power,
                 weapon.ProjectileRadius * 2f,
-                GetProjectileColor(weapon.Role),
-                context.OwnerCollider);
+                GetProjectileColor(weapon.Role));
 
             context.Spawner.Spawn(request);
         }

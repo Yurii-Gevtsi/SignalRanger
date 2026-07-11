@@ -14,7 +14,6 @@ namespace Game.Gameplay.Battle.Weapons
             Vector2 origin,
             Vector2 direction,
             float power,
-            Collider2D ownerCollider,
             IProjectileSpawner spawner)
         {
             Weapon = weapon;
@@ -22,7 +21,6 @@ namespace Game.Gameplay.Battle.Weapons
             Origin = origin;
             Direction = direction;
             Power = power;
-            OwnerCollider = ownerCollider;
             Spawner = spawner;
         }
 
@@ -31,7 +29,6 @@ namespace Game.Gameplay.Battle.Weapons
         public Vector2 Origin { get; }
         public Vector2 Direction { get; }
         public float Power { get; }
-        public Collider2D OwnerCollider { get; }
         public IProjectileSpawner Spawner { get; }
     }
 }
