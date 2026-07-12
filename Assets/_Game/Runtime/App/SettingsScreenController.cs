@@ -59,7 +59,7 @@ namespace Game.App
             canvasObject.transform.SetParent(transform, false);
             var canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 120;
+            canvas.sortingOrder = 150;
 
             var scaler = canvasObject.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;

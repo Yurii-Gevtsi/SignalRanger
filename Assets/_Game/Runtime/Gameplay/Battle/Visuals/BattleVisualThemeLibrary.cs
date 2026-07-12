@@ -8,7 +8,7 @@ namespace Game.Gameplay.Battle.Visuals
         private const string FirstArenaId = "arena.training-meadow";
         private const string FruitGardenBackground = "Visuals/Arenas/Background2";
         private const string FruitGardenForeground = "Visuals/Arenas/train2";
-        private const string PlayerCharacter = "Visuals/Characters/raccoon-agent-clean";
+        private const string PlayerCharacter = "Visuals/Characters/racoon-full";
         private const string OpponentCharacter = "Visuals/Characters/octopus-enemy-clean";
 
         public static BattleVisualTheme ForArena(ArenaDefinition arena)

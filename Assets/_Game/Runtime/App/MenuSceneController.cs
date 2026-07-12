@@ -1,10 +1,7 @@
 using System;
-using Game.App.Content;
+using System.Collections.Generic;
 using Game.Core;
-using Game.Core.Localization;
 using Game.Data.Save;
-using Game.Gameplay.Battle.Weapons;
-using Game.Progression.Missions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,12 +13,15 @@ namespace Game.App
 {
     public sealed class MenuSceneController : MonoBehaviour
     {
-        private static readonly Color BackgroundColor = new(0.12f, 0.17f, 0.20f);
-        private static readonly Color PrimaryColor = new(0.22f, 0.66f, 0.38f);
-        private static readonly Color SecondaryColor = new(0.18f, 0.25f, 0.31f);
+        private const string UiResourceRoot = "UI/Menu/";
+
+        private static readonly Color BackgroundColor = new(0.02f, 0.025f, 0.03f);
+        private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.88f);
+        private static readonly Color DisabledTint = new(0.72f, 0.78f, 0.82f, 0.78f);
+
+        private readonly Dictionary<string, Sprite> _sprites = new();
 
         private Sprite _whiteSprite;
-        private TMP_Text _statusText;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void CreateForMenuScene()
@@ -65,8 +65,7 @@ namespace Game.App
 
             if (AppServices.TryConsumePendingLoadoutReview())
             {
-                var unlockedWeaponName = DescribeUnlockedWeaponName(AppServices.LastMissionCompletionResult);
-                LoadoutScreenController.Open(() => SetStatus(GameText.LoadoutReviewUnlocked(unlockedWeaponName)));
+                LoadoutScreenController.Open(null);
             }
         }
 
@@ -82,7 +81,7 @@ namespace Game.App
             eventSystem.AddComponent<InputSystemUIInputModule>();
         }
 
-        private void BuildCamera()
+        private static void BuildCamera()
         {
             var cameraObject = new GameObject("Menu Camera");
             var camera = cameraObject.AddComponent<Camera>();
@@ -96,10 +95,7 @@ namespace Game.App
         private void BuildMenu()
         {
             var saveData = AppServices.SaveService.Current;
-            var nextMission = AppServices.Campaign.GetNextMission();
-            var nextChapter = nextMission != null && AppServices.Content != null && AppServices.Content.TryGetChapter(nextMission.ChapterId, out var chapter)
-                ? chapter
-                : null;
+
             var canvasObject = new GameObject("Menu Canvas");
             var canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -107,50 +103,69 @@ namespace Game.App
 
             var scaler = canvasObject.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1080f, 1920f);
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
+            CreateImage("Main Background", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, "main_scr_albom", false, null);
+            CreateImage("Menu Character", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(560f, 560f), new Vector2(0f, 80f),
+                "Visuals/Characters/racoon-full", true, null);
 
-            // Top band with title/subtitle (anchored to the top edge).
-            CreatePanel("Top Band", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0f, 220f), Vector2.zero, new Color(0.05f, 0.08f, 0.10f, 0.92f));
-            CreateText("Title", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-96f, 78f), new Vector2(0f, -58f), 48, TextAlignmentOptions.MidlineLeft, GameText.MenuTitle());
-            CreateText("Subtitle", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-96f, 64f), new Vector2(0f, -132f), 26, TextAlignmentOptions.MidlineLeft, GameText.MenuSubtitle());
+            BuildTopBar(root, saveData);
+            BuildBottomActions(root);
+        }
 
-            // Campaign chapter block, anchored under the top band.
-            CreateText("Chapter Label", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 42f), new Vector2(0f, -248f), 28, TextAlignmentOptions.MidlineLeft, GameText.ChapterLabel());
-            CreateText("Chapter Name", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 52f), new Vector2(0f, -300f), 36, TextAlignmentOptions.MidlineLeft, DescribeChapterTitle(nextChapter));
-            CreateText("Chapter Summary", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 84f), new Vector2(0f, -378f), 24, TextAlignmentOptions.TopLeft, DescribeChapterSummary(nextChapter));
+        private void BuildTopBar(Transform root, SaveData saveData)
+        {
+            var playerName = string.IsNullOrWhiteSpace(saveData?.profile.playerName)
+                ? "PLAYER NAME"
+                : saveData.profile.playerName.ToUpperInvariant();
+            var softCurrency = Mathf.Max(0, saveData?.economy.softCurrency ?? 0);
 
-            // Mission info block, anchored under the chapter block.
-            CreateText("Mission Label", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 42f), new Vector2(0f, -484f), 30, TextAlignmentOptions.MidlineLeft, DescribeMissionLabel());
-            CreateText("Mission Name", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 60f), new Vector2(0f, -540f), 42, TextAlignmentOptions.MidlineLeft, DescribeMissionTitle(nextMission));
-            CreateText("Mission Details", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 120f), new Vector2(0f, -634f), 25, TextAlignmentOptions.TopLeft, DescribeMissionDetails(nextMission));
-            CreateText("Profile Summary", root, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 120f), new Vector2(0f, -764f), 23, TextAlignmentOptions.TopLeft, DescribeProfile(saveData, nextMission));
+            var profile = CreateImage("Profile Panel", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(560f, 170f), new Vector2(34f, -24f), "user_panel", true, null);
+            CreateLabel("Player Name", profile.transform, new Vector2(0.36f, 0.28f), new Vector2(0.98f, 0.90f),
+                35, TextAlignmentOptions.MidlineLeft, playerName);
 
-            // Actions, anchored to the bottom edge so they never overlap the info above.
-            CreateButton("Play Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(680f, 124f), new Vector2(0f, 250f), PrimaryColor, GameText.Play, 44, StartBattle);
-            CreateButton("Loadout Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(332f, 100f), new Vector2(-176f, 132f), SecondaryColor, GameText.Loadout, 28, OpenLoadout);
-            CreateButton("Settings Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(332f, 100f), new Vector2(176f, 132f), SecondaryColor, GameText.Settings, 28, OpenSettings);
+            CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(124f, 124f), new Vector2(-28f, -25f), "settings_btn", OpenSettings);
 
-            _statusText = CreateText("Status", root, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(-96f, 44f), new Vector2(0f, 48f), 24, TextAlignmentOptions.Center,
-                DescribeMenuStatus(AppServices.LastSaveLoadResult, AppServices.LastMissionCompletionResult));
+            var coins = CreateImage("Coins Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(310f, 155f), new Vector2(-486f, -20f), "Coin_panel", true, null);
+            CreateLabel("Coins Value", coins.transform, new Vector2(0.34f, 0.22f), new Vector2(0.76f, 0.78f),
+                35, TextAlignmentOptions.Center, softCurrency.ToString());
+
+            var premium = CreateImage("Premium Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(310f, 155f), new Vector2(-166f, -20f), "vip_coins_panel", true, null);
+            CreateLabel("Premium Value", premium.transform, new Vector2(0.36f, 0.22f), new Vector2(0.76f, 0.78f),
+                35, TextAlignmentOptions.Center, "0");
+        }
+
+        private void BuildBottomActions(Transform root)
+        {
+            var play = CreateImageButton("Play Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f), new Vector2(620f, 413f), new Vector2(0f, 54f), "play_btn", StartBattle);
+            CreateLabel("Play Label", play.transform, new Vector2(0.20f, 0.17f), new Vector2(0.80f, 0.47f),
+                58, TextAlignmentOptions.Center, "Play");
+
+            var inventory = CreateImageButton("Inventory Button", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
+                new Vector2(0f, 0f), new Vector2(220f, 220f), new Vector2(80f, 72f), "inventory", OpenLoadout);
+            CreateLabel("Inventory Label", inventory.transform, new Vector2(-0.20f, -0.07f), new Vector2(1.20f, 0.17f),
+                35, TextAlignmentOptions.Center, "Inventory");
+
+            var shop = CreateImageButton("Shop Button", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
+                new Vector2(1f, 0f), new Vector2(220f, 220f), new Vector2(-80f, 72f), "shop_btn_inactive", OpenShop);
+            CreateLabel("Shop Label", shop.transform, new Vector2(-0.20f, -0.07f), new Vector2(1.20f, 0.17f),
+                35, TextAlignmentOptions.Center, "Shop");
+
+            var rewards = CreateImage("Rewards Button", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(280f, 210f), new Vector2(0f, -18f), "rewards_btn", true, DisabledTint);
+            CreateLabel("Rewards Label", rewards.transform, new Vector2(-0.20f, -0.10f), new Vector2(1.20f, 0.14f),
+                35, TextAlignmentOptions.Center, "Rewards");
         }
 
         private void StartBattle()
@@ -161,125 +176,104 @@ namespace Game.App
 
         private void OpenLoadout()
         {
-            LoadoutScreenController.Open(() => SetStatus(GameText.LoadoutUpdated()));
+            LoadoutScreenController.Open(null);
         }
 
         private void OpenSettings()
         {
-            SettingsScreenController.Open(() => SetStatus(GameText.SettingsSaved()));
+            SettingsScreenController.Open(null);
         }
 
-        private void SetStatus(string message)
+        private void OpenShop()
         {
-            if (_statusText != null)
-            {
-                _statusText.text = message;
-            }
+            ShopScreenController.Open(null);
         }
 
-        private static string DescribeProfile(SaveData saveData, MissionDefinition mission)
-        {
-            if (saveData == null)
-            {
-                return GameText.ProfileUnavailable();
-            }
-
-            var reward = mission != null ? mission.Reward.softCurrency : 0;
-            return GameText.ProfileSummary(
-                saveData.profile.playerName,
-                saveData.campaign.highestUnlockedMissionIndex + 1,
-                saveData.economy.softCurrency,
-                reward);
-        }
-
-        private static string DescribeMissionTitle(MissionDefinition mission)
-        {
-            return mission != null ? mission.Title : GameText.DefaultMissionTitle();
-        }
-
-        private static string DescribeMissionLabel()
-        {
-            return AppServices.Campaign != null
-                ? GameText.MissionProgress(AppServices.Session.SelectedMissionIndex + 1, AppServices.Campaign.MissionCount)
-                : GameText.NextMissionLabel();
-        }
-
-        private static string DescribeMissionDetails(MissionDefinition mission)
-        {
-            return mission != null
-                ? mission.Description
-                : GameText.DefaultMissionDetails();
-        }
-
-        private static string DescribeChapterTitle(CampaignChapterDefinition chapter)
-        {
-            return chapter != null ? chapter.DisplayName : GameText.ChapterFallbackTitle();
-        }
-
-        private static string DescribeChapterSummary(CampaignChapterDefinition chapter)
-        {
-            return chapter != null ? chapter.Summary : GameText.ChapterFallbackSummary();
-        }
-
-        private static string DescribeMenuStatus(SaveLoadResult loadResult, MissionCompletionResult completionResult)
-        {
-            if (completionResult.Applied)
-            {
-                var unlockedWeaponName = DescribeUnlockedWeaponName(completionResult);
-                return GameText.MissionCompleted(completionResult.GrantedSoftCurrency, unlockedWeaponName);
-            }
-
-            return loadResult.Status switch
-            {
-                SaveLoadStatus.CreatedNew => GameText.LoadStatusCreatedNew(),
-                SaveLoadStatus.RecoveredFromCorrupt => GameText.LoadStatusRecovered(),
-                _ => GameText.LoadStatusReady()
-            };
-        }
-
-        private static string DescribeUnlockedWeaponName(MissionCompletionResult completionResult)
-        {
-            return completionResult.HasUnlock
-                ? WeaponDisplayNames.Get(completionResult.UnlockedWeaponId)
-                : string.Empty;
-        }
-
-        private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 sizeDelta, Vector2 anchoredPosition, Color color)
+        private RectTransform CreateImage(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
+            Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPosition, string resourceName, bool preserveAspect,
+            Color? tint)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
             var image = rect.gameObject.AddComponent<Image>();
-            image.sprite = _whiteSprite;
-            image.color = color;
-            return image;
+            image.sprite = LoadSprite(resourceName);
+            image.color = tint ?? Color.white;
+            image.preserveAspect = preserveAspect;
+            image.raycastTarget = false;
+            return rect;
         }
 
-        private TMP_Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value)
+        private RectTransform CreateImageButton(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
+            Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPosition, string resourceName, Action onClick)
         {
-            var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
+            var rect = CreateImage(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition, resourceName, true, null);
+            var image = rect.GetComponent<Image>();
+            image.raycastTarget = true;
+
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = image;
+            button.transition = Selectable.Transition.ColorTint;
+            button.colors = CreateButtonColors();
+            button.onClick.AddListener(() => onClick?.Invoke());
+            return rect;
+        }
+
+        private TMP_Text CreateLabel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
+            int fontSize, TextAlignmentOptions alignment, string value)
+        {
+            var rect = CreateRect(name, parent, anchorMin, anchorMax, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
             var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
             text.fontSize = fontSize;
+            text.enableAutoSizing = true;
+            text.fontSizeMin = Mathf.Max(16, fontSize - 14);
+            text.fontSizeMax = fontSize;
+            text.fontStyle = FontStyles.Bold;
             text.color = Color.white;
             text.alignment = alignment;
-            text.textWrappingMode = TextWrappingModes.Normal;
-            text.overflowMode = TextOverflowModes.Overflow;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            text.overflowMode = TextOverflowModes.Ellipsis;
             text.text = value;
             text.raycastTarget = false;
+
+            var shadow = rect.gameObject.AddComponent<Shadow>();
+            shadow.effectColor = TextShadowColor;
+            shadow.effectDistance = new Vector2(0f, -3f);
             return text;
         }
 
-        private Button CreateButton(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
-            Vector2 size, Vector2 anchoredPosition, Color color, string label, int fontSize, Action onClick)
+        private Sprite LoadSprite(string resourceName)
         {
-            var image = CreatePanel(name, parent, anchorMin, anchorMax, new Vector2(anchorMin.x, anchorMin.y), size, anchoredPosition, color);
-            var button = image.gameObject.AddComponent<Button>();
-            button.targetGraphic = image;
-            button.onClick.AddListener(() => onClick?.Invoke());
+            if (_sprites.TryGetValue(resourceName, out var cached))
+            {
+                return cached;
+            }
 
-            CreateText($"{name} Label", image.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, fontSize, TextAlignmentOptions.Center, label);
-            return button;
+            var resourcePath = resourceName.Contains("/")
+                ? resourceName
+                : UiResourceRoot + resourceName;
+            var texture = Resources.Load<Texture2D>(resourcePath);
+            if (texture == null)
+            {
+                return _whiteSprite;
+            }
+
+            var sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f), 100f);
+            _sprites[resourceName] = sprite;
+            return sprite;
+        }
+
+        private static ColorBlock CreateButtonColors()
+        {
+            return new ColorBlock
+            {
+                normalColor = Color.white,
+                highlightedColor = new Color(1.06f, 1.06f, 1.06f, 1f),
+                pressedColor = new Color(0.88f, 0.92f, 0.95f, 1f),
+                selectedColor = Color.white,
+                disabledColor = new Color(0.58f, 0.62f, 0.66f, 0.65f),
+                colorMultiplier = 1f,
+                fadeDuration = 0.08f
+            };
         }
 
         private static RectTransform CreateRect(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
