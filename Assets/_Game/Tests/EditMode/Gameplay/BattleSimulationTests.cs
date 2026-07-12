@@ -194,9 +194,11 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.AreEqual(BattleTeamId.Opponent, team);
             };
 
-            var expired = harness.Simulation.TickPlayerTurnTimer(31f);
+            for (var i = 0; i < 30 * 120 + 4 && !advanced; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
 
-            Assert.IsTrue(expired);
             Assert.IsTrue(advanced);
             Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
         }
@@ -264,6 +266,124 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.IsFalse(exploded, "projectile does not collide with its owner at launch");
             Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight);
+        }
+
+        [Test]
+        public void CommandScript_ReplaysWithMatchingHashes()
+        {
+            var first = RunDeterministicScript();
+            var second = RunDeterministicScript();
+
+            Assert.AreEqual(first.Count, second.Count);
+            for (var i = 0; i < first.Count; i++)
+            {
+                Assert.AreEqual(first[i], second[i], $"hash mismatch after fixed tick {i}");
+            }
+        }
+
+        [Test]
+        public void SameTotalTickTime_WithDifferentChunks_ProducesSameFinalState()
+        {
+            var weapon = CreateWeapon("weapon.test.chunked", gravityScale: 0f);
+            var fixedHarness = CreateHarness(weapon);
+            var chunkedHarness = CreateHarness(weapon);
+
+            fixedHarness.Simulation.Walk(1, 0f);
+            TickMany(fixedHarness.Simulation, 60, 1f / 120f);
+            fixedHarness.Simulation.Walk(0, 0f);
+            fixedHarness.Simulation.TryStartJump(true);
+            TickMany(fixedHarness.Simulation, 180, 1f / 120f);
+            fixedHarness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 20f, true));
+            TickMany(fixedHarness.Simulation, 120, 1f / 120f);
+
+            chunkedHarness.Simulation.Walk(1, 0f);
+            TickMany(chunkedHarness.Simulation, 30, 1f / 60f);
+            chunkedHarness.Simulation.Walk(0, 0f);
+            chunkedHarness.Simulation.TryStartJump(true);
+            TickMany(chunkedHarness.Simulation, 90, 1f / 60f);
+            chunkedHarness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 20f, true));
+            TickMany(chunkedHarness.Simulation, 60, 1f / 60f);
+
+            Assert.AreEqual(HashSimulation(fixedHarness.Simulation), HashSimulation(chunkedHarness.Simulation));
+        }
+
+        private static List<int> RunDeterministicScript()
+        {
+            var weapon = CreateWeapon("weapon.test.determinism", gravityScale: 0f);
+            var harness = CreateHarness(weapon);
+            var hashes = new List<int>();
+
+            for (var tick = 0; tick < 420; tick++)
+            {
+                if (tick == 0)
+                {
+                    harness.Simulation.Walk(1, 0f);
+                }
+                else if (tick == 48)
+                {
+                    harness.Simulation.Walk(0, 0f);
+                }
+                else if (tick == 72)
+                {
+                    harness.Simulation.TryStartJump(true);
+                }
+                else if (tick == 260)
+                {
+                    harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 20f, true));
+                }
+
+                harness.Simulation.Tick(1f / 120f);
+                hashes.Add(HashSimulation(harness.Simulation));
+            }
+
+            return hashes;
+        }
+
+        private static void TickMany(BattleSimulation simulation, int count, float deltaTime)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                simulation.Tick(deltaTime);
+            }
+        }
+
+        private static int HashSimulation(BattleSimulation simulation)
+        {
+            unchecked
+            {
+                var hash = 17;
+                hash = hash * 31 + simulation.Result.Outcome.GetHashCode();
+                hash = hash * 31 + simulation.State.Turn.ActiveTeam.GetHashCode();
+                hash = hash * 31 + simulation.State.Turn.TurnNumber.GetHashCode();
+                hash = hash * 31 + simulation.State.Turn.ActionSpent.GetHashCode();
+                hash = hash * 31 + simulation.MovementTimeRemaining.GetHashCode();
+
+                foreach (var team in simulation.State.Teams)
+                {
+                    hash = hash * 31 + team.TeamId.GetHashCode();
+                    foreach (var unit in team.Units)
+                    {
+                        hash = hash * 31 + unit.UnitId.GetHashCode();
+                        hash = hash * 31 + unit.Health.GetHashCode();
+                        hash = hash * 31 + unit.Position.x.GetHashCode();
+                        hash = hash * 31 + unit.Position.y.GetHashCode();
+                        hash = hash * 31 + unit.FacingDirectionX.GetHashCode();
+                    }
+                }
+
+                foreach (var projectile in simulation.Projectiles)
+                {
+                    hash = hash * 31 + projectile.Id.GetHashCode();
+                    hash = hash * 31 + projectile.Definition.ProjectileId.GetHashCode();
+                    hash = hash * 31 + projectile.Position.x.GetHashCode();
+                    hash = hash * 31 + projectile.Position.y.GetHashCode();
+                    hash = hash * 31 + projectile.Velocity.x.GetHashCode();
+                    hash = hash * 31 + projectile.Velocity.y.GetHashCode();
+                    hash = hash * 31 + projectile.RemainingLifetime.GetHashCode();
+                }
+
+                return hash;
+            }
         }
     }
 }

@@ -37,6 +37,7 @@ namespace Game.Gameplay.Battle.Simulation
         private WeaponDefinition _activeShotWeapon;
         private int _nextProjectileId;
         private float _simulationAccumulator;
+        private int _walkIntentDirection;
 
         public static BattleSimulation CreatePlayerFirst(
             BattleState state,
@@ -208,40 +209,34 @@ namespace Game.Gameplay.Battle.Simulation
 
         public BattleWalkOutcome Walk(int direction, float deltaTime)
         {
+            if (direction == 0)
+            {
+                _walkIntentDirection = 0;
+                return BattleWalkOutcome.None;
+            }
+
             if (!CanUseMovement() || direction == 0)
             {
+                _walkIntentDirection = 0;
                 return BattleWalkOutcome.NotAllowed;
             }
 
             var unit = GetActiveUnitOrNull();
             if (unit == null || unit.TeamId != BattleTeamId.Player)
             {
+                _walkIntentDirection = 0;
                 return BattleWalkOutcome.NotAllowed;
             }
 
             var motor = GetMotor(unit.UnitId);
             if (motor == null)
             {
+                _walkIntentDirection = 0;
                 return BattleWalkOutcome.NotAllowed;
             }
 
-            var outcome = motor.Walk(direction, deltaTime);
-            if (outcome == WalkOutcome.None)
-            {
-                return BattleWalkOutcome.None;
-            }
-
-            unit.SetFacing(direction);
-            unit.MoveTo(motor.Position);
-            UnitsMoved?.Invoke();
-
-            return outcome switch
-            {
-                WalkOutcome.Moved => BattleWalkOutcome.Moved,
-                WalkOutcome.Blocked => BattleWalkOutcome.Blocked,
-                WalkOutcome.StartedFalling => BattleWalkOutcome.StartedFalling,
-                _ => BattleWalkOutcome.None
-            };
+            _walkIntentDirection = direction > 0 ? 1 : -1;
+            return BattleWalkOutcome.Moved;
         }
 
         public BattleJumpOutcome TryStartJump(bool forward)
@@ -272,26 +267,6 @@ namespace Game.Gameplay.Battle.Simulation
             return BattleJumpOutcome.Jumped;
         }
 
-        public bool TickPlayerTurnTimer(float deltaTime)
-        {
-            if (_state.Turn.ActiveTeam != BattleTeamId.Player
-                || _state.Turn.ActionSpent
-                || HasProjectilesInFlight
-                || Result.IsFinished)
-            {
-                return false;
-            }
-
-            _playerMovement.Tick(deltaTime);
-            if (_playerMovement.HasTimeRemaining || HasActiveMotion)
-            {
-                return false;
-            }
-
-            EndPlayerTurnFromTimer();
-            return true;
-        }
-
         public void AdvanceTurnDueToNoUsableWeapon()
         {
             _turnService.AdvanceTurn(_state);
@@ -306,6 +281,8 @@ namespace Game.Gameplay.Battle.Simulation
             while (_simulationAccumulator >= _settings.SimulationTickSeconds)
             {
                 _simulationAccumulator -= _settings.SimulationTickSeconds;
+                StepPlayerTurnTimer(_settings.SimulationTickSeconds);
+                StepWalkIntent(_settings.SimulationTickSeconds);
                 StepProjectiles(_settings.SimulationTickSeconds);
                 StepUnits();
             }
@@ -375,6 +352,7 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void ResetMotionForNewTurn()
         {
+            _walkIntentDirection = 0;
             foreach (var motor in _motors.Values)
             {
                 motor.ResetWalk();
@@ -688,10 +666,67 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void EndPlayerTurnFromTimer()
         {
+            _walkIntentDirection = 0;
             _turnService.AdvanceTurn(_state);
             ResetMotionForNewTurn();
             TurnAdvanced?.Invoke(_state.Turn.ActiveTeam, TurnAdvanceReason.PlayerTimerExpired);
             UnitsMoved?.Invoke();
+        }
+
+        private void StepPlayerTurnTimer(float tickSeconds)
+        {
+            if (_state.Turn.ActiveTeam != BattleTeamId.Player
+                || _state.Turn.ActionSpent
+                || HasProjectilesInFlight
+                || HasActiveMotion
+                || Result.IsFinished)
+            {
+                return;
+            }
+
+            _playerMovement.Tick(tickSeconds);
+            if (!_playerMovement.HasTimeRemaining)
+            {
+                EndPlayerTurnFromTimer();
+            }
+        }
+
+        private void StepWalkIntent(float tickSeconds)
+        {
+            var direction = _walkIntentDirection;
+            if (direction == 0 || !CanUseMovement())
+            {
+                return;
+            }
+
+            var unit = GetActiveUnitOrNull();
+            if (unit == null || unit.TeamId != BattleTeamId.Player)
+            {
+                _walkIntentDirection = 0;
+                return;
+            }
+
+            var motor = GetMotor(unit.UnitId);
+            if (motor == null)
+            {
+                _walkIntentDirection = 0;
+                return;
+            }
+
+            var outcome = motor.Walk(direction, tickSeconds);
+            if (outcome == WalkOutcome.None)
+            {
+                return;
+            }
+
+            unit.SetFacing(direction);
+            unit.MoveTo(motor.Position);
+            UnitsMoved?.Invoke();
+
+            if (outcome != WalkOutcome.Moved)
+            {
+                _walkIntentDirection = 0;
+            }
         }
 
         public void Spawn(in ProjectileSpawnRequest request)

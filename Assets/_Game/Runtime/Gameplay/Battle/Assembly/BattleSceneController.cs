@@ -245,11 +245,6 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (_simulation.TickPlayerTurnTimer(Time.deltaTime))
-            {
-                return;
-            }
-
             if (!HasProjectilesInFlight && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 if (!IsCancelBlockedByGuide())
@@ -311,6 +306,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             UpdateWalking();
+            _simulation.Tick(Time.deltaTime);
             UpdateAim();
             DrawAim();
             DrawTrajectoryPreview();
@@ -1030,10 +1026,11 @@ namespace Game.Gameplay.Battle.Assembly
             var walkDirection = _keyboardWalkInputDirection != 0 ? _keyboardWalkInputDirection : _uiWalkInputDirection;
             if (walkDirection == 0 || !CanPlayerUseMovement())
             {
+                _simulation?.Walk(0, 0f);
                 return;
             }
 
-            var outcome = _simulation.Walk(walkDirection, Time.deltaTime);
+            var outcome = _simulation.Walk(walkDirection, 0f);
             switch (outcome)
             {
                 case BattleWalkOutcome.Moved:
@@ -1054,6 +1051,7 @@ namespace Game.Gameplay.Battle.Assembly
         {
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
+            _simulation?.Walk(0, 0f);
         }
 
         private void TryStartJump(bool forward)
