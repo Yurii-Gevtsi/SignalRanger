@@ -15,6 +15,8 @@ namespace Game.Gameplay.Battle.Runtime
         private Color _baseColor = Color.white;
         private Vector3 _baseScale;
         private int _artFacingDirectionX = 1;
+        private Transform _visualRoot;
+        private Vector3 _visualRootBaseScale = Vector3.one;
 
         public Transform FirePoint => firePoint != null ? firePoint : transform;
 
@@ -48,6 +50,13 @@ namespace Game.Gameplay.Battle.Runtime
             }
         }
 
+        /// <summary>Animated rig root; when set, facing flips its X scale instead of the sprite flipX.</summary>
+        public void SetVisualRoot(Transform visualRoot)
+        {
+            _visualRoot = visualRoot;
+            _visualRootBaseScale = visualRoot != null ? visualRoot.localScale : Vector3.one;
+        }
+
         /// <summary>Which way the source art looks; the flip in <see cref="SetFacing"/> is relative to it.</summary>
         public void SetArtFacing(int artFacingDirectionX)
         {
@@ -63,7 +72,12 @@ namespace Game.Gameplay.Battle.Runtime
                 firePoint.localPosition = new Vector3(0.45f * sign, 0.2f, 0f);
             }
 
-            if (bodyRenderer != null)
+            if (_visualRoot != null)
+            {
+                var flip = sign != _artFacingDirectionX ? -1f : 1f;
+                _visualRoot.localScale = new Vector3(_visualRootBaseScale.x * flip, _visualRootBaseScale.y, _visualRootBaseScale.z);
+            }
+            else if (bodyRenderer != null)
             {
                 bodyRenderer.flipX = sign != _artFacingDirectionX;
             }

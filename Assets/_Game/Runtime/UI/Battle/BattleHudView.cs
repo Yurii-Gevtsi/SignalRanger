@@ -13,51 +13,49 @@ namespace Game.UI.Battle
     public sealed class BattleHudView : MonoBehaviour, IBattleHud
     {
         private const float SafeMargin = 24f;
-        private const float DockHeight = 176f;
+        private const float WalkButtonSize = 168f;
+        private const float JumpButtonSize = 112f;
+        private const string BattleResourceRoot = "UI/Battle/";
+        private const string WeaponResourceRoot = "UI/Weapons/";
 
-        private static readonly Color Ink = new(0.04f, 0.065f, 0.095f, 0.88f);
         private static readonly Color InkSolid = new(0.055f, 0.085f, 0.13f, 0.96f);
         private static readonly Color Fire = new(0.14f, 0.78f, 0.36f, 1f);
-        private static readonly Color FireDark = new(0.07f, 0.43f, 0.22f, 1f);
-        private static readonly Color Blue = new(0.15f, 0.47f, 0.88f, 1f);
         private static readonly Color Gold = new(1f, 0.72f, 0.18f, 1f);
-        private static readonly Color Orange = new(0.86f, 0.43f, 0.13f, 1f);
         private static readonly Color Neutral = new(0.17f, 0.24f, 0.34f, 1f);
         private static readonly Color Disabled = new(0.20f, 0.23f, 0.28f, 0.42f);
         private static readonly Color TutorialHighlight = new(1f, 0.83f, 0.26f, 0.98f);
+        private static readonly Color Control = new(0.11f, 0.36f, 0.62f, 0.84f);
+        private static readonly Color ControlDisabled = new(0.11f, 0.18f, 0.26f, 0.42f);
 
+        private readonly Dictionary<string, Sprite> _weaponSprites = new(StringComparer.Ordinal);
         private Sprite _whiteSprite;
         private Sprite _panelSprite;
         private Sprite _pillSprite;
         private Sprite _buttonSprite;
         private Sprite _circleSprite;
+        private Sprite _tutorialCardSprite;
+        private Sprite _timerPanelSprite;
+        private Sprite _moveButtonSprite;
+        private Sprite _jumpButtonSprite;
 
         private TMP_Text _statusText;
         private TMP_Text _turnText;
-        private TMP_Text _weaponTitleText;
-        private TMP_Text _weaponMetaText;
-        private TMP_Text _weaponHintText;
-        private TMP_Text _mobilityText;
         private TMP_Text _powerText;
         private Image _powerFill;
         private Image _statusPanel;
         private Image _turnPanel;
-        private Image _weaponPanel;
-        private Image _weaponAccent;
-        private Button _weaponButton;
         private Button _moveLeftButton;
-        private Image _moveLeftPanel;
         private Button _moveRightButton;
+        private Button _jumpLeftButton;
+        private Button _jumpRightButton;
+        private Image _moveLeftPanel;
         private Image _moveRightPanel;
-        private Button _jumpBackButton;
-        private Image _jumpBackPanel;
-        private Button _jumpForwardButton;
-        private Image _jumpForwardPanel;
-        private Button _cancelButton;
-        private Image _cancelPanel;
+        private Image _jumpLeftPanel;
+        private Image _jumpRightPanel;
         private Button _fireButton;
         private Image _firePanel;
-        private TMP_Text _fireLabel;
+        private Image _fireIcon;
+        private string _weaponIconId = string.Empty;
         private GameObject _aimGuideRoot;
         private TMP_Text _aimGuideText;
         private GameObject _resultRoot;
@@ -73,14 +71,14 @@ namespace Game.UI.Battle
         private TMP_Text _resultContinueLabel;
 
         public event Action FireRequested;
-        public event Action CancelRequested;
-        public event Action NextWeaponRequested;
         public event Action MoveLeftStarted;
         public event Action MoveLeftStopped;
         public event Action MoveRightStarted;
         public event Action MoveRightStopped;
-        public event Action JumpForwardRequested;
-        public event Action JumpBackwardRequested;
+        public event Action JumpLeftRequested;
+        public event Action JumpRightRequested;
+        public event Action ZoomInRequested;
+        public event Action ZoomOutRequested;
         public event Action RestartRequested;
         public event Action ContinueRequested;
         public event Action MenuRequested;
@@ -92,6 +90,10 @@ namespace Game.UI.Battle
             _pillSprite = CreateRoundedSprite(128, 42, 9);
             _buttonSprite = CreateRoundedSprite(128, 28, 9);
             _circleSprite = CreateRoundedSprite(128, 62, 10);
+            _tutorialCardSprite = LoadResourceSprite(BattleResourceRoot + "card", new Vector4(250f, 250f, 250f, 250f));
+            _timerPanelSprite = LoadResourceSprite(BattleResourceRoot + "smal_panel", Vector4.zero);
+            _moveButtonSprite = LoadResourceSprite(BattleResourceRoot + "btn_move", Vector4.zero);
+            _jumpButtonSprite = LoadResourceSprite(BattleResourceRoot + "btn_jump", Vector4.zero);
 
             EnsureEventSystem();
             BuildCanvas();
@@ -105,27 +107,22 @@ namespace Game.UI.Battle
             }
 
             _statusText.text = state.Status;
-            _turnText.text = GameText.BattleTurn(state.TurnNumber, state.ActiveTeam);
-            _weaponTitleText.text = state.WeaponLabel;
-            _weaponMetaText.text = $"{GameText.WeaponType(state.WeaponRoleLabel)}  /  {state.AmmoLabel}";
-            _weaponHintText.text = state.WeaponHint;
-            _mobilityText.text = state.MobilityLabel;
-
+            _turnText.text = Mathf.CeilToInt(state.TurnSecondsRemaining).ToString();
             var power01 = state.PowerFraction;
             _powerFill.fillAmount = power01;
             _powerFill.color = Color.Lerp(new Color(0.54f, 0.95f, 1f, 1f), new Color(1f, 0.38f, 0.12f, 1f), power01);
             _powerText.text = $"{Mathf.RoundToInt(power01 * 100f)}%";
 
-            _weaponButton.interactable = !state.TutorialBlocksWeaponSwitch;
-            _cancelButton.interactable = !state.TutorialBlocksCancel;
-            _moveLeftButton.interactable = state.CanMoveLeft && !state.TutorialBlocksMovement;
-            _moveRightButton.interactable = state.CanMoveRight && !state.TutorialBlocksMovement;
-            _jumpBackButton.interactable = state.CanJumpBackward && !state.TutorialBlocksMovement;
-            _jumpForwardButton.interactable = state.CanJumpForward && !state.TutorialBlocksMovement;
+            var movementEnabled = state.CanUseMovement && !state.TutorialBlocksMovement;
+            SetControlState(_moveLeftButton, _moveLeftPanel, movementEnabled);
+            SetControlState(_moveRightButton, _moveRightPanel, movementEnabled);
+            SetControlState(_jumpLeftButton, _jumpLeftPanel, movementEnabled);
+            SetControlState(_jumpRightButton, _jumpRightPanel, movementEnabled);
 
             _fireButton.interactable = state.CanFire;
             _firePanel.color = state.CanFire ? Fire : Disabled;
-            _fireLabel.color = state.CanFire ? Color.white : new Color(1f, 1f, 1f, 0.42f);
+            _fireIcon.color = state.CanFire ? Color.white : new Color(1f, 1f, 1f, 0.42f);
+            SetWeaponIcon(state.WeaponIconId);
 
             RenderTutorialHighlight(state.TutorialTargetId, state.Status);
             RenderResult(state);
@@ -162,108 +159,66 @@ namespace Game.UI.Battle
 
             var root = canvasObject.transform;
             BuildTopLayer(root);
-            BuildBottomDock(root);
+            BuildMovementControls(root);
+            BuildPowerIndicator(root);
+            BuildFireButton(root);
             BuildAimGuide(root);
             BuildResultOverlay(root);
         }
 
         private void BuildTopLayer(Transform root)
         {
-            _statusPanel = CreateGlassPanel("Status Chip", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
-                new Vector2(620f, 86f), new Vector2(SafeMargin, -SafeMargin), Ink, new Color(0.21f, 0.73f, 1f, 0.62f));
-            _ = AddAccentStrip(_statusPanel.transform, Gold);
+            _statusPanel = CreatePanel("Tutorial Card", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(700f, 520f), new Vector2(SafeMargin, -SafeMargin), Color.white, _tutorialCardSprite);
+            _statusPanel.type = Image.Type.Sliced;
+            _statusText = CreateText("Tutorial Text", _statusPanel.transform, Vector2.zero, Vector2.one, new Vector2(0f, 1f),
+                new Vector2(-120f, -170f), new Vector2(60f, -70f), 25, TextAlignmentOptions.TopLeft);
+            _statusText.overflowMode = TextOverflowModes.Overflow;
 
-            _statusText = CreateText("Status", _statusPanel.transform, Vector2.zero, Vector2.one, new Vector2(0f, 1f),
-                new Vector2(-46f, -10f), new Vector2(28f, -10f), 24, TextAlignmentOptions.TopLeft);
-            _turnText = CreateText("Turn", _statusPanel.transform, Vector2.zero, Vector2.one, new Vector2(0f, 0f),
-                new Vector2(-46f, -12f), new Vector2(28f, 10f), 22, TextAlignmentOptions.BottomLeft);
-            _turnText.color = new Color(0.76f, 0.91f, 1f, 1f);
-
-            _turnPanel = CreateGlassPanel("Turn Badge", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(260f, 58f), new Vector2(0f, -SafeMargin), new Color(0.06f, 0.08f, 0.11f, 0.7f), Gold);
-            var turnStatic = CreateText("Turn Badge Text", _turnPanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-22f, -10f), Vector2.zero, 20, TextAlignmentOptions.Center);
-            turnStatic.text = "30 SEC TURN";
-            turnStatic.color = new Color(1f, 0.88f, 0.45f, 1f);
+            _turnPanel = CreatePanel("Turn Timer", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(163f, 72f), new Vector2(0f, -2f), Color.white, _timerPanelSprite);
+            _turnPanel.type = Image.Type.Simple;
+            _turnPanel.preserveAspect = true;
+            _turnText = CreateText("Turn Seconds", _turnPanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                new Vector2(-34f, -16f), new Vector2(0f, -1f), 32, TextAlignmentOptions.Center);
+            _turnText.fontStyle = FontStyles.Bold;
+            _turnText.color = new Color(1f, 0.88f, 0.45f, 1f);
 
             _ = CreateGameButton("Restart", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(122f, 62f),
                 new Vector2(-SafeMargin, -SafeMargin), Neutral, "R", 32, string.Empty, 0, () => RestartRequested?.Invoke());
             _ = CreateGameButton("Menu", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(122f, 62f),
                 new Vector2(-(SafeMargin + 134f), -SafeMargin), new Color(0.36f, 0.17f, 0.19f, 1f), "M", 34, string.Empty, 0, () => MenuRequested?.Invoke());
+            _ = CreateGameButton("Zoom Out", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(72f, 72f),
+                new Vector2(-(SafeMargin + 88f), -108f), Neutral, "−", 44, string.Empty, 0, () => ZoomOutRequested?.Invoke());
+            _ = CreateGameButton("Zoom In", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(72f, 72f),
+                new Vector2(-SafeMargin, -108f), Neutral, "+", 40, string.Empty, 0, () => ZoomInRequested?.Invoke());
         }
 
-        private void BuildBottomDock(Transform root)
+        private void BuildMovementControls(Transform root)
         {
-            var dock = CreateGlassPanel("Battle Control Dock", root, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(-2f * SafeMargin, DockHeight), new Vector2(0f, SafeMargin), new Color(0.035f, 0.055f, 0.08f, 0.82f), new Color(0.26f, 0.57f, 0.86f, 0.28f));
-            AddTopSheen(dock.transform, 0.26f);
-            BuildWeaponCard(dock.transform);
-            BuildMovementCluster(dock.transform);
-            BuildActionCluster(dock.transform);
-        }
-
-        private void BuildWeaponCard(Transform dock)
-        {
-            _weaponPanel = CreateGlassPanel("Weapon Card", dock, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-                new Vector2(500f, 128f), new Vector2(26f, 0f), new Color(0.08f, 0.13f, 0.19f, 0.94f), Gold);
-            _weaponAccent = AddAccentStrip(_weaponPanel.transform, Gold);
-
-            _weaponButton = _weaponPanel.gameObject.AddComponent<Button>();
-            _weaponButton.targetGraphic = _weaponPanel;
-            _weaponButton.transition = Selectable.Transition.ColorTint;
-            _weaponButton.colors = CreateButtonColors(_weaponPanel.color);
-            _weaponButton.onClick.AddListener(() => NextWeaponRequested?.Invoke());
-
-            var iconPlate = CreatePanel("Weapon Icon Plate", _weaponPanel.transform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(84f, 84f), new Vector2(62f, 0f), new Color(0.93f, 0.64f, 0.18f, 0.98f), _circleSprite);
-            AddOuterStroke(iconPlate.gameObject, new Color(1f, 0.93f, 0.62f, 0.78f), new Vector2(2f, -2f));
-
-            var iconText = CreateText("Weapon Icon", iconPlate.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, 39, TextAlignmentOptions.Center);
-            iconText.text = "*";
-            iconText.color = new Color(0.18f, 0.12f, 0.06f, 1f);
-
-            _weaponTitleText = CreateText("Weapon Title", _weaponPanel.transform, Vector2.zero, Vector2.one, new Vector2(0f, 1f),
-                new Vector2(-144f, 38f), new Vector2(128f, -14f), 25, TextAlignmentOptions.TopLeft);
-            _weaponTitleText.fontStyle = FontStyles.Bold;
-            _weaponMetaText = CreateText("Weapon Meta", _weaponPanel.transform, Vector2.zero, Vector2.one, new Vector2(0f, 0.5f),
-                new Vector2(-144f, 26f), new Vector2(128f, -15f), 18, TextAlignmentOptions.Left);
-            _weaponMetaText.color = new Color(1f, 0.83f, 0.44f, 1f);
-            _weaponHintText = CreateText("Weapon Hint", _weaponPanel.transform, Vector2.zero, Vector2.one, new Vector2(0f, 0f),
-                new Vector2(-144f, 38f), new Vector2(128f, 13f), 16, TextAlignmentOptions.BottomLeft);
-            _weaponHintText.color = new Color(0.82f, 0.91f, 1f, 0.9f);
-            _weaponHintText.maxVisibleLines = 2;
-        }
-
-        private void BuildMovementCluster(Transform dock)
-        {
-            var cluster = CreatePanel("Movement Cluster", dock, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(650f, 134f), Vector2.zero, new Color(0.05f, 0.075f, 0.11f, 0.68f), _pillSprite);
-            AddTopSheen(cluster.transform, 0.18f);
-
-            _mobilityText = CreateText("Mobility Text", cluster.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(-34f, 30f), new Vector2(0f, -9f), 18, TextAlignmentOptions.Center);
-            _mobilityText.color = new Color(0.76f, 0.91f, 1f, 0.95f);
-
-            _jumpBackButton = CreateRoundAction("Jump Back", cluster.transform, new Vector2(-241f, -17f), Orange, "JB", 31, () => JumpBackwardRequested?.Invoke());
-            _jumpBackPanel = _jumpBackButton.GetComponent<Image>();
-            _moveLeftButton = CreateRoundAction("Move Left", cluster.transform, new Vector2(-91f, -17f), Blue, "<", 52, () => { });
+            _moveLeftButton = CreateMovementButton("Move Left", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
+                WalkButtonSize, new Vector2(36f + WalkButtonSize, 34f), _moveButtonSprite, true, null);
             _moveLeftPanel = _moveLeftButton.GetComponent<Image>();
-            WireHold(_moveLeftButton, () => MoveLeftStarted?.Invoke(), () => MoveLeftStopped?.Invoke());
-            _moveRightButton = CreateRoundAction("Move Right", cluster.transform, new Vector2(91f, -17f), Blue, ">", 52, () => { });
+            WireHold(_moveLeftButton.gameObject, () => MoveLeftStarted?.Invoke(), () => MoveLeftStopped?.Invoke());
+
+            _jumpLeftButton = CreateMovementButton("Jump Left", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
+                JumpButtonSize, new Vector2(58f + JumpButtonSize, 226f), _jumpButtonSprite, true, () => JumpLeftRequested?.Invoke());
+            _jumpLeftPanel = _jumpLeftButton.GetComponent<Image>();
+
+            _moveRightButton = CreateMovementButton("Move Right", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
+                WalkButtonSize, new Vector2(-36f, 34f), _moveButtonSprite, false, null);
             _moveRightPanel = _moveRightButton.GetComponent<Image>();
-            WireHold(_moveRightButton, () => MoveRightStarted?.Invoke(), () => MoveRightStopped?.Invoke());
-            _jumpForwardButton = CreateRoundAction("Jump Forward", cluster.transform, new Vector2(241f, -17f), new Color(0.32f, 0.68f, 0.22f, 1f), "JF", 31, () => JumpForwardRequested?.Invoke());
-            _jumpForwardPanel = _jumpForwardButton.GetComponent<Image>();
+            WireHold(_moveRightButton.gameObject, () => MoveRightStarted?.Invoke(), () => MoveRightStopped?.Invoke());
+
+            _jumpRightButton = CreateMovementButton("Jump Right", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
+                JumpButtonSize, new Vector2(-58f, 226f), _jumpButtonSprite, false, () => JumpRightRequested?.Invoke());
+            _jumpRightPanel = _jumpRightButton.GetComponent<Image>();
         }
 
-        private void BuildActionCluster(Transform dock)
+        private void BuildPowerIndicator(Transform root)
         {
-            var actionRoot = CreateRect("Action Cluster", dock, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-                new Vector2(540f, 138f), new Vector2(-26f, 0f));
-
-            var powerPanel = CreatePanel("Power Capsule", actionRoot, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0f, 36f), Vector2.zero, new Color(0.045f, 0.07f, 0.10f, 0.92f), _pillSprite);
+            var powerPanel = CreatePanel("Power Capsule", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(480f, 42f), new Vector2(0f, 38f), new Color(0.045f, 0.07f, 0.10f, 0.9f), _pillSprite);
             var powerBack = CreatePanel("Power Track", powerPanel.transform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, 0.5f),
                 new Vector2(-84f, 12f), new Vector2(20f, 0f), new Color(1f, 1f, 1f, 0.16f), _pillSprite);
             powerBack.raycastTarget = false;
@@ -276,16 +231,23 @@ namespace Game.UI.Battle
             _powerText = CreateText("Power Text", powerPanel.transform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(1f, 0.5f),
                 new Vector2(78f, -4f), new Vector2(-14f, 0f), 18, TextAlignmentOptions.Center);
             _powerText.color = new Color(0.88f, 0.97f, 1f, 1f);
+        }
 
-            _cancelButton = CreateGameButton("Cancel", actionRoot, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(190f, 88f),
-                Vector2.zero, Neutral, "X", 37, GameText.CancelAim, 18, () => CancelRequested?.Invoke());
-            _cancelPanel = _cancelButton.GetComponent<Image>();
-            _fireButton = CreateGameButton("Fire", actionRoot, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(326f, 88f),
-                Vector2.zero, Fire, "!", 32, GameText.Fire, 32, () => FireRequested?.Invoke());
-            _firePanel = _fireButton.GetComponent<Image>();
-            _fireLabel = _fireButton.GetComponentInChildren<TMP_Text>();
-            _ = AddAccentStrip(_fireButton.transform, new Color(0.72f, 1f, 0.45f, 0.8f));
-            AddBottomDepth(_fireButton.transform, FireDark);
+        private void BuildFireButton(Transform root)
+        {
+            _firePanel = CreatePanel("Fire Weapon", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(148f, 148f), new Vector2(350f, 30f), Fire, _circleSprite);
+            AddOuterStroke(_firePanel.gameObject, new Color(0.72f, 1f, 0.45f, 0.8f), new Vector2(2f, -2f));
+            _fireButton = _firePanel.gameObject.AddComponent<Button>();
+            _fireButton.targetGraphic = _firePanel;
+            _fireButton.colors = CreateButtonColors(Fire);
+            _fireButton.onClick.AddListener(() => FireRequested?.Invoke());
+
+            _fireIcon = CreatePanel("Selected Weapon Icon", _firePanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                new Vector2(-22f, -22f), Vector2.zero, Color.white, _whiteSprite);
+            _fireIcon.type = Image.Type.Simple;
+            _fireIcon.preserveAspect = true;
+            _fireIcon.raycastTarget = false;
         }
 
         private void BuildAimGuide(Transform root)
@@ -365,21 +327,16 @@ namespace Game.UI.Battle
         private void RenderTutorialHighlight(string tutorialTargetId, string tutorialMessage)
         {
             var pulse = 0.25f + Mathf.PingPong(Time.unscaledTime * 0.95f, 0.5f);
-            ApplyHighlight(_statusPanel, TargetsStatus(tutorialTargetId), Ink, pulse);
-            ApplyHighlight(_turnPanel, tutorialTargetId == "battle.turn-label", new Color(0.06f, 0.08f, 0.11f, 0.7f), pulse);
-            ApplyHighlight(_weaponPanel, tutorialTargetId == "battle.weapon-strip", new Color(0.08f, 0.13f, 0.19f, 0.94f), pulse);
-            ApplyHighlight(_moveLeftPanel, tutorialTargetId == "battle.move-controls", Blue, pulse);
-            ApplyHighlight(_moveRightPanel, tutorialTargetId == "battle.move-controls", Blue, pulse);
-            ApplyHighlight(_jumpBackPanel, tutorialTargetId == "battle.move-controls", Orange, pulse);
-            ApplyHighlight(_jumpForwardPanel, tutorialTargetId == "battle.move-controls", new Color(0.32f, 0.68f, 0.22f, 1f), pulse);
-            ApplyHighlight(_firePanel, tutorialTargetId == "battle.fire-button", Fire, pulse);
-            ApplyHighlight(_cancelPanel, tutorialTargetId == "battle.fire-button", Neutral, pulse * 0.45f);
+            var movementColor = _moveLeftButton != null && _moveLeftButton.interactable ? Control : ControlDisabled;
+            var fireColor = _fireButton != null && _fireButton.interactable ? Fire : Disabled;
+            ApplyHighlight(_statusPanel, TargetsStatus(tutorialTargetId), Color.white, pulse);
+            ApplyHighlight(_turnPanel, tutorialTargetId == "battle.turn-label", Color.white, pulse);
+            ApplyHighlight(_moveLeftPanel, tutorialTargetId == "battle.move-controls", movementColor, pulse);
+            ApplyHighlight(_moveRightPanel, tutorialTargetId == "battle.move-controls", movementColor, pulse);
+            ApplyHighlight(_jumpLeftPanel, tutorialTargetId == "battle.move-controls", movementColor, pulse);
+            ApplyHighlight(_jumpRightPanel, tutorialTargetId == "battle.move-controls", movementColor, pulse);
+            ApplyHighlight(_firePanel, tutorialTargetId == "battle.fire-button" || tutorialTargetId == "battle.weapon-strip", fireColor, pulse);
             ApplyHighlight(_resultPanel, tutorialTargetId == "battle.result", InkSolid, pulse);
-
-            if (_weaponAccent != null)
-            {
-                _weaponAccent.color = tutorialTargetId == "battle.weapon-strip" ? TutorialHighlight : Gold;
-            }
 
             var showAimGuide = tutorialTargetId == "battle.aim-area";
             _aimGuideRoot.SetActive(showAimGuide);
@@ -387,6 +344,86 @@ namespace Game.UI.Battle
             {
                 _aimGuideText.text = tutorialMessage;
             }
+        }
+
+        private static void SetControlState(Button button, Image panel, bool enabled)
+        {
+            if (button != null)
+            {
+                button.interactable = enabled;
+            }
+
+            if (panel != null)
+            {
+                panel.color = enabled ? Control : ControlDisabled;
+            }
+        }
+
+        private void SetWeaponIcon(string iconId)
+        {
+            iconId ??= string.Empty;
+            if (_weaponIconId == iconId)
+            {
+                return;
+            }
+
+            _weaponIconId = iconId;
+            if (!_weaponSprites.TryGetValue(iconId, out var sprite))
+            {
+                sprite = LoadResourceSprite(WeaponResourceRoot + iconId, Vector4.zero);
+                _weaponSprites[iconId] = sprite;
+            }
+
+            _fireIcon.sprite = sprite;
+            _fireIcon.enabled = sprite != null;
+        }
+
+        private Button CreateMovementButton(string name, Component parent, Vector2 anchor, Vector2 pivot, float size,
+            Vector2 anchoredPosition, Sprite sprite, bool mirrorHorizontally, Action onClick)
+        {
+            var image = CreatePanel(name, parent, anchor, anchor, pivot, new Vector2(size, size), anchoredPosition, Color.white, sprite ?? _circleSprite);
+            image.type = Image.Type.Simple;
+            image.preserveAspect = true;
+            image.rectTransform.localScale = mirrorHorizontally ? new Vector3(-1f, 1f, 1f) : Vector3.one;
+
+            var button = image.gameObject.AddComponent<Button>();
+            button.targetGraphic = image;
+            button.colors = CreateButtonColors(Control);
+            if (onClick != null)
+            {
+                button.onClick.AddListener(() => onClick());
+            }
+
+            return button;
+        }
+
+        private static void WireHold(GameObject target, Action onStart, Action onStop)
+        {
+            var trigger = target.GetComponent<EventTrigger>() ?? target.AddComponent<EventTrigger>();
+            trigger.triggers ??= new List<EventTrigger.Entry>();
+            AddTrigger(trigger, EventTriggerType.PointerDown, onStart);
+            AddTrigger(trigger, EventTriggerType.PointerUp, onStop);
+            AddTrigger(trigger, EventTriggerType.PointerExit, onStop);
+        }
+
+        private static void AddTrigger(EventTrigger trigger, EventTriggerType type, Action callback)
+        {
+            var entry = new EventTrigger.Entry { eventID = type };
+            entry.callback.AddListener(_ => callback?.Invoke());
+            trigger.triggers.Add(entry);
+        }
+
+        private Sprite LoadResourceSprite(string path, Vector4 border)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return null;
+            }
+
+            var texture = Resources.Load<Texture2D>(path);
+            return texture == null
+                ? null
+                : Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
         }
 
         private static bool TargetsStatus(string tutorialTargetId)
@@ -404,14 +441,6 @@ namespace Game.UI.Battle
             }
 
             image.color = highlighted ? Color.Lerp(baseColor, TutorialHighlight, pulse) : baseColor;
-        }
-
-        private Button CreateRoundAction(string name, Component parent, Vector2 position, Color color, string icon, int iconSize, Action onClick)
-        {
-            var button = CreateGameButton(name, parent, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(118f, 92f),
-                position, color, icon, iconSize, string.Empty, 0, onClick);
-            AddBottomDepth(button.transform, Color.Lerp(color, Color.black, 0.34f));
-            return button;
         }
 
         private Button CreateGameButton(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 size,
@@ -487,27 +516,11 @@ namespace Game.UI.Battle
             return text;
         }
 
-        private Image AddAccentStrip(Transform parent, Color color)
-        {
-            var strip = CreatePanel("Accent Strip", parent, Vector2.zero, new Vector2(0f, 1f), new Vector2(0f, 0.5f),
-                new Vector2(9f, -22f), Vector2.zero, color, _pillSprite);
-            strip.raycastTarget = false;
-            return strip;
-        }
-
         private void AddTopSheen(Transform parent, float alpha)
         {
             var sheen = CreatePanel("Top Sheen", parent, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-30f, 12f), new Vector2(0f, -8f), new Color(1f, 1f, 1f, alpha), _pillSprite);
             sheen.raycastTarget = false;
-        }
-
-        private void AddBottomDepth(Transform parent, Color color)
-        {
-            var depth = CreatePanel("Bottom Depth", parent, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(-28f, 9f), new Vector2(0f, 5f), color, _pillSprite);
-            depth.raycastTarget = false;
-            depth.transform.SetAsFirstSibling();
         }
 
         private void AddOuterStroke(GameObject target, Color color, Vector2 distance)
@@ -562,27 +575,6 @@ namespace Game.UI.Battle
                 colorMultiplier = 1f,
                 fadeDuration = 0.075f
             };
-        }
-
-        private static void WireHold(Button button, Action onDown, Action onUp)
-        {
-            if (button == null)
-            {
-                return;
-            }
-
-            var trigger = button.gameObject.GetComponent<EventTrigger>() ?? button.gameObject.AddComponent<EventTrigger>();
-            AddTrigger(trigger, EventTriggerType.PointerDown, _ => onDown?.Invoke());
-            AddTrigger(trigger, EventTriggerType.PointerUp, _ => onUp?.Invoke());
-            AddTrigger(trigger, EventTriggerType.PointerExit, _ => onUp?.Invoke());
-        }
-
-        private static void AddTrigger(EventTrigger trigger, EventTriggerType type, Action<BaseEventData> action)
-        {
-            trigger.triggers ??= new List<EventTrigger.Entry>();
-            var entry = new EventTrigger.Entry { eventID = type };
-            entry.callback.AddListener(data => action?.Invoke(data));
-            trigger.triggers.Add(entry);
         }
 
         private static RectTransform CreateRect(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,

@@ -21,8 +21,8 @@ namespace Game.Gameplay.Battle.Arenas
                 "Training Meadow",
                 new Vector3(0f, 1.2f, -10f),
                 5.6f,
-                new Vector2(-4.4f, -0.85f),
-                new Vector2(4.2f, -0.95f),
+                new Vector2(-3.4f, -0.85f),
+                new Vector2(5f, -0.95f),
                 new[]
                 {
                     Sky(),

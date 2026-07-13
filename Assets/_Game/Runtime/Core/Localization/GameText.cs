@@ -129,15 +129,12 @@ namespace Game.Core.Localization
         public static string DefeatSubtitle(int turnNumber) => $"Суперник переміг після {turnNumber} ходів.";
         public static string DrawSubtitle(int turnNumber) => $"Обидві команди вибули після {turnNumber} ходів.";
         public static string NextArenaPreview() => "Відкрито попередній доступ до наступної арени";
-        public const string WalkLeft = "<";
-        public const string WalkRight = ">";
-        public static string JumpBack() => "\u041d\u0430\u0437\u0430\u0434";
-        public static string JumpForward() => "\u0412\u043f\u0435\u0440\u0435\u0434";
         public static string MobilityLabel(float remainingSeconds) =>
             $"\u0425\u0456\u0434: {remainingSeconds:0}\u0441 \u2022 \u0440\u0443\u0445 \u0456 \u0441\u0442\u0440\u0438\u0431\u043a\u0438 \u0432\u0456\u043b\u044c\u043d\u0456";
         public static string Moved(string teamName) => $"{teamName} \u0437\u043c\u0456\u043d\u044e\u0454 \u043f\u043e\u0437\u0438\u0446\u0456\u044e.";
         public static string FrontJumped(string teamName) => $"{teamName} \u0440\u043e\u0431\u0438\u0442\u044c \u043f\u0435\u0440\u0435\u0434\u043d\u0456\u0439 \u0441\u0442\u0440\u0438\u0431\u043e\u043a.";
         public static string BackJumped(string teamName) => $"{teamName} \u0440\u043e\u0431\u0438\u0442\u044c \u0437\u0432\u043e\u0440\u043e\u0442\u043d\u0456\u0439 \u0441\u0442\u0440\u0438\u0431\u043e\u043a.";
+        public static string Jumped(string teamName) => $"{teamName} \u0440\u043e\u0431\u0438\u0442\u044c \u0441\u0442\u0440\u0438\u0431\u043e\u043a.";
         public static string MovementBlocked() => "\u0422\u0443\u0442 \u043d\u0435\u043c\u0430 \u0441\u0442\u0456\u0439\u043a\u043e\u0457 \u043f\u043e\u0432\u0435\u0440\u0445\u043d\u0456 \u0434\u043b\u044f \u043a\u0440\u043e\u043a\u0443.";
         public static string JumpBlocked() => "\u0421\u0442\u0440\u0438\u0431\u043e\u043a \u043d\u0435 \u0434\u043e\u0442\u044f\u0433\u0443\u0454\u0442\u044c\u0441\u044f \u0434\u043e \u0431\u0435\u0437\u043f\u0435\u0447\u043d\u043e\u0457 \u0442\u043e\u0447\u043a\u0438.";
         public static string JumpSpent() => "\u0421\u0442\u0440\u0438\u0431\u043e\u043a \u0443 \u0446\u044c\u043e\u043c\u0443 \u0445\u043e\u0434\u0456 \u0432\u0436\u0435 \u0432\u0438\u0442\u0440\u0430\u0447\u0435\u043d\u043e.";

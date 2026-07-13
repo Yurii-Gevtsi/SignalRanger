@@ -19,7 +19,8 @@ namespace Game.Gameplay.Battle.Weapons
                     17f,
                     -1,
                     "weapon.steady_orb.hint",
-                    new[] { "starter", "direct", "low-arc" }),
+                    new[] { "starter", "direct", "low-arc" },
+                    iconId: "bazooka_simple"),
                 WeaponDefinition.CreateRuntime(
                     "weapon.pulse-shell",
                     "weapon.pulse_shell.name",
@@ -33,7 +34,8 @@ namespace Game.Gameplay.Battle.Weapons
                     16f,
                     -1,
                     "weapon.pulse_shell.hint",
-                    new[] { "starter", "arc", "explosive" }),
+                    new[] { "starter", "arc", "explosive" },
+                    iconId: "bazooka"),
                 WeaponDefinition.CreateRuntime(
                     "weapon.close-pop",
                     "weapon.close_pop.name",
@@ -47,7 +49,8 @@ namespace Game.Gameplay.Battle.Weapons
                     10f,
                     -1,
                     "weapon.close_pop.hint",
-                    new[] { "starter", "short-range", "burst" }),
+                    new[] { "starter", "short-range", "burst" },
+                    iconId: "drobovik"),
                 // Precision niche: flat, fast, small blast, high single-target damage.
                 // Flatness comes from the low gravityScale, not from extreme power, so the
                 // power range stays close to the other weapons for a consistent aim feel.
@@ -64,7 +67,8 @@ namespace Game.Gameplay.Battle.Weapons
                     19f,
                     -1,
                     "weapon.long_lance.hint",
-                    new[] { "precision", "direct", "long-range" }),
+                    new[] { "precision", "direct", "long-range" },
+                    iconId: "rifle"),
                 // Area niche: high lob, wide but soft blast to flush units out of cover.
                 // Low damage per hit so it pressures position rather than deleting full-HP units.
                 WeaponDefinition.CreateRuntime(
@@ -80,7 +84,8 @@ namespace Game.Gameplay.Battle.Weapons
                     15f,
                     -1,
                     "weapon.scatter_arc.hint",
-                    new[] { "area", "arc", "flush" }),
+                    new[] { "area", "arc", "flush" },
+                    iconId: "bomber"),
                 WeaponDefinition.CreateRuntime(
                     "weapon.rampart-kit",
                     "weapon.rampart_kit.name",
@@ -94,7 +99,8 @@ namespace Game.Gameplay.Battle.Weapons
                     14f,
                     2,
                     "weapon.rampart_kit.hint",
-                    new[] { "utility", "cover", "defensive-line" }),
+                    new[] { "utility", "cover", "defensive-line" },
+                    iconId: "bur"),
                 WeaponDefinition.CreateRuntime(
                     "weapon.guard-pulse",
                     "weapon.guard_pulse.name",
@@ -108,7 +114,8 @@ namespace Game.Gameplay.Battle.Weapons
                     13f,
                     2,
                     "weapon.guard_pulse.hint",
-                    new[] { "utility", "defense", "restore" }),
+                    new[] { "utility", "defense", "restore" },
+                    iconId: "glove"),
                 WeaponDefinition.CreateRuntime(
                     "weapon.relay-step",
                     "weapon.relay_step.name",
@@ -122,7 +129,8 @@ namespace Game.Gameplay.Battle.Weapons
                     14f,
                     2,
                     "weapon.relay_step.hint",
-                    new[] { "utility", "movement", "reposition" })
+                    new[] { "utility", "movement", "reposition" },
+                    iconId: "fpv")
             };
         }
     }

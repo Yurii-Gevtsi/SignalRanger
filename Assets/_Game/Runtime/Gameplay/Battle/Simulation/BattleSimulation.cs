@@ -18,6 +18,7 @@ namespace Game.Gameplay.Battle.Simulation
     public sealed class BattleSimulation : IProjectileSpawner
     {
         private const float ProjectileSubStepLength = 0.04f;
+        private const float StandardJumpHorizontalSpeedRatio = 0.9f;
 
         private readonly BattleState _state;
         private readonly TurnService _turnService;
@@ -146,9 +147,19 @@ namespace Game.Gameplay.Battle.Simulation
 
         public bool CanUseMovement()
         {
+            return CanAcceptMovementInput() && !HasActiveMotion;
+        }
+
+        /// <summary>
+        /// Whether player movement input may stay active. Unlike
+        /// <see cref="CanUseMovement"/>, this remains true while the unit is in
+        /// player-controlled motion so a held movement button is not released mid-jump or
+        /// while dropping from a ledge.
+        /// </summary>
+        public bool CanAcceptMovementInput()
+        {
             return !Result.IsFinished
                 && !HasProjectilesInFlight
-                && !HasActiveMotion
                 && _state.Turn.ActiveTeam == BattleTeamId.Player
                 && !_state.Turn.ActionSpent
                 && _playerMovement.HasTimeRemaining;
@@ -239,32 +250,63 @@ namespace Game.Gameplay.Battle.Simulation
             return BattleWalkOutcome.Moved;
         }
 
-        public BattleJumpOutcome TryStartJump(bool forward)
+        /// <summary>
+        /// Starts the single player jump arc toward the requested screen side.
+        /// Its horizontal launch speed is capped below running speed, keeping the
+        /// jump useful for obstacles and pits without making repeated jumps faster.
+        /// </summary>
+        public BattleJumpOutcome TryStartJump(int directionX)
         {
-            if (!CanUseMovement())
+            if (!TryGetJumpReadyMotor(out var unit, out var motor, out var blocked))
             {
-                return BattleJumpOutcome.NotAllowed;
-            }
-
-            var unit = GetActiveUnitOrNull();
-            if (unit == null || unit.TeamId != BattleTeamId.Player)
-            {
-                return BattleJumpOutcome.NotAllowed;
-            }
-
-            var motor = GetMotor(unit.UnitId);
-            if (motor == null || !motor.IsStable)
-            {
-                return BattleJumpOutcome.NotStable;
+                return blocked;
             }
 
             var archetype = ArchetypeFor(unit.TeamId);
-            var direction = unit.FacingDirectionX;
-            var horizontalDistance = (forward ? archetype.FrontJumpDistance : -archetype.BackJumpDistance) * direction;
-            var apexHeight = (forward ? archetype.FrontJumpHeight : archetype.BackJumpHeight) + 0.2f;
+            var direction = directionX == 0 ? 0 : directionX > 0 ? 1 : -1;
+            if (direction == 0)
+            {
+                return BattleJumpOutcome.NotAllowed;
+            }
+
+            var apexHeight = Mathf.Lerp(archetype.FrontJumpHeight, archetype.BackJumpHeight, 0.5f);
+            var desiredDistance = Mathf.Lerp(archetype.FrontJumpDistance, archetype.BackJumpDistance, 0.5f);
+            var verticalSpeed = Mathf.Sqrt(2f * motor.Profile.Gravity * apexHeight);
+            var flightTime = 2f * verticalSpeed / motor.Profile.Gravity;
+            var runSpeedDistanceCap = motor.Profile.WalkSpeed * StandardJumpHorizontalSpeedRatio * flightTime;
+            var horizontalDistance = Mathf.Min(desiredDistance, runSpeedDistanceCap) * direction;
+
+            unit.SetFacing(direction);
+
             motor.StartJump(horizontalDistance, apexHeight);
             UnitsMoved?.Invoke();
             return BattleJumpOutcome.Jumped;
+        }
+
+        private bool TryGetJumpReadyMotor(out BattleUnitState unit, out UnitMotor motor, out BattleJumpOutcome blocked)
+        {
+            unit = null;
+            motor = null;
+            blocked = BattleJumpOutcome.NotAllowed;
+            if (!CanUseMovement())
+            {
+                return false;
+            }
+
+            unit = GetActiveUnitOrNull();
+            if (unit == null || unit.TeamId != BattleTeamId.Player)
+            {
+                return false;
+            }
+
+            motor = GetMotor(unit.UnitId);
+            if (motor == null || !motor.IsStable)
+            {
+                blocked = BattleJumpOutcome.NotStable;
+                return false;
+            }
+
+            return true;
         }
 
         public void AdvanceTurnDueToNoUsableWeapon()
@@ -677,7 +719,6 @@ namespace Game.Gameplay.Battle.Simulation
             if (_state.Turn.ActiveTeam != BattleTeamId.Player
                 || _state.Turn.ActionSpent
                 || HasProjectilesInFlight
-                || HasActiveMotion
                 || Result.IsFinished)
             {
                 return;
@@ -844,7 +885,18 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 foreach (var unit in team.Units)
                 {
-                    if (unit.IsDefeated || !_motors.TryGetValue(unit.UnitId, out var motor) || motor.IsStable)
+                    if (unit.IsDefeated || !_motors.TryGetValue(unit.UnitId, out var motor))
+                    {
+                        continue;
+                    }
+
+                    if (HasEnteredKillZone(unit))
+                    {
+                        DefeatFromKillZone(unit, motor);
+                        continue;
+                    }
+
+                    if (motor.IsStable)
                     {
                         continue;
                     }
@@ -853,10 +905,7 @@ namespace Game.Gameplay.Battle.Simulation
                     unit.MoveTo(motor.Position);
                     if (outcome == MotorStepOutcome.FellOutOfBounds)
                     {
-                        unit.MoveTo(new Vector2(motor.Position.x, _settings.FallDeathY));
-                        motor.Teleport(unit.Position);
-                        unit.ApplyDamage(unit.MaxHealth, "fall.out-of-bounds");
-                        UnitDefeated?.Invoke(new UnitDefeatedEvent(unit.UnitId, "fall.out-of-bounds"));
+                        DefeatFromKillZone(unit, motor);
                     }
                     else if (outcome == MotorStepOutcome.Landed)
                     {
@@ -864,6 +913,20 @@ namespace Game.Gameplay.Battle.Simulation
                     }
                 }
             }
+        }
+
+        private bool HasEnteredKillZone(BattleUnitState unit)
+        {
+            var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
+            return unit.Position.y - halfHeight < _settings.FallDeathY;
+        }
+
+        private void DefeatFromKillZone(BattleUnitState unit, UnitMotor motor)
+        {
+            unit.MoveTo(new Vector2(motor.Position.x, _settings.FallDeathY));
+            motor.Teleport(unit.Position);
+            unit.ApplyDamage(unit.MaxHealth, "fall.out-of-bounds");
+            UnitDefeated?.Invoke(new UnitDefeatedEvent(unit.UnitId, "fall.out-of-bounds"));
         }
 
         private void NudgeApartFromOthers(BattleUnitState unit, UnitMotor motor)

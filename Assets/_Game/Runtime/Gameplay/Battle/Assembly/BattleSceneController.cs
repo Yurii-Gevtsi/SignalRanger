@@ -60,6 +60,10 @@ namespace Game.Gameplay.Battle.Assembly
         private const float SimulationTickSeconds = 1f / 120f;
         private const float PlayerTurnDurationSeconds = 30f;
         private const int TrajectoryDotCount = 13;
+        private const float CameraZoomInMultiplier = 0.58f;
+        private const float CameraZoomOutMultiplier = 1.25f;
+        private const float CameraZoomStep = 0.62f;
+        private const float PinchZoomSensitivity = 0.008f;
 
         private readonly Color _playerColor = new(0.18f, 0.56f, 0.96f);
         private readonly Color _opponentColor = new(0.95f, 0.28f, 0.22f);
@@ -107,6 +111,10 @@ namespace Game.Gameplay.Battle.Assembly
         private Vector2 _aimAnchorWorld;
         private int _uiWalkInputDirection;
         private int _keyboardWalkInputDirection;
+        private float _minimumCameraSize;
+        private float _maximumCameraSize;
+        private float _previousPinchDistance;
+        private bool _hasPreviousPinchDistance;
 
         private bool HasProjectilesInFlight => _simulation != null && _simulation.HasProjectilesInFlight;
 
@@ -138,15 +146,6 @@ namespace Game.Gameplay.Battle.Assembly
             _inventory = new WeaponInventoryRuntime(CreateMissionWeapons(allWeapons), 1);
             _opponentInventory = new WeaponInventoryRuntime(CreateOpponentWeapons(allWeapons), 1);
             _firstBattleGuide = new FirstBattleGuideState(GameSessionContext.SelectedMissionId);
-            _simulationSettings = new BattleSimulationSettings(
-                FallDeathY,
-                SimulationTickSeconds,
-                PlayerTurnDurationSeconds,
-                OccupiedRadius,
-                UnitCollisionHalfWidth,
-                KnockbackLandingSearchPadding,
-                GroundRayStartHeight,
-                GroundRayDistance);
             SelectWeapon(_inventory.SelectedIndex);
 
             LoadArena(GameSessionContext.SelectedArenaIndex);
@@ -197,14 +196,14 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _hud.FireRequested += Fire;
-            _hud.CancelRequested += CancelAim;
-            _hud.NextWeaponRequested += () => SelectWeapon(_inventory.SelectedIndex + 1);
-            _hud.MoveLeftStarted += () => SetWalkInput(-1);
-            _hud.MoveLeftStopped += StopWalkInput;
-            _hud.MoveRightStarted += () => SetWalkInput(1);
-            _hud.MoveRightStopped += StopWalkInput;
-            _hud.JumpForwardRequested += () => TryStartJump(true);
-            _hud.JumpBackwardRequested += () => TryStartJump(false);
+            _hud.MoveLeftStarted += () => SetUiWalkInput(-1);
+            _hud.MoveLeftStopped += () => StopUiWalkInput(-1);
+            _hud.MoveRightStarted += () => SetUiWalkInput(1);
+            _hud.MoveRightStopped += () => StopUiWalkInput(1);
+            _hud.JumpLeftRequested += () => TryStartJump(-1);
+            _hud.JumpRightRequested += () => TryStartJump(1);
+            _hud.ZoomInRequested += () => AdjustCameraZoom(-CameraZoomStep);
+            _hud.ZoomOutRequested += () => AdjustCameraZoom(CameraZoomStep);
             _hud.RestartRequested += RestartScene;
             _hud.ContinueRequested += ContinueFromResult;
             _hud.MenuRequested += ExitToMenu;
@@ -223,6 +222,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             RenderHud();
+            UpdateCameraZoom();
 
             if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
             {
@@ -296,13 +296,13 @@ namespace Game.Gameplay.Battle.Assembly
 
                 if (!HasProjectilesInFlight && Keyboard.current.qKey.wasPressedThisFrame)
                 {
-                    TryStartJump(false);
+                    TryStartJump(-1);
                     return;
                 }
 
                 if (!HasProjectilesInFlight && Keyboard.current.eKey.wasPressedThisFrame)
                 {
-                    TryStartJump(true);
+                    TryStartJump(1);
                     return;
                 }
             }
@@ -346,6 +346,7 @@ namespace Game.Gameplay.Battle.Assembly
             BuildWorld(_currentArena);
             BuildBattleState(_currentArena);
             BuildUnits();
+            _simulationSettings = CreateSimulationSettings(GetFallDeathY());
 
             _simulation = BattleSimulation.CreatePlayerFirst(
                 _battleState,
@@ -411,6 +412,86 @@ namespace Game.Gameplay.Battle.Assembly
         {
             _camera.transform.position = arena.CameraPosition;
             _camera.orthographicSize = arena.CameraSize;
+            _minimumCameraSize = arena.CameraSize * CameraZoomInMultiplier;
+            _maximumCameraSize = arena.CameraSize * CameraZoomOutMultiplier;
+            _hasPreviousPinchDistance = false;
+        }
+
+        private void UpdateCameraZoom()
+        {
+            if (_camera == null || _minimumCameraSize <= 0f || _maximumCameraSize <= 0f)
+            {
+                return;
+            }
+
+            if (TryGetPinchDistance(out var pinchDistance))
+            {
+                if (_hasPreviousPinchDistance)
+                {
+                    AdjustCameraZoom(-(pinchDistance - _previousPinchDistance) * PinchZoomSensitivity);
+                }
+
+                _previousPinchDistance = pinchDistance;
+                _hasPreviousPinchDistance = true;
+                _aimDragActive = false;
+                return;
+            }
+
+            _hasPreviousPinchDistance = false;
+
+            var zoomDelta = 0f;
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.equalsKey.wasPressedThisFrame || Keyboard.current.numpadPlusKey.wasPressedThisFrame)
+                {
+                    zoomDelta -= CameraZoomStep;
+                }
+
+                if (Keyboard.current.minusKey.wasPressedThisFrame || Keyboard.current.numpadMinusKey.wasPressedThisFrame)
+                {
+                    zoomDelta += CameraZoomStep;
+                }
+            }
+
+            if (Mouse.current != null && !IsPointerOverUi())
+            {
+                var scroll = Mouse.current.scroll.ReadValue().y;
+                if (Mathf.Abs(scroll) > 0.01f)
+                {
+                    zoomDelta -= Mathf.Sign(scroll) * CameraZoomStep;
+                }
+            }
+
+            AdjustCameraZoom(zoomDelta);
+        }
+
+        private bool TryGetPinchDistance(out float distance)
+        {
+            distance = 0f;
+            if (Touchscreen.current == null || Touchscreen.current.touches.Count < 2)
+            {
+                return false;
+            }
+
+            var firstTouch = Touchscreen.current.touches[0];
+            var secondTouch = Touchscreen.current.touches[1];
+            if (!firstTouch.press.isPressed || !secondTouch.press.isPressed)
+            {
+                return false;
+            }
+
+            distance = Vector2.Distance(firstTouch.position.ReadValue(), secondTouch.position.ReadValue());
+            return true;
+        }
+
+        private void AdjustCameraZoom(float sizeDelta)
+        {
+            if (_camera == null || Mathf.Approximately(sizeDelta, 0f) || _minimumCameraSize <= 0f || _maximumCameraSize <= 0f)
+            {
+                return;
+            }
+
+            _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize + sizeDelta, _minimumCameraSize, _maximumCameraSize);
         }
 
         private void BuildWorld(ArenaDefinition arena)
@@ -434,6 +515,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             solidLayer = AddVisualLayer("Arena Foreground", _visualTheme?.Foreground, solidLayer);
+            AddKillZoneVisual();
 
             var bounds = ComputeArenaBounds(arena);
             if (solidLayer != null)
@@ -462,7 +544,7 @@ namespace Game.Gameplay.Battle.Assembly
             var minX = arena.CameraPosition.x - cameraWidth * 0.5f - margin;
             var maxX = arena.CameraPosition.x + cameraWidth * 0.5f + margin;
             var maxY = arena.CameraPosition.y + cameraHeight * 0.5f + margin;
-            var minY = Mathf.Min(arena.CameraPosition.y - cameraHeight * 0.5f, FallDeathY) - margin;
+            var minY = Mathf.Min(arena.CameraPosition.y - cameraHeight * 0.5f, GetFallDeathY()) - margin;
             return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
 
@@ -498,8 +580,65 @@ namespace Game.Gameplay.Battle.Assembly
                     _battleTerrain.Grid,
                     CreateMotionProfile(ArchetypeFor(unit.TeamId)),
                     unit.Position,
-                    FallDeathY);
+                    GetFallDeathY());
             }
+        }
+
+        private BattleSimulationSettings CreateSimulationSettings(float fallDeathY)
+        {
+            return new BattleSimulationSettings(
+                fallDeathY,
+                SimulationTickSeconds,
+                PlayerTurnDurationSeconds,
+                OccupiedRadius,
+                UnitCollisionHalfWidth,
+                KnockbackLandingSearchPadding,
+                GroundRayStartHeight,
+                GroundRayDistance);
+        }
+
+        private float GetFallDeathY()
+        {
+            return _visualTheme?.KillZoneDeathY ?? FallDeathY;
+        }
+
+        private void AddKillZoneVisual()
+        {
+            if (_visualTheme == null || !_visualTheme.HasKillZonePrefab)
+            {
+                return;
+            }
+
+            var prefab = Resources.Load<GameObject>(_visualTheme.KillZonePrefabResourcePath);
+            if (prefab == null)
+            {
+                Debug.LogWarning($"Kill-zone prefab '{_visualTheme.KillZonePrefabResourcePath}' was not found.");
+                return;
+            }
+
+            var killZone = Object.Instantiate(prefab);
+            ScaleKillZoneToCamera(killZone);
+            _arenaObjects.Add(killZone);
+        }
+
+        private void ScaleKillZoneToCamera(GameObject killZone)
+        {
+            if (_camera == null || killZone == null)
+            {
+                return;
+            }
+
+            var visuals = killZone.transform.Find("Visuals");
+            var waveRenderer = visuals?.Find("SurfaceWaves")?.GetComponent<SpriteRenderer>();
+            if (waveRenderer == null || waveRenderer.bounds.size.x <= 0f)
+            {
+                return;
+            }
+
+            var cameraHeight = Mathf.Max(_camera.orthographicSize, _maximumCameraSize) * 2f;
+            var cameraWidth = cameraHeight * _camera.aspect;
+            var horizontalScale = cameraWidth / waveRenderer.bounds.size.x;
+            visuals.localScale = new Vector3(horizontalScale, 1f, 1f);
         }
 
         private static UnitMotionProfile CreateMotionProfile(CharacterArchetype archetype)
@@ -549,8 +688,19 @@ namespace Game.Gameplay.Battle.Assembly
             var unitObject = new GameObject(state.UnitId);
             unitObject.transform.position = state.Position;
 
-            var skin = GetUnitSkin(state.TeamId);
-            if (skin == null)
+            var rigPrefab = GetUnitRigPrefab(state.TeamId);
+            var skin = rigPrefab != null ? null : GetUnitSkin(state.TeamId);
+            GameObject rigInstance = null;
+            if (rigPrefab != null)
+            {
+                rigInstance = Object.Instantiate(rigPrefab, unitObject.transform);
+                rigInstance.name = "Rig Visual";
+                var spriteOffset = _visualTheme != null ? _visualTheme.UnitSpriteOffset : Vector2.zero;
+                var spriteScale = _visualTheme != null ? _visualTheme.UnitSpriteScale : Vector2.one;
+                rigInstance.transform.localPosition = new Vector3(spriteOffset.x, spriteOffset.y, 0f);
+                rigInstance.transform.localScale = new Vector3(spriteScale.x, spriteScale.y, 1f);
+            }
+            else if (skin == null)
             {
                 unitObject.transform.localScale = new Vector3(0.72f, bodyHeight, 1f);
 
@@ -574,12 +724,17 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var view = unitObject.AddComponent<BattleUnitView>();
-            view.SetPreserveSpriteColor(skin != null);
-            if (skin != null && _visualTheme != null)
+            view.SetPreserveSpriteColor(skin != null || rigInstance != null);
+            if ((skin != null || rigInstance != null) && _visualTheme != null)
             {
                 view.SetArtFacing(state.TeamId == BattleTeamId.Player
                     ? _visualTheme.PlayerSkinFacingDirectionX
                     : _visualTheme.OpponentSkinFacingDirectionX);
+            }
+
+            if (rigInstance != null)
+            {
+                view.SetVisualRoot(rigInstance.transform);
             }
 
             return view;
@@ -608,6 +763,12 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void UpdateAim()
         {
+            if (TryGetPinchDistance(out _))
+            {
+                _aimDragActive = false;
+                return;
+            }
+
             var activePresenter = GetActivePresenter();
             if (activePresenter == null)
             {
@@ -1032,11 +1193,10 @@ namespace Game.Gameplay.Battle.Assembly
             return true;
         }
 
-        private void SetWalkInput(int direction)
+        private void SetUiWalkInput(int direction)
         {
-            if (!CanPlayerUseMovement())
+            if (!CanPlayerAcceptMovementInput())
             {
-                _uiWalkInputDirection = 0;
                 if (IsMovementBlockedByGuide())
                 {
                     _status = GameText.MovementGuideBlocked();
@@ -1048,14 +1208,17 @@ namespace Game.Gameplay.Battle.Assembly
             _uiWalkInputDirection = NormalizeDirection(direction);
         }
 
-        private void StopWalkInput()
+        private void StopUiWalkInput(int direction)
         {
-            _uiWalkInputDirection = 0;
+            if (_uiWalkInputDirection == NormalizeDirection(direction))
+            {
+                _uiWalkInputDirection = 0;
+            }
         }
 
         private void SetKeyboardWalkInput(int direction)
         {
-            _keyboardWalkInputDirection = CanPlayerUseMovement() ? NormalizeDirection(direction) : 0;
+            _keyboardWalkInputDirection = CanPlayerAcceptMovementInput() ? NormalizeDirection(direction) : 0;
         }
 
         private static int NormalizeDirection(int direction)
@@ -1070,6 +1233,13 @@ namespace Game.Gameplay.Battle.Assembly
                 && _simulation.CanUseMovement();
         }
 
+        private bool CanPlayerAcceptMovementInput()
+        {
+            return IsBattleReady()
+                && !IsMovementBlockedByGuide()
+                && _simulation.CanAcceptMovementInput();
+        }
+
         private bool IsMovementBlockedByGuide()
         {
             return _firstBattleGuide != null && _firstBattleGuide.IsActive;
@@ -1078,9 +1248,16 @@ namespace Game.Gameplay.Battle.Assembly
         private void UpdateWalking()
         {
             var walkDirection = _keyboardWalkInputDirection != 0 ? _keyboardWalkInputDirection : _uiWalkInputDirection;
-            if (walkDirection == 0 || !CanPlayerUseMovement())
+            if (walkDirection == 0)
             {
                 _simulation?.Walk(0, 0f);
+                return;
+            }
+
+            if (!CanPlayerUseMovement())
+            {
+                // Preserve the held direction while the motor is airborne. The
+                // command is submitted again automatically after landing.
                 return;
             }
 
@@ -1096,7 +1273,6 @@ namespace Game.Gameplay.Battle.Assembly
                     break;
                 case BattleWalkOutcome.StartedFalling:
                     // Regular physics takes over from here (HasActiveMotion).
-                    ClearWalkInput();
                     break;
             }
         }
@@ -1108,7 +1284,7 @@ namespace Game.Gameplay.Battle.Assembly
             _simulation?.Walk(0, 0f);
         }
 
-        private void TryStartJump(bool forward)
+        private void TryStartJump(int direction)
         {
             if (!CanPlayerUseMovement())
             {
@@ -1120,12 +1296,10 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            var outcome = _simulation.TryStartJump(forward);
+            var outcome = _simulation.TryStartJump(direction);
             if (outcome == BattleJumpOutcome.Jumped)
             {
-                _status = forward
-                    ? GameText.FrontJumped(DescribeTeam(BattleTeamId.Player))
-                    : GameText.BackJumped(DescribeTeam(BattleTeamId.Player));
+                _status = GameText.Jumped(DescribeTeam(BattleTeamId.Player));
             }
         }
 
@@ -1431,7 +1605,7 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            var cameraHeight = _camera.orthographicSize * 2f;
+            var cameraHeight = Mathf.Max(_camera.orthographicSize, _maximumCameraSize) * 2f;
             var cameraWidth = cameraHeight * _camera.aspect;
             var scale = Mathf.Max(cameraWidth / spriteSize.x, cameraHeight / spriteSize.y);
             visual.localScale = new Vector3(scale, scale, 1f);
@@ -1448,6 +1622,24 @@ namespace Game.Gameplay.Battle.Assembly
                 ? _visualTheme.PlayerSkinResourcePath
                 : _visualTheme.OpponentSkinResourcePath;
             return LoadSpriteResource(resourcePath);
+        }
+
+        private GameObject GetUnitRigPrefab(BattleTeamId teamId)
+        {
+            if (_visualTheme == null)
+            {
+                return null;
+            }
+
+            var resourcePath = teamId == BattleTeamId.Player
+                ? _visualTheme.PlayerRigResourcePath
+                : _visualTheme.OpponentRigResourcePath;
+            if (string.IsNullOrWhiteSpace(resourcePath))
+            {
+                return null;
+            }
+
+            return Resources.Load<GameObject>(resourcePath);
         }
 
         private Sprite LoadSpriteResource(string resourcePath)
@@ -1580,23 +1772,20 @@ namespace Game.Gameplay.Battle.Assembly
             var tutorialTargetId = guideActive
                 ? _firstBattleGuide.TargetId
                 : _coachTimer > 0f ? _coachTargetId : string.Empty;
-            var canUseMovement = !_simulation.Result.IsFinished
-                && !HasProjectilesInFlight
-                && !HasActiveMotion
-                && _battleState.Turn.ActiveTeam == BattleTeamId.Player
-                && !_battleState.Turn.ActionSpent
-                && playerHasTime;
+            var canUseMovement = _simulation.CanAcceptMovementInput();
             var mobilityLabel = GameText.MobilityLabel(_simulation.MovementTimeRemaining);
 
             var state = new BattleHudState(
                 status,
                 _battleState.Turn.TurnNumber,
                 DescribeTeam(_battleState.Turn.ActiveTeam),
+                _simulation.MovementTimeRemaining,
                 GetTeamHealth(BattleTeamId.Player),
                 GetTeamMaxHealth(BattleTeamId.Player),
                 GetTeamHealth(BattleTeamId.Opponent),
                 GetTeamMaxHealth(BattleTeamId.Opponent),
                 GameText.WeaponSlot(DescribeWeapon(weapon), _inventory.SelectedIndex + 1, _inventory.Count),
+                weapon != null ? weapon.IconId : string.Empty,
                 WeaponPresentationText.DescribeRole(weapon),
                 DescribeAmmo(_inventory),
                 WeaponPresentationText.DescribeBattleHint(weapon),
@@ -1609,9 +1798,6 @@ namespace Game.Gameplay.Battle.Assembly
                 _aimSettings.MinPower,
                 _aimSettings.MaxPower,
                 canFire,
-                canUseMovement,
-                canUseMovement,
-                canUseMovement,
                 canUseMovement,
                 _simulation.Result.IsFinished,
                 _resultScreenState.Title,

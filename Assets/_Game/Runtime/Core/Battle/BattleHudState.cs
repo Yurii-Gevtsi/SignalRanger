@@ -12,11 +12,13 @@ namespace Game.Core.Battle
             string status,
             int turnNumber,
             string activeTeam,
+            float turnSecondsRemaining,
             int playerHealth,
             int playerMaxHealth,
             int opponentHealth,
             int opponentMaxHealth,
             string weaponLabel,
+            string weaponIconId,
             string weaponRoleLabel,
             string ammoLabel,
             string weaponHint,
@@ -29,10 +31,7 @@ namespace Game.Core.Battle
             float minPower,
             float maxPower,
             bool canFire,
-            bool canMoveLeft,
-            bool canMoveRight,
-            bool canJumpForward,
-            bool canJumpBackward,
+            bool canUseMovement,
             bool showResult,
             string resultTitle,
             string resultSubtitle,
@@ -46,11 +45,13 @@ namespace Game.Core.Battle
             Status = status;
             TurnNumber = turnNumber;
             ActiveTeam = activeTeam;
+            TurnSecondsRemaining = UnityEngine.Mathf.Max(0f, turnSecondsRemaining);
             PlayerHealth = playerHealth;
             PlayerMaxHealth = playerMaxHealth;
             OpponentHealth = opponentHealth;
             OpponentMaxHealth = opponentMaxHealth;
             WeaponLabel = weaponLabel;
+            WeaponIconId = weaponIconId ?? string.Empty;
             WeaponRoleLabel = weaponRoleLabel ?? string.Empty;
             AmmoLabel = ammoLabel;
             WeaponHint = weaponHint ?? string.Empty;
@@ -63,10 +64,7 @@ namespace Game.Core.Battle
             MinPower = minPower;
             MaxPower = maxPower;
             CanFire = canFire;
-            CanMoveLeft = canMoveLeft;
-            CanMoveRight = canMoveRight;
-            CanJumpForward = canJumpForward;
-            CanJumpBackward = canJumpBackward;
+            CanUseMovement = canUseMovement;
             ShowResult = showResult;
             ResultTitle = resultTitle ?? string.Empty;
             ResultSubtitle = resultSubtitle ?? string.Empty;
@@ -81,11 +79,13 @@ namespace Game.Core.Battle
         public string Status { get; }
         public int TurnNumber { get; }
         public string ActiveTeam { get; }
+        public float TurnSecondsRemaining { get; }
         public int PlayerHealth { get; }
         public int PlayerMaxHealth { get; }
         public int OpponentHealth { get; }
         public int OpponentMaxHealth { get; }
         public string WeaponLabel { get; }
+        public string WeaponIconId { get; }
         public string WeaponRoleLabel { get; }
         public string AmmoLabel { get; }
         public string WeaponHint { get; }
@@ -98,10 +98,7 @@ namespace Game.Core.Battle
         public float MinPower { get; }
         public float MaxPower { get; }
         public bool CanFire { get; }
-        public bool CanMoveLeft { get; }
-        public bool CanMoveRight { get; }
-        public bool CanJumpForward { get; }
-        public bool CanJumpBackward { get; }
+        public bool CanUseMovement { get; }
         public bool ShowResult { get; }
         public string ResultTitle { get; }
         public string ResultSubtitle { get; }

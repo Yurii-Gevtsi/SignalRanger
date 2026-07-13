@@ -245,7 +245,7 @@ namespace Game.Tests.EditMode.Gameplay
         [Test]
         public void JumpAgainstWall_SettlesAndUnblocksInput(
             [Values(0f, 0.04f, 0.08f, 0.12f)] float wallOffset,
-            [Values(true, false)] bool forward)
+            [Values(-1, 1)] int direction)
         {
             var harness = CreateHarness(CreateWeapon("weapon.test.jumpwall"));
             harness.Terrain.StampSolidRect(new Vector2(-2f - wallOffset, 1f), new Vector2(1f, 4f));
@@ -257,7 +257,7 @@ namespace Game.Tests.EditMode.Gameplay
                 harness.Simulation.Tick(1f / 120f);
             }
 
-            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(forward));
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(direction));
             for (var i = 0; i < 2400 && harness.Simulation.HasActiveMotion; i++)
             {
                 harness.Simulation.Tick(1f / 120f);
@@ -284,7 +284,7 @@ namespace Game.Tests.EditMode.Gameplay
                 harness.Simulation.Tick(1f / 120f);
             }
 
-            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(true));
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(1));
             for (var i = 0; i < 2400 && harness.Simulation.HasActiveMotion; i++)
             {
                 harness.Simulation.Tick(1f / 120f);
@@ -293,6 +293,89 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsFalse(harness.Simulation.HasActiveMotion,
                 "snagging an overhang corner must not leave the unit unstable forever");
             Assert.IsTrue(harness.Simulation.CanUseMovement());
+        }
+
+        [Test]
+        public void StandardJump_LeftMirrorsRight()
+        {
+            var rightDisplacement = RunStandardJump(1);
+            var leftDisplacement = RunStandardJump(-1);
+
+            Assert.Greater(rightDisplacement, 0.2f);
+            Assert.AreEqual(rightDisplacement, -leftDisplacement, 0.05f, "left jumps mirror right jumps");
+        }
+
+        [Test]
+        public void StandardJump_TurnsUnitTowardsJumpDirection()
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.jumpface"));
+            SettleUnits(harness);
+            var unit = harness.State.GetUnit("player.test.01");
+            Assert.AreEqual(1, unit.FacingDirectionX);
+
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(-1));
+
+            Assert.AreEqual(-1, unit.FacingDirectionX);
+        }
+
+        [Test]
+        public void StandardJump_WhileAirborne_IsRejected()
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.jumpair"));
+            SettleUnits(harness);
+
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(1));
+            Assert.IsTrue(harness.Simulation.CanAcceptMovementInput(),
+                "held movement input remains accepted while the motor is airborne");
+            Assert.IsFalse(harness.Simulation.CanUseMovement(),
+                "the airborne motor cannot execute another jump until it lands");
+            Assert.AreEqual(BattleJumpOutcome.NotAllowed, harness.Simulation.TryStartJump(1));
+        }
+
+        [Test]
+        public void StandardJump_HorizontalLaunchSpeedStaysBelowRunningSpeed()
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.jumpspeed"));
+            SettleUnits(harness);
+            var motor = harness.Motors["player.test.01"];
+
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(1));
+
+            Assert.LessOrEqual(Mathf.Abs(motor.Velocity.x), motor.Profile.WalkSpeed * 0.9f + 0.001f,
+                "the standard jump must remain slower than normal walking");
+        }
+
+        [Test]
+        public void PlayerTurnTimer_ContinuesWhileJumping()
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.jumptimer"));
+            SettleUnits(harness);
+            var before = harness.Simulation.MovementTimeRemaining;
+
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(1));
+            harness.Simulation.Tick(0.1f);
+            harness.Simulation.Tick(0.1f);
+            harness.Simulation.Tick(0.1f);
+
+            Assert.Less(harness.Simulation.MovementTimeRemaining, before - 0.25f,
+                "jump time is part of the real player turn timer");
+        }
+
+        private static float RunStandardJump(int direction)
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.angledjump"));
+            SettleUnits(harness);
+            var unit = harness.State.GetUnit("player.test.01");
+            var startX = unit.Position.x;
+
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(direction));
+            for (var i = 0; i < 2400 && harness.Simulation.HasActiveMotion; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.IsFalse(harness.Simulation.HasActiveMotion, "the jump settles back on the ground");
+            return unit.Position.x - startX;
         }
 
         private static void SettleUnits(Harness harness)
@@ -398,7 +481,7 @@ namespace Game.Tests.EditMode.Gameplay
             fixedHarness.Simulation.Walk(1, 0f);
             TickMany(fixedHarness.Simulation, 60, 1f / 120f);
             fixedHarness.Simulation.Walk(0, 0f);
-            fixedHarness.Simulation.TryStartJump(true);
+            fixedHarness.Simulation.TryStartJump(1);
             TickMany(fixedHarness.Simulation, 180, 1f / 120f);
             fixedHarness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 20f, true));
             TickMany(fixedHarness.Simulation, 120, 1f / 120f);
@@ -406,7 +489,7 @@ namespace Game.Tests.EditMode.Gameplay
             chunkedHarness.Simulation.Walk(1, 0f);
             TickMany(chunkedHarness.Simulation, 30, 1f / 60f);
             chunkedHarness.Simulation.Walk(0, 0f);
-            chunkedHarness.Simulation.TryStartJump(true);
+            chunkedHarness.Simulation.TryStartJump(1);
             TickMany(chunkedHarness.Simulation, 90, 1f / 60f);
             chunkedHarness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 20f, true));
             TickMany(chunkedHarness.Simulation, 60, 1f / 60f);
@@ -432,7 +515,7 @@ namespace Game.Tests.EditMode.Gameplay
                 }
                 else if (tick == 72)
                 {
-                    harness.Simulation.TryStartJump(true);
+                    harness.Simulation.TryStartJump(1);
                 }
                 else if (tick == 260)
                 {
