@@ -108,3 +108,12 @@ InitTestScene*.unity*
 
 # Local decompilation/analysis tooling (large binaries, not part of the project)
 /.tools/
+
+# Player build outputs dropped at the repo root (named after the executable,
+# so the template's /Build/ rules do not catch them)
+*_BurstDebugInformation_DoNotShip/
+*_BackUpThisFolder_ButDontShipItWithYourGame/
+*.symbols.zip
+
+# JetBrains Rider project metadata
+.idea/
