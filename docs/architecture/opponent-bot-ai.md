@@ -463,15 +463,18 @@ FireStep виконано (або TryFire неможливий) → Idle
 
 Мінімальний рефакторинг, без зміни поведінки для гравця:
 
-1. `_playerMovement: TurnMovementState` → `_movementByTeam`
-   (по одному на команду; бюджет ходу однаковий —
-   `PlayerTurnDurationSeconds` стає `TurnDurationSeconds`).
+1. **Реалізовано простіше, ніж планувалось:** per-team `TurnMovementState`
+   не знадобився. Оскільки таймер ходу лишається виключно player-only
+   (п.3), `_playerMovement` і назва `PlayerTurnDurationSeconds`
+   збережені без змін — це знижує churn і не чіпає сигнатуру
+   `BattleSimulationSettings`, якою користуються тести й scene controller.
 2. `Walk`, `TryStartJump`, `CanUseMovement`, `CanAcceptMovementInput`,
-   `StepWalkIntent`: прибрати перевірки `TeamId == Player`, замінити на
-   «юніт належить активній команді». Хто «водить» юніта — вирішує
-   викликач (input router для гравця, `BotTurnController` для бота);
-   симуляції байдуже.
-3. Таймер ходу (`StepPlayerTurnTimer`) залишити **тільки для гравця**
+   `StepWalkIntent`: прибрано перевірки `TeamId == Player`. Активний юніт
+   за побудовою належить активній команді, а дозвіл на рух гейтиться
+   per-team у `CanAcceptMovementInput` (Player → обмежений таймером,
+   Opponent → без обмеження). Хто «водить» юніта — вирішує викликач
+   (input router для гравця, `BotTurnController` для бота).
+3. Таймер ходу (`StepPlayerTurnTimer`) залишено **тільки для гравця**
    (бот обмежений власним захисним таймером у контролері) — інакше
    повільний бот «згорить» по таймеру і ходи почнуть пропускатись.
 4. Нових публічних членів: немає (усе вже є — `Walk`, `TryStartJump`,
@@ -505,14 +508,16 @@ FireStep виконано (або TryFire неможливий) → Idle
 
 ### Етап 0 — рух симуляції для обох команд (передумова)
 
-- [ ] `TurnMovementState` per-team у `BattleSimulation`; перейменувати
-      `PlayerTurnDurationSeconds` → `TurnDurationSeconds` (зі збереженням
-      семантики для гравця)
-- [ ] Прибрати player-only перевірки з `Walk`/`TryStartJump`/
+- [x] `CanAcceptMovementInput` зроблено team-aware (Player обмежений
+      таймером, Opponent — ні). Per-team `TurnMovementState` не знадобився:
+      таймер лишається player-only, тому `PlayerTurnDurationSeconds` не
+      перейменовано (менше churn, сигнатура settings стабільна)
+- [x] Прибрано player-only перевірки з `Walk`/`TryStartJump`/
       `CanUseMovement`/`CanAcceptMovementInput`/`StepWalkIntent`
-- [ ] Таймер ходу лишити гравцеві; бот таймером симуляції не обмежується
-- [ ] Тести: юніт опонента ходить/стрибає через публічний API так само,
-      як гравець; поведінка гравця не змінилась (регресія на існуючих тестах)
+- [x] Таймер ходу лишено гравцеві; бот таймером симуляції не обмежується
+- [x] Тести: `WalkIntent_MovesOpponentUnit_DuringOpponentTurn`,
+      `StandardJump_OpponentJumps_DuringOpponentTurn`; існуючі тести
+      гравця — регресія зелена
 
 **Вихід:** бот *може* рухатись; поведінка гри не змінилась.
 

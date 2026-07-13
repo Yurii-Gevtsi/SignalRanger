@@ -158,11 +158,20 @@ namespace Game.Gameplay.Battle.Simulation
         /// </summary>
         public bool CanAcceptMovementInput()
         {
-            return !Result.IsFinished
-                && !HasProjectilesInFlight
-                && _state.Turn.ActiveTeam == BattleTeamId.Player
-                && !_state.Turn.ActionSpent
-                && _playerMovement.HasTimeRemaining;
+            if (Result.IsFinished || HasProjectilesInFlight || _state.Turn.ActionSpent)
+            {
+                return false;
+            }
+
+            return _state.Turn.ActiveTeam switch
+            {
+                // The player is bounded by the on-screen turn timer.
+                BattleTeamId.Player => _playerMovement.HasTimeRemaining,
+                // The opponent bot paces itself through its own turn
+                // controller, so the simulation imposes no movement time cap.
+                BattleTeamId.Opponent => true,
+                _ => false
+            };
         }
 
         public BattleFireResult TryFire(AimState aim)
@@ -232,8 +241,10 @@ namespace Game.Gameplay.Battle.Simulation
                 return BattleWalkOutcome.NotAllowed;
             }
 
+            // The active unit always belongs to the active team; movement
+            // permission is already gated per-team by CanUseMovement().
             var unit = GetActiveUnitOrNull();
-            if (unit == null || unit.TeamId != BattleTeamId.Player)
+            if (unit == null)
             {
                 _walkIntentDirection = 0;
                 return BattleWalkOutcome.NotAllowed;
@@ -294,7 +305,7 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             unit = GetActiveUnitOrNull();
-            if (unit == null || unit.TeamId != BattleTeamId.Player)
+            if (unit == null)
             {
                 return false;
             }
@@ -740,7 +751,7 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var unit = GetActiveUnitOrNull();
-            if (unit == null || unit.TeamId != BattleTeamId.Player)
+            if (unit == null)
             {
                 _walkIntentDirection = 0;
                 return;

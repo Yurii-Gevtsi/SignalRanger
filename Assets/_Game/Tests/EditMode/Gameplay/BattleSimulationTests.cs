@@ -243,6 +243,46 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void WalkIntent_MovesOpponentUnit_DuringOpponentTurn()
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.opp-walk", gravityScale: 0f, timeoutSeconds: 0.5f));
+            AdvanceToOpponentTurn(harness);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            var startX = opponent.Position.x;
+
+            Assert.IsTrue(harness.Simulation.CanUseMovement(),
+                "the opponent can move on its own turn through the same API as the player");
+            Assert.AreEqual(BattleWalkOutcome.Moved, harness.Simulation.Walk(-1, 0f));
+            for (var i = 0; i < 120; i++)
+            {
+                harness.Simulation.Walk(-1, 0f);
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.Less(opponent.Position.x, startX, "opponent walk intent moves the opponent unit");
+            Assert.AreEqual(-1, opponent.FacingDirectionX);
+        }
+
+        [Test]
+        public void StandardJump_OpponentJumps_DuringOpponentTurn()
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.opp-jump", gravityScale: 0f, timeoutSeconds: 0.5f));
+            AdvanceToOpponentTurn(harness);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            var startX = opponent.Position.x;
+
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(-1));
+            for (var i = 0; i < 2400 && harness.Simulation.HasActiveMotion; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.IsFalse(harness.Simulation.HasActiveMotion, "the opponent jump settles back on the ground");
+            Assert.Less(opponent.Position.x, startX, "the opponent jumped to the left");
+            Assert.AreEqual(-1, opponent.FacingDirectionX);
+        }
+
+        [Test]
         public void JumpAgainstWall_SettlesAndUnblocksInput(
             [Values(0f, 0.04f, 0.08f, 0.12f)] float wallOffset,
             [Values(-1, 1)] int direction)
@@ -376,6 +416,28 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.IsFalse(harness.Simulation.HasActiveMotion, "the jump settles back on the ground");
             return unit.Position.x - startX;
+        }
+
+        /// <summary>
+        /// Spends the player's action with a harmless flat shot and ticks until
+        /// the turn hands over, so movement can be exercised on the opponent's turn.
+        /// </summary>
+        private static void AdvanceToOpponentTurn(Harness harness)
+        {
+            SettleUnits(harness);
+
+            // Fire away from the opponent so the shot resolves by timeout without
+            // touching it; the resolved shot advances the turn to the opponent.
+            var fired = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.left, 6f, true));
+            Assert.AreEqual(BattleFireOutcome.Fired, fired.Outcome);
+            for (var i = 0; i < 600 && harness.State.Turn.ActiveTeam != BattleTeamId.Opponent; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam,
+                "the player's shot resolves and hands the turn to the opponent");
+            SettleUnits(harness);
         }
 
         private static void SettleUnits(Harness harness)
