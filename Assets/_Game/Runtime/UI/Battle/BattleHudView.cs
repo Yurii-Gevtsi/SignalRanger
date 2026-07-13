@@ -24,8 +24,8 @@ namespace Game.UI.Battle
         private static readonly Color Neutral = new(0.17f, 0.24f, 0.34f, 1f);
         private static readonly Color Disabled = new(0.20f, 0.23f, 0.28f, 0.42f);
         private static readonly Color TutorialHighlight = new(1f, 0.83f, 0.26f, 0.98f);
-        private static readonly Color Control = new(0.11f, 0.36f, 0.62f, 0.84f);
-        private static readonly Color ControlDisabled = new(0.11f, 0.18f, 0.26f, 0.42f);
+        private static readonly Color Control = new(0.11f, 0.36f, 0.62f, 1f);
+        private static readonly Color ControlDisabled = new(0.11f, 0.18f, 0.26f, 0.62f);
 
         private readonly Dictionary<string, Sprite> _weaponSprites = new(StringComparer.Ordinal);
         private Sprite _whiteSprite;
@@ -388,7 +388,7 @@ namespace Game.UI.Battle
 
             var button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
-            button.colors = CreateButtonColors(Control);
+            button.colors = CreateMovementButtonColors();
             if (onClick != null)
             {
                 button.onClick.AddListener(() => onClick());
@@ -572,6 +572,20 @@ namespace Game.UI.Battle
                 pressedColor = Color.Lerp(baseColor, Color.black, 0.24f),
                 selectedColor = Color.Lerp(baseColor, Color.white, 0.10f),
                 disabledColor = Disabled,
+                colorMultiplier = 1f,
+                fadeDuration = 0.075f
+            };
+        }
+
+        private static ColorBlock CreateMovementButtonColors()
+        {
+            return new ColorBlock
+            {
+                normalColor = Color.white,
+                highlightedColor = new Color(1f, 1f, 1f, 1f),
+                pressedColor = new Color(0.72f, 0.82f, 0.94f, 1f),
+                selectedColor = Color.white,
+                disabledColor = Color.white,
                 colorMultiplier = 1f,
                 fadeDuration = 0.075f
             };
