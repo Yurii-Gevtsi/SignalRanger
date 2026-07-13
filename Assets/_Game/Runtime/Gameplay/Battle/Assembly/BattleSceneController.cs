@@ -103,6 +103,8 @@ namespace Game.Gameplay.Battle.Assembly
         private string _coachTargetId = string.Empty;
         private float _coachTimer;
         private bool _aimHadInput;
+        private bool _aimDragActive;
+        private Vector2 _aimAnchorWorld;
         private int _uiWalkInputDirection;
         private int _keyboardWalkInputDirection;
 
@@ -366,6 +368,7 @@ namespace Game.Gameplay.Battle.Assembly
             _aimLine.enabled = false;
             HideTrajectoryPreview();
             _aimHadInput = false;
+            _aimDragActive = false;
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
             RefreshUnitViews();
@@ -398,6 +401,7 @@ namespace Game.Gameplay.Battle.Assembly
             var weapon = _inventory.Selected;
             _aimSettings = weapon.CreateAimSettings(_baseAimSettings);
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
+            _aimDragActive = false;
             _status = _currentArena != null
                 ? GameText.WeaponSelected(DescribeWeapon(weapon))
                 : GameText.WeaponSelectedGeneric();
@@ -571,6 +575,13 @@ namespace Game.Gameplay.Battle.Assembly
 
             var view = unitObject.AddComponent<BattleUnitView>();
             view.SetPreserveSpriteColor(skin != null);
+            if (skin != null && _visualTheme != null)
+            {
+                view.SetArtFacing(state.TeamId == BattleTeamId.Player
+                    ? _visualTheme.PlayerSkinFacingDirectionX
+                    : _visualTheme.OpponentSkinFacingDirectionX);
+            }
+
             return view;
         }
 
@@ -598,20 +609,51 @@ namespace Game.Gameplay.Battle.Assembly
         private void UpdateAim()
         {
             var activePresenter = GetActivePresenter();
-            if (activePresenter == null || !TryGetPointerWorldPosition(out var pointerWorld))
+            if (activePresenter == null)
             {
+                _aimDragActive = false;
                 return;
             }
 
-            _aimState = AimCalculator.Calculate(activePresenter.View.FirePoint.position, pointerWorld, _aimSettings);
-            _firstBattleGuide?.ObserveAimState(_aimState.HasInput);
-            if (_aimState.HasInput && !_aimHadInput)
+            if (!TryReadPointer(out var pressed, out var pressStarted, out var released, out var screenPosition, out var pointerOverUi))
             {
-                ReportTutorial(BattleTutorialBridge.AimStarted);
-                EmitFeedback(BattleFeedbackEventType.AimStarted);
+                _aimDragActive = false;
+                return;
             }
 
-            _aimHadInput = _aimState.HasInput;
+            var origin = (Vector2)activePresenter.View.FirePoint.position;
+
+            // Slingshot: the press anchors anywhere on screen (away from the unit
+            // so the finger never covers the arc), and dragging pulls the shot
+            // back. The launch aims opposite the pull. Releasing only commits the
+            // aim — the shot itself is fired by the Fire button, never on release.
+            if (pressStarted && !pointerOverUi)
+            {
+                _aimDragActive = true;
+                _aimAnchorWorld = ScreenToWorld(screenPosition);
+            }
+
+            if (_aimDragActive && pressed)
+            {
+                var pull = ScreenToWorld(screenPosition) - _aimAnchorWorld;
+                _aimState = AimCalculator.CalculateFromPull(origin, pull, _aimSettings);
+                _firstBattleGuide?.ObserveAimState(_aimState.HasInput);
+                if (_aimState.HasInput && !_aimHadInput)
+                {
+                    ReportTutorial(BattleTutorialBridge.AimStarted);
+                    EmitFeedback(BattleFeedbackEventType.AimStarted);
+                }
+
+                _aimHadInput = _aimState.HasInput;
+                return;
+            }
+
+            if (_aimDragActive && released)
+            {
+                // Freeze the pulled aim so the arc stays on screen for review;
+                // the player fires it with the Fire button.
+                _aimDragActive = false;
+            }
         }
 
         private static AiDifficulty MapDifficulty(int tier)
@@ -661,42 +703,52 @@ namespace Game.Gameplay.Battle.Assembly
             }
         }
 
-        private bool TryGetPointerWorldPosition(out Vector2 pointerWorld)
+        private bool TryReadPointer(
+            out bool pressed,
+            out bool pressStarted,
+            out bool released,
+            out Vector2 screenPosition,
+            out bool pointerOverUi)
         {
-            pointerWorld = default;
+            pressed = false;
+            pressStarted = false;
+            released = false;
+            screenPosition = default;
+            pointerOverUi = false;
+
             if (_camera == null)
             {
                 return false;
             }
 
-            if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
+            if (Touchscreen.current != null)
             {
-                if (IsPointerOverUi((int)Touchscreen.current.primaryTouch.touchId.ReadValue()))
-                {
-                    return false;
-                }
-
-                pointerWorld = _camera.ScreenToWorldPoint(Touchscreen.current.primaryTouch.position.ReadValue());
+                var touch = Touchscreen.current.primaryTouch;
+                pressed = touch.press.isPressed;
+                pressStarted = touch.press.wasPressedThisFrame;
+                released = touch.press.wasReleasedThisFrame;
+                screenPosition = touch.position.ReadValue();
+                pointerOverUi = IsPointerOverUi((int)touch.touchId.ReadValue());
                 return true;
             }
 
             if (Mouse.current != null)
             {
-                if (!Mouse.current.leftButton.isPressed)
-                {
-                    return false;
-                }
-
-                if (IsPointerOverUi())
-                {
-                    return false;
-                }
-
-                pointerWorld = _camera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+                var button = Mouse.current.leftButton;
+                pressed = button.isPressed;
+                pressStarted = button.wasPressedThisFrame;
+                released = button.wasReleasedThisFrame;
+                screenPosition = Mouse.current.position.ReadValue();
+                pointerOverUi = IsPointerOverUi();
                 return true;
             }
 
             return false;
+        }
+
+        private Vector2 ScreenToWorld(Vector2 screenPosition)
+        {
+            return _camera.ScreenToWorldPoint(screenPosition);
         }
 
         private void Fire()
@@ -852,6 +904,7 @@ namespace Game.Gameplay.Battle.Assembly
                 _status = GameText.ShotStatus(DescribeTeam(team), DescribeWeapon(weapon));
             }
 
+            _aimDragActive = false;
             _aimLine.enabled = false;
             HideTrajectoryPreview();
             EmitFeedback(BattleFeedbackEventType.ShotFired);
@@ -877,6 +930,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             ApplyAimSettingsForActiveTeam();
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
+            _aimDragActive = false;
             _aiDecisionTimer = 0f;
             ClearWalkInput();
             _aimLine.enabled = false;
@@ -1220,7 +1274,6 @@ namespace Game.Gameplay.Battle.Assembly
             var weakShot01 = 1f - power01;
             var minimumArcTime = Mathf.Lerp(0.34f, 0.78f, upwardAim01 * weakShot01);
             previewEndTime = Mathf.Max(previewEndTime, minimumArcTime);
-            var dotColor = Color.Lerp(new Color(0.28f, 1f, 0.12f, 0.98f), new Color(0.98f, 0.05f, 0.02f, 0.98f), power01);
 
             for (var i = 0; i < _trajectoryDots.Count; i++)
             {
@@ -1229,12 +1282,11 @@ namespace Game.Gameplay.Battle.Assembly
                 var time01 = Mathf.Pow(t01, 0.86f);
                 var point = GetTrajectoryPreviewPointAtTime(firePoint, weapon, previewEndTime * time01);
                 var scale = Mathf.Lerp(0.24f, 0.115f, t01);
-                var alpha = Mathf.Lerp(1f, 0.62f, t01);
 
                 dot.enabled = true;
                 dot.transform.position = new Vector3(point.x, point.y, -0.18f);
                 dot.transform.localScale = new Vector3(scale, scale, 1f);
-                dot.color = new Color(dotColor.r, dotColor.g, dotColor.b, alpha);
+                dot.color = Color.white;
             }
         }
 
@@ -1500,6 +1552,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
+            _aimDragActive = false;
             _aimLine.enabled = false;
             HideTrajectoryPreview();
             _status = GameText.AimReset();

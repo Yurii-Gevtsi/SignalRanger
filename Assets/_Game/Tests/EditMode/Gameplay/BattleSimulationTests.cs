@@ -204,6 +204,113 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void WalkIntent_MovesPlayerUnit_AndUpdatesFacing()
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.walk"));
+            var player = harness.State.GetUnit("player.test.01");
+            SettleUnits(harness);
+            var startX = player.Position.x;
+
+            Assert.AreEqual(BattleWalkOutcome.Moved, harness.Simulation.Walk(1, 0f));
+            for (var i = 0; i < 60; i++)
+            {
+                harness.Simulation.Walk(1, 0f);
+                harness.Simulation.Tick(1f / 60f);
+            }
+
+            Assert.Greater(player.Position.x, startX, "walk intent consumed by fixed ticks moves the unit");
+            Assert.AreEqual(1, player.FacingDirectionX);
+        }
+
+        [Test]
+        public void WalkIntent_AccumulatesAcrossFramesShorterThanOneTick()
+        {
+            // At high framerates a frame delivers less than one fixed tick of
+            // time; the accumulator must carry the remainder across frames.
+            var harness = CreateHarness(CreateWeapon("weapon.test.walk2"));
+            var player = harness.State.GetUnit("player.test.01");
+            SettleUnits(harness);
+            var startX = player.Position.x;
+
+            for (var i = 0; i < 480; i++)
+            {
+                harness.Simulation.Walk(-1, 0f);
+                harness.Simulation.Tick(1f / 240f);
+            }
+
+            Assert.Less(player.Position.x, startX, "sub-tick frames still add up to movement");
+            Assert.AreEqual(-1, player.FacingDirectionX);
+        }
+
+        [Test]
+        public void JumpAgainstWall_SettlesAndUnblocksInput(
+            [Values(0f, 0.04f, 0.08f, 0.12f)] float wallOffset,
+            [Values(true, false)] bool forward)
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.jumpwall"));
+            harness.Terrain.StampSolidRect(new Vector2(-2f - wallOffset, 1f), new Vector2(1f, 4f));
+            SettleUnits(harness);
+
+            for (var i = 0; i < 600; i++)
+            {
+                harness.Simulation.Walk(1, 0f);
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(forward));
+            for (var i = 0; i < 2400 && harness.Simulation.HasActiveMotion; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.IsFalse(harness.Simulation.HasActiveMotion,
+                "a jump into an obstacle must always come to rest instead of hanging mid-motion");
+            Assert.IsTrue(harness.Simulation.CanUseMovement(),
+                "movement input unblocks once the jump resolves");
+        }
+
+        [Test]
+        public void JumpUnderOverhang_SettlesAndUnblocksInput()
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.test.jumplip"));
+            // Wall ahead with a thin lip sticking out over the player's head.
+            harness.Terrain.StampSolidRect(new Vector2(-2f, 1f), new Vector2(1f, 4f));
+            harness.Terrain.StampSolidRect(new Vector2(-2.8f, 0.3f), new Vector2(0.8f, 0.12f));
+            SettleUnits(harness);
+
+            for (var i = 0; i < 600; i++)
+            {
+                harness.Simulation.Walk(1, 0f);
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.AreEqual(BattleJumpOutcome.Jumped, harness.Simulation.TryStartJump(true));
+            for (var i = 0; i < 2400 && harness.Simulation.HasActiveMotion; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.IsFalse(harness.Simulation.HasActiveMotion,
+                "snagging an overhang corner must not leave the unit unstable forever");
+            Assert.IsTrue(harness.Simulation.CanUseMovement());
+        }
+
+        private static void SettleUnits(Harness harness)
+        {
+            foreach (var motor in harness.Motors.Values)
+            {
+                motor.WakeIfUnsupported();
+            }
+
+            for (var i = 0; i < 1200 && harness.Simulation.HasActiveMotion; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.IsFalse(harness.Simulation.HasActiveMotion, "units settle on the ground before the scenario starts");
+        }
+
+        [Test]
         public void CoverWeapon_Fired_StampsTerrainMask()
         {
             var coverWeapon = CreateWeapon("weapon.test.cover", WeaponRole.CoverTool, damage: 0, impactRadius: 1.5f);

@@ -17,14 +17,17 @@ namespace Game.Gameplay.Battle.Domain
         public float MaxPower { get; }
 
         /// <summary>
-        /// Drag length (from the fire point) at which power reaches <see cref="MaxPower"/>.
+        /// Pull length (from the press anchor) at which power reaches <see cref="MaxPower"/>.
         /// Power is interpolated across [MinInputDistance, MaxInputDistance], so power is
-        /// controlled by how far you drag, not by how far away the target happens to be.
+        /// controlled by how far you drag the slingshot back, in world units, and is
+        /// independent of where on screen the pull begins.
         /// </summary>
         public float MaxInputDistance { get; }
+
+        /// <summary>Dead zone: pulls shorter than this register no shot.</summary>
         public float MinInputDistance { get; }
         public Vector2 FallbackDirection { get; }
 
-        public static AimSettings Default => new(4f, 18f, 10f, 0.35f, Vector2.right);
+        public static AimSettings Default => new(4f, 18f, 3.4f, 0.5f, Vector2.right);
     }
 }

@@ -294,7 +294,6 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
-            _simulationAccumulator = 0f;
             ResolveBattleAfterMotion();
         }
 

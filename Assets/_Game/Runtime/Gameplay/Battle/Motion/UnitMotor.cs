@@ -316,9 +316,26 @@ namespace Game.Gameplay.Battle.Motion
                 return MotorStepOutcome.Airborne;
             }
 
+            // Wedged: both the full step and a pure vertical retreat are
+            // blocked. Whatever snags the body also supports it, so bleed the
+            // motion off here — keeping the velocity would let gravity feed a
+            // block that never resolves and the unit would hang unstable forever.
             Position = previous;
-            Velocity = new Vector2(Velocity.x * -_profile.BounceDampingX, Velocity.y);
-            return DampenOrRest(previous);
+            if (Velocity.y > 0f)
+            {
+                Velocity = new Vector2(
+                    Velocity.x * -_profile.BounceDampingX,
+                    -Mathf.Abs(Velocity.y) * _profile.BounceDampingY);
+                return MotorStepOutcome.Airborne;
+            }
+
+            Velocity = new Vector2(Velocity.x * -_profile.BounceDampingX, 0f);
+            if (Velocity.magnitude <= _profile.RestSpeed)
+            {
+                return Settle(previous);
+            }
+
+            return MotorStepOutcome.Airborne;
         }
 
         private MotorStepOutcome DampenOrRest(Vector2 position)

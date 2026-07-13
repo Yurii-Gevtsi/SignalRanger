@@ -14,6 +14,7 @@ namespace Game.Gameplay.Battle.Runtime
 
         private Color _baseColor = Color.white;
         private Vector3 _baseScale;
+        private int _artFacingDirectionX = 1;
 
         public Transform FirePoint => firePoint != null ? firePoint : transform;
 
@@ -47,10 +48,16 @@ namespace Game.Gameplay.Battle.Runtime
             }
         }
 
+        /// <summary>Which way the source art looks; the flip in <see cref="SetFacing"/> is relative to it.</summary>
+        public void SetArtFacing(int artFacingDirectionX)
+        {
+            _artFacingDirectionX = artFacingDirectionX >= 0 ? 1 : -1;
+        }
+
         public void SetFacing(int facingDirectionX)
         {
             EnsureReferences();
-            var sign = facingDirectionX >= 0 ? 1f : -1f;
+            var sign = facingDirectionX >= 0 ? 1 : -1;
             if (firePoint != null)
             {
                 firePoint.localPosition = new Vector3(0.45f * sign, 0.2f, 0f);
@@ -58,7 +65,7 @@ namespace Game.Gameplay.Battle.Runtime
 
             if (bodyRenderer != null)
             {
-                bodyRenderer.flipX = sign < 0f;
+                bodyRenderer.flipX = sign != _artFacingDirectionX;
             }
         }
 

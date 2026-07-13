@@ -12,12 +12,16 @@ namespace Game.Gameplay.Battle.Visuals
             Vector2 unitSpriteScale,
             Vector2 unitSpriteOffset,
             bool hideProceduralTerrain,
-            bool useProceduralTerrainColliders)
+            bool useProceduralTerrainColliders,
+            int playerSkinFacingDirectionX = 1,
+            int opponentSkinFacingDirectionX = 1)
         {
             Background = background;
             Foreground = foreground;
             PlayerSkinResourcePath = playerSkinResourcePath ?? string.Empty;
             OpponentSkinResourcePath = opponentSkinResourcePath ?? string.Empty;
+            PlayerSkinFacingDirectionX = playerSkinFacingDirectionX >= 0 ? 1 : -1;
+            OpponentSkinFacingDirectionX = opponentSkinFacingDirectionX >= 0 ? 1 : -1;
             UnitSpriteScale = unitSpriteScale;
             UnitSpriteOffset = unitSpriteOffset;
             HideProceduralTerrain = hideProceduralTerrain;
@@ -28,6 +32,10 @@ namespace Game.Gameplay.Battle.Visuals
         public BattleVisualLayer Foreground { get; }
         public string PlayerSkinResourcePath { get; }
         public string OpponentSkinResourcePath { get; }
+
+        /// <summary>Which way the source art looks before any runtime flip.</summary>
+        public int PlayerSkinFacingDirectionX { get; }
+        public int OpponentSkinFacingDirectionX { get; }
         public Vector2 UnitSpriteScale { get; }
         public Vector2 UnitSpriteOffset { get; }
         public bool HideProceduralTerrain { get; }

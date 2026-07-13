@@ -9,7 +9,7 @@ namespace Game.Gameplay.Battle.Visuals
         private const string FruitGardenBackground = "Visuals/Arenas/Background2";
         private const string FruitGardenForeground = "Visuals/Arenas/train2";
         private const string PlayerCharacter = "Visuals/Characters/racoon-full";
-        private const string OpponentCharacter = "Visuals/Characters/octopus-enemy-clean";
+        private const string OpponentCharacter = "Visuals/Characters/oct_full";
 
         public static BattleVisualTheme ForArena(ArenaDefinition arena)
         {
@@ -26,7 +26,9 @@ namespace Game.Gameplay.Battle.Visuals
                 new Vector2(0.18f, 0.18f),
                 new Vector2(0f, 0.23f),
                 true,
-                false);
+                false,
+                playerSkinFacingDirectionX: -1,
+                opponentSkinFacingDirectionX: 1);
         }
     }
 }

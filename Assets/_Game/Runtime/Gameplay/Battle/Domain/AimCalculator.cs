@@ -4,21 +4,26 @@ namespace Game.Gameplay.Battle.Domain
 {
     public static class AimCalculator
     {
-        public static AimState Calculate(Vector2 origin, Vector2 pointerWorldPosition, AimSettings settings)
+        /// <summary>
+        /// Slingshot aiming: the player presses anywhere comfortable and pulls.
+        /// The shot launches opposite the pull (like drawing a bow), and power
+        /// scales with how far the pull is dragged across
+        /// [MinInputDistance, MaxInputDistance]. The pull is measured from the
+        /// press anchor, not from <paramref name="origin"/>, so the finger can
+        /// rest anywhere on screen while the arc is drawn from the firing unit.
+        /// </summary>
+        public static AimState CalculateFromPull(Vector2 origin, Vector2 pull, AimSettings settings)
         {
-            var offset = pointerWorldPosition - origin;
-            var distance = offset.magnitude;
+            var distance = pull.magnitude;
             if (distance < settings.MinInputDistance)
             {
                 return new AimState(origin, settings.FallbackDirection, settings.MinPower, false);
             }
 
-            // Power scales with drag length across [MinInputDistance, MaxInputDistance],
-            // so a short controlled drag spans the whole power range regardless of how far
-            // the target is. Aim high for an arc; drag longer for more power.
             var t = Mathf.InverseLerp(settings.MinInputDistance, settings.MaxInputDistance, distance);
             var power = Mathf.Lerp(settings.MinPower, settings.MaxPower, t);
-            return new AimState(origin, offset.normalized, power, true, pointerWorldPosition);
+            var launchDirection = -pull;
+            return new AimState(origin, launchDirection, power, true);
         }
     }
 }

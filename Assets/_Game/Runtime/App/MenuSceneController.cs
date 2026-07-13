@@ -17,7 +17,15 @@ namespace Game.App
 
         private static readonly Color BackgroundColor = new(0.02f, 0.025f, 0.03f);
         private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.88f);
-        private static readonly Color DisabledTint = new(0.72f, 0.78f, 0.82f, 0.78f);
+        // Layout uses the Canvas reference resolution (1920 x 1080).
+        private static readonly Vector2 CharacterSize = new(560f, 560f);
+        private static readonly Vector2 CharacterPosition = new(18f, -42f);
+        private static readonly Vector2 BottomButtonPosition = new(0f, -34f);
+        private static readonly Vector2 SideButtonSize = new(220f, 220f);
+        private static readonly Vector2 RewardsSize = new(418f, 252f);
+        private static readonly Vector2 RewardsPosition = new(480f, -34f);
+        private static readonly Vector2 SettingsSize = new(140f, 140f);
+        private static readonly Vector2 SettingsPosition = new(-26f, -31f);
 
         private readonly Dictionary<string, Sprite> _sprites = new();
 
@@ -112,7 +120,7 @@ namespace Game.App
             CreateImage("Main Background", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, "main_scr_albom", false, null);
             CreateImage("Menu Character", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(560f, 560f), new Vector2(0f, 80f),
+                new Vector2(0.5f, 0.5f), CharacterSize, CharacterPosition,
                 "Visuals/Characters/racoon-full", true, null);
 
             BuildTopBar(root, saveData);
@@ -132,40 +140,34 @@ namespace Game.App
                 35, TextAlignmentOptions.MidlineLeft, playerName);
 
             CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(124f, 124f), new Vector2(-28f, -25f), "settings_btn", OpenSettings);
+                SettingsSize, SettingsPosition, "settings_btn", OpenSettings);
 
             var coins = CreateImage("Coins Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(310f, 155f), new Vector2(-486f, -20f), "Coin_panel", true, null);
-            CreateLabel("Coins Value", coins.transform, new Vector2(0.34f, 0.22f), new Vector2(0.76f, 0.78f),
+            CreateLabel("Coins Value", coins.transform, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
                 35, TextAlignmentOptions.Center, softCurrency.ToString());
 
             var premium = CreateImage("Premium Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(310f, 155f), new Vector2(-166f, -20f), "vip_coins_panel", true, null);
-            CreateLabel("Premium Value", premium.transform, new Vector2(0.36f, 0.22f), new Vector2(0.76f, 0.78f),
+            CreateLabel("Premium Value", premium.transform, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
                 35, TextAlignmentOptions.Center, "0");
         }
 
         private void BuildBottomActions(Transform root)
         {
             var play = CreateImageButton("Play Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), new Vector2(620f, 413f), new Vector2(0f, 54f), "play_btn", StartBattle);
+                new Vector2(0.5f, 0f), new Vector2(620f, 413f), BottomButtonPosition, "play_btn", StartBattle);
             CreateLabel("Play Label", play.transform, new Vector2(0.20f, 0.17f), new Vector2(0.80f, 0.47f),
                 58, TextAlignmentOptions.Center, "Play");
 
             var inventory = CreateImageButton("Inventory Button", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
-                new Vector2(0f, 0f), new Vector2(220f, 220f), new Vector2(80f, 72f), "inventory", OpenLoadout);
-            CreateLabel("Inventory Label", inventory.transform, new Vector2(-0.20f, -0.07f), new Vector2(1.20f, 0.17f),
-                35, TextAlignmentOptions.Center, "Inventory");
+                new Vector2(0f, 0f), SideButtonSize, new Vector2(80f, BottomButtonPosition.y), "inventory", OpenLoadout);
 
             var shop = CreateImageButton("Shop Button", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(1f, 0f), new Vector2(220f, 220f), new Vector2(-80f, 72f), "shop_btn_inactive", OpenShop);
-            CreateLabel("Shop Label", shop.transform, new Vector2(-0.20f, -0.07f), new Vector2(1.20f, 0.17f),
-                35, TextAlignmentOptions.Center, "Shop");
+                new Vector2(1f, 0f), SideButtonSize, new Vector2(-80f, BottomButtonPosition.y), "shop_btn_inactive", OpenShop);
 
-            var rewards = CreateImage("Rewards Button", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(280f, 210f), new Vector2(0f, -18f), "rewards_btn", true, DisabledTint);
-            CreateLabel("Rewards Label", rewards.transform, new Vector2(-0.20f, -0.10f), new Vector2(1.20f, 0.14f),
-                35, TextAlignmentOptions.Center, "Rewards");
+            var rewards = CreateImage("Rewards Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f), RewardsSize, RewardsPosition, "rewards_btn", true, Color.white);
         }
 
         private void StartBattle()

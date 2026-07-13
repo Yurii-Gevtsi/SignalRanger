@@ -15,7 +15,17 @@ namespace Game.App
         private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.9f);
         private static readonly Color SelectedSlotColor = new(1f, 1f, 1f, 1f);
         private static readonly Color NormalSlotColor = new(0.72f, 0.82f, 0.92f, 0.88f);
+        private static readonly Color LockedLevelColor = new(1f, 0.25f, 0.22f, 0.96f);
         private static readonly Color HologramColor = new(0.70f, 1f, 0.96f, 0.95f);
+        // Layout uses the Canvas reference resolution (1920 x 1080).
+        private static readonly Vector2 SettingsSize = new(140f, 140f);
+        private static readonly Vector2 SettingsPosition = new(-26f, -5f);
+        private static readonly Vector2 PreviewPosition = new(-35f, -18f);
+        private static readonly Vector2 DetailCardSize = new(661f, 807f);
+        private static readonly Vector2 DetailCardPosition = new(0f, 40f);
+        private static readonly Vector2 WeaponStripPosition = new(120f, -128f);
+        private static readonly Vector2 WeaponSlotSize = new(266f, 266f);
+        private static readonly Vector2 WeaponArtSize = new(170f, 170f);
 
         private readonly Dictionary<string, Sprite> _sprites = new();
         private readonly List<SlotView> _slots = new();
@@ -33,6 +43,8 @@ namespace Game.App
         private TMP_Text _usesText;
         private TMP_Text _coinPriceText;
         private TMP_Text _crystalPriceText;
+        private Button _coinBuyButton;
+        private Button _crystalBuyButton;
         private int _selectedIndex;
 
         private readonly struct ShopWeaponItem
@@ -69,6 +81,7 @@ namespace Game.App
             public Image Frame;
             public RectTransform Weapon;
             public TMP_Text Label;
+            public Image Lock;
         }
 
         public static void Open(Action onClosed)
@@ -88,6 +101,7 @@ namespace Game.App
             BuildItems();
             Build();
             SelectWeapon(0);
+            ApplyPage();
         }
 
         private void BuildItems()
@@ -107,8 +121,6 @@ namespace Game.App
                 "Тактичний інструмент для створення захисної лінії.", 1080, 36);
             Add(weapons, "weapon.guard-pulse", "glove", "Захисний імпульс", 8,
                 "Утилітарний заряд для оборони й контролю темпу.", 1220, 42);
-            Add(weapons, "weapon.relay-step", "fpv", "Релейний крок", 9,
-                "Маневровий пристрій для швидкої зміни позиції.", 1440, 48);
         }
 
         private void Add(
@@ -150,7 +162,7 @@ namespace Game.App
 
             var root = canvasObject.transform;
             CreateImage("Shop Background", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, "shop_scr", false, null, false);
+                Vector2.zero, Vector2.zero, "shop_scr_light", false, null, false);
 
             BuildTopBar(root);
             BuildPreview(root);
@@ -164,35 +176,31 @@ namespace Game.App
             var softCurrency = Mathf.Max(0, saveData?.economy.softCurrency ?? 0);
 
             CreateImageButton("Back Button", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
-                new Vector2(118f, 118f), new Vector2(30f, -28f), "back_btn", Close);
+                new Vector2(118f, 118f), new Vector2(30f, 0f), "back_btn", Close);
 
-            var titlePanel = CreatePanel("Shop Title Panel", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
-                new Vector2(430f, 86f), new Vector2(152f, -42f), new Color(0.03f, 0.07f, 0.10f, 0.72f));
+            var titlePanel = CreateImage("Shop Title Panel", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(560f, 110f), new Vector2(128f, 0f), "info_panel", true, null, false);
             CreateText("Shop Title", titlePanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-44f, -8f), Vector2.zero, 38, TextAlignmentOptions.Center, "Магазин зброї");
+                new Vector2(-60f, -12f), new Vector2(-70f, 0f), 38, TextAlignmentOptions.Center, "Магазин зброї");
 
             var coins = CreateImage("Coins Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(310f, 155f), new Vector2(-486f, -20f), "Coin_panel", true, null, false);
-            CreateText("Coins Value", coins.transform, new Vector2(0.34f, 0.22f), new Vector2(0.76f, 0.78f),
+                new Vector2(310f, 155f), new Vector2(-486f, 0f), "Coin_panel", true, null, false);
+            CreateText("Coins Value", coins.transform, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, softCurrency.ToString());
 
             var premium = CreateImage("Premium Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(310f, 155f), new Vector2(-166f, -20f), "vip_coins_panel", true, null, false);
-            CreateText("Premium Value", premium.transform, new Vector2(0.36f, 0.22f), new Vector2(0.76f, 0.78f),
+                new Vector2(310f, 155f), new Vector2(-166f, 0f), "vip_coins_panel", true, null, false);
+            CreateText("Premium Value", premium.transform, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, "0");
 
             CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(124f, 124f), new Vector2(-28f, -25f), "settings_btn", () => SettingsScreenController.Open(null));
+                SettingsSize, SettingsPosition, "settings_btn", () => SettingsScreenController.Open(null));
         }
 
         private void BuildPreview(Transform root)
         {
             _previewRoot = CreateRect("Weapon Preview Root", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(620f, 520f), new Vector2(-105f, -18f));
-
-            var glow = CreatePanel("Weapon Preview Glow", _previewRoot, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), new Vector2(500f, 84f), new Vector2(0f, 4f), new Color(0.28f, 0.95f, 0.95f, 0.18f));
-            glow.raycastTarget = false;
+                new Vector2(0.5f, 0.5f), new Vector2(620f, 520f), PreviewPosition);
 
             _previewImage = CreateImage("Selected Weapon", _previewRoot, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), new Vector2(470f, 470f), new Vector2(0f, 62f), "bazooka", true, HologramColor, false)
@@ -202,67 +210,138 @@ namespace Game.App
         private void BuildDetails(Transform root)
         {
             var card = CreateImage("Weapon Details", root, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-                new Vector2(470f, 588f), new Vector2(-54f, -16f), "weapon_details", true, null, false);
+                DetailCardSize, DetailCardPosition, "weapon_details", false, null, false);
 
             _nameText = CreateText("Weapon Name", card.transform, new Vector2(0.12f, 0.80f), new Vector2(0.88f, 0.91f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 38, TextAlignmentOptions.Center, string.Empty);
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -30f), 38, TextAlignmentOptions.Center, string.Empty);
+            ConfigureVerticalOffsets(_nameText, 0f, 40f);
             _levelText = CreateText("Weapon Level", card.transform, new Vector2(0.15f, 0.70f), new Vector2(0.85f, 0.78f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 28, TextAlignmentOptions.Center, string.Empty);
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -70f), 28, TextAlignmentOptions.Center, string.Empty);
+            ConfigureVerticalOffsets(_levelText, -80f, 0f);
             _descriptionText = CreateText("Weapon Description", card.transform, new Vector2(0.14f, 0.55f), new Vector2(0.86f, 0.69f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 23, TextAlignmentOptions.Center, string.Empty);
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -130f), 23, TextAlignmentOptions.Center, string.Empty);
+            ConfigureVerticalOffsets(_descriptionText, -100f, 0f);
 
-            CreateText("Stats Header", card.transform, new Vector2(0.16f, 0.49f), new Vector2(0.84f, 0.54f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 25, TextAlignmentOptions.Center, "ТТХ");
-            _damageText = CreateStatLine(card.transform, "Damage Stat", 0.41f, "Шкода");
-            _blastText = CreateStatLine(card.transform, "Blast Stat", 0.34f, "Сила вибуху");
-            _usesText = CreateStatLine(card.transform, "Uses Stat", 0.27f, "За бій");
+            _damageText = CreateStatLine(card.transform, "Damage Stat", 0.4075f, "Шкода", 0f, 5f, 0f, 20f, 22);
+            _blastText = CreateStatLine(card.transform, "Blast Stat", 0.3412f, "Сила вибуху", 0f, -5f, null, 15f, 22);
+            _usesText = CreateStatLine(card.transform, "Uses Stat", 0.2762f, "За бій", 0f, null, 13f, 25f, 44);
 
             var coinButton = CreateImageButton("Buy Coins", card.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), new Vector2(310f, 104f), new Vector2(0f, 104f), "Green_btn", BuySelectedWithCoins);
-            _coinPriceText = CreateText("Buy Coins Label", coinButton.transform, new Vector2(0.12f, 0.18f), new Vector2(0.88f, 0.82f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 28, TextAlignmentOptions.Center, string.Empty);
+                new Vector2(0.5f, 0f), new Vector2(200f, 200f), new Vector2(-120f, 90f), "Green_btn", BuySelectedWithCoins);
+            coinButton.localScale = new Vector3(1f, 2f, 1f);
+            _coinBuyButton = coinButton.GetComponent<Button>();
+            var coinIcon = CreateImage("Buy Coins Icon", coinButton, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
+                new Vector2(0f, 0.5f), new Vector2(30f, 30f), new Vector2(24f, -74f), "coin", true, null, false);
+            coinIcon.localScale = new Vector3(1.7f, 1f, 1f);
+            _coinPriceText = CreateText("Buy Coins Label", coinButton.transform, new Vector2(0.20f, 0.18f), new Vector2(0.96f, 0.82f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -50f), 28, TextAlignmentOptions.Center, string.Empty);
+            ConfigurePriceLabel(_coinPriceText, 90f, 0f, -60f, 1.2f);
 
             var crystalButton = CreateImageButton("Buy Crystals", card.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), new Vector2(310f, 104f), new Vector2(0f, 22f), "yellow_btn", BuySelectedWithCrystals);
-            _crystalPriceText = CreateText("Buy Crystals Label", crystalButton.transform, new Vector2(0.12f, 0.18f), new Vector2(0.88f, 0.82f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 28, TextAlignmentOptions.Center, string.Empty);
+                new Vector2(0.5f, 0f), new Vector2(200f, 200f), new Vector2(120f, 90f), "yellow_btn", BuySelectedWithCrystals);
+            crystalButton.localScale = new Vector3(1f, 2f, 1f);
+            _crystalBuyButton = crystalButton.GetComponent<Button>();
+            var crystalIcon = CreateImage("Buy Crystals Icon", crystalButton, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
+                new Vector2(0f, 0.5f), new Vector2(30f, 30f), new Vector2(24f, -74f), "vip_coin", true, null, false);
+            crystalIcon.localScale = new Vector3(2f, 1f, 1f);
+            _crystalPriceText = CreateText("Buy Crystals Label", crystalButton.transform, new Vector2(0.20f, 0.18f), new Vector2(0.96f, 0.82f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -50f), 28, TextAlignmentOptions.Center, string.Empty);
+            ConfigurePriceLabel(_crystalPriceText, 90f, 30f, -60f, 1.2f);
         }
 
-        private TMP_Text CreateStatLine(Transform parent, string name, float centerY, string label)
+        private TMP_Text CreateStatLine(Transform parent, string name, float centerY, string label, float positionY,
+            float? top, float? bottom, float valueRight, int valueFontSize)
         {
             var line = CreatePanel(name, parent, new Vector2(0.16f, centerY - 0.025f), new Vector2(0.84f, centerY + 0.025f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.18f));
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, positionY), new Color(0f, 0f, 0f, 0.18f));
+            var lineRect = line.rectTransform;
+            if (top.HasValue)
+            {
+                lineRect.offsetMax = new Vector2(lineRect.offsetMax.x, -top.Value);
+            }
+
+            if (bottom.HasValue)
+            {
+                lineRect.offsetMin = new Vector2(lineRect.offsetMin.x, bottom.Value);
+            }
+
             line.raycastTarget = false;
             CreateText($"{name} Label", line.transform, new Vector2(0.04f, 0f), new Vector2(0.58f, 1f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 22, TextAlignmentOptions.MidlineLeft, label);
-            return CreateText($"{name} Value", line.transform, new Vector2(0.58f, 0f), new Vector2(0.96f, 1f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 22, TextAlignmentOptions.MidlineRight, string.Empty);
+            var value = CreateText($"{name} Value", line.transform, new Vector2(0.58f, 0f), new Vector2(0.96f, 1f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, valueFontSize, TextAlignmentOptions.MidlineRight, string.Empty);
+            value.rectTransform.offsetMax = new Vector2(-valueRight, value.rectTransform.offsetMax.y);
+            return value;
+        }
+
+        private static void ConfigurePriceLabel(TMP_Text label, float top, float right, float bottom, float scaleX)
+        {
+            var rect = label.rectTransform;
+            rect.anchorMin = new Vector2(rect.anchorMin.x, 0f);
+            rect.anchorMax = new Vector2(rect.anchorMax.x, 1f);
+            rect.offsetMin = new Vector2(rect.offsetMin.x, bottom);
+            rect.offsetMax = new Vector2(-right, -top);
+            rect.localScale = new Vector3(scaleX, 1f, 1f);
+        }
+
+        private static void ConfigureVerticalOffsets(TMP_Text text, float top, float bottom)
+        {
+            var rect = text.rectTransform;
+            rect.offsetMin = new Vector2(rect.offsetMin.x, bottom);
+            rect.offsetMax = new Vector2(rect.offsetMax.x, -top);
         }
 
         private void BuildWeaponStrip(Transform root)
         {
             var strip = CreateRect("Weapon Strip", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), new Vector2(1270f, 205f), new Vector2(-28f, 18f));
+                new Vector2(0.5f, 0f), new Vector2(1840f, 300f), WeaponStripPosition);
 
-            var startX = -552f;
-            const float spacing = 158f;
+            var startX = -840f;
+            const float spacing = 240f;
             for (var i = 0; i < _items.Count; i++)
             {
                 var index = i;
+                var isLocked = i > 0;
                 var slotRoot = CreateImageButton($"Weapon Slot {i}", strip, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                    new Vector2(0.5f, 0.5f), new Vector2(148f, 148f), new Vector2(startX + i * spacing, 42f), "card",
+                    new Vector2(0.5f, 0.5f), WeaponSlotSize, new Vector2(startX + i * spacing, 74f), "card",
                     () => SelectWeapon(index));
                 var frame = slotRoot.GetComponent<Image>();
                 var weapon = CreateImage($"Weapon Slot Art {i}", slotRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                    new Vector2(0.5f, 0.5f), new Vector2(112f, 112f), new Vector2(0f, 8f), _items[i].Art, true, null, true);
-                var label = CreateText($"Weapon Slot Level {i}", slotRoot.transform, new Vector2(0.12f, -0.08f), new Vector2(0.88f, 0.16f),
-                    new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 18, TextAlignmentOptions.Center, $"LVL {_items[i].RequiredLevel}");
+                    new Vector2(0.5f, 0.5f), WeaponArtSize, new Vector2(0f, 12f), _items[i].Art, true, null, true);
+                var lockIcon = CreateImage($"Weapon Slot Lock {i}", slotRoot.transform, new Vector2(0.178f, 0.214f), new Vector2(0.178f, 0.214f),
+                    new Vector2(0f, 0.5f), new Vector2(34f, 34f), Vector2.zero, "lock", true, null, false).GetComponent<Image>();
+                lockIcon.enabled = isLocked;
+                var labelMin = isLocked ? new Vector2(0.367f, 0.143f) : new Vector2(0.197f, 0.161f);
+                var labelMax = isLocked ? new Vector2(0.897f, 0.303f) : new Vector2(0.897f, 0.321f);
+                var label = CreateText($"Weapon Slot Level {i}", slotRoot.transform, labelMin, labelMax,
+                    new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 18, TextAlignmentOptions.MidlineLeft, $"LVL {_items[i].RequiredLevel}");
                 _slots.Add(new SlotView
                 {
                     Frame = frame,
                     Weapon = weapon,
-                    Label = label
+                    Label = label,
+                    Lock = lockIcon
                 });
+            }
+
+            var leftArrow = CreateImageButton("Weapon Carousel Left", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
+                new Vector2(0.5f, 0.5f), new Vector2(200f, 300f), new Vector2(38f, 95f), "arrow_btn", () => ChangePage(-1));
+            leftArrow.localScale = new Vector3(-1f, 1f, 1f);
+
+            CreateImageButton("Weapon Carousel Right", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
+                new Vector2(0.5f, 0.5f), new Vector2(200f, 300f), new Vector2(-38f, 95f), "arrow_btn", () => ChangePage(1));
+        }
+
+        private void ChangePage(int direction)
+        {
+            // Pagination controls are reserved for the larger weapon catalog.
+        }
+
+        private void ApplyPage()
+        {
+            for (var i = 0; i < _slots.Count; i++)
+            {
+                _slots[i].Frame.gameObject.SetActive(true);
             }
         }
 
@@ -282,15 +361,21 @@ namespace Game.App
             _damageText.text = item.Definition.Damage.ToString();
             _blastText.text = item.Definition.ImpactRadius.ToString("0.0");
             _usesText.text = item.Definition.HasLimitedAmmo ? item.Definition.AmmoCount.ToString() : "∞";
-            _coinPriceText.text = $"Купити  {item.CoinPrice}";
-            _crystalPriceText.text = $"Купити  {item.CrystalPrice}";
+            _coinPriceText.text = item.CoinPrice.ToString();
+            _crystalPriceText.text = item.CrystalPrice.ToString();
+            var isLocked = index > 0;
+            _coinBuyButton.interactable = !isLocked;
+            _crystalBuyButton.interactable = !isLocked;
 
             for (var i = 0; i < _slots.Count; i++)
             {
+                var slotLocked = i > 0;
                 var selected = i == index;
                 _slots[i].Frame.color = selected ? SelectedSlotColor : NormalSlotColor;
+                _slots[i].Weapon.GetComponent<Image>().color = Color.white;
                 _slots[i].Weapon.localScale = selected ? new Vector3(1.12f, 1.12f, 1f) : Vector3.one;
-                _slots[i].Label.color = selected ? Color.white : new Color(0.82f, 0.92f, 1f, 0.95f);
+                _slots[i].Label.color = slotLocked ? LockedLevelColor : (selected ? Color.white : new Color(0.82f, 0.92f, 1f, 0.95f));
+                _slots[i].Lock.enabled = slotLocked;
             }
         }
 
