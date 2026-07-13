@@ -44,6 +44,15 @@ namespace Game.Data.Save
             settings.EnsureDefaults();
             tutorial.EnsureDefaults();
         }
+
+        public void ResetProgression()
+        {
+            campaign = SaveCampaignData.CreateDefault();
+            inventory = SaveInventoryData.CreateDefault();
+            economy = SaveEconomyData.CreateDefault();
+            tutorial = SaveTutorialData.CreateDefault();
+            EnsureDefaults();
+        }
     }
 
     [Serializable]

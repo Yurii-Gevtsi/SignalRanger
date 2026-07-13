@@ -81,7 +81,7 @@ Weapon implementation details:
 - Shared UI text lives in `Game.Core.Localization.GameText`.
 - Battle HUD shows health, turn/status, selected weapon, ammo, power and action buttons.
 - Loadout modal supports scrolling, selection, save and development/test unlock path.
-- Settings modal supports audio settings and saves volume.
+- Settings modal supports audio settings and a confirmed progression reset that preserves profile and audio preferences.
 - UI was adjusted for mobile-style large controls and modal flows.
 
 ### Progression, Economy And Save

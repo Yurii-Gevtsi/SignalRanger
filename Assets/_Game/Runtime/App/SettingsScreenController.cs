@@ -1,4 +1,5 @@
 using System;
+using Game.Core;
 using Game.Core.Localization;
 using TMPro;
 using UnityEngine;
@@ -23,9 +24,12 @@ namespace Game.App
         private static readonly Color StepColor = new(0.20f, 0.26f, 0.32f);
         private static readonly Color SaveColor = new(0.22f, 0.60f, 0.86f);
         private static readonly Color BackColor = new(0.30f, 0.20f, 0.22f);
+        private static readonly Color ResetColor = new(0.58f, 0.20f, 0.18f);
+        private static readonly Color ConfirmationOverlayColor = new(0.02f, 0.03f, 0.04f, 0.88f);
 
         private Sprite _whiteSprite;
         private Action _onClosed;
+        private GameObject _resetConfirmationRoot;
 
         private float _music;
         private float _sfx;
@@ -85,6 +89,10 @@ namespace Game.App
             CreateText("Language", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-80f, 48f), new Vector2(0f, -600f), 26, TextAlignmentOptions.MidlineLeft, GameText.LanguageLabel());
 
+            CreateButton("Reset Progression", panel.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(752f, 84f), new Vector2(0f, -700f), ResetColor, GameText.ResetProgressionLabel(), 28,
+                () => ShowResetConfirmation(panel.transform));
+
             CreateButton("Save", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(360f, 104f), new Vector2(-196f, 96f), SaveColor, GameText.Save, 34, Save);
             CreateButton("Back", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
@@ -132,6 +140,52 @@ namespace Game.App
                 _sfxFill.fillAmount = _sfx;
                 _sfxValue.text = $"{Mathf.RoundToInt(_sfx * 100f)}%";
             }
+        }
+
+        private void ShowResetConfirmation(Transform parent)
+        {
+            if (_resetConfirmationRoot != null)
+            {
+                return;
+            }
+
+            var overlay = CreatePanel("Reset Confirmation", parent, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, ConfirmationOverlayColor);
+            _resetConfirmationRoot = overlay.gameObject;
+
+            var dialog = CreatePanel("Confirmation Dialog", overlay.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(700f, 430f), Vector2.zero, PanelColor);
+            CreateText("Confirmation Title", dialog.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(-80f, 64f), new Vector2(0f, -52f), 34, TextAlignmentOptions.Center, GameText.ResetProgressionTitle());
+            CreateText("Confirmation Warning", dialog.transform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(-100f, 150f), new Vector2(0f, 16f), 24, TextAlignmentOptions.Center, GameText.ResetProgressionWarning());
+
+            CreateButton("Confirm Reset", dialog.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(280f, 84f), new Vector2(-154f, 62f), ResetColor, GameText.ConfirmResetProgression(), 26,
+                ConfirmResetProgression);
+            CreateButton("Cancel Reset", dialog.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(280f, 84f), new Vector2(154f, 62f), StepColor, GameText.Cancel(), 26,
+                HideResetConfirmation);
+        }
+
+        private void HideResetConfirmation()
+        {
+            if (_resetConfirmationRoot == null)
+            {
+                return;
+            }
+
+            Destroy(_resetConfirmationRoot);
+            _resetConfirmationRoot = null;
+        }
+
+        private void ConfirmResetProgression()
+        {
+            AppServices.Audio.SetVolumes(_music, _sfx);
+            AppServices.ResetProgression();
+            _onClosed = null;
+            Destroy(gameObject);
+            AppServices.SceneLoader.Load(GameSceneNames.Menu);
         }
 
         private void Save()

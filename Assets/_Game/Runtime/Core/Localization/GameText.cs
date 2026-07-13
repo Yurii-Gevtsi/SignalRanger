@@ -105,6 +105,11 @@ namespace Game.Core.Localization
         public static string Music() => "Музика";
         public static string Sounds() => "Звуки";
         public static string LanguageLabel() => "Мова: Українська";
+        public static string ResetProgressionLabel() => "\u0421\u043a\u0438\u043d\u0443\u0442\u0438 \u043f\u0440\u043e\u0433\u0440\u0435\u0441";
+        public static string ResetProgressionTitle() => "\u0421\u043a\u0438\u0434\u0430\u043d\u043d\u044f \u043f\u0440\u043e\u0433\u0440\u0435\u0441\u0443";
+        public static string ResetProgressionWarning() => "\u0423\u0441\u0456 \u043c\u0456\u0441\u0456\u0457, \u043c\u043e\u043d\u0435\u0442\u0438, \u0432\u0456\u0434\u043a\u0440\u0438\u0442\u0430 \u0437\u0431\u0440\u043e\u044f \u0442\u0430 \u043d\u0430\u0432\u0447\u0430\u043d\u043d\u044f \u0431\u0443\u0434\u0443\u0442\u044c \u0441\u043a\u0438\u043d\u0443\u0442\u0456. \u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f \u0437\u0432\u0443\u043a\u0443 \u0437\u0431\u0435\u0440\u0435\u0436\u0443\u0442\u044c\u0441\u044f.";
+        public static string ConfirmResetProgression() => "\u0421\u043a\u0438\u043d\u0443\u0442\u0438";
+        public static string Cancel() => "\u0421\u043a\u0430\u0441\u0443\u0432\u0430\u0442\u0438";
         public static string RoleDirect() => "прямий";
         public static string RoleArc() => "навісний";
         public static string RoleBurst() => "ближній";

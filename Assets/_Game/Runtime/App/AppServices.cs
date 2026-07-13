@@ -111,5 +111,22 @@ namespace Game.App
         {
             _pendingLoadoutReviewConsumed = !pending;
         }
+
+        public static void ResetProgression()
+        {
+            var saveData = SaveService?.Current;
+            if (saveData == null)
+            {
+                return;
+            }
+
+            saveData.ResetProgression();
+            SaveService.Save(saveData);
+            LastMissionCompletionResult = default;
+            _firstSessionAutoStartConsumed = true;
+            _pendingLoadoutReviewConsumed = true;
+            Session?.SelectNextMission();
+            Analytics?.TrackEvent("progression_reset");
+        }
     }
 }

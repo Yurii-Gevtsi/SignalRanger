@@ -52,6 +52,34 @@ namespace Game.Tests.EditMode.Data
         }
 
         [Test]
+        public void ResetProgression_RestoresGameplayDefaultsAndPreservesProfileAndSettings()
+        {
+            var saveData = SaveData.CreateNew();
+            var profileId = saveData.profile.profileId;
+            saveData.settings.musicVolume = 0.3f;
+            saveData.settings.sfxVolume = 0.4f;
+            saveData.campaign.highestUnlockedMissionIndex = 3;
+            saveData.campaign.completedMissionIds.Add("mission.training.01");
+            saveData.inventory.unlockedWeaponIds.Add("weapon.test");
+            saveData.inventory.selectedLoadoutWeaponIds.Clear();
+            saveData.inventory.selectedLoadoutWeaponIds.Add("weapon.test");
+            saveData.economy.softCurrency = 125;
+            saveData.tutorial.completedStepIds.Add("tutorial.test");
+
+            saveData.ResetProgression();
+
+            Assert.That(saveData.profile.profileId, Is.EqualTo(profileId));
+            Assert.That(saveData.settings.musicVolume, Is.EqualTo(0.3f));
+            Assert.That(saveData.settings.sfxVolume, Is.EqualTo(0.4f));
+            Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.Zero);
+            Assert.That(saveData.campaign.completedMissionIds, Is.Empty);
+            Assert.That(saveData.inventory.unlockedWeaponIds, Is.EquivalentTo(new[] { "weapon.steady-orb", "weapon.pulse-shell" }));
+            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EquivalentTo(new[] { "weapon.steady-orb", "weapon.pulse-shell" }));
+            Assert.That(saveData.economy.softCurrency, Is.Zero);
+            Assert.That(saveData.tutorial.completedStepIds, Is.Empty);
+        }
+
+        [Test]
         public void Serializer_MigratesVersionOneSaveToCurrent()
         {
             var json = @"{
