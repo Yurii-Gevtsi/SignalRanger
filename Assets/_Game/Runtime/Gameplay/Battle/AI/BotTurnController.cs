@@ -92,6 +92,12 @@ namespace Game.Gameplay.Battle.AI
 
         public BotActivity Activity { get; private set; } = BotActivity.Idle;
 
+        // --- Telemetry (for a debug overlay / balance tuning) -----------------
+        public BotMoveKind LastMoveKind { get; private set; }
+        public float LastPlanScore { get; private set; }
+        public int LastPositionsConsidered { get; private set; }
+        public double LastPlanningMilliseconds { get; private set; }
+
         public void Tick(float deltaTime)
         {
             var state = _simulation.State;
@@ -193,8 +199,13 @@ namespace Game.Gameplay.Battle.AI
 
             if (_profile.MovementEnabled && _positionPlanner != null)
             {
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
                 var decision = _positionPlanner.SelectPosition(
                     unit.Position, _scatteredTarget, target.Position, _weapon, _aimSettings, BuildBodies(unit, target));
+                stopwatch.Stop();
+                LastPlanningMilliseconds = stopwatch.Elapsed.TotalMilliseconds;
+                LastPositionsConsidered = _positionPlanner.LastCandidateCount;
+                LastMoveKind = decision.Kind;
                 switch (decision.Kind)
                 {
                     case BotMoveKind.Walk:
@@ -213,6 +224,7 @@ namespace Game.Gameplay.Battle.AI
                 }
             }
 
+            LastMoveKind = BotMoveKind.Stay;
             _plan = PlanShotFromCurrent();
             _aimTimer = _profile.ThinkPauseSeconds + _profile.AimPauseSeconds;
             _phase = Phase.Aiming;
@@ -294,6 +306,7 @@ namespace Game.Gameplay.Battle.AI
                 : _planner.PlanShot(new BotShotContext(unit.Position, _scatteredTarget, _weapon, _aimSettings, bodies));
             if (plan != null)
             {
+                LastPlanScore = plan.Value.Score;
                 return plan;
             }
 

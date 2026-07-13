@@ -1333,7 +1333,7 @@ namespace Game.Gameplay.Battle.Assembly
                 SimulationTickSeconds,
                 BattleSimulation.ProjectileSubStepLength,
                 GetFallDeathY());
-            var profile = BotProfileLibrary.For(_aiDifficulty);
+            var profile = BotProfileProvider.Resolve(_aiDifficulty);
             var random = new SystemBotRandom(System.Environment.TickCount);
             IBotShotPlanner planner = _aiDifficulty == AiDifficulty.Easy
                 ? new HeuristicShotPlanner(_aiDifficulty)

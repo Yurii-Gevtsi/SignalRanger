@@ -617,16 +617,21 @@ FireStep виконано (або TryFire неможливий) → Idle
 
 ### Етап 5 — контент, баланс, телеметрія
 
-- [ ] `BotProfile` як asset'и в `Assets/_Game/Content/Resources/`
-      (runtime-дефолти лишаються fallback'ом), прив'язка через
-      `DifficultyProfileDefinition.AiDifficultyTier`
-- [ ] Балансний прохід: скатер/ваги скорингу по місіях кампанії
-      (легкі місії — Easy, середина — Normal, фінали — Hard)
-- [ ] Метрики в дебаг-оверлей: hit-rate бота, час планування,
-      число кандидатів/бракованих (для тюнінгу, не в релізний білд)
-- [ ] Оновити `docs/design/game-design-brief.md` розділом про складності
+- [x] Seam для authored-профілів: `BotProfileProvider.Resolve` тягне
+      `Resources/Bot/BotProfile.<Difficulty>`, fallback на
+      `BotProfileLibrary`; сцена використовує провайдер. (Самі .asset —
+      авторяться в редакторі пізніше; код готовий.)
+- [x] Телеметрія на `BotTurnController`: `LastMoveKind`, `LastPlanScore`,
+      `LastPositionsConsidered`, `LastPlanningMilliseconds`
+      (`BotPositionPlanner.LastCandidateCount`) — джерело даних для
+      майбутнього дебаг-оверлея
+- [x] Оновлено `docs/design/game-design-brief.md` розділом про складності
+- [ ] Балансний прохід (hit-rate по місіях, ваги скорингу) — потребує
+      запуску гри/плейтесту; окремий трек
+- [ ] UI дебаг-оверлея, що малює телеметрію — окремий трек (сцена)
 
-**Вихід:** складність — контентна ручка, а не код.
+**Вихід:** складність — контентна ручка, а не код (seam + телеметрія готові;
+баланс і оверлей-UI — окремими задачами).
 
 ### Етап 6 — заділ на майбутнє (окремими задачами, поза цим планом)
 

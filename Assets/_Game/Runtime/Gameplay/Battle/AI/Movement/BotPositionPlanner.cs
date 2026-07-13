@@ -42,6 +42,9 @@ namespace Game.Gameplay.Battle.AI.Movement
             _walkSpeed = Mathf.Max(0.1f, walkSpeed);
         }
 
+        /// <summary>Number of positions scored in the last <see cref="SelectPosition"/> call (telemetry).</summary>
+        public int LastCandidateCount { get; private set; }
+
         public BotMoveDecision SelectPosition(
             Vector2 start,
             Vector2 scatteredTarget,
@@ -56,6 +59,7 @@ namespace Game.Gameplay.Battle.AI.Movement
             var best = BotMoveDecision.Stay(start);
             var bestScore = float.NegativeInfinity;
             var candidateCount = Mathf.Min(_positions.Count, _profile.MaxPositionCandidates);
+            LastCandidateCount = candidateCount;
 
             for (var i = 0; i < candidateCount; i++)
             {
