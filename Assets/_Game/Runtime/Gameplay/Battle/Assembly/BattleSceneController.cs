@@ -5,6 +5,7 @@ using Game.Core.Battle;
 using Game.Core.Localization;
 using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.AI;
+using Game.Gameplay.Battle.AI.Ballistics;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Feedback;
 using Game.Gameplay.Battle.Motion;
@@ -95,14 +96,13 @@ namespace Game.Gameplay.Battle.Assembly
         private BattleResultScreenState _resultScreenState;
         private string _status;
         private IBattleHud _hud;
-        private SimpleAiShooter _aiShooter;
+        private BotTurnController _botTurnController;
         private AiDifficulty _aiDifficulty;
         private CharacterArchetype _playerArchetype;
         private CharacterArchetype _opponentArchetype;
         private BattleVisualTheme _visualTheme;
         private BattleTerrain _battleTerrain;
         private FirstBattleGuideState _firstBattleGuide;
-        private float _aiDecisionTimer;
         private string _coachMessage = string.Empty;
         private string _coachTargetId = string.Empty;
         private float _coachTimer;
@@ -141,7 +141,6 @@ namespace Game.Gameplay.Battle.Assembly
             _weaponExecutor = new WeaponExecutor();
             _weaponExecutor.RegisterEffect(WeaponRole.ShortRangeBurst, new BurstProjectileEffect());
             _weaponExecutor.RegisterEffect("weapon.scatter-arc", new BurstProjectileEffect(3, 20f));
-            _aiShooter = new SimpleAiShooter();
             _aiDifficulty = MapDifficulty(GameSessionContext.SelectedAiDifficulty);
             _inventory = new WeaponInventoryRuntime(CreateMissionWeapons(allWeapons), 1);
             _opponentInventory = new WeaponInventoryRuntime(CreateOpponentWeapons(allWeapons), 1);
@@ -243,7 +242,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (_battleState.Turn.ActiveTeam == BattleTeamId.Opponent)
             {
-                UpdateOpponentAi();
+                UpdateOpponentBot();
                 return;
             }
 
@@ -361,10 +360,10 @@ namespace Game.Gameplay.Battle.Assembly
                 _playerArchetype,
                 _opponentArchetype);
             SubscribeToSimulation(_simulation);
+            _botTurnController = CreateBotTurnController();
 
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _resultScreenState = default;
-            _aiDecisionTimer = 0f;
             _status = GameText.BattleIntro(DescribeArena(_currentArena));
             _aimLine.enabled = false;
             HideTrajectoryPreview();
@@ -657,6 +656,7 @@ namespace Game.Gameplay.Battle.Assembly
             _battleTerrain = null;
             _unitMotors.Clear();
             _simulation = null;
+            _botTurnController = null;
             _projectileVisuals.Clear();
 
             foreach (var presenter in _unitPresenters)
@@ -1092,7 +1092,6 @@ namespace Game.Gameplay.Battle.Assembly
             ApplyAimSettingsForActiveTeam();
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _aimDragActive = false;
-            _aiDecisionTimer = 0f;
             ClearWalkInput();
             _aimLine.enabled = false;
             HideTrajectoryPreview();
@@ -1311,43 +1310,40 @@ namespace Game.Gameplay.Battle.Assembly
             }
         }
 
-        private void UpdateOpponentAi()
+        private void UpdateOpponentBot()
         {
-            if (HasProjectilesInFlight)
-            {
-                return;
-            }
+            // The bot plans and paces its own turn; ticking the simulation lets any
+            // shot it fires (Stage 3: also movement) integrate this frame.
+            _botTurnController?.Tick(Time.deltaTime);
+            _simulation.Tick(Time.deltaTime);
+            _status = _botTurnController?.Activity == BotActivity.Firing
+                ? GameText.OpponentFiring()
+                : GameText.OpponentAiming();
+        }
 
-            _aiDecisionTimer += Time.deltaTime;
-            if (_aiDecisionTimer < 0.55f)
-            {
-                _status = GameText.OpponentAiming();
-                return;
-            }
+        private BotTurnController CreateBotTurnController()
+        {
+            var probe = new TrajectoryProbe(
+                _battleTerrain.Grid,
+                Physics2D.gravity,
+                SimulationTickSeconds,
+                BattleSimulation.ProjectileSubStepLength,
+                GetFallDeathY());
+            var profile = BotProfileLibrary.For(_aiDifficulty);
+            var random = new SystemBotRandom(System.Environment.TickCount);
+            IBotShotPlanner planner = _aiDifficulty == AiDifficulty.Easy
+                ? new HeuristicShotPlanner(_aiDifficulty)
+                : new BallisticShotPlanner(probe, profile, random, Physics2D.gravity);
 
-            var activePresenter = GetActivePresenter();
-            var targetPresenter = _unitPresenters.FirstOrDefault(presenter =>
-                presenter.State.TeamId == BattleTeamId.Player && !presenter.State.IsDefeated);
-            if (activePresenter == null || targetPresenter == null)
-            {
-                return;
-            }
-
-            if (!_opponentInventory.TrySelectNextUsable())
-            {
-                _simulation.AdvanceTurnDueToNoUsableWeapon();
-                return;
-            }
-
-            var origin = (Vector2)activePresenter.View.FirePoint.position;
-            var target = (Vector2)targetPresenter.View.transform.position;
-            var opponentWeapon = _opponentInventory.Selected;
-            _aimSettings = opponentWeapon.CreateAimSettings(_baseAimSettings);
-            var plan = _aiShooter.CreateShot(origin, target, _aimSettings, _aiDifficulty, _battleState.Turn.TurnNumber);
-            _aimState = new AimState(origin, plan.Direction, plan.Power, true);
-            _status = GameText.OpponentFiring();
-            Fire();
-            _aiDecisionTimer = 0f;
+            return new BotTurnController(
+                _simulation,
+                planner,
+                profile,
+                random,
+                UnitCollisionHalfWidth,
+                _playerArchetype,
+                _opponentArchetype,
+                _baseAimSettings);
         }
 
         private void ApplyAimSettingsForActiveTeam()

@@ -541,20 +541,26 @@ FireStep виконано (або TryFire неможливий) → Idle
 
 ### Етап 2 — `BallisticShotPlanner` (середня складність, без руху)
 
-- [ ] `ShotCandidate`, скоринг (5.3), `TargetScatter` (5.4),
-      seeded RNG інжектиться
-- [ ] `IBotShotPlanner`; `SimpleAiShooter` адаптується під інтерфейс (Easy)
-- [ ] `BotProfile` + `BotProfileLibrary` (runtime-дефолти Easy/Normal/Hard)
-- [ ] `BotTurnController` мінімальний: Planning → AimPause → Fire
-      (без Reposition), інтеграція в `BattleSceneController` замість
-      `UpdateOpponentAi`
-- [ ] Тести: на сцені зі стіною Normal-бот не стріляє в стіну
-      (обирає навісну дугу або валідно бракує всі кандидати);
-      з фіксованим seed план детермінований; hit-rate на відкритій сцені:
-      Normal ≥ 60% прямих влучань з 20 пострілів, Easy ≤ 30%
+- [x] Скоринг (5.3) у `BallisticShotPlanner`, `TargetScatter` (5.4),
+      seeded `IBotRandom`/`SystemBotRandom` інжектиться
+- [x] `IBotShotPlanner` + `BotShotContext`/`BotShotPlan`;
+      `HeuristicShotPlanner` (Easy) обгортає `SimpleAiShooter`
+- [x] `BotProfile` (ScriptableObject + CreateRuntime) +
+      `BotProfileLibrary` (runtime-дефолти Easy/Normal/Hard)
+- [x] `BotTurnController` мінімальний: Idle→Aiming(pause)→Firing→Done,
+      скидання фази за зміною номера ходу; інтеграція в
+      `BattleSceneController` замість `UpdateOpponentAi`.
+      `BattleSimulation.ProjectileSubStepLength` зроблено public
+      (єдине джерело правди для проби)
+- [x] Тести: `BallisticShotPlanner_ClearsAWallBetweenOriginAndTarget`
+      (обирає навісну дугу над стіною), детермінізм за seed,
+      scatter у радіусі / perfect-chance, контролер стріляє на своєму
+      ході і на **двох** ходах поспіль, простоює в хід гравця
 - [ ] Ручний плейтест: середня місія відчувається «небезпечно, але чесно»
+      (потребує запуску гри; окремо)
 
 **Вихід:** середня складність готова (влучає, враховує перешкоди, стоїть).
+Примітка: hit-rate Easy/Normal винесено на балансний прохід Етапу 5.
 
 ### Етап 3 — рух ходьбою (повна середня складність)
 

@@ -17,7 +17,12 @@ namespace Game.Gameplay.Battle.Simulation
     /// </summary>
     public sealed class BattleSimulation : IProjectileSpawner
     {
-        private const float ProjectileSubStepLength = 0.04f;
+        /// <summary>
+        /// Max distance a projectile advances per collision sub-step. Public so
+        /// the bot's <c>TrajectoryProbe</c> can mirror this exactly instead of
+        /// hardcoding its own copy.
+        /// </summary>
+        public const float ProjectileSubStepLength = 0.04f;
         private const float StandardJumpHorizontalSpeedRatio = 0.9f;
 
         private readonly BattleState _state;
