@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Gameplay.Battle.AI.Ballistics;
+using Game.Gameplay.Battle.AI.Movement;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Simulation;
 using Game.Gameplay.Battle.Units;
@@ -12,29 +13,38 @@ namespace Game.Gameplay.Battle.AI
     public enum BotActivity
     {
         Idle,
+        Repositioning,
         Aiming,
         Firing
     }
 
     /// <summary>
-    /// Drives the opponent's turn as a small state machine: plan once, pause so
-    /// the player can read the intent, then fire through the same
-    /// <c>BattleSimulation.TryFire</c> the player uses. No scene, no input — the
-    /// scene controller only ticks this and reflects <see cref="Activity"/>.
-    /// Movement steps arrive in Stage 3; for now the bot aims and shoots in place.
+    /// Drives the opponent's turn as a small state machine: pick a position,
+    /// walk there through the same movement commands the player uses, pause so
+    /// the intent reads, then fire through <c>BattleSimulation.TryFire</c>. No
+    /// scene, no input — the scene controller only ticks this and reflects
+    /// <see cref="Activity"/>. Every step is bounded by a watchdog so a turn can
+    /// never hang. Jumps arrive in Stage 4.
     /// </summary>
     public sealed class BotTurnController
     {
         private enum Phase
         {
             Idle,
+            Repositioning,
+            WaitStable,
             Aiming,
             Firing,
             Done
         }
 
+        private const float MoveEpsilon = 0.15f;
+        private const float StallTimeout = 0.35f;
+        private const float TurnHardCapSeconds = 12f;
+
         private readonly BattleSimulation _simulation;
         private readonly IBotShotPlanner _planner;
+        private readonly BotPositionPlanner _positionPlanner;
         private readonly BotProfile _profile;
         private readonly IBotRandom _random;
         private readonly float _unitCollisionHalfWidth;
@@ -44,13 +54,22 @@ namespace Game.Gameplay.Battle.AI
         private readonly List<TrajectoryUnitBody> _bodies = new();
 
         private Phase _phase = Phase.Idle;
-        private float _timer;
+        private float _aimTimer;
+        private float _moveTimer;
+        private float _stallTimer;
+        private float _turnTimer;
+        private float _lastMoveX;
+        private float _targetX;
         private BotShotPlan? _plan;
         private int _plannedTurn = -1;
+        private Vector2 _scatteredTarget;
+        private WeaponDefinition _weapon;
+        private AimSettings _aimSettings;
 
         public BotTurnController(
             BattleSimulation simulation,
             IBotShotPlanner planner,
+            BotPositionPlanner positionPlanner,
             BotProfile profile,
             IBotRandom random,
             float unitCollisionHalfWidth,
@@ -60,6 +79,7 @@ namespace Game.Gameplay.Battle.AI
         {
             _simulation = simulation;
             _planner = planner;
+            _positionPlanner = positionPlanner;
             _profile = profile;
             _random = random;
             _unitCollisionHalfWidth = unitCollisionHalfWidth;
@@ -75,36 +95,50 @@ namespace Game.Gameplay.Battle.AI
             var state = _simulation.State;
             if (_simulation.Result.IsFinished || state.Turn.ActiveTeam != BattleTeamId.Opponent)
             {
-                _phase = Phase.Idle;
-                Activity = BotActivity.Idle;
+                ResetToIdle();
                 return;
             }
 
-            // Let shots and knockback settle before deciding anything.
+            // Wait for shots and knockback (and mid-move falls) to settle.
             if (_simulation.HasProjectilesInFlight || _simulation.HasActiveMotion)
             {
                 return;
             }
 
-            // A fresh opponent turn (new turn number) restarts the plan even though
-            // Tick is only called during the opponent's turn, never in between.
+            // A new opponent turn restarts the plan even though Tick is only
+            // called during the opponent's turn, never in between.
             if (_phase != Phase.Idle && state.Turn.TurnNumber != _plannedTurn)
             {
                 _phase = Phase.Idle;
             }
 
+            if (_phase != Phase.Idle && _phase != Phase.Done)
+            {
+                _turnTimer += deltaTime;
+                if (_turnTimer > TurnHardCapSeconds)
+                {
+                    ForceFire();
+                    return;
+                }
+            }
+
             switch (_phase)
             {
                 case Phase.Idle:
-                    _plannedTurn = state.Turn.TurnNumber;
-                    _plan = BuildPlan();
-                    _timer = _profile.ThinkPauseSeconds + _profile.AimPauseSeconds;
+                    BeginTurn(state);
+                    break;
+                case Phase.Repositioning:
+                    StepReposition(deltaTime);
+                    break;
+                case Phase.WaitStable:
+                    _plan = PlanShotFromCurrent();
+                    _aimTimer = _profile.ThinkPauseSeconds + _profile.AimPauseSeconds;
                     _phase = Phase.Aiming;
                     Activity = BotActivity.Aiming;
                     break;
                 case Phase.Aiming:
-                    _timer -= deltaTime;
-                    if (_timer <= 0f)
+                    _aimTimer -= deltaTime;
+                    if (_aimTimer <= 0f)
                     {
                         _phase = Phase.Firing;
                     }
@@ -119,6 +153,108 @@ namespace Game.Gameplay.Battle.AI
             }
         }
 
+        private void BeginTurn(BattleState state)
+        {
+            _plannedTurn = state.Turn.TurnNumber;
+            _turnTimer = 0f;
+            _plan = null;
+
+            var unit = ActiveOpponentUnit();
+            if (unit == null)
+            {
+                _phase = Phase.Firing; // Execute yields the turn.
+                return;
+            }
+
+            var inventory = _simulation.ActiveInventory;
+            if (inventory == null || !inventory.TrySelectNextUsable() || inventory.Selected == null)
+            {
+                _phase = Phase.Firing;
+                return;
+            }
+
+            var target = SelectTarget(unit);
+            if (target == null)
+            {
+                _phase = Phase.Firing;
+                return;
+            }
+
+            _weapon = inventory.Selected;
+            _aimSettings = _weapon.CreateAimSettings(_baseAimSettings);
+            _scatteredTarget = TargetScatter.Apply(target.Position, unit.Position, _profile, _random);
+            unit.SetFacing(target.Position.x >= unit.Position.x ? 1 : -1);
+
+            if (_profile.MovementEnabled && _positionPlanner != null)
+            {
+                var chosen = _positionPlanner.SelectPosition(
+                    unit.Position, _scatteredTarget, target.Position, _weapon, _aimSettings, BuildBodies(unit, target));
+                if (Mathf.Abs(chosen.x - unit.Position.x) > MoveEpsilon)
+                {
+                    _targetX = chosen.x;
+                    _moveTimer = 0f;
+                    _stallTimer = 0f;
+                    _lastMoveX = unit.Position.x;
+                    _phase = Phase.Repositioning;
+                    Activity = BotActivity.Repositioning;
+                    return;
+                }
+            }
+
+            _plan = PlanShotFromCurrent();
+            _aimTimer = _profile.ThinkPauseSeconds + _profile.AimPauseSeconds;
+            _phase = Phase.Aiming;
+            Activity = BotActivity.Aiming;
+        }
+
+        private void StepReposition(float deltaTime)
+        {
+            var unit = ActiveOpponentUnit();
+            if (unit == null)
+            {
+                _simulation.Walk(0, 0f);
+                _phase = Phase.Firing;
+                return;
+            }
+
+            _moveTimer += deltaTime;
+
+            // Stall detector: barely moving for a while means blocked — stop.
+            if (Mathf.Abs(unit.Position.x - _lastMoveX) < 0.01f)
+            {
+                _stallTimer += deltaTime;
+            }
+            else
+            {
+                _stallTimer = 0f;
+                _lastMoveX = unit.Position.x;
+            }
+
+            var arrived = Mathf.Abs(_targetX - unit.Position.x) <= MoveEpsilon;
+            var exhausted = _moveTimer > _profile.MaxWalkBudgetSeconds + 1f || _stallTimer > StallTimeout;
+            if (arrived || exhausted)
+            {
+                _simulation.Walk(0, 0f);
+                _phase = Phase.WaitStable;
+                return;
+            }
+
+            var direction = _targetX > unit.Position.x ? 1 : -1;
+            if (_simulation.Walk(direction, 0f) == BattleWalkOutcome.NotAllowed)
+            {
+                _simulation.Walk(0, 0f);
+                _phase = Phase.WaitStable;
+            }
+        }
+
+        private void ForceFire()
+        {
+            _simulation.Walk(0, 0f);
+            _plan ??= PlanShotFromCurrent();
+            Execute();
+            _phase = Phase.Done;
+        }
+
         private void Execute()
         {
             if (_plan.HasValue)
@@ -128,63 +264,44 @@ namespace Game.Gameplay.Battle.AI
                 return;
             }
 
-            // Nothing to fire (no target or no usable weapon): yield the turn.
             _simulation.AdvanceTurnDueToNoUsableWeapon();
         }
 
-        private BotShotPlan? BuildPlan()
+        private BotShotPlan? PlanShotFromCurrent()
         {
-            var state = _simulation.State;
-            var activeUnitId = state.Turn.ActiveUnitId;
-            if (string.IsNullOrEmpty(activeUnitId))
-            {
-                return null;
-            }
-
-            var unit = state.GetUnit(activeUnitId);
-            if (unit == null || unit.IsDefeated || unit.TeamId != BattleTeamId.Opponent)
-            {
-                return null;
-            }
-
-            var inventory = _simulation.ActiveInventory;
-            if (inventory == null || !inventory.TrySelectNextUsable())
-            {
-                return null;
-            }
-
-            var weapon = inventory.Selected;
-            if (weapon == null)
+            var unit = ActiveOpponentUnit();
+            if (unit == null || _weapon == null)
             {
                 return null;
             }
 
             var target = SelectTarget(unit);
-            if (target == null)
+            var bodies = BuildBodies(unit, target);
+            var context = new BotShotContext(unit.Position, _scatteredTarget, _weapon, _aimSettings, bodies);
+            var plan = _planner.PlanShot(context);
+            if (plan != null)
+            {
+                return plan;
+            }
+
+            // Unreachable at every sampled power: desperation shot so the bot
+            // still acts (and likely reshapes terrain for next turn).
+            var toTarget = _scatteredTarget - unit.Position;
+            var direction = toTarget.sqrMagnitude > 0.01f ? toTarget.normalized : Vector2.up;
+            var power = Mathf.Lerp(_aimSettings.MinPower, _aimSettings.MaxPower, 0.8f);
+            return new BotShotPlan(new AimState(unit.Position, direction, power, true), _weapon.WeaponId, 0f);
+        }
+
+        private BattleUnitState ActiveOpponentUnit()
+        {
+            var activeUnitId = _simulation.State.Turn.ActiveUnitId;
+            if (string.IsNullOrEmpty(activeUnitId))
             {
                 return null;
             }
 
-            unit.SetFacing(target.Position.x >= unit.Position.x ? 1 : -1);
-
-            var origin = unit.Position;
-            var scatteredTarget = TargetScatter.Apply(target.Position, origin, _profile, _random);
-            var aimSettings = weapon.CreateAimSettings(_baseAimSettings);
-            var context = new BotShotContext(origin, scatteredTarget, weapon, aimSettings, BuildBodies(unit, target));
-
-            var plan = _planner.PlanShot(context);
-            if (plan == null)
-            {
-                // Target unreachable at every sampled power: desperation shot so
-                // the bot still acts (and likely reshapes terrain for next turn).
-                var direction = (scatteredTarget - origin).sqrMagnitude > 0.01f
-                    ? (scatteredTarget - origin).normalized
-                    : Vector2.up;
-                var power = Mathf.Lerp(aimSettings.MinPower, aimSettings.MaxPower, 0.8f);
-                plan = new BotShotPlan(new AimState(origin, direction, power, true), weapon.WeaponId, 0f);
-            }
-
-            return plan;
+            var unit = _simulation.State.GetUnit(activeUnitId);
+            return unit != null && !unit.IsDefeated && unit.TeamId == BattleTeamId.Opponent ? unit : null;
         }
 
         private BattleUnitState SelectTarget(BattleUnitState from)
@@ -222,7 +339,7 @@ namespace Game.Gameplay.Battle.AI
                         _unitCollisionHalfWidth,
                         halfHeight,
                         isAlly: unit.TeamId == owner.TeamId,
-                        isTarget: unit.UnitId == target.UnitId));
+                        isTarget: target != null && unit.UnitId == target.UnitId));
                 }
             }
 
@@ -232,6 +349,17 @@ namespace Game.Gameplay.Battle.AI
         private CharacterArchetype ArchetypeFor(BattleTeamId teamId)
         {
             return teamId == BattleTeamId.Player ? _playerArchetype : _opponentArchetype;
+        }
+
+        private void ResetToIdle()
+        {
+            if (_phase != Phase.Idle)
+            {
+                _simulation.Walk(0, 0f);
+            }
+
+            _phase = Phase.Idle;
+            Activity = BotActivity.Idle;
         }
     }
 }

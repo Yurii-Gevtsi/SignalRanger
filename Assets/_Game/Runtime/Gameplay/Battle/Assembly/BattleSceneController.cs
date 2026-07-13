@@ -6,6 +6,7 @@ using Game.Core.Localization;
 using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.AI;
 using Game.Gameplay.Battle.AI.Ballistics;
+using Game.Gameplay.Battle.AI.Movement;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Feedback;
 using Game.Gameplay.Battle.Motion;
@@ -1316,9 +1317,12 @@ namespace Game.Gameplay.Battle.Assembly
             // shot it fires (Stage 3: also movement) integrate this frame.
             _botTurnController?.Tick(Time.deltaTime);
             _simulation.Tick(Time.deltaTime);
-            _status = _botTurnController?.Activity == BotActivity.Firing
-                ? GameText.OpponentFiring()
-                : GameText.OpponentAiming();
+            _status = _botTurnController?.Activity switch
+            {
+                BotActivity.Repositioning => GameText.Moved(DescribeTeam(BattleTeamId.Opponent)),
+                BotActivity.Firing => GameText.OpponentFiring(),
+                _ => GameText.OpponentAiming()
+            };
         }
 
         private BotTurnController CreateBotTurnController()
@@ -1335,9 +1339,14 @@ namespace Game.Gameplay.Battle.Assembly
                 ? new HeuristicShotPlanner(_aiDifficulty)
                 : new BallisticShotPlanner(probe, profile, random, Physics2D.gravity);
 
+            var opponentMotionProfile = CreateMotionProfile(_opponentArchetype);
+            var scanner = new WalkReachabilityScanner(_battleTerrain.Grid, opponentMotionProfile, GetFallDeathY());
+            var positionPlanner = new BotPositionPlanner(scanner, planner, profile, opponentMotionProfile.WalkSpeed);
+
             return new BotTurnController(
                 _simulation,
                 planner,
+                positionPlanner,
                 profile,
                 random,
                 UnitCollisionHalfWidth,

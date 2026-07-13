@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Gameplay.Battle.AI;
 using Game.Gameplay.Battle.AI.Ballistics;
+using Game.Gameplay.Battle.AI.Movement;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Motion;
 using Game.Gameplay.Battle.Simulation;
@@ -25,6 +26,7 @@ namespace Game.Tests.EditMode.Gameplay
             public BattleTerrain Terrain;
             public CharacterArchetype PlayerArchetype;
             public CharacterArchetype OpponentArchetype;
+            public UnitMotionProfile MotionProfile;
         }
 
         [Test]
@@ -109,8 +111,10 @@ namespace Game.Tests.EditMode.Gameplay
             IBotShotPlanner planner = difficulty == AiDifficulty.Easy
                 ? new HeuristicShotPlanner(difficulty)
                 : new BallisticShotPlanner(probe, profile, random, Physics2D.gravity);
+            var scanner = new WalkReachabilityScanner(harness.Terrain.Grid, harness.MotionProfile, FallDeathY);
+            var positionPlanner = new BotPositionPlanner(scanner, planner, profile, harness.MotionProfile.WalkSpeed);
             return new BotTurnController(
-                harness.Simulation, planner, profile, random,
+                harness.Simulation, planner, positionPlanner, profile, random,
                 UnitCollisionHalfWidth, harness.PlayerArchetype, harness.OpponentArchetype, AimSettings.Default);
         }
 
@@ -182,7 +186,8 @@ namespace Game.Tests.EditMode.Gameplay
                 Simulation = simulation,
                 Terrain = terrain,
                 PlayerArchetype = playerArchetype,
-                OpponentArchetype = opponentArchetype
+                OpponentArchetype = opponentArchetype,
+                MotionProfile = profile
             };
         }
     }
