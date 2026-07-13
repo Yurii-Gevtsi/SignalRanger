@@ -32,6 +32,7 @@ namespace Game.Gameplay.Battle.AI
         {
             Idle,
             Repositioning,
+            RepositionJump,
             WaitStable,
             Aiming,
             Firing,
@@ -60,6 +61,7 @@ namespace Game.Gameplay.Battle.AI
         private float _turnTimer;
         private float _lastMoveX;
         private float _targetX;
+        private int _jumpDirection;
         private BotShotPlan? _plan;
         private int _plannedTurn = -1;
         private Vector2 _scatteredTarget;
@@ -130,6 +132,10 @@ namespace Game.Gameplay.Battle.AI
                 case Phase.Repositioning:
                     StepReposition(deltaTime);
                     break;
+                case Phase.RepositionJump:
+                    _simulation.TryStartJump(_jumpDirection);
+                    _phase = Phase.WaitStable;
+                    break;
                 case Phase.WaitStable:
                     _plan = PlanShotFromCurrent();
                     _aimTimer = _profile.ThinkPauseSeconds + _profile.AimPauseSeconds;
@@ -187,17 +193,23 @@ namespace Game.Gameplay.Battle.AI
 
             if (_profile.MovementEnabled && _positionPlanner != null)
             {
-                var chosen = _positionPlanner.SelectPosition(
+                var decision = _positionPlanner.SelectPosition(
                     unit.Position, _scatteredTarget, target.Position, _weapon, _aimSettings, BuildBodies(unit, target));
-                if (Mathf.Abs(chosen.x - unit.Position.x) > MoveEpsilon)
+                switch (decision.Kind)
                 {
-                    _targetX = chosen.x;
-                    _moveTimer = 0f;
-                    _stallTimer = 0f;
-                    _lastMoveX = unit.Position.x;
-                    _phase = Phase.Repositioning;
-                    Activity = BotActivity.Repositioning;
-                    return;
+                    case BotMoveKind.Walk:
+                        _targetX = decision.Position.x;
+                        _moveTimer = 0f;
+                        _stallTimer = 0f;
+                        _lastMoveX = unit.Position.x;
+                        _phase = Phase.Repositioning;
+                        Activity = BotActivity.Repositioning;
+                        return;
+                    case BotMoveKind.Jump:
+                        _jumpDirection = decision.JumpDirection;
+                        _phase = Phase.RepositionJump;
+                        Activity = BotActivity.Repositioning;
+                        return;
                 }
             }
 
@@ -277,8 +289,9 @@ namespace Game.Gameplay.Battle.AI
 
             var target = SelectTarget(unit);
             var bodies = BuildBodies(unit, target);
-            var context = new BotShotContext(unit.Position, _scatteredTarget, _weapon, _aimSettings, bodies);
-            var plan = _planner.PlanShot(context);
+            var plan = _profile.EvaluateAllWeapons
+                ? PlanBestWeapon(unit.Position, bodies)
+                : _planner.PlanShot(new BotShotContext(unit.Position, _scatteredTarget, _weapon, _aimSettings, bodies));
             if (plan != null)
             {
                 return plan;
@@ -290,6 +303,59 @@ namespace Game.Gameplay.Battle.AI
             var direction = toTarget.sqrMagnitude > 0.01f ? toTarget.normalized : Vector2.up;
             var power = Mathf.Lerp(_aimSettings.MinPower, _aimSettings.MaxPower, 0.8f);
             return new BotShotPlan(new AimState(unit.Position, direction, power, true), _weapon.WeaponId, 0f);
+        }
+
+        /// <summary>
+        /// Hard-difficulty weapon choice: plan a shot with every usable weapon
+        /// from the given origin and keep the one with the best expected value
+        /// (hit likelihood x damage), leaving that weapon selected so the fired
+        /// shot matches the plan.
+        /// </summary>
+        private BotShotPlan? PlanBestWeapon(Vector2 origin, IReadOnlyList<TrajectoryUnitBody> bodies)
+        {
+            var inventory = _simulation.ActiveInventory;
+            if (inventory == null || inventory.Count == 0)
+            {
+                return _planner.PlanShot(new BotShotContext(origin, _scatteredTarget, _weapon, _aimSettings, bodies));
+            }
+
+            var bestIndex = inventory.SelectedIndex;
+            BotShotPlan? bestPlan = null;
+            var bestValue = float.NegativeInfinity;
+
+            for (var i = 0; i < inventory.Count; i++)
+            {
+                inventory.Select(i);
+                if (!inventory.CanFireSelected)
+                {
+                    continue;
+                }
+
+                var weapon = inventory.Selected;
+                var aimSettings = weapon.CreateAimSettings(_baseAimSettings);
+                var plan = _planner.PlanShot(new BotShotContext(origin, _scatteredTarget, weapon, aimSettings, bodies));
+                if (plan == null)
+                {
+                    continue;
+                }
+
+                var expectedValue = Mathf.Clamp01(plan.Value.Score) * weapon.Damage;
+                if (bestPlan == null || expectedValue > bestValue)
+                {
+                    bestValue = expectedValue;
+                    bestPlan = plan;
+                    bestIndex = i;
+                }
+            }
+
+            inventory.Select(bestIndex);
+            if (bestPlan != null)
+            {
+                _weapon = inventory.Selected;
+                _aimSettings = _weapon.CreateAimSettings(_baseAimSettings);
+            }
+
+            return bestPlan;
         }
 
         private BattleUnitState ActiveOpponentUnit()

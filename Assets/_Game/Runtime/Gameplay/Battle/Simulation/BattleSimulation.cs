@@ -23,7 +23,11 @@ namespace Game.Gameplay.Battle.Simulation
         /// hardcoding its own copy.
         /// </summary>
         public const float ProjectileSubStepLength = 0.04f;
-        private const float StandardJumpHorizontalSpeedRatio = 0.9f;
+        /// <summary>
+        /// Fraction of walk speed the standard jump's horizontal launch is capped
+        /// at. Public so the bot's jump prediction mirrors it from one source.
+        /// </summary>
+        public const float StandardJumpHorizontalSpeedRatio = 0.9f;
 
         private readonly BattleState _state;
         private readonly TurnService _turnService;

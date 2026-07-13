@@ -93,7 +93,7 @@ namespace Game.Tests.EditMode.Gameplay
             var chosen = positionPlanner.SelectPosition(
                 start, enemy, enemy, weapon, weapon.CreateAimSettings(AimSettings.Default), bodies);
 
-            Assert.Less(chosen.x, start.x - 0.5f, "the bot steps away from an enemy that is inside its safety gap");
+            Assert.Less(chosen.Position.x, start.x - 0.5f, "the bot steps away from an enemy that is inside its safety gap");
         }
 
         [Test]
@@ -117,7 +117,7 @@ namespace Game.Tests.EditMode.Gameplay
             var chosen = positionPlanner.SelectPosition(
                 start, enemy, enemy, weapon, weapon.CreateAimSettings(AimSettings.Default), bodies);
 
-            Assert.LessOrEqual(Mathf.Abs(chosen.x - start.x), 1f, "with a clear shot and a safe distance, travel cost keeps the bot roughly in place");
+            Assert.LessOrEqual(Mathf.Abs(chosen.Position.x - start.x), 1f, "with a clear shot and a safe distance, travel cost keeps the bot roughly in place");
         }
 
         private static BattleTerrain FlatTerrain()

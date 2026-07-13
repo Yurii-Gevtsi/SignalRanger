@@ -1341,7 +1341,8 @@ namespace Game.Gameplay.Battle.Assembly
 
             var opponentMotionProfile = CreateMotionProfile(_opponentArchetype);
             var scanner = new WalkReachabilityScanner(_battleTerrain.Grid, opponentMotionProfile, GetFallDeathY());
-            var positionPlanner = new BotPositionPlanner(scanner, planner, profile, opponentMotionProfile.WalkSpeed);
+            var jumpGenerator = new JumpCandidateGenerator(_battleTerrain.Grid, opponentMotionProfile, _opponentArchetype, GetFallDeathY());
+            var positionPlanner = new BotPositionPlanner(scanner, planner, profile, opponentMotionProfile.WalkSpeed, jumpGenerator);
 
             return new BotTurnController(
                 _simulation,
