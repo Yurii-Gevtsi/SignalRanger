@@ -157,7 +157,11 @@ namespace Game.App
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            scaler.matchWidthOrHeight = 0.5f;
+            // Landscape layout: match height so the canvas is always exactly 1080
+            // reference units tall. Phones wider than 16:9 (19.5:9 etc.) gain extra
+            // horizontal room instead of shrinking the vertical space, which kept
+            // the fixed-height details card from fitting between the bars.
+            scaler.matchWidthOrHeight = 1f;
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
