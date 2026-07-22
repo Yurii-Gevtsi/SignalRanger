@@ -140,11 +140,11 @@ namespace Game.Tests.EditMode.Gameplay
         private static BotProfile HardProfile()
         {
             return BotProfile.CreateRuntime(
-                powerSteps: 10, angleStepDegrees: 2f, minClearPathRatio: 0.9f,
+                powerSteps: 10, angleStepDegrees: 2f,
                 scatterBase: 0f, scatterPerDistance: 0f, perfectShotChance: 1f,
-                scoreJitter: 0f, allySafetyWeight: 1f, evaluateAllWeapons: true,
+                scoreJitter: 0f, evaluateAllWeapons: true,
                 movementEnabled: true, jumpEnabled: true, minEnemySeparation: 0f,
-                maxWalkBudgetSeconds: 2f, maxPositionCandidates: 16, retreatAfterShot: false,
+                maxWalkBudgetSeconds: 2f, maxPositionCandidates: 16,
                 thinkPauseSeconds: 0f, aimPauseSeconds: 0f);
         }
 

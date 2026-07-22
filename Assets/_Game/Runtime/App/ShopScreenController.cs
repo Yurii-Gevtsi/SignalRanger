@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Gameplay.Battle.Weapons;
+using Game.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,22 +11,28 @@ namespace Game.App
     public sealed class ShopScreenController : MonoBehaviour
     {
         private const string ShopResourceRoot = "UI/Shop/";
+        private const string BattleResourceRoot = "UI/Battle/";
         private const string WeaponResourceRoot = "UI/Weapons/";
+        private const float PhoneElementScale = 1.2f;
 
         private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.9f);
-        private static readonly Color SelectedSlotColor = new(1f, 1f, 1f, 1f);
         private static readonly Color NormalSlotColor = new(0.72f, 0.82f, 0.92f, 0.88f);
-        private static readonly Color LockedLevelColor = new(1f, 0.25f, 0.22f, 0.96f);
-        private static readonly Color HologramColor = new(0.70f, 1f, 0.96f, 0.95f);
+        private static readonly Color LockedLevelColor = SciFiTextStyle.WarningText;
+        private static readonly Color HologramColor = Color.white;
         // Layout uses the Canvas reference resolution (1920 x 1080).
-        private static readonly Vector2 SettingsSize = new(140f, 140f);
-        private static readonly Vector2 SettingsPosition = new(-26f, -5f);
+        private static readonly Vector2 SettingsSize = new(104f, 104f);
+        private static readonly Vector2 SettingsPosition = new(-26f, -10f);
         private static readonly Vector2 PreviewPosition = new(-35f, -18f);
-        private static readonly Vector2 DetailCardSize = new(661f, 807f);
-        private static readonly Vector2 DetailCardPosition = new(0f, 40f);
+        private static readonly Vector2 DetailCardSize = new(1100f, 1000f);
+        private static readonly Vector2 DetailCardPosition = new(120f, 90f);
+        private static readonly Vector2 PurchaseButtonSize = new(270f, 124f);
+        private static readonly Vector2 PurchaseIconSize = new(60f, 60f);
+        private static readonly Vector2 CarouselArrowSize = new(200f, 250f);
+        private static readonly Vector2 CarouselArrowOffset = new(46f, 135f);
         private static readonly Vector2 WeaponStripPosition = new(120f, -128f);
         private static readonly Vector2 WeaponSlotSize = new(266f, 266f);
         private static readonly Vector2 WeaponArtSize = new(170f, 170f);
+        private const int WeaponsPerPage = 7;
 
         private readonly Dictionary<string, Sprite> _sprites = new();
         private readonly List<SlotView> _slots = new();
@@ -39,13 +46,15 @@ namespace Game.App
         private TMP_Text _levelText;
         private TMP_Text _descriptionText;
         private TMP_Text _damageText;
-        private TMP_Text _blastText;
         private TMP_Text _usesText;
         private TMP_Text _coinPriceText;
         private TMP_Text _crystalPriceText;
         private Button _coinBuyButton;
         private Button _crystalBuyButton;
+        private Button _leftArrowButton;
+        private Button _rightArrowButton;
         private int _selectedIndex;
+        private int _pageStart;
 
         private readonly struct ShopWeaponItem
         {
@@ -78,6 +87,7 @@ namespace Game.App
 
         private struct SlotView
         {
+            public string WeaponId;
             public Image Frame;
             public RectTransform Weapon;
             public TMP_Text Label;
@@ -107,20 +117,16 @@ namespace Game.App
         private void BuildItems()
         {
             var weapons = PrototypeWeaponLibrary.CreateAll();
-            Add(weapons, "weapon.steady-orb", "bazooka_simple", "Базова труба", 1,
-                "Надійний стартовий постріл з передбачуваною траєкторією.", 240, 8);
-            Add(weapons, "weapon.pulse-shell", "bazooka", "Імпульсний заряд", 2,
-                "Дуга з ширшим вибухом для ворогів за укриттям.", 420, 14);
-            Add(weapons, "weapon.close-pop", "drobovik", "Ближній розрив", 3,
-                "Коротка дистанція, швидкий контакт і стабільний тиск.", 520, 18);
-            Add(weapons, "weapon.long-lance", "rifle", "Довгий спис", 5,
-                "Точна зброя для дальнього пострілу по одиночній цілі.", 780, 26);
-            Add(weapons, "weapon.scatter-arc", "bomber", "Розсипна дуга", 6,
-                "Велика зона вибуху, щоб вибивати суперника з позиції.", 960, 32);
-            Add(weapons, "weapon.rampart-kit", "bur", "Комплект валу", 7,
-                "Тактичний інструмент для створення захисної лінії.", 1080, 36);
-            Add(weapons, "weapon.guard-pulse", "glove", "Захисний імпульс", 8,
-                "Утилітарний заряд для оборони й контролю темпу.", 1220, 42);
+            for (var index = 0; index < weapons.Length; index++)
+            {
+                var weapon = weapons[index];
+                if (weapon == null || WeaponPresentationText.IsDropOnly(weapon)) continue;
+                var itemIndex = _items.Count;
+                var level = itemIndex + 1;
+                _items.Add(new ShopWeaponItem(weapon, weapon.IconId, WeaponDisplayNames.Get(weapon.WeaponId), level,
+                    $"{WeaponPresentationText.Describe(weapon)}\nТип: {WeaponPresentationText.DescribeCategory(weapon)}",
+                    240 + itemIndex * 140, 8 + itemIndex * 4));
+            }
         }
 
         private void Add(
@@ -179,26 +185,29 @@ namespace Game.App
             var saveData = AppServices.SaveService.Current;
             var softCurrency = Mathf.Max(0, saveData?.economy.softCurrency ?? 0);
 
-            CreateImageButton("Back Button", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+            var backButton = CreateImageButton("Back Button", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
                 new Vector2(118f, 118f), new Vector2(30f, 0f), "back_btn", Close);
+            EnlargeForPhone(backButton);
 
             var titlePanel = CreateImage("Shop Title Panel", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
                 new Vector2(560f, 110f), new Vector2(128f, 0f), "info_panel", true, null, false);
+            EnlargeForPhone(titlePanel);
             CreateText("Shop Title", titlePanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-60f, -12f), new Vector2(-70f, 0f), 38, TextAlignmentOptions.Center, "Магазин зброї");
+                new Vector2(-60f, -12f), new Vector2(-70f, 0f), 38, TextAlignmentOptions.Center, "Магазин зброї", GameTextRole.DisplayTitle);
 
             var coins = CreateImage("Coins Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(310f, 155f), new Vector2(-486f, 0f), "Coin_panel", true, null, false);
             CreateText("Coins Value", coins.transform, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, softCurrency.ToString());
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, softCurrency.ToString(), GameTextRole.CurrencyGold);
 
             var premium = CreateImage("Premium Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(310f, 155f), new Vector2(-166f, 0f), "vip_coins_panel", true, null, false);
             CreateText("Premium Value", premium.transform, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, "0");
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, "0", GameTextRole.CurrencyCrystal);
 
-            CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+            var settingsButton = CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 SettingsSize, SettingsPosition, "settings_btn", () => SettingsScreenController.Open(null));
+            EnlargeForPhone(settingsButton);
         }
 
         private void BuildPreview(Transform root)
@@ -214,104 +223,100 @@ namespace Game.App
         private void BuildDetails(Transform root)
         {
             var card = CreateImage("Weapon Details", root, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-                DetailCardSize, DetailCardPosition, "weapon_details", false, null, false);
+                DetailCardSize, DetailCardPosition, BattleResourceRoot + "card", false, null, false, new Vector4(250f, 250f, 250f, 250f));
+            var cardImage = card.GetComponent<Image>();
+            cardImage.type = Image.Type.Sliced;
+            cardImage.preserveAspect = false;
 
-            _nameText = CreateText("Weapon Name", card.transform, new Vector2(0.12f, 0.80f), new Vector2(0.88f, 0.91f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -30f), 38, TextAlignmentOptions.Center, string.Empty);
-            ConfigureVerticalOffsets(_nameText, 0f, 40f);
-            _levelText = CreateText("Weapon Level", card.transform, new Vector2(0.15f, 0.70f), new Vector2(0.85f, 0.78f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -70f), 28, TextAlignmentOptions.Center, string.Empty);
-            ConfigureVerticalOffsets(_levelText, -80f, 0f);
-            _descriptionText = CreateText("Weapon Description", card.transform, new Vector2(0.14f, 0.55f), new Vector2(0.86f, 0.69f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -130f), 23, TextAlignmentOptions.Center, string.Empty);
-            ConfigureVerticalOffsets(_descriptionText, -100f, 0f);
+            _nameText = CreateText("Weapon Name", card.transform, new Vector2(0.18f, 0.70f), new Vector2(0.86f, 0.775f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 44, TextAlignmentOptions.Center, string.Empty);
+            _nameText.enableAutoSizing = false;
 
-            _damageText = CreateStatLine(card.transform, "Damage Stat", 0.4075f, "Шкода", 0f, 5f, 0f, 20f, 22);
-            _blastText = CreateStatLine(card.transform, "Blast Stat", 0.3412f, "Сила вибуху", 0f, -5f, null, 15f, 22);
-            _usesText = CreateStatLine(card.transform, "Uses Stat", 0.2762f, "За бій", 0f, null, 13f, 25f, 44);
+            _levelText = CreateText("Weapon Level", card.transform, new Vector2(0.20f, 0.625f), new Vector2(0.84f, 0.68f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 30, TextAlignmentOptions.Center, string.Empty);
+            _levelText.enableAutoSizing = false;
+            _levelText.color = SciFiTextStyle.CyanText;
+
+            _descriptionText = CreateText("Weapon Description", card.transform, new Vector2(0.19f, 0.525f), new Vector2(0.81f, 0.61f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 29, TextAlignmentOptions.TopLeft, string.Empty, GameTextRole.Body);
+            SetLeftOffset(_descriptionText.rectTransform, 40f);
+            _descriptionText.enableAutoSizing = false;
+            _descriptionText.overflowMode = TextOverflowModes.Truncate;
+            _descriptionText.textWrappingMode = TextWrappingModes.Normal;
+
+            _damageText = CreateStatLine(card.transform, "Damage Stat", new Vector2(0.19f, 0.465f), new Vector2(0.47f, 0.525f), "Урон", 40f);
+            _usesText = CreateStatLine(card.transform, "Uses Stat", new Vector2(0.52f, 0.465f), new Vector2(0.80f, 0.525f), "За бій");
 
             var coinButton = CreateImageButton("Buy Coins", card.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), new Vector2(200f, 200f), new Vector2(-120f, 90f), "Green_btn", BuySelectedWithCoins);
-            coinButton.localScale = new Vector3(1f, 2f, 1f);
+                new Vector2(0.5f, 0f), PurchaseButtonSize, new Vector2(-150f, 230f), "btn_green", BuySelectedWithCoins);
+            coinButton.GetComponent<Image>().preserveAspect = false;
             _coinBuyButton = coinButton.GetComponent<Button>();
             var coinIcon = CreateImage("Buy Coins Icon", coinButton, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-                new Vector2(0f, 0.5f), new Vector2(30f, 30f), new Vector2(24f, -74f), "coin", true, null, false);
-            coinIcon.localScale = new Vector3(1.7f, 1f, 1f);
-            _coinPriceText = CreateText("Buy Coins Label", coinButton.transform, new Vector2(0.20f, 0.18f), new Vector2(0.96f, 0.82f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -50f), 28, TextAlignmentOptions.Center, string.Empty);
-            ConfigurePriceLabel(_coinPriceText, 90f, 0f, -60f, 1.2f);
+                new Vector2(0f, 0.5f), PurchaseIconSize, new Vector2(46f, 0f), "coin", true, null, false);
+            _coinPriceText = CreateText("Buy Coins Label", coinButton.transform, new Vector2(0.30f, 0.12f), new Vector2(0.90f, 0.88f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 32, TextAlignmentOptions.Center, string.Empty, GameTextRole.CurrencyGold);
+            ConfigurePriceLabel(_coinPriceText);
 
             var crystalButton = CreateImageButton("Buy Crystals", card.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), new Vector2(200f, 200f), new Vector2(120f, 90f), "yellow_btn", BuySelectedWithCrystals);
-            crystalButton.localScale = new Vector3(1f, 2f, 1f);
+                new Vector2(0.5f, 0f), PurchaseButtonSize, new Vector2(150f, 230f), "btn_yellow", BuySelectedWithCrystals);
+            crystalButton.GetComponent<Image>().preserveAspect = false;
             _crystalBuyButton = crystalButton.GetComponent<Button>();
             var crystalIcon = CreateImage("Buy Crystals Icon", crystalButton, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-                new Vector2(0f, 0.5f), new Vector2(30f, 30f), new Vector2(24f, -74f), "vip_coin", true, null, false);
-            crystalIcon.localScale = new Vector3(2f, 1f, 1f);
-            _crystalPriceText = CreateText("Buy Crystals Label", crystalButton.transform, new Vector2(0.20f, 0.18f), new Vector2(0.96f, 0.82f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, -50f), 28, TextAlignmentOptions.Center, string.Empty);
-            ConfigurePriceLabel(_crystalPriceText, 90f, 30f, -60f, 1.2f);
+                new Vector2(0f, 0.5f), PurchaseIconSize, new Vector2(46f, 0f), "vip_coin", true, null, false);
+            _crystalPriceText = CreateText("Buy Crystals Label", crystalButton.transform, new Vector2(0.30f, 0.12f), new Vector2(0.90f, 0.88f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 32, TextAlignmentOptions.Center, string.Empty, GameTextRole.CurrencyCrystal);
+            ConfigurePriceLabel(_crystalPriceText);
         }
 
-        private TMP_Text CreateStatLine(Transform parent, string name, float centerY, string label, float positionY,
-            float? top, float? bottom, float valueRight, int valueFontSize)
+        private TMP_Text CreateStatLine(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, string label, float leftOffset = 0f)
         {
-            var line = CreatePanel(name, parent, new Vector2(0.16f, centerY - 0.025f), new Vector2(0.84f, centerY + 0.025f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, positionY), new Color(0f, 0f, 0f, 0.18f));
-            var lineRect = line.rectTransform;
-            if (top.HasValue)
+            var line = CreatePanel(name, parent, anchorMin, anchorMax,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.18f));
+            if (leftOffset > 0f)
             {
-                lineRect.offsetMax = new Vector2(lineRect.offsetMax.x, -top.Value);
-            }
-
-            if (bottom.HasValue)
-            {
-                lineRect.offsetMin = new Vector2(lineRect.offsetMin.x, bottom.Value);
+                SetLeftOffset(line.rectTransform, leftOffset);
             }
 
             line.raycastTarget = false;
-            CreateText($"{name} Label", line.transform, new Vector2(0.04f, 0f), new Vector2(0.58f, 1f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 22, TextAlignmentOptions.MidlineLeft, label);
-            var value = CreateText($"{name} Value", line.transform, new Vector2(0.58f, 0f), new Vector2(0.96f, 1f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, valueFontSize, TextAlignmentOptions.MidlineRight, string.Empty);
-            value.rectTransform.offsetMax = new Vector2(-valueRight, value.rectTransform.offsetMax.y);
+            CreateText($"{name} Label", line.transform, new Vector2(0.06f, 0f), new Vector2(0.48f, 1f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 29, TextAlignmentOptions.MidlineLeft, label, GameTextRole.Body);
+            var value = CreateText($"{name} Value", line.transform, new Vector2(0.48f, 0f), new Vector2(0.84f, 1f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 31, TextAlignmentOptions.MidlineLeft, string.Empty, GameTextRole.Numeric);
+            value.enableAutoSizing = false;
             return value;
         }
 
-        private static void ConfigurePriceLabel(TMP_Text label, float top, float right, float bottom, float scaleX)
+        private static void ConfigurePriceLabel(TMP_Text label)
         {
-            var rect = label.rectTransform;
-            rect.anchorMin = new Vector2(rect.anchorMin.x, 0f);
-            rect.anchorMax = new Vector2(rect.anchorMax.x, 1f);
-            rect.offsetMin = new Vector2(rect.offsetMin.x, bottom);
-            rect.offsetMax = new Vector2(-right, -top);
-            rect.localScale = new Vector3(scaleX, 1f, 1f);
+            label.enableAutoSizing = false;
+            label.fontStyle = FontStyles.Bold;
+            label.rectTransform.localScale = Vector3.one;
         }
 
-        private static void ConfigureVerticalOffsets(TMP_Text text, float top, float bottom)
+        private static void SetLeftOffset(RectTransform rect, float left)
         {
-            var rect = text.rectTransform;
-            rect.offsetMin = new Vector2(rect.offsetMin.x, bottom);
-            rect.offsetMax = new Vector2(rect.offsetMax.x, -top);
+            rect.offsetMin = new Vector2(left, rect.offsetMin.y);
         }
 
         private void BuildWeaponStrip(Transform root)
         {
             var strip = CreateRect("Weapon Strip", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(0.5f, 0f), new Vector2(1840f, 300f), WeaponStripPosition);
+            EnlargeForPhone(strip);
 
             var startX = -840f;
             const float spacing = 240f;
             for (var i = 0; i < _items.Count; i++)
             {
                 var index = i;
-                var isLocked = i > 0;
+                var isLocked = !AppServices.Inventory.IsWeaponUnlocked(_items[i].Definition.WeaponId);
                 var slotRoot = CreateImageButton($"Weapon Slot {i}", strip, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f), WeaponSlotSize, new Vector2(startX + i * spacing, 74f), "card",
                     () => SelectWeapon(index));
                 var frame = slotRoot.GetComponent<Image>();
                 var weapon = CreateImage($"Weapon Slot Art {i}", slotRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f), WeaponArtSize, new Vector2(0f, 12f), _items[i].Art, true, null, true);
+                ApplySlotWeaponVisual(weapon, _items[i].Definition.WeaponId);
                 var lockIcon = CreateImage($"Weapon Slot Lock {i}", slotRoot.transform, new Vector2(0.178f, 0.214f), new Vector2(0.178f, 0.214f),
                     new Vector2(0f, 0.5f), new Vector2(34f, 34f), Vector2.zero, "lock", true, null, false).GetComponent<Image>();
                 lockIcon.enabled = isLocked;
@@ -321,6 +326,7 @@ namespace Game.App
                     new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 18, TextAlignmentOptions.MidlineLeft, $"LVL {_items[i].RequiredLevel}");
                 _slots.Add(new SlotView
                 {
+                    WeaponId = _items[i].Definition.WeaponId,
                     Frame = frame,
                     Weapon = weapon,
                     Label = label,
@@ -329,24 +335,76 @@ namespace Game.App
             }
 
             var leftArrow = CreateImageButton("Weapon Carousel Left", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
-                new Vector2(0.5f, 0.5f), new Vector2(200f, 300f), new Vector2(38f, 95f), "arrow_btn", () => ChangePage(-1));
-            leftArrow.localScale = new Vector3(-1f, 1f, 1f);
+                new Vector2(0.5f, 0.5f), CarouselArrowSize, CarouselArrowOffset, "arrow_btn", () => ChangePage(-1));
+            leftArrow.GetComponent<Image>().preserveAspect = false;
+            leftArrow.localScale = new Vector3(-PhoneElementScale, PhoneElementScale, 1f);
+            _leftArrowButton = leftArrow.GetComponent<Button>();
 
-            CreateImageButton("Weapon Carousel Right", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(0.5f, 0.5f), new Vector2(200f, 300f), new Vector2(-38f, 95f), "arrow_btn", () => ChangePage(1));
+            var rightArrow = CreateImageButton("Weapon Carousel Right", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
+                new Vector2(0.5f, 0.5f), CarouselArrowSize, new Vector2(-CarouselArrowOffset.x, CarouselArrowOffset.y), "arrow_btn", () => ChangePage(1));
+            rightArrow.GetComponent<Image>().preserveAspect = false;
+            EnlargeForPhone(rightArrow);
+            _rightArrowButton = rightArrow.GetComponent<Button>();
+        }
+
+        private static void EnlargeForPhone(RectTransform rect)
+        {
+            rect.localScale = new Vector3(PhoneElementScale, PhoneElementScale, 1f);
         }
 
         private void ChangePage(int direction)
         {
-            // Pagination controls are reserved for the larger weapon catalog.
+            var maxStart = GetMaxPageStart();
+            if (maxStart <= 0) return;
+
+            _pageStart = direction > 0 ? GetNextPageStart(maxStart) : GetPreviousPageStart(maxStart);
+            ApplyPage();
         }
 
         private void ApplyPage()
         {
             for (var i = 0; i < _slots.Count; i++)
             {
-                _slots[i].Frame.gameObject.SetActive(true);
+                var visibleIndex = i - _pageStart;
+                var visible = visibleIndex >= 0 && visibleIndex < WeaponsPerPage;
+                _slots[i].Frame.gameObject.SetActive(visible);
+                if (visible)
+                {
+                    _slots[i].Frame.rectTransform.anchoredPosition = new Vector2(-840f + visibleIndex * 240f, 74f);
+                }
             }
+
+            var maxStart = GetMaxPageStart();
+            if (_leftArrowButton != null)
+            {
+                _leftArrowButton.interactable = _pageStart > 0;
+            }
+
+            if (_rightArrowButton != null)
+            {
+                _rightArrowButton.interactable = _pageStart < maxStart;
+            }
+        }
+
+        private int GetMaxPageStart()
+        {
+            return Mathf.Max(0, _items.Count - WeaponsPerPage);
+        }
+
+        private int GetNextPageStart(int maxStart)
+        {
+            var next = _pageStart + WeaponsPerPage;
+            return next >= maxStart ? maxStart : next;
+        }
+
+        private int GetPreviousPageStart(int maxStart)
+        {
+            if (_pageStart >= maxStart && maxStart % WeaponsPerPage != 0)
+            {
+                return Mathf.Max(0, (maxStart / WeaponsPerPage) * WeaponsPerPage);
+            }
+
+            return Mathf.Max(0, _pageStart - WeaponsPerPage);
         }
 
         private void SelectWeapon(int index)
@@ -359,32 +417,94 @@ namespace Game.App
             _selectedIndex = index;
             var item = _items[index];
             _previewImage.sprite = LoadSprite(item.Art, true);
+            ApplyPreviewWeaponVisual(item.Definition.WeaponId);
             _nameText.text = item.DisplayName;
             _levelText.text = $"Потрібен рівень {item.RequiredLevel}";
             _descriptionText.text = item.Description;
             _damageText.text = item.Definition.Damage.ToString();
-            _blastText.text = item.Definition.ImpactRadius.ToString("0.0");
             _usesText.text = item.Definition.HasLimitedAmmo ? item.Definition.AmmoCount.ToString() : "∞";
             _coinPriceText.text = item.CoinPrice.ToString();
             _crystalPriceText.text = item.CrystalPrice.ToString();
-            var isLocked = index > 0;
+            var isLocked = !AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId);
             _coinBuyButton.interactable = !isLocked;
             _crystalBuyButton.interactable = !isLocked;
 
             for (var i = 0; i < _slots.Count; i++)
             {
-                var slotLocked = i > 0;
-                var selected = i == index;
-                _slots[i].Frame.color = selected ? SelectedSlotColor : NormalSlotColor;
+                var slotLocked = !AppServices.Inventory.IsWeaponUnlocked(_slots[i].WeaponId);
+                _slots[i].Frame.color = NormalSlotColor;
                 _slots[i].Weapon.GetComponent<Image>().color = Color.white;
-                _slots[i].Weapon.localScale = selected ? new Vector3(1.12f, 1.12f, 1f) : Vector3.one;
-                _slots[i].Label.color = slotLocked ? LockedLevelColor : (selected ? Color.white : new Color(0.82f, 0.92f, 1f, 0.95f));
+                ApplySlotWeaponVisual(_slots[i].Weapon, _slots[i].WeaponId);
+                _slots[i].Label.color = slotLocked ? LockedLevelColor : SciFiTextStyle.SecondaryText;
                 _slots[i].Lock.enabled = slotLocked;
             }
         }
 
+        private static void ApplySlotWeaponVisual(RectTransform rect, string weaponId)
+        {
+            var tuning = GetWeaponVisualTuning(weaponId);
+            rect.localScale = new Vector3(tuning.SlotScale.x, tuning.SlotScale.y, 1f);
+            rect.anchoredPosition = tuning.SlotOffset;
+        }
+
+        private void ApplyPreviewWeaponVisual(string weaponId)
+        {
+            var tuning = GetWeaponVisualTuning(weaponId);
+            var rect = _previewImage.rectTransform;
+            rect.localScale = new Vector3(tuning.PreviewScale.x, tuning.PreviewScale.y, 1f);
+            rect.anchoredPosition = tuning.PreviewOffset;
+        }
+
+        private readonly struct WeaponVisualTuning
+        {
+            public WeaponVisualTuning(Vector2 slotScale, Vector2 slotOffset, Vector2 previewScale, Vector2 previewOffset)
+            {
+                SlotScale = slotScale;
+                SlotOffset = slotOffset;
+                PreviewScale = previewScale;
+                PreviewOffset = previewOffset;
+            }
+
+            public Vector2 SlotScale { get; }
+            public Vector2 SlotOffset { get; }
+            public Vector2 PreviewScale { get; }
+            public Vector2 PreviewOffset { get; }
+        }
+
+        private static WeaponVisualTuning GetWeaponVisualTuning(string weaponId)
+        {
+            var normalSlotOffset = new Vector2(0f, 12f);
+            var normalPreviewOffset = new Vector2(50f, 62f);
+
+            return weaponId switch
+            {
+                "weapon.impulse" => new WeaponVisualTuning(new Vector2(1.10f, 1.10f), normalSlotOffset, Vector2.one, normalPreviewOffset),
+                "weapon.blaster-caset" => new WeaponVisualTuning(new Vector2(0.84f, 0.84f), normalSlotOffset, Vector2.one, normalPreviewOffset),
+                "weapon.bur" => new WeaponVisualTuning(new Vector2(0.78f, 0.78f), normalSlotOffset, new Vector2(0.82f, 0.82f), normalPreviewOffset),
+                "weapon.mortira" => new WeaponVisualTuning(Vector2.one, normalSlotOffset, new Vector2(1.10f, 1.10f), normalPreviewOffset),
+                "weapon.granata" => new WeaponVisualTuning(new Vector2(0.68f, 0.68f), normalSlotOffset, new Vector2(0.35f, 0.35f), normalPreviewOffset),
+                "weapon.teleport" => new WeaponVisualTuning(new Vector2(0.48f, 0.48f), normalSlotOffset, new Vector2(0.46f, 0.46f), normalPreviewOffset),
+                "weapon.mine" => new WeaponVisualTuning(new Vector2(0.78f, 0.78f), normalSlotOffset, new Vector2(0.78f, 0.78f), normalPreviewOffset),
+                "weapon.heal" => new WeaponVisualTuning(new Vector2(0.82f, 0.82f), normalSlotOffset, Vector2.one, normalPreviewOffset),
+                "weapon.emp" => new WeaponVisualTuning(new Vector2(0.82f, 0.72f), normalSlotOffset, new Vector2(0.86f, 0.72f), normalPreviewOffset),
+                "weapon.fire-gun" => new WeaponVisualTuning(new Vector2(0.82f, 0.82f), normalSlotOffset, Vector2.one, normalPreviewOffset),
+                "weapon.fpv-drone" => new WeaponVisualTuning(new Vector2(0.72f, 0.72f), normalSlotOffset, Vector2.one, normalPreviewOffset),
+                _ => new WeaponVisualTuning(Vector2.one, normalSlotOffset, Vector2.one, normalPreviewOffset)
+            };
+        }
+
         private void BuySelectedWithCoins()
         {
+            if (_selectedIndex < 0 || _selectedIndex >= _items.Count) return;
+            var item = _items[_selectedIndex];
+            var save = AppServices.SaveService.Current;
+            if (save == null || AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId)
+                || save.economy.softCurrency < item.CoinPrice) return;
+
+            save.economy.softCurrency -= item.CoinPrice;
+            AppServices.Inventory.UnlockWeapon(item.Definition.WeaponId);
+            AppServices.SaveService.Save(save);
+            SelectWeapon(_selectedIndex);
         }
 
         private void BuySelectedWithCrystals()
@@ -401,11 +521,11 @@ namespace Game.App
 
         private RectTransform CreateImage(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
             Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPosition, string resourceName, bool preserveAspect,
-            Color? tint, bool weaponResource)
+            Color? tint, bool weaponResource, Vector4? border = null)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
             var image = rect.gameObject.AddComponent<Image>();
-            image.sprite = LoadSprite(resourceName, weaponResource);
+            image.sprite = LoadSprite(resourceName, weaponResource, border ?? Vector4.zero);
             image.color = tint ?? Color.white;
             image.preserveAspect = preserveAspect;
             image.raycastTarget = false;
@@ -438,21 +558,16 @@ namespace Game.App
         }
 
         private TMP_Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value)
+            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value,
+            GameTextRole role = GameTextRole.Button)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
             var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
-            text.fontSize = fontSize;
-            text.enableAutoSizing = true;
+            SciFiTextStyle.Apply(text, role, fontSize, alignment);
             text.fontSizeMin = Mathf.Max(14, fontSize - 10);
-            text.fontSizeMax = fontSize;
-            text.fontStyle = FontStyles.Bold;
-            text.color = Color.white;
-            text.alignment = alignment;
             text.textWrappingMode = TextWrappingModes.Normal;
-            text.overflowMode = TextOverflowModes.Ellipsis;
+            text.overflowMode = TextOverflowModes.Truncate;
             text.text = value;
-            text.raycastTarget = false;
 
             var shadow = rect.gameObject.AddComponent<Shadow>();
             shadow.effectColor = TextShadowColor;
@@ -460,17 +575,17 @@ namespace Game.App
             return text;
         }
 
-        private Sprite LoadSprite(string resourceName, bool weaponResource)
+        private Sprite LoadSprite(string resourceName, bool weaponResource, Vector4 border = default)
         {
-            var key = $"{(weaponResource ? "weapon" : "shop")}:{resourceName}";
+            var resourcePath = resourceName.Contains("/")
+                ? resourceName
+                : (weaponResource ? WeaponResourceRoot : ShopResourceRoot) + resourceName;
+            var key = $"{resourcePath}:{border.x:0.###},{border.y:0.###},{border.z:0.###},{border.w:0.###}";
             if (_sprites.TryGetValue(key, out var cached))
             {
                 return cached;
             }
 
-            var resourcePath = resourceName.Contains("/")
-                ? resourceName
-                : (weaponResource ? WeaponResourceRoot : ShopResourceRoot) + resourceName;
             var texture = Resources.Load<Texture2D>(resourcePath);
             if (texture == null)
             {
@@ -478,7 +593,7 @@ namespace Game.App
             }
 
             var sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height),
-                new Vector2(0.5f, 0.5f), 100f);
+                new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
             _sprites[key] = sprite;
             return sprite;
         }

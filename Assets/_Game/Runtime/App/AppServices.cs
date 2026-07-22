@@ -59,6 +59,8 @@ namespace Game.App
             Game.Core.BattleTutorialBridge.Feed = new AppBattleTutorialFeed(Tutorial, SaveService);
             Game.Core.BattleFeedbackBridge.Sink = new AppBattleFeedbackSink(Audio);
             Game.Core.Battle.BattleHudFactoryBridge.Factory = new Game.UI.Battle.BattleHudViewFactory();
+            Game.Core.Battle.BattleSettingsBridge.OpenHandler =
+                (onClosed, onRestart, onMenu) => SettingsScreenController.Open(onClosed, onRestart, onMenu);
             Session = new GameSessionService(SaveService.Current, Campaign, Content);
             LastMissionCompletionResult = default;
             IsInitialized = true;

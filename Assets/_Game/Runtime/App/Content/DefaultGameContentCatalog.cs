@@ -46,10 +46,10 @@ namespace Game.App.Content
                     },
                     new[]
                     {
-                        "weapon.steady-orb",
-                        "weapon.pulse-shell",
-                        "weapon.close-pop",
-                        "weapon.long-lance"
+                        "weapon.impulse",
+                        "weapon.mortira",
+                        "weapon.blaster-caset",
+                        "weapon.bur"
                     }),
                 CampaignChapterDefinition.CreateRuntime(
                     "chapter.tactical-tools",
@@ -70,9 +70,9 @@ namespace Game.App.Content
                     },
                     new[]
                     {
-                        "weapon.rampart-kit",
-                        "weapon.guard-pulse",
-                        "weapon.relay-step"
+                        "weapon.granata",
+                        "weapon.heal",
+                        "weapon.teleport"
                     })
             };
         }
@@ -84,19 +84,19 @@ namespace Game.App.Content
                 EnemyLoadoutDefinition.CreateRuntime(
                     "enemy.training.direct",
                     "Direct Basics",
-                    new[] { "weapon.steady-orb", "weapon.pulse-shell" }),
+                    new[] { "weapon.impulse", "weapon.mortira" }),
                 EnemyLoadoutDefinition.CreateRuntime(
                     "enemy.training.arc",
                     "Arc Pressure",
-                    new[] { "weapon.pulse-shell", "weapon.scatter-arc" }),
+                    new[] { "weapon.mortira", "weapon.granata" }),
                 EnemyLoadoutDefinition.CreateRuntime(
                     "enemy.training.precision",
                     "Precision Mix",
-                    new[] { "weapon.steady-orb", "weapon.long-lance" }),
+                    new[] { "weapon.impulse", "weapon.bur" }),
                 EnemyLoadoutDefinition.CreateRuntime(
                     "enemy.training.utility",
                     "Utility Pressure",
-                    new[] { "weapon.pulse-shell", "weapon.rampart-kit", "weapon.guard-pulse" })
+                    new[] { "weapon.mortira", "weapon.granata", "weapon.heal" })
             };
         }
 
@@ -138,7 +138,8 @@ namespace Game.App.Content
                     striker.FrontJumpDistance,
                     striker.FrontJumpHeight,
                     striker.BackJumpDistance,
-                    striker.BackJumpHeight),
+                    striker.BackJumpHeight,
+                    striker.MaxWalkSlopeDegrees),
                 UnitArchetypeDefinition.CreateRuntime(
                     skirmisher.Id,
                     skirmisher.DisplayName,
@@ -150,7 +151,8 @@ namespace Game.App.Content
                     skirmisher.FrontJumpDistance,
                     skirmisher.FrontJumpHeight,
                     skirmisher.BackJumpDistance,
-                    skirmisher.BackJumpHeight),
+                    skirmisher.BackJumpHeight,
+                    skirmisher.MaxWalkSlopeDegrees),
                 UnitArchetypeDefinition.CreateRuntime(
                     bulwark.Id,
                     bulwark.DisplayName,
@@ -162,7 +164,8 @@ namespace Game.App.Content
                     bulwark.FrontJumpDistance,
                     bulwark.FrontJumpHeight,
                     bulwark.BackJumpDistance,
-                    bulwark.BackJumpHeight)
+                    bulwark.BackJumpHeight,
+                    bulwark.MaxWalkSlopeDegrees)
             };
         }
     }

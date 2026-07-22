@@ -128,4 +128,58 @@ namespace Game.Gameplay.Battle.Simulation
         public int Amount { get; }
         public BattleTeamId Team { get; }
     }
+
+    public readonly struct MineDeployedEvent
+    {
+        public MineDeployedEvent(int mineId, Vector2 point, WeaponDefinition weapon, BattleTeamId team)
+        {
+            MineId = mineId;
+            Point = point;
+            Weapon = weapon;
+            Team = team;
+        }
+
+        public int MineId { get; }
+        public Vector2 Point { get; }
+        public WeaponDefinition Weapon { get; }
+        public BattleTeamId Team { get; }
+    }
+
+    public readonly struct LinearWeaponEffectEvent
+    {
+        public LinearWeaponEffectEvent(WeaponDefinition weapon, BattleTeamId team, Vector2 origin, Vector2 direction, float range, float durationSeconds)
+        {
+            Weapon = weapon;
+            Team = team;
+            Origin = origin;
+            Direction = direction;
+            Range = range;
+            DurationSeconds = durationSeconds;
+        }
+
+        public WeaponDefinition Weapon { get; }
+        public BattleTeamId Team { get; }
+        public Vector2 Origin { get; }
+        public Vector2 Direction { get; }
+        public float Range { get; }
+        public float DurationSeconds { get; }
+    }
+
+    public readonly struct FireBlobEvent
+    {
+        public FireBlobEvent(WeaponDefinition weapon, BattleTeamId team, Vector2 origin, Vector2 impactPoint, float lifetimeSeconds)
+        {
+            Weapon = weapon;
+            Team = team;
+            Origin = origin;
+            ImpactPoint = impactPoint;
+            LifetimeSeconds = lifetimeSeconds;
+        }
+
+        public WeaponDefinition Weapon { get; }
+        public BattleTeamId Team { get; }
+        public Vector2 Origin { get; }
+        public Vector2 ImpactPoint { get; }
+        public float LifetimeSeconds { get; }
+    }
 }

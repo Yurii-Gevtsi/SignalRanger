@@ -1,6 +1,37 @@
 namespace Game.Core.Battle
 {
+    using System;
+    using System.Collections.Generic;
     using Game.Core.Localization;
+
+    public readonly struct BattleWeaponHudItem
+    {
+        public BattleWeaponHudItem(
+            int index,
+            string label,
+            string iconId,
+            string ammoLabel,
+            bool hasLimitedAmmo,
+            int ammoRemaining,
+            bool isUsable)
+        {
+            Index = index;
+            Label = label ?? string.Empty;
+            IconId = iconId ?? string.Empty;
+            AmmoLabel = ammoLabel ?? string.Empty;
+            HasLimitedAmmo = hasLimitedAmmo;
+            AmmoRemaining = ammoRemaining;
+            IsUsable = isUsable;
+        }
+
+        public int Index { get; }
+        public string Label { get; }
+        public string IconId { get; }
+        public string AmmoLabel { get; }
+        public bool HasLimitedAmmo { get; }
+        public int AmmoRemaining { get; }
+        public bool IsUsable { get; }
+    }
 
     /// <summary>
     /// Immutable snapshot the battle scene pushes to the HUD each frame.
@@ -23,6 +54,11 @@ namespace Game.Core.Battle
             string ammoLabel,
             string weaponHint,
             string mobilityLabel,
+            IReadOnlyList<BattleWeaponHudItem> arsenalWeapons,
+            int selectedWeaponIndex,
+            bool hasSelectedWeapon,
+            bool showFireButton,
+            bool canOpenArsenal,
             string tutorialTargetId,
             bool tutorialBlocksWeaponSwitch,
             bool tutorialBlocksCancel,
@@ -56,6 +92,11 @@ namespace Game.Core.Battle
             AmmoLabel = ammoLabel;
             WeaponHint = weaponHint ?? string.Empty;
             MobilityLabel = mobilityLabel ?? string.Empty;
+            ArsenalWeapons = arsenalWeapons ?? Array.Empty<BattleWeaponHudItem>();
+            SelectedWeaponIndex = selectedWeaponIndex;
+            HasSelectedWeapon = hasSelectedWeapon;
+            ShowFireButton = showFireButton;
+            CanOpenArsenal = canOpenArsenal;
             TutorialTargetId = tutorialTargetId ?? string.Empty;
             TutorialBlocksWeaponSwitch = tutorialBlocksWeaponSwitch;
             TutorialBlocksCancel = tutorialBlocksCancel;
@@ -90,6 +131,11 @@ namespace Game.Core.Battle
         public string AmmoLabel { get; }
         public string WeaponHint { get; }
         public string MobilityLabel { get; }
+        public IReadOnlyList<BattleWeaponHudItem> ArsenalWeapons { get; }
+        public int SelectedWeaponIndex { get; }
+        public bool HasSelectedWeapon { get; }
+        public bool ShowFireButton { get; }
+        public bool CanOpenArsenal { get; }
         public string TutorialTargetId { get; }
         public bool TutorialBlocksWeaponSwitch { get; }
         public bool TutorialBlocksCancel { get; }

@@ -9,15 +9,16 @@ namespace Game.Core.Battle
     public interface IBattleHud
     {
         event Action FireRequested;
+        event Action<int> WeaponSelected;
+        event Action<bool> ArsenalVisibilityChanged;
+        event Action WeaponResetRequested;
+        event Action SettingsRequested;
         event Action MoveLeftStarted;
         event Action MoveLeftStopped;
         event Action MoveRightStarted;
         event Action MoveRightStopped;
         event Action JumpLeftRequested;
         event Action JumpRightRequested;
-        event Action ZoomInRequested;
-        event Action ZoomOutRequested;
-
         event Action RestartRequested;
         event Action ContinueRequested;
         event Action MenuRequested;

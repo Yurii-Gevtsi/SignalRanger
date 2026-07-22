@@ -24,8 +24,8 @@ namespace Game.Tests.EditMode.Inventory
             var service = new InventoryService(saveData);
 
             Assert.That(service.TrySetLoadout(new[] { "weapon.test.locked" }), Is.False);
-            Assert.That(service.TrySetLoadout(new[] { "weapon.steady-orb", "weapon.pulse-shell" }), Is.True);
-            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EqualTo(new[] { "weapon.steady-orb", "weapon.pulse-shell" }));
+            Assert.That(service.TrySetLoadout(new[] { "weapon.impulse", "weapon.mortira" }), Is.True);
+            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EqualTo(new[] { "weapon.impulse", "weapon.mortira" }));
         }
 
         [Test]
@@ -34,9 +34,9 @@ namespace Game.Tests.EditMode.Inventory
             var saveData = SaveData.CreateNew();
             var service = new InventoryService(saveData);
 
-            Assert.That(service.TrySetLoadout(new[] { "weapon.steady-orb", "weapon.steady-orb" }), Is.True);
+            Assert.That(service.TrySetLoadout(new[] { "weapon.impulse", "weapon.impulse" }), Is.True);
 
-            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EqualTo(new[] { "weapon.steady-orb" }));
+            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EqualTo(new[] { "weapon.impulse" }));
         }
     }
 }

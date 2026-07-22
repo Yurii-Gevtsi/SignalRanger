@@ -28,6 +28,6 @@ namespace Game.Gameplay.Battle.Domain
         public float MinInputDistance { get; }
         public Vector2 FallbackDirection { get; }
 
-        public static AimSettings Default => new(4f, 18f, 3.4f, 0.5f, Vector2.right);
+        public static AimSettings Default => new(4f, 13.5f, 6.8f, 0.5f, Vector2.right);
     }
 }

@@ -27,6 +27,7 @@ namespace Game.Gameplay.Battle.AI.Movement
         private readonly BotProfile _profile;
         private readonly float _walkSpeed;
         private readonly List<Vector2> _positions = new();
+        private readonly List<int> _candidateOrder = new();
 
         public BotPositionPlanner(
             WalkReachabilityScanner scanner,
@@ -55,15 +56,16 @@ namespace Game.Gameplay.Battle.AI.Movement
         {
             var maxDistance = _profile.MaxWalkBudgetSeconds * _walkSpeed;
             _scanner.ScanReachable(start, maxDistance, SampleSpacing, _positions);
+            BuildBalancedOrder(start);
 
             var best = BotMoveDecision.Stay(start);
             var bestScore = float.NegativeInfinity;
-            var candidateCount = Mathf.Min(_positions.Count, _profile.MaxPositionCandidates);
+            var candidateCount = Mathf.Min(_candidateOrder.Count, _profile.MaxPositionCandidates);
             LastCandidateCount = candidateCount;
 
             for (var i = 0; i < candidateCount; i++)
             {
-                var position = _positions[i];
+                var position = _positions[_candidateOrder[i]];
                 var travelSeconds = Mathf.Abs(position.x - start.x) / _walkSpeed;
                 if (!TryScore(position, start, scatteredTarget, enemyPosition, weapon, aimSettings, bodies, travelSeconds, out var score))
                 {
@@ -121,6 +123,11 @@ namespace Game.Gameplay.Battle.AI.Movement
             float travelSeconds, out float score)
         {
             score = 0f;
+            if (OverlapsUnit(position, bodies))
+            {
+                return false;
+            }
+
             var plan = _shotPlanner.PlanShot(new BotShotContext(position, scatteredTarget, weapon, aimSettings, bodies));
             if (!plan.HasValue)
             {
@@ -130,6 +137,67 @@ namespace Game.Gameplay.Battle.AI.Movement
             var exposure = Mathf.Max(0f, _profile.MinEnemySeparation - Vector2.Distance(position, enemyPosition));
             score = plan.Value.Score - TravelWeight * travelSeconds - ExposureWeight * exposure;
             return true;
+        }
+
+        /// <summary>
+        /// The scanner fills positions as [start, left near-to-far, right
+        /// near-to-far]; taking the first MaxPositionCandidates of that would
+        /// spend the whole budget on the left side. Alternate the sides so both
+        /// directions compete regardless of the cap.
+        /// </summary>
+        private void BuildBalancedOrder(Vector2 start)
+        {
+            _candidateOrder.Clear();
+            if (_positions.Count == 0)
+            {
+                return;
+            }
+
+            _candidateOrder.Add(0);
+            var rightStart = _positions.Count;
+            for (var i = 1; i < _positions.Count; i++)
+            {
+                if (_positions[i].x > start.x)
+                {
+                    rightStart = i;
+                    break;
+                }
+            }
+
+            var left = 1;
+            var right = rightStart;
+            while (left < rightStart || right < _positions.Count)
+            {
+                if (left < rightStart)
+                {
+                    _candidateOrder.Add(left++);
+                }
+
+                if (right < _positions.Count)
+                {
+                    _candidateOrder.Add(right++);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The motor does not collide with units, so occupied spots are walkable —
+        /// but standing inside another unit reads as a glitch, so such candidates
+        /// are skipped rather than scored.
+        /// </summary>
+        private static bool OverlapsUnit(Vector2 position, IReadOnlyList<TrajectoryUnitBody> bodies)
+        {
+            for (var i = 0; i < bodies.Count; i++)
+            {
+                var body = bodies[i];
+                if (Mathf.Abs(position.x - body.Position.x) <= body.HalfWidth * 2f
+                    && Mathf.Abs(position.y - body.Position.y) <= body.HalfHeight * 2f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

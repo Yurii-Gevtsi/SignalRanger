@@ -26,7 +26,6 @@ namespace Game.Gameplay.Battle.AI
         private const float ClearPathWeight = 0.35f;
         private const float AngleWeight = 0.1f;
         private const float SelfRiskWeight = 0.8f;
-        private const float AllyRiskWeight = 0.6f;
 
         private readonly TrajectoryProbe _probe;
         private readonly BotProfile _profile;
@@ -120,7 +119,9 @@ namespace Game.Gameplay.Battle.AI
                 weapon.TimeoutSeconds,
                 new TrajectoryObstacles(context.Bodies, context.AimTarget));
 
-            // Never fire on a friendly.
+            // Never fire on a friendly: a direct ally hit disqualifies the arc
+            // outright. Graded ally-splash risk (distance along the trajectory)
+            // only matters once team battles exist and can be added to Score then.
             if (report.EndedOnAllyUnit)
             {
                 return;
@@ -150,19 +151,17 @@ namespace Game.Gameplay.Battle.AI
             return Vector2.Dot(lowDir, reference) >= Vector2.Dot(highDir, reference) ? lowDir : highDir;
         }
 
-        private float Score(TrajectoryReport report, float anglePenalty, WeaponDefinition weapon, Vector2 origin)
+        private static float Score(TrajectoryReport report, float anglePenalty, WeaponDefinition weapon, Vector2 origin)
         {
             var impactRadius = weapon.ImpactRadius;
             var hit = Mathf.Clamp01(1f - report.DistanceToTarget / (2f * impactRadius));
             var selfDistance = Vector2.Distance(report.EndPoint, origin);
             var selfRisk = Mathf.Clamp01(1f - selfDistance / impactRadius);
-            var allyRisk = report.EndedOnAllyUnit ? 1f : 0f;
 
             return HitWeight * hit
                 + ClearPathWeight * report.ClearPathRatio
                 - AngleWeight * anglePenalty
-                - SelfRiskWeight * selfRisk
-                - AllyRiskWeight * _profile.AllySafetyWeight * allyRisk;
+                - SelfRiskWeight * selfRisk;
         }
     }
 }

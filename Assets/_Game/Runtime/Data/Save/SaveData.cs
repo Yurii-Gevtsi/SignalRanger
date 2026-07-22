@@ -6,7 +6,7 @@ namespace Game.Data.Save
     [Serializable]
     public sealed class SaveData
     {
-        public const int CurrentSchemaVersion = 2;
+        public const int CurrentSchemaVersion = 3;
 
         public int schemaVersion;
         public SaveProfileData profile;
@@ -130,17 +130,55 @@ namespace Game.Data.Save
             unlockedWeaponIds ??= new List<string>();
             selectedLoadoutWeaponIds ??= new List<string>();
 
+            ReplaceLegacyWeaponIds(unlockedWeaponIds);
+            ReplaceLegacyWeaponIds(selectedLoadoutWeaponIds);
+            RemoveDeprecatedWeaponIds(unlockedWeaponIds);
+            RemoveDeprecatedWeaponIds(selectedLoadoutWeaponIds);
+
             if (unlockedWeaponIds.Count == 0)
             {
-                unlockedWeaponIds.Add("weapon.steady-orb");
-                unlockedWeaponIds.Add("weapon.pulse-shell");
+                unlockedWeaponIds.Add("weapon.impulse");
+                unlockedWeaponIds.Add("weapon.mortira");
             }
 
             if (selectedLoadoutWeaponIds.Count == 0)
             {
-                selectedLoadoutWeaponIds.Add("weapon.steady-orb");
-                selectedLoadoutWeaponIds.Add("weapon.pulse-shell");
+                selectedLoadoutWeaponIds.Add("weapon.impulse");
+                selectedLoadoutWeaponIds.Add("weapon.mortira");
             }
+        }
+
+        private static void ReplaceLegacyWeaponIds(List<string> weaponIds)
+        {
+            if (weaponIds == null) return;
+
+            for (var index = weaponIds.Count - 1; index >= 0; index--)
+            {
+                weaponIds[index] = weaponIds[index] switch
+                {
+                    "weapon.steady-orb" => "weapon.impulse",
+                    "weapon.pulse-shell" => "weapon.mortira",
+                    "weapon.close-pop" => "weapon.blaster-caset",
+                    "weapon.long-lance" => "weapon.bur",
+                    "weapon.scatter-arc" => "weapon.granata",
+                    "weapon.rampart-kit" => "weapon.bur",
+                    "weapon.guard-pulse" => "weapon.heal",
+                    "weapon.relay-step" => "weapon.teleport",
+                    "weapon.fpv" => "weapon.fpv-drone",
+                    _ => weaponIds[index]
+                };
+            }
+
+            var unique = new HashSet<string>(weaponIds);
+            weaponIds.Clear();
+            weaponIds.AddRange(unique);
+        }
+
+        private static void RemoveDeprecatedWeaponIds(List<string> weaponIds)
+        {
+            weaponIds?.RemoveAll(id => id == "weapon.launch-platform"
+                || id == "weapon.rocket-launch-platform"
+                || id == "weapon.bonus-box");
         }
     }
 

@@ -20,11 +20,11 @@ namespace Game.Tests.EditMode.Gameplay
         private static BotProfile Profile(float scatterBase = 0f, float perfectChance = 1f, float jitter = 0f)
         {
             return BotProfile.CreateRuntime(
-                powerSteps: 12, angleStepDegrees: 2f, minClearPathRatio: 0.9f,
+                powerSteps: 12, angleStepDegrees: 2f,
                 scatterBase: scatterBase, scatterPerDistance: 0f, perfectShotChance: perfectChance,
-                scoreJitter: jitter, allySafetyWeight: 1f, evaluateAllWeapons: false,
+                scoreJitter: jitter, evaluateAllWeapons: false,
                 movementEnabled: false, jumpEnabled: false, minEnemySeparation: 0f,
-                maxWalkBudgetSeconds: 0f, maxPositionCandidates: 1, retreatAfterShot: false,
+                maxWalkBudgetSeconds: 0f, maxPositionCandidates: 1,
                 thinkPauseSeconds: 0f, aimPauseSeconds: 0f);
         }
 

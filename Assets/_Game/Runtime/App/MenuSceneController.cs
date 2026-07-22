@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Core;
 using Game.Data.Save;
+using Game.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -19,11 +20,13 @@ namespace Game.App
         private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.88f);
         // Layout uses the Canvas reference resolution (1920 x 1080).
         private static readonly Vector2 CharacterSize = new(560f, 560f);
-        private static readonly Vector2 CharacterPosition = new(18f, -42f);
-        private static readonly Vector2 BottomButtonPosition = new(0f, -34f);
+        private static readonly Vector2 CharacterPosition = new(40f, -10f);
+        private static readonly Vector2 PlayButtonPosition = new(0f, -39f);
         private static readonly Vector2 SideButtonSize = new(220f, 220f);
-        private static readonly Vector2 RewardsSize = new(418f, 252f);
-        private static readonly Vector2 RewardsPosition = new(480f, -34f);
+        private static readonly Vector2 InventoryButtonPosition = new(80f, -10f);
+        private static readonly Vector2 ShopButtonPosition = new(-80f, -10f);
+        private static readonly Vector2 RewardsSize = new(220f, 220f);
+        private static readonly Vector2 RewardsPosition = new(480f, -10f);
         private static readonly Vector2 SettingsSize = new(140f, 140f);
         private static readonly Vector2 SettingsPosition = new(-26f, -31f);
 
@@ -129,15 +132,14 @@ namespace Game.App
 
         private void BuildTopBar(Transform root, SaveData saveData)
         {
-            var playerName = string.IsNullOrWhiteSpace(saveData?.profile.playerName)
-                ? "PLAYER NAME"
-                : saveData.profile.playerName.ToUpperInvariant();
             var softCurrency = Mathf.Max(0, saveData?.economy.softCurrency ?? 0);
 
             var profile = CreateImage("Profile Panel", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
-                new Vector2(560f, 170f), new Vector2(34f, -24f), "user_panel", true, null);
-            CreateLabel("Player Name", profile.transform, new Vector2(0.36f, 0.28f), new Vector2(0.98f, 0.90f),
-                35, TextAlignmentOptions.MidlineLeft, playerName);
+                new Vector2(560f, 110f), new Vector2(80f, -40f), "UI/Shop/info_panel", true, null);
+            var playerName = CreateLabel("Player Name", profile.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                46, TextAlignmentOptions.Center, "Гравець", GameTextRole.DisplayTitle);
+            playerName.rectTransform.sizeDelta = new Vector2(360f, 90f);
+            playerName.rectTransform.anchoredPosition = new Vector2(-100f, 0f);
 
             CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 SettingsSize, SettingsPosition, "settings_btn", OpenSettings);
@@ -156,15 +158,15 @@ namespace Game.App
         private void BuildBottomActions(Transform root)
         {
             var play = CreateImageButton("Play Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), new Vector2(620f, 413f), BottomButtonPosition, "play_btn", StartBattle);
-            CreateLabel("Play Label", play.transform, new Vector2(0.20f, 0.17f), new Vector2(0.80f, 0.47f),
+                new Vector2(0.5f, 0f), new Vector2(620f, 413f), PlayButtonPosition, "play_btn", StartBattle);
+            CreateLabel("Play Label", play.transform, new Vector2(0.20f, 0.19f), new Vector2(0.80f, 0.49f),
                 58, TextAlignmentOptions.Center, "Play");
 
             var inventory = CreateImageButton("Inventory Button", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
-                new Vector2(0f, 0f), SideButtonSize, new Vector2(80f, BottomButtonPosition.y), "inventory", OpenLoadout);
+                new Vector2(0f, 0f), SideButtonSize, InventoryButtonPosition, "inventory_btn", OpenLoadout);
 
             var shop = CreateImageButton("Shop Button", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(1f, 0f), SideButtonSize, new Vector2(-80f, BottomButtonPosition.y), "shop_btn_inactive", OpenShop);
+                new Vector2(1f, 0f), SideButtonSize, ShopButtonPosition, "shop_btn", OpenShop);
 
             var rewards = CreateImage("Rewards Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(0.5f, 0f), RewardsSize, RewardsPosition, "rewards_btn", true, Color.white);
@@ -220,21 +222,16 @@ namespace Game.App
         }
 
         private TMP_Text CreateLabel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
-            int fontSize, TextAlignmentOptions alignment, string value)
+            int fontSize, TextAlignmentOptions alignment, string value, GameTextRole? roleOverride = null)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
             var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
-            text.fontSize = fontSize;
-            text.enableAutoSizing = true;
+            var role = roleOverride ?? (fontSize >= 50 ? GameTextRole.DisplayTitle : GameTextRole.Button);
+            SciFiTextStyle.Apply(text, role, fontSize, alignment);
             text.fontSizeMin = Mathf.Max(16, fontSize - 14);
-            text.fontSizeMax = fontSize;
-            text.fontStyle = FontStyles.Bold;
-            text.color = Color.white;
-            text.alignment = alignment;
             text.textWrappingMode = TextWrappingModes.NoWrap;
-            text.overflowMode = TextOverflowModes.Ellipsis;
+            text.overflowMode = TextOverflowModes.Truncate;
             text.text = value;
-            text.raycastTarget = false;
 
             var shadow = rect.gameObject.AddComponent<Shadow>();
             shadow.effectColor = TextShadowColor;

@@ -27,6 +27,24 @@ namespace Game.Tests.EditMode.Gameplay
                 walkSpeed: 1.6f);
         }
 
+        /// <summary>
+        /// Stamps a staircase slope: each column is one cell wide and rises
+        /// <paramref name="riseCellsPerColumn"/> cells above the previous one.
+        /// </summary>
+        private static void StampSlope(TerrainGrid grid, float startX, float baseY, int columns, int riseCellsPerColumn)
+        {
+            var cell = grid.CellSize;
+            for (var i = 0; i < columns; i++)
+            {
+                var height = (i + 1) * riseCellsPerColumn * cell.y;
+                grid.StampRect(
+                    new Vector2(startX + (i + 0.5f) * cell.x, baseY + height * 0.5f),
+                    new Vector2(cell.x, height),
+                    true,
+                    out _);
+            }
+        }
+
         private static MotorStepOutcome Simulate(UnitMotor motor, float maxSeconds, out float elapsed)
         {
             var outcome = MotorStepOutcome.Airborne;
@@ -174,6 +192,134 @@ namespace Game.Tests.EditMode.Gameplay
             var outcome = Simulate(motor, 10f, out _);
             Assert.AreEqual(MotorStepOutcome.Landed, outcome);
             Assert.Less(motor.Position.y, -3f, "unit landed on the lower floor");
+        }
+
+        [Test]
+        public void Walk_OnFlatGround_WithMisalignedStart_NeverStumbles()
+        {
+            var grid = CreateFlatGround();
+            // Feet in the upper half of a cell: the alignment every landing
+            // used to leave behind, which made flat ground read as a ledge.
+            var badAlignment = grid.CellSize.y * 0.75f;
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0f, 0.5f + badAlignment), KillY);
+
+            var stumbles = 0;
+            for (var i = 0; i < 240; i++)
+            {
+                if (motor.Walk(1, Step) == WalkOutcome.StartedFalling)
+                {
+                    stumbles++;
+                }
+            }
+
+            Assert.AreEqual(0, stumbles, "flat ground must never read as a ledge");
+            Assert.IsTrue(motor.IsStable);
+            Assert.Greater(motor.Position.x, 2.5f, "walked at full speed without stutter");
+            Assert.AreEqual(0.5f, motor.Position.y, 0.05f, "feet snapped onto the surface");
+        }
+
+        [Test]
+        public void Walk_AfterLanding_RunsSmoothlyAtFullSpeed()
+        {
+            var grid = CreateFlatGround();
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0f, 0.5f), KillY);
+            motor.AddImpulse(new Vector2(1.4f, 2.1f));
+            Assert.AreEqual(MotorStepOutcome.Landed, Simulate(motor, 10f, out _));
+
+            var startX = motor.Position.x;
+            var stumbles = 0;
+            for (var i = 0; i < 240; i++)
+            {
+                if (motor.Walk(1, Step) == WalkOutcome.StartedFalling)
+                {
+                    stumbles++;
+                }
+            }
+
+            Assert.AreEqual(0, stumbles, "landing alignment must not cause walk stutter");
+            Assert.Greater(motor.Position.x - startX, 2.5f, "walked at full speed after landing");
+        }
+
+        [Test]
+        public void Walk_ClimbsWalkableSlope()
+        {
+            var grid = CreateFlatGround();
+            // One cell of rise per column: a 45-degree hill, within the 60-degree limit.
+            StampSlope(grid, 1f, 0f, 64, 1);
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0.3f, 0.5f), KillY);
+
+            var blocked = false;
+            for (var i = 0; i < 1200 && motor.Position.x < 2.6f; i++)
+            {
+                if (motor.Walk(1, Step) == WalkOutcome.Blocked)
+                {
+                    blocked = true;
+                    break;
+                }
+            }
+
+            Assert.IsFalse(blocked, "a 45-degree hill is walkable");
+            Assert.Greater(motor.Position.y, 1.8f, "unit climbed the hill");
+        }
+
+        [Test]
+        public void Walk_IsBlockedOnNearVerticalSlope()
+        {
+            var grid = CreateFlatGround();
+            // Four cells of rise per column (~76 degrees): a ship-hull incline
+            // where every single column stays under the step height, so only
+            // the slope rule can stop it.
+            StampSlope(grid, 1f, 0f, 40, 4);
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0.3f, 0.5f), KillY);
+
+            var blocked = false;
+            var highestY = motor.Position.y;
+            for (var i = 0; i < 2000 && !blocked; i++)
+            {
+                blocked = motor.Walk(1, Step) == WalkOutcome.Blocked;
+                highestY = Mathf.Max(highestY, motor.Position.y);
+            }
+
+            Assert.IsTrue(blocked, "a near-vertical incline is not walkable");
+            Assert.Less(highestY - 0.5f, 1.2f, "unit gained at most a step-ish of height before stopping");
+        }
+
+        [Test]
+        public void Walk_IsBlockedOnSustainedSlopeAboveLimit()
+        {
+            var grid = CreateFlatGround();
+            // Two cells of rise per column (~63 degrees): headroom always
+            // exists, so the leaky-bucket slope debt is the only gate.
+            StampSlope(grid, 1f, 0f, 90, 2);
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0.3f, 0.5f), KillY);
+
+            var blocked = false;
+            for (var i = 0; i < 4000 && !blocked; i++)
+            {
+                blocked = motor.Walk(1, Step) == WalkOutcome.Blocked;
+            }
+
+            Assert.IsTrue(blocked, "a sustained slope above the limit eventually blocks");
+            Assert.Less(motor.Position.x, 3.5f, "unit never crested the slope");
+        }
+
+        [Test]
+        public void Walk_CannotEnterGapLowerThanBody()
+        {
+            var grid = CreateFlatGround();
+            // Shelf leaving a 0.6-unit gap above the floor: shorter than the
+            // one-unit body, so the unit must not squeeze in.
+            grid.StampRect(new Vector2(2.5f, 0.75f), new Vector2(1f, 0.3f), true, out _);
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(1f, 0.5f), KillY);
+
+            var blocked = false;
+            for (var i = 0; i < 600 && !blocked; i++)
+            {
+                blocked = motor.Walk(1, Step) == WalkOutcome.Blocked;
+            }
+
+            Assert.IsTrue(blocked, "gap lower than the body is impassable");
+            Assert.Less(motor.Position.x, 2f, "unit stopped at the shelf edge");
         }
 
         [Test]

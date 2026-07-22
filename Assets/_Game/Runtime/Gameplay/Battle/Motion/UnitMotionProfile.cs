@@ -18,7 +18,8 @@ namespace Game.Gameplay.Battle.Motion
             float bounceDampingX = 0.3f,
             float bounceDampingY = 0.5f,
             float restSpeed = 0.55f,
-            float maxSpeed = 26f)
+            float maxSpeed = 26f,
+            float maxWalkSlopeDegrees = 60f)
         {
             HalfWidth = Mathf.Max(0.05f, halfWidth);
             HalfHeight = Mathf.Max(0.1f, halfHeight);
@@ -30,6 +31,8 @@ namespace Game.Gameplay.Battle.Motion
             BounceDampingY = Mathf.Clamp01(bounceDampingY);
             RestSpeed = Mathf.Max(0.01f, restSpeed);
             MaxSpeed = Mathf.Max(1f, maxSpeed);
+            MaxWalkSlopeDegrees = Mathf.Clamp(maxWalkSlopeDegrees, 20f, 80f);
+            MaxWalkSlopeTangent = Mathf.Tan(MaxWalkSlopeDegrees * Mathf.Deg2Rad);
         }
 
         public float HalfWidth { get; }
@@ -50,5 +53,11 @@ namespace Game.Gameplay.Battle.Motion
         public float RestSpeed { get; }
 
         public float MaxSpeed { get; }
+
+        /// <summary>Steepest sustained incline the unit can walk up.</summary>
+        public float MaxWalkSlopeDegrees { get; }
+
+        /// <summary>Precomputed tangent of <see cref="MaxWalkSlopeDegrees"/>.</summary>
+        public float MaxWalkSlopeTangent { get; }
     }
 }

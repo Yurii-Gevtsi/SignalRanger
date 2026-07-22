@@ -57,7 +57,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void Scanner_DoesNotWalkIntoTheKillZone()
+        public void Scanner_DoesNotWalkPastTheOutOfBoundsLimit()
         {
             // Ground only over x in [-10, 2]; a void (kill zone) lies to the right.
             var terrain = BattleTerrain.CreateProcedural(new Rect(-10f, -8f, 20f, 16f));
@@ -137,11 +137,11 @@ namespace Game.Tests.EditMode.Gameplay
         private static BotProfile RetreatProfile()
         {
             return BotProfile.CreateRuntime(
-                powerSteps: 10, angleStepDegrees: 2f, minClearPathRatio: 0.9f,
+                powerSteps: 10, angleStepDegrees: 2f,
                 scatterBase: 0f, scatterPerDistance: 0f, perfectShotChance: 1f,
-                scoreJitter: 0f, allySafetyWeight: 1f, evaluateAllWeapons: false,
+                scoreJitter: 0f, evaluateAllWeapons: false,
                 movementEnabled: true, jumpEnabled: false, minEnemySeparation: 5f,
-                maxWalkBudgetSeconds: 3f, maxPositionCandidates: 12, retreatAfterShot: false,
+                maxWalkBudgetSeconds: 3f, maxPositionCandidates: 12,
                 thinkPauseSeconds: 0f, aimPauseSeconds: 0f);
         }
     }

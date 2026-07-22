@@ -32,10 +32,19 @@ namespace Game.Gameplay.Battle.Motion
     /// </summary>
     public sealed class UnitMotor
     {
+        // Feet rest this fraction of a cell above the surface top, keeping the
+        // body clear of the ground while staying inside the grounded window.
+        private const float SkinCellFraction = 0.25f;
+        // Lateral offset of the outer foot/edge samples, as a fraction of half width.
+        private const float BodySampleSpread = 0.7f;
+        // Ground-support columns across the body, as fractions of half width.
+        private static readonly float[] FootColumnOffsets = { -1f, -BodySampleSpread, 0f, BodySampleSpread, 1f };
+
         private readonly TerrainGrid _terrain;
         private readonly UnitMotionProfile _profile;
         private readonly float _killY;
         private float _walkEnergy;
+        private float _climbDebt;
 
         public UnitMotor(TerrainGrid terrain, UnitMotionProfile profile, Vector2 position, float killY)
         {
@@ -54,11 +63,14 @@ namespace Game.Gameplay.Battle.Motion
 
         public UnitMotionProfile Profile => _profile;
 
+        private float Skin => _terrain.CellSize.y * SkinCellFraction;
+
         public void Teleport(Vector2 position)
         {
             Position = position;
             Velocity = Vector2.zero;
             IsStable = true;
+            _climbDebt = 0f;
         }
 
         /// <summary>Knockback entry point: push the unit and let physics resolve the rest.</summary>
@@ -152,8 +164,9 @@ namespace Game.Gameplay.Battle.Motion
 
         /// <summary>
         /// Walks one tick worth of distance. The unit hugs the terrain: climbs
-        /// ledges up to the step height, descends slopes, and starts falling
-        /// (through regular physics) when it walks off an edge.
+        /// ledges up to the step height (as long as the sustained incline stays
+        /// under the profile's walkable slope), descends slopes, and starts
+        /// falling (through regular physics) when it walks off an edge.
         /// </summary>
         public WalkOutcome Walk(int direction, float deltaTime)
         {
@@ -189,52 +202,90 @@ namespace Game.Gameplay.Battle.Motion
         public bool IsGrounded(Vector2 position)
         {
             var footY = position.y - _profile.HalfHeight - _terrain.CellSize.y * 0.5f;
-            return _terrain.IsSolidWorld(new Vector2(position.x, footY))
-                || _terrain.IsSolidWorld(new Vector2(position.x - _profile.HalfWidth * 0.7f, footY))
-                || _terrain.IsSolidWorld(new Vector2(position.x + _profile.HalfWidth * 0.7f, footY));
+            for (var i = 0; i < FootColumnOffsets.Length; i++)
+            {
+                if (_terrain.IsSolidWorld(new Vector2(position.x + FootColumnOffsets[i] * _profile.HalfWidth, footY)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private WalkOutcome TryWalkOneCell(int direction)
         {
-            var candidate = new Vector2(Position.x + direction * _terrain.CellSize.x, Position.y);
-            if (IsBodyBlocked(candidate))
+            var candidateX = Position.x + direction * _terrain.CellSize.x;
+            var feetY = Position.y - _profile.HalfHeight;
+            var stepHeight = _profile.WalkStepHeight;
+
+            // Where would the feet stand at the next column? The highest
+            // footing within one step up or down, under any body column: the
+            // leading edge counts, so a stair lip catches the front foot the
+            // same way it would block the body. Feet then snap exactly onto
+            // the surface top, which keeps the body aligned to the grid no
+            // matter how the last landing ended — flat ground can never read
+            // as a ledge mid-walk.
+            if (!TryFindFooting(candidateX, feetY + stepHeight + Skin, 2f * (stepHeight + Skin), out var surfaceY))
             {
-                // Wall ahead: try to climb it within the step height.
-                var lift = _terrain.CellSize.y;
-                while (lift <= _profile.WalkStepHeight)
-                {
-                    var raised = new Vector2(candidate.x, Position.y + lift);
-                    if (!IsBodyBlocked(raised))
-                    {
-                        Position = raised;
-                        return WalkOutcome.Moved;
-                    }
+                // Nothing to stand on within a step below: walked off a
+                // ledge. Keep a little forward drift and fall.
+                Position = new Vector2(candidateX, Position.y);
+                Velocity = new Vector2(direction * 0.6f, 0f);
+                IsStable = false;
+                return WalkOutcome.StartedFalling;
+            }
 
-                    lift += _terrain.CellSize.y;
-                }
+            var newFeetY = surfaceY + Skin;
 
+            // Leaky-bucket slope rule: rising steeper than the walkable slope
+            // accumulates debt, walking flat or downhill pays it back. A single
+            // ledge within the step height passes instantly; a sustained
+            // steeper climb (a hull, a near-vertical hillside) blocks within a
+            // few cells no matter how gently each cell slices it.
+            var drain = _terrain.CellSize.x * _profile.MaxWalkSlopeTangent;
+            var debt = Mathf.Max(0f, _climbDebt + (newFeetY - feetY) - drain);
+            if (debt > stepHeight)
+            {
                 return WalkOutcome.Blocked;
             }
 
-            // Free ahead: follow the ground down within the step height.
-            var drop = 0f;
-            while (drop <= _profile.WalkStepHeight)
+            var target = new Vector2(candidateX, newFeetY + _profile.HalfHeight);
+            if (IsBodyBlocked(target))
             {
-                var lowered = new Vector2(candidate.x, Position.y - drop);
-                if (!IsBodyBlocked(lowered) && IsGrounded(lowered))
-                {
-                    Position = lowered;
-                    return WalkOutcome.Moved;
-                }
-
-                drop += _terrain.CellSize.y;
+                // Standing on that footing leaves the body inside terrain: a
+                // wall taller than the step, or a gap shorter than the unit.
+                return WalkOutcome.Blocked;
             }
 
-            // Walked off a ledge: keep a little forward drift and fall.
-            Position = candidate;
-            Velocity = new Vector2(direction * 0.6f, 0f);
-            IsStable = false;
-            return WalkOutcome.StartedFalling;
+            Position = target;
+            _climbDebt = debt;
+            return WalkOutcome.Moved;
+        }
+
+        /// <summary>
+        /// Finds the highest surface top below <paramref name="scanStartY"/>
+        /// under any of the five body columns (center, hips, edges) within
+        /// <paramref name="maxDrop"/>, mirroring <see cref="IsGrounded"/>.
+        /// </summary>
+        private bool TryFindFooting(float centerX, float scanStartY, float maxDrop, out float surfaceY)
+        {
+            surfaceY = float.MinValue;
+            var found = false;
+            for (var i = 0; i < FootColumnOffsets.Length; i++)
+            {
+                var columnX = centerX + FootColumnOffsets[i] * _profile.HalfWidth;
+                // One extra cell of drop so a surface sitting exactly on the
+                // range boundary is still entered and reported.
+                if (_terrain.TryFindSurfaceBelow(columnX, scanStartY, maxDrop + _terrain.CellSize.y, out var columnSurfaceY)
+                    && columnSurfaceY > surfaceY)
+                {
+                    surfaceY = columnSurfaceY;
+                    found = true;
+                }
+            }
+
+            return found;
         }
 
         private MotorStepOutcome ResolveCollision(Vector2 previous)
@@ -350,10 +401,28 @@ namespace Game.Gameplay.Battle.Motion
 
         private MotorStepOutcome Settle(Vector2 position)
         {
-            Position = position;
+            Position = SnapFeetToSurface(position);
             Velocity = Vector2.zero;
             IsStable = true;
+            _climbDebt = 0f;
             return MotorStepOutcome.Landed;
+        }
+
+        /// <summary>
+        /// Rests the feet exactly on the surface top (plus the skin) so a
+        /// landing never leaves the body misaligned against the cell grid.
+        /// </summary>
+        private Vector2 SnapFeetToSurface(Vector2 position)
+        {
+            var cellY = _terrain.CellSize.y;
+            var feetY = position.y - _profile.HalfHeight;
+            if (!TryFindFooting(position.x, feetY + cellY, 2f * cellY, out var surfaceY))
+            {
+                return position;
+            }
+
+            var snapped = new Vector2(position.x, surfaceY + Skin + _profile.HalfHeight);
+            return IsBodyBlocked(snapped) ? position : snapped;
         }
 
         private bool IsBodyBlocked(Vector2 center)
@@ -367,26 +436,26 @@ namespace Game.Gameplay.Battle.Motion
                 || _terrain.IsSolidWorld(new Vector2(center.x, center.y + halfHeight))
                 || _terrain.IsSolidWorld(new Vector2(center.x - halfWidth, center.y))
                 || _terrain.IsSolidWorld(new Vector2(center.x + halfWidth, center.y))
-                || _terrain.IsSolidWorld(new Vector2(center.x - halfWidth * 0.7f, center.y - halfHeight * 0.6f))
-                || _terrain.IsSolidWorld(new Vector2(center.x + halfWidth * 0.7f, center.y - halfHeight * 0.6f))
-                || _terrain.IsSolidWorld(new Vector2(center.x - halfWidth * 0.7f, center.y + halfHeight * 0.6f))
-                || _terrain.IsSolidWorld(new Vector2(center.x + halfWidth * 0.7f, center.y + halfHeight * 0.6f));
+                || _terrain.IsSolidWorld(new Vector2(center.x - halfWidth * BodySampleSpread, center.y - halfHeight * 0.6f))
+                || _terrain.IsSolidWorld(new Vector2(center.x + halfWidth * BodySampleSpread, center.y - halfHeight * 0.6f))
+                || _terrain.IsSolidWorld(new Vector2(center.x - halfWidth * BodySampleSpread, center.y + halfHeight * 0.6f))
+                || _terrain.IsSolidWorld(new Vector2(center.x + halfWidth * BodySampleSpread, center.y + halfHeight * 0.6f));
         }
 
         private bool IsBottomBlocked(Vector2 center)
         {
             var footY = center.y - _profile.HalfHeight;
             return _terrain.IsSolidWorld(new Vector2(center.x, footY))
-                || _terrain.IsSolidWorld(new Vector2(center.x - _profile.HalfWidth * 0.7f, footY))
-                || _terrain.IsSolidWorld(new Vector2(center.x + _profile.HalfWidth * 0.7f, footY));
+                || _terrain.IsSolidWorld(new Vector2(center.x - _profile.HalfWidth * BodySampleSpread, footY))
+                || _terrain.IsSolidWorld(new Vector2(center.x + _profile.HalfWidth * BodySampleSpread, footY));
         }
 
         private bool IsTopBlocked(Vector2 center)
         {
             var headY = center.y + _profile.HalfHeight;
             return _terrain.IsSolidWorld(new Vector2(center.x, headY))
-                || _terrain.IsSolidWorld(new Vector2(center.x - _profile.HalfWidth * 0.7f, headY))
-                || _terrain.IsSolidWorld(new Vector2(center.x + _profile.HalfWidth * 0.7f, headY));
+                || _terrain.IsSolidWorld(new Vector2(center.x - _profile.HalfWidth * BodySampleSpread, headY))
+                || _terrain.IsSolidWorld(new Vector2(center.x + _profile.HalfWidth * BodySampleSpread, headY));
         }
     }
 }

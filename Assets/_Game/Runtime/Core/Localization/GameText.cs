@@ -35,6 +35,7 @@ namespace Game.Core.Localization
         public static string WeaponSelected(string weaponName) => $"Обрано зброю: {weaponName}.";
         public static string WeaponSelectedGeneric() => "Зброю обрано.";
         public static string AimRequired() => "Спочатку наведи постріл перетягуванням у зоні бою.";
+        public static string GuideChooseFirstWeapon() => "Відкрий арсенал і обери зброю для пострілу.";
         public static string GuideAimFirstShot() => "Перший крок: затисни й потягни в зоні бою, щоб з'явилась траєкторія.";
         public static string GuideConfirmFirstShot() => "Тепер підтвердь підготовлений постріл кнопкою «Вогонь».";
         public static string GuideWatchImpact() => "Подивись, куди впаде снаряд і скільки шкоди дасть удар.";
@@ -47,6 +48,7 @@ namespace Game.Core.Localization
         public static string UnlockAfterBattle() => "Нове спорядження відкрито після бою";
         public static string UnlockAfterBattle(string weaponName) => $"Нове спорядження відкрито: {weaponName}.";
         public static string AimReset() => "Приціл скинуто.";
+        public static string WeaponReset() => "Вибір зброї скинуто.";
         public static string OpponentAiming() => "Суперник прицілюється.";
         public static string OpponentFiring() => "Суперник стріляє.";
         public static string CoverDeployed(string weaponName) => $"{weaponName} розгортає укриття.";

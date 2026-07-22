@@ -28,6 +28,7 @@ namespace Game.Gameplay.Battle.Simulation
         public Vector2 Position { get; private set; }
         public Vector2 Velocity { get; private set; }
         public float RemainingLifetime { get; private set; }
+        public int BounceCount { get; private set; }
 
         internal void MoveTo(Vector2 position)
         {
@@ -42,6 +43,11 @@ namespace Game.Gameplay.Battle.Simulation
         internal void ReduceLifetime(float deltaTime)
         {
             RemainingLifetime = Mathf.Max(0f, RemainingLifetime - deltaTime);
+        }
+
+        internal void RegisterBounce()
+        {
+            BounceCount++;
         }
     }
 }

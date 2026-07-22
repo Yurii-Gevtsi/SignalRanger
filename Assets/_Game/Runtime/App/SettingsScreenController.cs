@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using Game.Core;
 using Game.Core.Localization;
+using Game.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,31 +15,33 @@ namespace Game.App
     /// </summary>
     public sealed class SettingsScreenController : MonoBehaviour
     {
-        private const float Step = 0.1f;
+        private const string BattleResourceRoot = "UI/Battle/";
+        private const string ButtonBlueResource = "UI/Shop/btn_blue";
+        private const string ButtonGreenResource = "UI/Shop/btn_green";
+        private const string ButtonRedResource = "UI/Shop/btn_red";
+        private const string ButtonYellowResource = "UI/Shop/btn_yellow";
 
         private static readonly Color OverlayColor = new(0.04f, 0.06f, 0.08f, 0.92f);
         private static readonly Color PanelColor = new(0.10f, 0.13f, 0.16f, 1f);
-        private static readonly Color BarBackColor = new(0f, 0f, 0f, 0.45f);
-        private static readonly Color MusicColor = new(0.36f, 0.56f, 0.92f);
-        private static readonly Color SfxColor = new(0.30f, 0.72f, 0.48f);
         private static readonly Color StepColor = new(0.20f, 0.26f, 0.32f);
-        private static readonly Color SaveColor = new(0.22f, 0.60f, 0.86f);
         private static readonly Color BackColor = new(0.30f, 0.20f, 0.22f);
         private static readonly Color ResetColor = new(0.58f, 0.20f, 0.18f);
         private static readonly Color ConfirmationOverlayColor = new(0.02f, 0.03f, 0.04f, 0.88f);
 
         private Sprite _whiteSprite;
         private Action _onClosed;
+        private Action _onRestart;
+        private Action _onMenu;
         private GameObject _resetConfirmationRoot;
 
         private float _music;
         private float _sfx;
-        private Image _musicFill;
         private TMP_Text _musicValue;
-        private Image _sfxFill;
         private TMP_Text _sfxValue;
+        private Image _musicToggleImage;
+        private Image _sfxToggleImage;
 
-        public static void Open(Action onClosed)
+        public static void Open(Action onClosed, Action onRestart = null, Action onMenu = null)
         {
             if (FindAnyObjectByType<SettingsScreenController>() != null)
             {
@@ -46,7 +49,12 @@ namespace Game.App
             }
 
             var root = new GameObject("Settings Screen");
-            root.AddComponent<SettingsScreenController>()._onClosed = onClosed;
+            root.SetActive(false);
+            var controller = root.AddComponent<SettingsScreenController>();
+            controller._onClosed = onClosed;
+            controller._onRestart = onRestart;
+            controller._onMenu = onMenu;
+            root.SetActive(true);
         }
 
         private void Awake()
@@ -67,78 +75,107 @@ namespace Game.App
 
             var scaler = canvasObject.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1080f, 1920f);
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
-            CreatePanel("Overlay", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, OverlayColor);
+            var overlay = CreatePanel("Overlay", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, OverlayColor);
+            var overlayButton = overlay.gameObject.AddComponent<Button>();
+            overlayButton.targetGraphic = overlay;
+            overlayButton.transition = Selectable.Transition.None;
+            overlayButton.onClick.AddListener(Close);
 
-            var panel = CreatePanel("Settings Panel", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(840f, 900f), Vector2.zero, PanelColor);
+            var panel = CreatePanel("Settings Panel", overlay.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(980f, 1080f), new Vector2(0f, -20f), Color.white,
+                LoadResourceSprite(BattleResourceRoot + "card", new Vector4(250f, 250f, 250f, 250f)));
+            panel.type = Image.Type.Sliced;
+            panel.preserveAspect = false;
+            var panelBlocker = panel.gameObject.AddComponent<Button>();
+            panelBlocker.targetGraphic = panel;
+            panelBlocker.transition = Selectable.Transition.None;
 
-            CreateText("Title", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-80f, 80f), new Vector2(0f, -64f), 44, TextAlignmentOptions.MidlineLeft, GameText.SettingsTitle());
+            CreateText("Title", panel.transform, new Vector2(0.18f, 0.70f), new Vector2(0.82f, 0.78f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, 48, TextAlignmentOptions.Center, GameText.SettingsTitle(), GameTextRole.DisplayTitle);
+            CreateCloseButton(panel.transform);
 
-            _musicFill = CreateVolumeRow(panel.transform, -220f, GameText.Music(), MusicColor, out _musicValue,
-                () => Adjust(ref _music, -Step), () => Adjust(ref _music, Step));
-            _sfxFill = CreateVolumeRow(panel.transform, -400f, GameText.Sounds(), SfxColor, out _sfxValue,
-                () => Adjust(ref _sfx, -Step), () => Adjust(ref _sfx, Step));
+            CreateToggleRow(panel.transform, 0.58f, GameText.Music(), out _musicValue, out _musicToggleImage, ToggleMusic);
+            CreateToggleRow(panel.transform, 0.48f, GameText.Sounds(), out _sfxValue, out _sfxToggleImage, ToggleSfx);
 
-            CreateText("Language", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-80f, 48f), new Vector2(0f, -600f), 26, TextAlignmentOptions.MidlineLeft, GameText.LanguageLabel());
+            CreateText("Language", panel.transform, new Vector2(0.18f, 0.39f), new Vector2(0.82f, 0.45f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, 26, TextAlignmentOptions.Center, GameText.LanguageLabel());
 
-            CreateButton("Reset Progression", panel.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(752f, 84f), new Vector2(0f, -700f), ResetColor, GameText.ResetProgressionLabel(), 28,
-                () => ShowResetConfirmation(panel.transform));
-
-            CreateButton("Save", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(360f, 104f), new Vector2(-196f, 96f), SaveColor, GameText.Save, 34, Save);
-            CreateButton("Back", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(360f, 104f), new Vector2(196f, 96f), BackColor, GameText.Back, 34, Close);
+            if (_onRestart != null || _onMenu != null)
+            {
+                CreateButton("Restart Battle", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                    new Vector2(210f, 104f), new Vector2(-120f, 275f), ResetColor, GameText.Restart, 30,
+                    RestartBattle, ButtonYellowResource);
+                CreateButton("Exit To Menu", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                    new Vector2(210f, 104f), new Vector2(120f, 275f), BackColor, GameText.Menu, 30,
+                    ExitBattleToMenu, ButtonBlueResource);
+            }
+            else
+            {
+                CreateButton("Reset Progression", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                    new Vector2(400f, 104f), new Vector2(0f, 260f), ResetColor, GameText.ResetProgressionLabel(), 28,
+                    () => ShowResetConfirmation(panel.transform), ButtonRedResource);
+            }
 
             RefreshValues();
         }
 
-        private Image CreateVolumeRow(Transform parent, float y, string label, Color fillColor, out TMP_Text valueText,
-            Action onMinus, Action onPlus)
+        private void CreateToggleRow(Transform parent, float centerY, string label, out TMP_Text valueText, out Image buttonImage, Action onToggle)
         {
-            CreateText($"{label} Label", parent, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-80f, 44f), new Vector2(0f, y), 30, TextAlignmentOptions.MidlineLeft, label);
+            CreateText($"{label} Label", parent, new Vector2(0.24f, centerY - 0.045f), new Vector2(0.49f, centerY + 0.045f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 34, TextAlignmentOptions.MidlineLeft, label);
 
-            var back = CreatePanel($"{label} Bar", parent, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(520f, 44f), new Vector2(-40f, y - 64f), BarBackColor);
-            var fill = CreateFill($"{label} Fill", back.transform, fillColor);
-
-            valueText = CreateText($"{label} Value", parent, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(120f, 44f), new Vector2(300f, y - 64f), 28, TextAlignmentOptions.MidlineRight, "0%");
-
-            CreateButton($"{label} Minus", parent, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(64f, 64f), new Vector2(-330f, y - 60f), StepColor, "-", 28, () => onMinus());
-            CreateButton($"{label} Plus", parent, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(64f, 64f), new Vector2(360f, y - 60f), StepColor, "+", 28, () => onPlus());
-            return fill;
+            var buttonPanel = CreatePanel($"{label} Toggle", parent, new Vector2(0.50f, centerY - 0.065f), new Vector2(0.74f, centerY + 0.065f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, Color.white, LoadResourceSprite(ButtonGreenResource, Vector4.zero));
+            buttonPanel.preserveAspect = false;
+            buttonImage = buttonPanel;
+            var button = buttonPanel.gameObject.AddComponent<Button>();
+            button.targetGraphic = buttonPanel;
+            button.onClick.AddListener(() => onToggle?.Invoke());
+            valueText = CreateText($"{label} Value", buttonPanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, 30, TextAlignmentOptions.Center, string.Empty);
         }
 
-        private void Adjust(ref float value, float delta)
+        private void ToggleMusic()
         {
-            value = Mathf.Clamp01(Mathf.Round((value + delta) * 10f) / 10f);
+            _music = _music > 0f ? 0f : 1f;
             RefreshValues();
+            SaveSettings();
+        }
+
+        private void ToggleSfx()
+        {
+            _sfx = _sfx > 0f ? 0f : 1f;
+            RefreshValues();
+            SaveSettings();
         }
 
         private void RefreshValues()
         {
-            if (_musicFill != null)
+            if (_musicValue != null)
             {
-                _musicFill.fillAmount = _music;
-                _musicValue.text = $"{Mathf.RoundToInt(_music * 100f)}%";
+                var enabled = _music > 0f;
+                _musicValue.text = enabled ? "Вкл" : "Викл";
+                if (_musicToggleImage != null)
+                {
+                    _musicToggleImage.sprite = LoadResourceSprite(enabled ? ButtonGreenResource : ButtonRedResource, Vector4.zero);
+                }
             }
 
-            if (_sfxFill != null)
+            if (_sfxValue != null)
             {
-                _sfxFill.fillAmount = _sfx;
-                _sfxValue.text = $"{Mathf.RoundToInt(_sfx * 100f)}%";
+                var enabled = _sfx > 0f;
+                _sfxValue.text = enabled ? "Вкл" : "Викл";
+                if (_sfxToggleImage != null)
+                {
+                    _sfxToggleImage.sprite = LoadResourceSprite(enabled ? ButtonGreenResource : ButtonRedResource, Vector4.zero);
+                }
             }
         }
 
@@ -156,16 +193,16 @@ namespace Game.App
             var dialog = CreatePanel("Confirmation Dialog", overlay.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), new Vector2(700f, 430f), Vector2.zero, PanelColor);
             CreateText("Confirmation Title", dialog.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-80f, 64f), new Vector2(0f, -52f), 34, TextAlignmentOptions.Center, GameText.ResetProgressionTitle());
+                new Vector2(-80f, 64f), new Vector2(0f, -52f), 34, TextAlignmentOptions.Center, GameText.ResetProgressionTitle(), GameTextRole.DisplayTitle);
             CreateText("Confirmation Warning", dialog.transform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(-100f, 150f), new Vector2(0f, 16f), 24, TextAlignmentOptions.Center, GameText.ResetProgressionWarning());
 
             CreateButton("Confirm Reset", dialog.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(280f, 84f), new Vector2(-154f, 62f), ResetColor, GameText.ConfirmResetProgression(), 26,
-                ConfirmResetProgression);
+                ConfirmResetProgression, ButtonRedResource);
             CreateButton("Cancel Reset", dialog.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(280f, 84f), new Vector2(154f, 62f), StepColor, GameText.Cancel(), 26,
-                HideResetConfirmation);
+                HideResetConfirmation, ButtonBlueResource);
         }
 
         private void HideResetConfirmation()
@@ -188,70 +225,112 @@ namespace Game.App
             AppServices.SceneLoader.Load(GameSceneNames.Menu);
         }
 
-        private void Save()
+        private void RestartBattle()
+        {
+            CloseForBattleAction(_onRestart);
+        }
+
+        private void ExitBattleToMenu()
+        {
+            CloseForBattleAction(_onMenu);
+        }
+
+        private void CloseForBattleAction(Action action)
+        {
+            SaveSettings();
+            _onClosed = null;
+            _onRestart = null;
+            _onMenu = null;
+            Destroy(gameObject);
+            action?.Invoke();
+        }
+
+        private void SaveSettings()
         {
             AppServices.Audio.SetVolumes(_music, _sfx);
             AppServices.SaveService.Save(AppServices.SaveService.Current);
-            Close();
         }
 
         private void Close()
         {
+            SaveSettings();
             var callback = _onClosed;
             _onClosed = null;
+            _onRestart = null;
+            _onMenu = null;
             Destroy(gameObject);
             callback?.Invoke();
         }
 
         private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 sizeDelta, Vector2 anchoredPosition, Color color)
+            Vector2 sizeDelta, Vector2 anchoredPosition, Color color, Sprite sprite = null)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
             var image = rect.gameObject.AddComponent<Image>();
-            image.sprite = _whiteSprite;
+            image.sprite = sprite ?? _whiteSprite;
             image.color = color;
-            return image;
-        }
-
-        private Image CreateFill(string name, Component parent, Color color)
-        {
-            var rect = CreateRect(name, parent, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
-            var image = rect.gameObject.AddComponent<Image>();
-            image.sprite = _whiteSprite;
-            image.color = color;
-            image.type = Image.Type.Filled;
-            image.fillMethod = Image.FillMethod.Horizontal;
-            image.fillOrigin = (int)Image.OriginHorizontal.Left;
-            image.fillAmount = 1f;
-            image.raycastTarget = false;
             return image;
         }
 
         private TMP_Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value)
+            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value,
+            GameTextRole? roleOverride = null)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
             var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
-            text.fontSize = fontSize;
-            text.color = Color.white;
-            text.alignment = alignment;
+            var role = roleOverride ?? (fontSize >= 40 ? GameTextRole.ScreenTitle : GameTextRole.Body);
+            SciFiTextStyle.Apply(text, role, fontSize, alignment);
             text.textWrappingMode = TextWrappingModes.Normal;
             text.overflowMode = TextOverflowModes.Overflow;
             text.text = value;
-            text.raycastTarget = false;
             return text;
         }
 
         private Button CreateButton(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
-            Vector2 size, Vector2 anchoredPosition, Color color, string label, int fontSize, Action onClick)
+            Vector2 size, Vector2 anchoredPosition, Color color, string label, int fontSize, Action onClick,
+            string resourcePath = ButtonBlueResource)
         {
-            var image = CreatePanel(name, parent, anchorMin, anchorMax, new Vector2(0.5f, 0.5f), size, anchoredPosition, color);
+            var useStandardButton = name != "Close Settings";
+            var image = CreatePanel(name, parent, anchorMin, anchorMax, new Vector2(0.5f, 0.5f), size, anchoredPosition,
+                useStandardButton ? Color.white : color,
+                useStandardButton ? LoadResourceSprite(resourcePath, Vector4.zero) : null);
+            image.preserveAspect = false;
             var button = image.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
             button.onClick.AddListener(() => onClick?.Invoke());
             CreateText($"{name} Label", image.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, fontSize, TextAlignmentOptions.Center, label);
             return button;
+        }
+
+        private void CreateCloseButton(Transform parent)
+        {
+            var rect = CreateRect("Close Settings", parent, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            rect.offsetMin = new Vector2(450f, 620f);
+            rect.offsetMax = new Vector2(0f, 0f);
+            var hitArea = rect.gameObject.AddComponent<Image>();
+            hitArea.sprite = _whiteSprite;
+            hitArea.color = new Color(1f, 1f, 1f, 0f);
+            hitArea.raycastTarget = true;
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = hitArea;
+            button.transition = Selectable.Transition.None;
+            button.onClick.AddListener(Close);
+
+            var label = CreateText("Close Settings Label", rect, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, 72, TextAlignmentOptions.Center, "×");
+            label.rectTransform.localScale = new Vector3(1.5f, 1.5f, 1f);
+            label.color = new Color(1f, 0.18f, 0.16f, 1f);
+            label.raycastTarget = false;
+        }
+
+        private static Sprite LoadResourceSprite(string path, Vector4 border)
+        {
+            var texture = Resources.Load<Texture2D>(path);
+            return texture == null
+                ? null
+                : Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
         }
 
         private static RectTransform CreateRect(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,

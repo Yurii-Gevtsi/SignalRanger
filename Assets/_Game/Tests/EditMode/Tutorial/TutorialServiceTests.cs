@@ -23,10 +23,14 @@ namespace Game.Tests.EditMode.Tutorial
         {
             var saveData = SaveData.CreateNew();
             var service = new TutorialService(saveData, TutorialStepLibrary.CreateFirstBattleSteps());
+            // Scope to one mission's steps, the way AppBattleTutorialFeed queries
+            // in game — the unscoped library also contains later-mission steps for
+            // the same trigger with no requirements (e.g. tutorial.precision).
+            var missionSteps = new[] { "tutorial.aim", "tutorial.fire" };
 
-            var blocked = service.FindNext(TutorialStepTrigger.OnAimStarted);
+            var blocked = service.FindNext(TutorialStepTrigger.OnAimStarted, missionSteps);
             service.Complete("tutorial.aim");
-            var available = service.FindNext(TutorialStepTrigger.OnAimStarted);
+            var available = service.FindNext(TutorialStepTrigger.OnAimStarted, missionSteps);
 
             Assert.That(blocked, Is.Null);
             Assert.That(available, Is.Not.Null);

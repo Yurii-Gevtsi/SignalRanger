@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Game.Core.Battle
@@ -20,6 +21,17 @@ namespace Game.Core.Battle
         public static IBattleHud Create(Transform parent)
         {
             return Factory != null ? Factory.Create(parent) : null;
+        }
+    }
+
+    public static class BattleSettingsBridge
+    {
+        public static Action<Action, Action, Action> OpenHandler { get; set; }
+        public static bool IsConfigured => OpenHandler != null;
+
+        public static void Open(Action onClosed, Action onRestart, Action onMenu)
+        {
+            OpenHandler?.Invoke(onClosed, onRestart, onMenu);
         }
     }
 }

@@ -28,13 +28,13 @@ namespace Game.Tests.EditMode.Progression
 
             Assert.That(content.TryGetChapter("chapter.basics", out var basicsChapter), Is.True);
             Assert.That(basicsChapter.MissionIds.Length, Is.EqualTo(5));
-            Assert.That(basicsChapter.FeaturedWeaponIds, Contains.Item("weapon.steady-orb"));
-            Assert.That(basicsChapter.FeaturedWeaponIds, Contains.Item("weapon.long-lance"));
+            Assert.That(basicsChapter.FeaturedWeaponIds, Contains.Item("weapon.impulse"));
+            Assert.That(basicsChapter.FeaturedWeaponIds, Contains.Item("weapon.bur"));
 
             Assert.That(content.TryGetChapter("chapter.tactical-tools", out var toolsChapter), Is.True);
             Assert.That(toolsChapter.MissionIds.Length, Is.EqualTo(3));
-            Assert.That(toolsChapter.FeaturedWeaponIds, Contains.Item("weapon.rampart-kit"));
-            Assert.That(toolsChapter.FeaturedWeaponIds, Contains.Item("weapon.guard-pulse"));
+            Assert.That(toolsChapter.FeaturedWeaponIds, Contains.Item("weapon.granata"));
+            Assert.That(toolsChapter.FeaturedWeaponIds, Contains.Item("weapon.heal"));
         }
     }
 }

@@ -6,12 +6,15 @@ namespace Game.Gameplay.Battle.Visuals
     public static class BattleVisualThemeLibrary
     {
         private const string FirstArenaId = "arena.training-meadow";
-        private const string FruitGardenBackground = "Visuals/Arenas/Background2";
-        private const string FruitGardenForeground = "Visuals/Arenas/train2";
-        private const string PlayerCharacter = "Visuals/Characters/racoon-full";
+        private const string AnimatedSkyBackgroundPrefab = "Visuals/Arenas/Backgrounds/Sky1/AnimatedSkyBackground";
+        private const string TrainingGround = "Visuals/Arenas/Training/ground";
+        private const string TrainingShip = "Visuals/Arenas/Training/ship";
+        private const string TrainingBoxes = "Visuals/Arenas/Training/boxes";
+        private const string TrainingRock = "Visuals/Arenas/Training/rock";
+        private const string TrainingLaserKillZone = "Visuals/Arenas/KillZones/LaserLine/laser_line";
+        private const string PlayerCharacter = "";
         private const string OpponentCharacter = "Visuals/Characters/oct_full";
-        private const string PlayerRig = "Visuals/Characters/RaccoonRig";
-        private const string OceanKillZone = "Visuals/Arenas/KillZones/Ocean/Prefabs/KillZone_Ocean";
+        private const string PlayerRig = "Visuals/Characters/DroidRig";
 
         public static BattleVisualTheme ForArena(ArenaDefinition arena)
         {
@@ -21,19 +24,28 @@ namespace Game.Gameplay.Battle.Visuals
             }
 
             return new BattleVisualTheme(
-                new BattleVisualLayer(FruitGardenBackground, new Vector2(0f, 1.45f), Vector2.one, -30, false, true),
-                new BattleVisualLayer(FruitGardenForeground, new Vector2(0f, -2f), new Vector2(1.8f, 1.8f), -8, true),
+                default,
+                new BattleVisualLayer(TrainingGround, new Vector2(-0.09862f, -4.93959f), new Vector2(3.47552f, 3.91558f), -8, true),
                 PlayerCharacter,
                 OpponentCharacter,
                 new Vector2(0.18f, 0.18f),
-                new Vector2(0f, 0.23f),
+                new Vector2(0f, -0.08f),
                 true,
                 false,
-                playerSkinFacingDirectionX: -1,
+                playerSkinFacingDirectionX: 1,
                 opponentSkinFacingDirectionX: 1,
                 playerRigResourcePath: PlayerRig,
-                killZonePrefabResourcePath: OceanKillZone,
-                killZoneDeathY: -5.75f);
+                backgroundPrefabResourcePath: AnimatedSkyBackgroundPrefab,
+                additionalDestructibleLayers: new[]
+                {
+                    new BattleVisualLayer(TrainingShip, new Vector2(-9.66498f, -0.53610f), new Vector2(2.05578f, 1.88287f), -7, true),
+                    new BattleVisualLayer(TrainingBoxes, new Vector2(0.83379f, -2.39658f), new Vector2(0.97620f, 1.00449f), -7, true),
+                    new BattleVisualLayer(TrainingRock, new Vector2(9.25f, -2.35f), new Vector2(1.85961f, 1.80162f), -7, true)
+                },
+                overlayLayers: new[]
+                {
+                    new BattleVisualLayer(TrainingLaserKillZone, new Vector2(0f, -5.75f), new Vector2(5.7f, 4.55f), -6)
+                });
         }
     }
 }

@@ -12,7 +12,8 @@ namespace Game.Data.Save
             : this(new ISaveMigration[]
             {
                 new SaveMigrationV0ToV1(),
-                new SaveMigrationV1ToV2()
+                new SaveMigrationV1ToV2(),
+                new SaveMigrationV2ToV3()
             })
         {
         }

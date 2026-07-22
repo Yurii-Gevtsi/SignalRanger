@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.Gameplay.Battle.Visuals
@@ -17,8 +19,9 @@ namespace Game.Gameplay.Battle.Visuals
             int opponentSkinFacingDirectionX = 1,
             string playerRigResourcePath = null,
             string opponentRigResourcePath = null,
-            string killZonePrefabResourcePath = null,
-            float? killZoneDeathY = null)
+            string backgroundPrefabResourcePath = null,
+            IReadOnlyList<BattleVisualLayer> additionalDestructibleLayers = null,
+            IReadOnlyList<BattleVisualLayer> overlayLayers = null)
         {
             Background = background;
             Foreground = foreground;
@@ -32,8 +35,9 @@ namespace Game.Gameplay.Battle.Visuals
             UseProceduralTerrainColliders = useProceduralTerrainColliders;
             PlayerRigResourcePath = playerRigResourcePath ?? string.Empty;
             OpponentRigResourcePath = opponentRigResourcePath ?? string.Empty;
-            KillZonePrefabResourcePath = killZonePrefabResourcePath ?? string.Empty;
-            KillZoneDeathY = killZoneDeathY;
+            BackgroundPrefabResourcePath = backgroundPrefabResourcePath ?? string.Empty;
+            AdditionalDestructibleLayers = additionalDestructibleLayers ?? Array.Empty<BattleVisualLayer>();
+            OverlayLayers = overlayLayers ?? Array.Empty<BattleVisualLayer>();
         }
 
         public BattleVisualLayer Background { get; }
@@ -44,8 +48,9 @@ namespace Game.Gameplay.Battle.Visuals
         /// <summary>Optional animated rig prefab; wins over the flat skin sprite when set.</summary>
         public string PlayerRigResourcePath { get; }
         public string OpponentRigResourcePath { get; }
-        public string KillZonePrefabResourcePath { get; }
-        public float? KillZoneDeathY { get; }
+        public string BackgroundPrefabResourcePath { get; }
+        public IReadOnlyList<BattleVisualLayer> AdditionalDestructibleLayers { get; }
+        public IReadOnlyList<BattleVisualLayer> OverlayLayers { get; }
 
         /// <summary>Which way the source art looks before any runtime flip.</summary>
         public int PlayerSkinFacingDirectionX { get; }
@@ -59,6 +64,6 @@ namespace Game.Gameplay.Battle.Visuals
         public bool HasOpponentSkin => !string.IsNullOrWhiteSpace(OpponentSkinResourcePath);
         public bool HasPlayerRig => !string.IsNullOrWhiteSpace(PlayerRigResourcePath);
         public bool HasOpponentRig => !string.IsNullOrWhiteSpace(OpponentRigResourcePath);
-        public bool HasKillZonePrefab => !string.IsNullOrWhiteSpace(KillZonePrefabResourcePath);
+        public bool HasBackgroundPrefab => !string.IsNullOrWhiteSpace(BackgroundPrefabResourcePath);
     }
 }

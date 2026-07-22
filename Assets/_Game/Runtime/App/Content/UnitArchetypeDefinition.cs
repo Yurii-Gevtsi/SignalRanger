@@ -17,6 +17,7 @@ namespace Game.App.Content
         [SerializeField] private float _frontJumpHeight = 1.15f;
         [SerializeField] private float _backJumpDistance = 1.15f;
         [SerializeField] private float _backJumpHeight = 1.4f;
+        [SerializeField] private float _maxWalkSlopeDegrees = 60f;
 
         public string ArchetypeId => _archetypeId;
         public string DisplayName => _displayName;
@@ -29,6 +30,7 @@ namespace Game.App.Content
         public float FrontJumpHeight => Mathf.Max(0.25f, _frontJumpHeight);
         public float BackJumpDistance => Mathf.Max(0.35f, _backJumpDistance);
         public float BackJumpHeight => Mathf.Max(0.25f, _backJumpHeight);
+        public float MaxWalkSlopeDegrees => Mathf.Clamp(_maxWalkSlopeDegrees, 20f, 80f);
 
         public CharacterArchetype ToRuntime()
         {
@@ -43,7 +45,8 @@ namespace Game.App.Content
                 FrontJumpDistance,
                 FrontJumpHeight,
                 BackJumpDistance,
-                BackJumpHeight);
+                BackJumpHeight,
+                MaxWalkSlopeDegrees);
         }
 
         public static UnitArchetypeDefinition CreateRuntime(
@@ -57,7 +60,8 @@ namespace Game.App.Content
             float frontJumpDistance,
             float frontJumpHeight,
             float backJumpDistance,
-            float backJumpHeight)
+            float backJumpHeight,
+            float maxWalkSlopeDegrees = 60f)
         {
             var definition = CreateInstance<UnitArchetypeDefinition>();
             definition._archetypeId = archetypeId ?? string.Empty;
@@ -71,6 +75,7 @@ namespace Game.App.Content
             definition._frontJumpHeight = Mathf.Max(0.25f, frontJumpHeight);
             definition._backJumpDistance = Mathf.Max(0.35f, backJumpDistance);
             definition._backJumpHeight = Mathf.Max(0.25f, backJumpHeight);
+            definition._maxWalkSlopeDegrees = Mathf.Clamp(maxWalkSlopeDegrees, 20f, 80f);
             return definition;
         }
     }

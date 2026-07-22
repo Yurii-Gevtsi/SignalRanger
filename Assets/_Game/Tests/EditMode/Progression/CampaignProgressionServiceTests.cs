@@ -44,9 +44,9 @@ namespace Game.Tests.EditMode.Progression
             var secondResult = service.CompleteMission(2);
 
             Assert.That(result.HasUnlock, Is.True);
-            Assert.That(result.UnlockedWeaponId, Is.EqualTo("weapon.scatter-arc"));
+            Assert.That(result.UnlockedWeaponId, Is.EqualTo("weapon.granata"));
             Assert.That(secondResult.HasUnlock, Is.False);
-            Assert.That(saveData.inventory.unlockedWeaponIds, Contains.Item("weapon.scatter-arc"));
+            Assert.That(saveData.inventory.unlockedWeaponIds, Contains.Item("weapon.granata"));
         }
 
         [Test]

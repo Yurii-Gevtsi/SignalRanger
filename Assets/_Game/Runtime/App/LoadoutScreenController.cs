@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Game.Core.Localization;
 using Game.Gameplay.Battle.Weapons;
+using Game.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -85,12 +87,14 @@ namespace Game.App
                 new Vector2(0.5f, 0.5f), new Vector2(840f, 1180f), Vector2.zero, PanelColor);
 
             CreateText("Title", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-80f, 80f), new Vector2(0f, -64f), 44, TextAlignmentOptions.MidlineLeft, GameText.LoadoutTitle());
+                new Vector2(-80f, 80f), new Vector2(0f, -64f), 44, TextAlignmentOptions.MidlineLeft, GameText.LoadoutTitle(), GameTextRole.DisplayTitle);
             CreateText("Hint", panel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-80f, 60f), new Vector2(0f, -132f), 24, TextAlignmentOptions.MidlineLeft,
                 GameText.LoadoutHint());
 
-            var weapons = PrototypeWeaponLibrary.CreateAll();
+            var weapons = PrototypeWeaponLibrary.CreateAll()
+                .Where(weapon => !WeaponPresentationText.IsDropOnly(weapon))
+                .ToArray();
             var rowHeight = 96f;
             var rowSpacing = 12f;
             var listViewport = CreatePanel("List Viewport", panel.transform,
@@ -149,7 +153,7 @@ namespace Game.App
             {
                 WeaponId = weaponId,
                 Unlocked = unlocked,
-                BaseLabel = $"{WeaponDisplayNames.Get(weaponId)}  ·  {DescribeRole(weapon.Role)}",
+                BaseLabel = $"{WeaponDisplayNames.Get(weaponId)}  ·  {WeaponPresentationText.DescribeCategory(weapon)}",
                 Image = image,
                 Label = label
             });
@@ -277,17 +281,16 @@ namespace Game.App
         }
 
         private TMP_Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value)
+            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value,
+            GameTextRole? roleOverride = null)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
             var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
-            text.fontSize = fontSize;
-            text.color = Color.white;
-            text.alignment = alignment;
+            var role = roleOverride ?? (fontSize >= 40 ? GameTextRole.ScreenTitle : GameTextRole.Body);
+            SciFiTextStyle.Apply(text, role, fontSize, alignment);
             text.textWrappingMode = TextWrappingModes.Normal;
             text.overflowMode = TextOverflowModes.Overflow;
             text.text = value;
-            text.raycastTarget = false;
             return text;
         }
 

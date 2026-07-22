@@ -6,132 +6,44 @@ namespace Game.Gameplay.Battle.Weapons
         {
             return new[]
             {
-                WeaponDefinition.CreateRuntime(
-                    "weapon.steady-orb",
-                    "weapon.steady_orb.name",
-                    WeaponRole.DirectProjectile,
-                    34,
-                    1.05f,
-                    0.11f,
-                    0.55f,
-                    7f,
-                    5f,
-                    17f,
-                    -1,
-                    "weapon.steady_orb.hint",
-                    new[] { "starter", "direct", "low-arc" },
-                    iconId: "bazooka_simple"),
-                WeaponDefinition.CreateRuntime(
-                    "weapon.pulse-shell",
-                    "weapon.pulse_shell.name",
-                    WeaponRole.ArcingExplosive,
-                    42,
-                    1.65f,
-                    0.13f,
-                    1f,
-                    8f,
-                    4f,
-                    16f,
-                    -1,
-                    "weapon.pulse_shell.hint",
-                    new[] { "starter", "arc", "explosive" },
-                    iconId: "bazooka"),
-                WeaponDefinition.CreateRuntime(
-                    "weapon.close-pop",
-                    "weapon.close_pop.name",
-                    WeaponRole.ShortRangeBurst,
-                    28,
-                    1.25f,
-                    0.16f,
-                    1.25f,
-                    3.4f,
-                    3f,
-                    10f,
-                    -1,
-                    "weapon.close_pop.hint",
-                    new[] { "starter", "short-range", "burst" },
-                    iconId: "drobovik"),
-                // Precision niche: flat, fast, small blast, high single-target damage.
-                // Flatness comes from the low gravityScale, not from extreme power, so the
-                // power range stays close to the other weapons for a consistent aim feel.
-                WeaponDefinition.CreateRuntime(
-                    "weapon.long-lance",
-                    "weapon.long_lance.name",
-                    WeaponRole.DirectProjectile,
-                    46,
-                    0.75f,
-                    0.09f,
-                    0.35f,
-                    8f,
-                    6f,
-                    19f,
-                    -1,
-                    "weapon.long_lance.hint",
-                    new[] { "precision", "direct", "long-range" },
-                    iconId: "rifle"),
-                // Area niche: high lob, wide but soft blast to flush units out of cover.
-                // Low damage per hit so it pressures position rather than deleting full-HP units.
-                WeaponDefinition.CreateRuntime(
-                    "weapon.scatter-arc",
-                    "weapon.scatter_arc.name",
-                    WeaponRole.ArcingExplosive,
-                    24,
-                    2.35f,
-                    0.14f,
-                    1.35f,
-                    9f,
-                    4f,
-                    15f,
-                    -1,
-                    "weapon.scatter_arc.hint",
-                    new[] { "area", "arc", "flush" },
-                    iconId: "bomber"),
-                WeaponDefinition.CreateRuntime(
-                    "weapon.rampart-kit",
-                    "weapon.rampart_kit.name",
-                    WeaponRole.CoverTool,
-                    0,
-                    1.2f,
-                    0.12f,
-                    0.9f,
-                    7f,
-                    3f,
-                    14f,
-                    2,
-                    "weapon.rampart_kit.hint",
-                    new[] { "utility", "cover", "defensive-line" },
-                    iconId: "bur"),
-                WeaponDefinition.CreateRuntime(
-                    "weapon.guard-pulse",
-                    "weapon.guard_pulse.name",
-                    WeaponRole.DefensiveTool,
-                    18,
-                    1.8f,
-                    0.12f,
-                    0.8f,
-                    6f,
-                    3f,
-                    13f,
-                    2,
-                    "weapon.guard_pulse.hint",
-                    new[] { "utility", "defense", "restore" },
-                    iconId: "glove"),
-                WeaponDefinition.CreateRuntime(
-                    "weapon.relay-step",
-                    "weapon.relay_step.name",
-                    WeaponRole.MovementTool,
-                    0,
-                    2.6f,
-                    0.11f,
-                    0.5f,
-                    6f,
-                    4f,
-                    14f,
-                    2,
-                    "weapon.relay_step.hint",
-                    new[] { "utility", "movement", "reposition" },
-                    iconId: "fpv")
+                Weapon("weapon.impulse", WeaponRole.ArcingExplosive, 34, 1.15f, 0.12f, 1f, 8f, 5f, 13f, -1, "impulse", "arc", "starter"),
+                Weapon("weapon.blaster-caset", WeaponRole.DirectProjectile, 30, 0.9f, 0.09f, 0f, 4.5f, 14f, 14f, 3, "blaster_caset", "straight-long", "burst"),
+                Weapon("weapon.bur", WeaponRole.ShortRangeBurst, 18, 0.7f, 0.08f, 0f, 1.2f, 3f, 3f, 3, "bur", "straight-close", "engineering", "drill"),
+                Weapon("weapon.mortira", WeaponRole.ArcingExplosive, 48, 1.8f, 0.16f, 1.15f, 9f, 4f, 12f, 2, "mortira", "arc", "fragment"),
+                Weapon("weapon.granata", WeaponRole.ArcingExplosive, 42, 1.55f, 0.14f, 1.1f, 8f, 4f, 12f, 3, "granata", "arc", "grenade"),
+                Weapon("weapon.teleport", WeaponRole.MovementTool, 0, 2.5f, 0.11f, 0.5f, 6f, 4f, 11f, 2, "teleport", "arc-utility", "teleport"),
+                Weapon("weapon.c4", WeaponRole.ShortRangeBurst, 74, 2.25f, 0.19f, 0.9f, 5f, 3f, 8f, 1, "C4", "ground", "explosive"),
+                Weapon("weapon.mine", WeaponRole.ArcingExplosive, 54, 1.7f, 0.14f, 1.05f, 8f, 3f, 10f, 2, "mine_off", "ground", "mine"),
+                Weapon("weapon.bur-rocket", WeaponRole.ArcingExplosive, 46, 1.25f, 0.12f, 0.8f, 8f, 5f, 13f, 2, "bur_rocket", "arc-special", "drill"),
+                Weapon("weapon.heal", WeaponRole.DefensiveTool, 34, 1.4f, 0.12f, 0.65f, 6f, 3f, 9f, 2, "heal", "bonus", "repair"),
+                Weapon("weapon.bonus-box", WeaponRole.DefensiveTool, 22, 1.25f, 0.12f, 0.85f, 7f, 3f, 10f, 2, "bonus_box", "drop", "random"),
+                Weapon("weapon.toxic", WeaponRole.DirectProjectile, 30, 1.2f, 0.11f, 0f, 4.5f, 13f, 13f, 3, "toxic", "straight-close", "toxic"),
+                Weapon("weapon.emp", WeaponRole.DirectProjectile, 38, 1.5f, 0.13f, 0f, 5f, 15f, 15f, 2, "emp", "straight-long", "emp"),
+                Weapon("weapon.freeze", WeaponRole.ArcingExplosive, 36, 1.35f, 0.12f, 1.05f, 8f, 4f, 12f, 2, "freeze", "arc", "freeze"),
+                Weapon("weapon.fire-gun", WeaponRole.ShortRangeBurst, 40, 1.45f, 0.13f, 0f, 1.5f, 3.5f, 3.5f, 3, "fire_gun", "straight-close", "fire"),
+                Weapon("weapon.missle", WeaponRole.ArcingExplosive, 52, 1.4f, 0.13f, 0.8f, 8f, 5f, 13f, 2, "missle", "arc-homing", "homing"),
+                Weapon("weapon.fpv-drone", WeaponRole.DirectProjectile, 58, 1.35f, 0.14f, 0.35f, 8f, 5f, 13f, 1, "fpv_0", "controlled", "drone")
             };
+        }
+
+        private static WeaponDefinition Weapon(string id, WeaponRole role, int damage, float impactRadius,
+            float projectileRadius, float gravity, float timeout, float minPower, float maxPower, int ammo,
+            string icon, string category, params string[] tags)
+        {
+            return WeaponDefinition.CreateRuntime(id, id + ".name", role, damage, impactRadius, projectileRadius,
+                gravity, timeout, minPower, maxPower, ammo, id + ".hint", Combine(category, tags), iconId: icon);
+        }
+
+        private static string[] Combine(string category, string[] tags)
+        {
+            var result = new string[(tags?.Length ?? 0) + 1];
+            result[0] = category;
+            if (tags != null)
+            {
+                System.Array.Copy(tags, 0, result, 1, tags.Length);
+            }
+
+            return result;
         }
     }
 }

@@ -13,8 +13,17 @@ namespace Game.UI.Battle
     public sealed class BattleHudView : MonoBehaviour, IBattleHud
     {
         private const float SafeMargin = 24f;
-        private const float WalkButtonSize = 168f;
-        private const float JumpButtonSize = 112f;
+        private const float TutorialCardPositionY = 24f;
+        private const float TimerPositionY = 0f;
+        private const float SettingsPositionY = -20f;
+        private const float ArsenalPositionY = -30f;
+        private const float WalkButtonSize = 202f;
+        private const float JumpButtonSize = 134f;
+        private const float WeaponButtonSize = 180f;
+        private const float FireWeaponIconSize = 120f;
+        private const float ArsenalButtonSize = 264f;
+        private const float MovementBottomMargin = 34f;
+        private const float MovementButtonGap = 24f;
         private const string BattleResourceRoot = "UI/Battle/";
         private const string WeaponResourceRoot = "UI/Weapons/";
 
@@ -24,8 +33,8 @@ namespace Game.UI.Battle
         private static readonly Color Neutral = new(0.17f, 0.24f, 0.34f, 1f);
         private static readonly Color Disabled = new(0.20f, 0.23f, 0.28f, 0.42f);
         private static readonly Color TutorialHighlight = new(1f, 0.83f, 0.26f, 0.98f);
-        private static readonly Color Control = new(0.11f, 0.36f, 0.62f, 1f);
-        private static readonly Color ControlDisabled = new(0.11f, 0.18f, 0.26f, 0.62f);
+        private static readonly Color ControlVisual = new(1f, 1f, 1f, 0.4f);
+        private static readonly Color FireControlVisual = new(1f, 1f, 1f, 0.68f);
 
         private readonly Dictionary<string, Sprite> _weaponSprites = new(StringComparer.Ordinal);
         private Sprite _whiteSprite;
@@ -33,15 +42,19 @@ namespace Game.UI.Battle
         private Sprite _pillSprite;
         private Sprite _buttonSprite;
         private Sprite _circleSprite;
+        private Sprite _fireRingSprite;
         private Sprite _tutorialCardSprite;
         private Sprite _timerPanelSprite;
         private Sprite _moveButtonSprite;
         private Sprite _jumpButtonSprite;
+        private Sprite _arsenalButtonSprite;
+        private Sprite _resetButtonSprite;
+        private Sprite _settingsButtonSprite;
+        private Sprite _weaponsCardSprite;
+        private Sprite _weaponMiniCardSprite;
 
         private TMP_Text _statusText;
         private TMP_Text _turnText;
-        private TMP_Text _powerText;
-        private Image _powerFill;
         private Image _statusPanel;
         private Image _turnPanel;
         private Button _moveLeftButton;
@@ -52,12 +65,17 @@ namespace Game.UI.Battle
         private Image _moveRightPanel;
         private Image _jumpLeftPanel;
         private Image _jumpRightPanel;
+        private Button _arsenalButton;
+        private Image _arsenalPanel;
+        private GameObject _arsenalRoot;
+        private Image _arsenalWindow;
+        private Transform _arsenalItemsRoot;
+        private IReadOnlyList<BattleWeaponHudItem> _renderedArsenalWeapons;
+        private int _renderedSelectedWeaponIndex = -1;
         private Button _fireButton;
         private Image _firePanel;
         private Image _fireIcon;
-        private string _weaponIconId = string.Empty;
-        private GameObject _aimGuideRoot;
-        private TMP_Text _aimGuideText;
+        private Button _weaponResetButton;
         private GameObject _resultRoot;
         private Image _resultPanel;
         private TMP_Text _resultTitleText;
@@ -71,14 +89,16 @@ namespace Game.UI.Battle
         private TMP_Text _resultContinueLabel;
 
         public event Action FireRequested;
+        public event Action<int> WeaponSelected;
+        public event Action<bool> ArsenalVisibilityChanged;
+        public event Action WeaponResetRequested;
+        public event Action SettingsRequested;
         public event Action MoveLeftStarted;
         public event Action MoveLeftStopped;
         public event Action MoveRightStarted;
         public event Action MoveRightStopped;
         public event Action JumpLeftRequested;
         public event Action JumpRightRequested;
-        public event Action ZoomInRequested;
-        public event Action ZoomOutRequested;
         public event Action RestartRequested;
         public event Action ContinueRequested;
         public event Action MenuRequested;
@@ -90,10 +110,16 @@ namespace Game.UI.Battle
             _pillSprite = CreateRoundedSprite(128, 42, 9);
             _buttonSprite = CreateRoundedSprite(128, 28, 9);
             _circleSprite = CreateRoundedSprite(128, 62, 10);
+            _fireRingSprite = CreateCircleFrameSprite(256, 7f);
             _tutorialCardSprite = LoadResourceSprite(BattleResourceRoot + "card", new Vector4(250f, 250f, 250f, 250f));
             _timerPanelSprite = LoadResourceSprite(BattleResourceRoot + "smal_panel", Vector4.zero);
             _moveButtonSprite = LoadResourceSprite(BattleResourceRoot + "btn_move", Vector4.zero);
             _jumpButtonSprite = LoadResourceSprite(BattleResourceRoot + "btn_jump", Vector4.zero);
+            _arsenalButtonSprite = LoadResourceSprite(BattleResourceRoot + "arsenal", Vector4.zero);
+            _resetButtonSprite = LoadResourceSprite(BattleResourceRoot + "reset_btn", Vector4.zero);
+            _settingsButtonSprite = LoadResourceSprite("UI/Menu/settings_btn", Vector4.zero);
+            _weaponsCardSprite = LoadResourceSprite(BattleResourceRoot + "weapons_card", Vector4.zero);
+            _weaponMiniCardSprite = LoadResourceSprite(BattleResourceRoot + "weapon_mini_card", Vector4.zero);
 
             EnsureEventSystem();
             BuildCanvas();
@@ -108,23 +134,27 @@ namespace Game.UI.Battle
 
             _statusText.text = state.Status;
             _turnText.text = Mathf.CeilToInt(state.TurnSecondsRemaining).ToString();
-            var power01 = state.PowerFraction;
-            _powerFill.fillAmount = power01;
-            _powerFill.color = Color.Lerp(new Color(0.54f, 0.95f, 1f, 1f), new Color(1f, 0.38f, 0.12f, 1f), power01);
-            _powerText.text = $"{Mathf.RoundToInt(power01 * 100f)}%";
-
             var movementEnabled = state.CanUseMovement && !state.TutorialBlocksMovement;
             SetControlState(_moveLeftButton, _moveLeftPanel, movementEnabled);
             SetControlState(_moveRightButton, _moveRightPanel, movementEnabled);
             SetControlState(_jumpLeftButton, _jumpLeftPanel, movementEnabled);
             SetControlState(_jumpRightButton, _jumpRightPanel, movementEnabled);
 
-            _fireButton.interactable = state.CanFire;
-            _firePanel.color = state.CanFire ? Fire : Disabled;
-            _fireIcon.color = state.CanFire ? Color.white : new Color(1f, 1f, 1f, 0.42f);
-            SetWeaponIcon(state.WeaponIconId);
+            _arsenalButton.interactable = state.CanOpenArsenal;
+            _arsenalPanel.color = Color.white;
+            RenderArsenal(state);
 
-            RenderTutorialHighlight(state.TutorialTargetId, state.Status);
+            var fireIcon = LoadWeaponSprite(state.WeaponIconId);
+            _fireIcon.sprite = fireIcon;
+            _firePanel.gameObject.SetActive(state.ShowFireButton && fireIcon != null);
+            _fireButton.interactable = state.CanFire;
+            _firePanel.color = FireControlVisual;
+            _fireIcon.color = Color.white;
+
+            _weaponResetButton.gameObject.SetActive(state.HasSelectedWeapon);
+            _weaponResetButton.interactable = state.HasSelectedWeapon && state.CanOpenArsenal;
+
+            RenderTutorialHighlight(state.TutorialTargetId);
             RenderResult(state);
         }
 
@@ -160,104 +190,260 @@ namespace Game.UI.Battle
             var root = canvasObject.transform;
             BuildTopLayer(root);
             BuildMovementControls(root);
-            BuildPowerIndicator(root);
-            BuildFireButton(root);
-            BuildAimGuide(root);
+            BuildWeaponControls(root);
             BuildResultOverlay(root);
         }
 
         private void BuildTopLayer(Transform root)
         {
             _statusPanel = CreatePanel("Tutorial Card", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
-                new Vector2(700f, 520f), new Vector2(SafeMargin, -SafeMargin), Color.white, _tutorialCardSprite);
-            _statusPanel.type = Image.Type.Sliced;
-            _statusText = CreateText("Tutorial Text", _statusPanel.transform, Vector2.zero, Vector2.one, new Vector2(0f, 1f),
-                new Vector2(-120f, -170f), new Vector2(60f, -70f), 25, TextAlignmentOptions.TopLeft);
-            _statusText.overflowMode = TextOverflowModes.Overflow;
+                new Vector2(500f, 500f), new Vector2(SafeMargin, TutorialCardPositionY), Color.white, _tutorialCardSprite);
+            _statusPanel.type = Image.Type.Simple;
+            _statusPanel.preserveAspect = true;
+            _statusText = CreateText("Tutorial Text", _statusPanel.transform, new Vector2(0.22f, 0.20f), new Vector2(0.86f, 0.79f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 25, TextAlignmentOptions.TopLeft);
+            _statusText.overflowMode = TextOverflowModes.Truncate;
 
             _turnPanel = CreatePanel("Turn Timer", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(163f, 72f), new Vector2(0f, -2f), Color.white, _timerPanelSprite);
+                new Vector2(246f, 180f), new Vector2(0f, TimerPositionY), Color.white, _timerPanelSprite);
             _turnPanel.type = Image.Type.Simple;
-            _turnPanel.preserveAspect = true;
-            _turnText = CreateText("Turn Seconds", _turnPanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-34f, -16f), new Vector2(0f, -1f), 32, TextAlignmentOptions.Center);
-            _turnText.fontStyle = FontStyles.Bold;
-            _turnText.color = new Color(1f, 0.88f, 0.45f, 1f);
+            _turnPanel.preserveAspect = false;
+            _turnText = CreateText("Turn Seconds", _turnPanel.transform, new Vector2(0.24f, 0.28f), new Vector2(0.76f, 0.72f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 36, TextAlignmentOptions.Center);
+            SciFiTextStyle.Apply(_turnText, GameTextRole.Numeric, 36, TextAlignmentOptions.Center);
 
-            _ = CreateGameButton("Restart", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(122f, 62f),
-                new Vector2(-SafeMargin, -SafeMargin), Neutral, "R", 32, string.Empty, 0, () => RestartRequested?.Invoke());
-            _ = CreateGameButton("Menu", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(122f, 62f),
-                new Vector2(-(SafeMargin + 134f), -SafeMargin), new Color(0.36f, 0.17f, 0.19f, 1f), "M", 34, string.Empty, 0, () => MenuRequested?.Invoke());
-            _ = CreateGameButton("Zoom Out", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(72f, 72f),
-                new Vector2(-(SafeMargin + 88f), -108f), Neutral, "−", 44, string.Empty, 0, () => ZoomOutRequested?.Invoke());
-            _ = CreateGameButton("Zoom In", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(72f, 72f),
-                new Vector2(-SafeMargin, -108f), Neutral, "+", 40, string.Empty, 0, () => ZoomInRequested?.Invoke());
+            var settingsRect = CreateRect("Settings", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(140f, 140f), new Vector2(220f, SettingsPositionY));
+            var settingsImage = settingsRect.gameObject.AddComponent<Image>();
+            settingsImage.sprite = _settingsButtonSprite;
+            settingsImage.type = Image.Type.Simple;
+            settingsImage.preserveAspect = true;
+            settingsImage.color = Color.white;
+            var settingsButton = settingsRect.gameObject.AddComponent<Button>();
+            settingsButton.targetGraphic = settingsImage;
+            settingsButton.colors = CreateButtonColors(Color.white);
+            settingsButton.onClick.AddListener(() => SettingsRequested?.Invoke());
         }
 
         private void BuildMovementControls(Transform root)
         {
+            var jumpBottom = MovementBottomMargin + WalkButtonSize + MovementButtonGap;
             _moveLeftButton = CreateMovementButton("Move Left", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
-                WalkButtonSize, new Vector2(36f + WalkButtonSize, 34f), _moveButtonSprite, true, null);
+                WalkButtonSize, new Vector2(36f + WalkButtonSize, MovementBottomMargin), _moveButtonSprite, true, null);
             _moveLeftPanel = _moveLeftButton.GetComponent<Image>();
             WireHold(_moveLeftButton.gameObject, () => MoveLeftStarted?.Invoke(), () => MoveLeftStopped?.Invoke());
 
             _jumpLeftButton = CreateMovementButton("Jump Left", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
-                JumpButtonSize, new Vector2(58f + JumpButtonSize, 226f), _jumpButtonSprite, true, () => JumpLeftRequested?.Invoke());
+                JumpButtonSize, new Vector2(58f + JumpButtonSize, jumpBottom), _jumpButtonSprite, true, () => JumpLeftRequested?.Invoke());
             _jumpLeftPanel = _jumpLeftButton.GetComponent<Image>();
 
             _moveRightButton = CreateMovementButton("Move Right", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                WalkButtonSize, new Vector2(-36f, 34f), _moveButtonSprite, false, null);
+                WalkButtonSize, new Vector2(-36f, MovementBottomMargin), _moveButtonSprite, false, null);
             _moveRightPanel = _moveRightButton.GetComponent<Image>();
             WireHold(_moveRightButton.gameObject, () => MoveRightStarted?.Invoke(), () => MoveRightStopped?.Invoke());
 
             _jumpRightButton = CreateMovementButton("Jump Right", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                JumpButtonSize, new Vector2(-58f, 226f), _jumpButtonSprite, false, () => JumpRightRequested?.Invoke());
+                JumpButtonSize, new Vector2(-58f, jumpBottom), _jumpButtonSprite, false, () => JumpRightRequested?.Invoke());
             _jumpRightPanel = _jumpRightButton.GetComponent<Image>();
         }
 
-        private void BuildPowerIndicator(Transform root)
+        private void BuildWeaponControls(Transform root)
         {
-            var powerPanel = CreatePanel("Power Capsule", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(480f, 42f), new Vector2(0f, 38f), new Color(0.045f, 0.07f, 0.10f, 0.9f), _pillSprite);
-            var powerBack = CreatePanel("Power Track", powerPanel.transform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, 0.5f),
-                new Vector2(-84f, 12f), new Vector2(20f, 0f), new Color(1f, 1f, 1f, 0.16f), _pillSprite);
-            powerBack.raycastTarget = false;
-            _powerFill = CreatePanel("Power Fill", powerBack.transform, Vector2.zero, Vector2.one, new Vector2(0f, 0.5f),
-                Vector2.zero, Vector2.zero, new Color(0.54f, 0.95f, 1f, 1f), _pillSprite);
-            _powerFill.type = Image.Type.Filled;
-            _powerFill.fillMethod = Image.FillMethod.Horizontal;
-            _powerFill.fillOrigin = (int)Image.OriginHorizontal.Left;
-            _powerFill.fillAmount = 0f;
-            _powerText = CreateText("Power Text", powerPanel.transform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(1f, 0.5f),
-                new Vector2(78f, -4f), new Vector2(-14f, 0f), 18, TextAlignmentOptions.Center);
-            _powerText.color = new Color(0.88f, 0.97f, 1f, 1f);
-        }
+            _arsenalPanel = CreatePanel("Arsenal", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(ArsenalButtonSize, ArsenalButtonSize), new Vector2(-24f, ArsenalPositionY), Color.white, _arsenalButtonSprite);
+            _arsenalPanel.type = Image.Type.Simple;
+            _arsenalPanel.preserveAspect = true;
+            DisableGraphicEffects(_arsenalPanel);
+            _arsenalButton = _arsenalPanel.gameObject.AddComponent<Button>();
+            _arsenalButton.targetGraphic = _arsenalPanel;
+            _arsenalButton.transition = Selectable.Transition.None;
+            _arsenalButton.onClick.AddListener(ToggleArsenal);
 
-        private void BuildFireButton(Transform root)
-        {
-            _firePanel = CreatePanel("Fire Weapon", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(148f, 148f), new Vector2(350f, 30f), Fire, _circleSprite);
-            AddOuterStroke(_firePanel.gameObject, new Color(0.72f, 1f, 0.45f, 0.8f), new Vector2(2f, -2f));
+            var weaponButtonCenterY = MovementBottomMargin + WalkButtonSize * 0.5f;
+            var fireButtonCenterY = MovementBottomMargin + WalkButtonSize + MovementButtonGap + JumpButtonSize + 198f;
+            var fireRect = CreateRect("Fire Weapon", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
+                new Vector2(0.5f, 0.5f), new Vector2(WeaponButtonSize, WeaponButtonSize), new Vector2(-148f, fireButtonCenterY));
+            _firePanel = fireRect.gameObject.AddComponent<Image>();
+            _firePanel.sprite = _fireRingSprite;
+            _firePanel.type = Image.Type.Simple;
+            _firePanel.preserveAspect = true;
+            _firePanel.color = FireControlVisual;
             _fireButton = _firePanel.gameObject.AddComponent<Button>();
             _fireButton.targetGraphic = _firePanel;
-            _fireButton.colors = CreateButtonColors(Fire);
+            _fireButton.transition = Selectable.Transition.None;
             _fireButton.onClick.AddListener(() => FireRequested?.Invoke());
 
-            _fireIcon = CreatePanel("Selected Weapon Icon", _firePanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-22f, -22f), Vector2.zero, Color.white, _whiteSprite);
+            var fireIconRect = CreateRect("Selected Weapon Icon", _firePanel, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), new Vector2(FireWeaponIconSize, FireWeaponIconSize), new Vector2(0f, -22f));
+            fireIconRect.localScale = new Vector3(0.8f, 0.8f, 1f);
+            _fireIcon = fireIconRect.gameObject.AddComponent<Image>();
             _fireIcon.type = Image.Type.Simple;
             _fireIcon.preserveAspect = true;
+            _fireIcon.color = Color.white;
             _fireIcon.raycastTarget = false;
+            _firePanel.gameObject.SetActive(false);
+
+            var resetRect = CreateRect("Reset Weapon", root, new Vector2(0.25f, 0f), new Vector2(0.25f, 0f),
+                new Vector2(0.5f, 0.5f), new Vector2(WeaponButtonSize, WeaponButtonSize), new Vector2(0f, weaponButtonCenterY));
+            var resetImage = resetRect.gameObject.AddComponent<Image>();
+            resetImage.sprite = _resetButtonSprite;
+            resetImage.type = Image.Type.Simple;
+            resetImage.preserveAspect = true;
+            resetImage.color = ControlVisual;
+            _weaponResetButton = resetRect.gameObject.AddComponent<Button>();
+            _weaponResetButton.targetGraphic = resetImage;
+            _weaponResetButton.transition = Selectable.Transition.None;
+            _weaponResetButton.onClick.AddListener(() => WeaponResetRequested?.Invoke());
+            _weaponResetButton.gameObject.SetActive(false);
+
+            var overlayRect = CreateRect("Arsenal Overlay", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero);
+            var overlay = overlayRect.gameObject.AddComponent<Image>();
+            overlay.sprite = _whiteSprite;
+            overlay.color = new Color(0f, 0f, 0f, 0.38f);
+            overlay.raycastTarget = true;
+            _arsenalRoot = overlay.gameObject;
+            var overlayButton = overlay.gameObject.AddComponent<Button>();
+            overlayButton.targetGraphic = overlay;
+            overlayButton.transition = Selectable.Transition.None;
+            overlayButton.onClick.AddListener(() => SetArsenalVisible(false));
+
+            _arsenalWindow = CreatePanel("Arsenal Window", overlay.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(1640f, 1120f), new Vector2(0f, -22f), new Color32(255, 255, 255, 183), _weaponsCardSprite);
+            _arsenalWindow.type = Image.Type.Simple;
+            _arsenalWindow.preserveAspect = false;
+            DisableGraphicEffects(_arsenalWindow);
+
+            _arsenalItemsRoot = CreateRect("Arsenal Items", _arsenalWindow, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(1320f, 820f), new Vector2(0f, 12f));
+            CreateArsenalCloseButton(_arsenalWindow.transform);
+            _arsenalRoot.SetActive(false);
         }
 
-        private void BuildAimGuide(Transform root)
+        private void ToggleArsenal()
         {
-            _aimGuideRoot = CreateGlassPanel("Aim Guide", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(760f, 74f), new Vector2(0f, -170f), new Color(0.05f, 0.08f, 0.12f, 0.78f), Gold).gameObject;
-            _aimGuideText = CreateText("Aim Guide Text", _aimGuideRoot.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-34f, -16f), Vector2.zero, 22, TextAlignmentOptions.Center);
-            _aimGuideText.color = new Color(1f, 0.92f, 0.62f, 1f);
-            _aimGuideRoot.SetActive(false);
+            if (_arsenalRoot != null && _arsenalButton != null && _arsenalButton.interactable)
+            {
+                SetArsenalVisible(!_arsenalRoot.activeSelf);
+            }
+        }
+
+        private void SetArsenalVisible(bool visible)
+        {
+            if (_arsenalRoot == null || _arsenalRoot.activeSelf == visible)
+            {
+                return;
+            }
+
+            _arsenalRoot.SetActive(visible);
+            ArsenalVisibilityChanged?.Invoke(visible);
+        }
+
+        private void CreateArsenalCloseButton(Transform parent)
+        {
+            var rect = CreateRect("Close Arsenal", parent, new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(0.5f, 0.5f), new Vector2(132f, 132f), new Vector2(-168f, -132f));
+            var hitArea = rect.gameObject.AddComponent<Image>();
+            hitArea.sprite = _whiteSprite;
+            hitArea.color = new Color(1f, 1f, 1f, 0f);
+            hitArea.raycastTarget = true;
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = hitArea;
+            button.transition = Selectable.Transition.None;
+            button.onClick.AddListener(() => SetArsenalVisible(false));
+
+            var label = CreateText("Close Arsenal Label", rect, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, 87, TextAlignmentOptions.Center);
+            label.text = "\u00D7";
+            label.rectTransform.localScale = new Vector3(1.1f, 1.1f, 1f);
+            label.color = new Color(1f, 0.18f, 0.16f, 1f);
+            label.raycastTarget = false;
+        }
+
+        private void RenderArsenal(in BattleHudState state)
+        {
+            if (_arsenalRoot == null)
+            {
+                return;
+            }
+
+            if (!state.CanOpenArsenal)
+            {
+                SetArsenalVisible(false);
+            }
+
+            if (ReferenceEquals(_renderedArsenalWeapons, state.ArsenalWeapons)
+                && _renderedSelectedWeaponIndex == state.SelectedWeaponIndex)
+            {
+                return;
+            }
+
+            _renderedArsenalWeapons = state.ArsenalWeapons;
+            _renderedSelectedWeaponIndex = state.SelectedWeaponIndex;
+            for (var index = _arsenalItemsRoot.childCount - 1; index >= 0; index--)
+            {
+                Destroy(_arsenalItemsRoot.GetChild(index).gameObject);
+            }
+
+            var realCount = state.ArsenalWeapons.Count;
+            if (realCount == 0)
+            {
+                return;
+            }
+
+            var count = realCount;
+            const int columns = 7;
+            const float cardSize = 176f;
+            const float cardScaleX = 1.2f;
+            const float cardScaleY = 0.9f;
+            const float visualCardWidth = cardSize * cardScaleX;
+            const float visualCardHeight = cardSize * cardScaleY;
+            const float columnGap = -18f;
+            const float rowGap = 18f;
+            var totalWidth = columns * visualCardWidth + (columns - 1) * columnGap;
+            const float totalHeight = 4f * visualCardHeight + 3f * rowGap;
+            var startX = -totalWidth * 0.5f + visualCardWidth * 0.5f;
+            var startY = totalHeight * 0.5f - visualCardHeight * 0.5f;
+            for (var index = 0; index < count; index++)
+            {
+                var item = state.ArsenalWeapons[index];
+                var row = index / columns;
+                var column = index % columns;
+                var position = new Vector2(startX + column * (visualCardWidth + columnGap), startY - row * (visualCardHeight + rowGap));
+                var slot = CreatePanel($"Weapon {item.Index + 1}", _arsenalItemsRoot, new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(cardSize, cardSize),
+                    position, item.IsUsable ? Color.white : new Color(1f, 1f, 1f, 0.48f), _weaponMiniCardSprite);
+                slot.type = Image.Type.Simple;
+                slot.preserveAspect = true;
+                slot.rectTransform.localScale = new Vector3(cardScaleX, cardScaleY, 1f);
+                DisableGraphicEffects(slot);
+
+                var button = slot.gameObject.AddComponent<Button>();
+                button.targetGraphic = slot;
+                button.interactable = item.IsUsable;
+                button.colors = CreateButtonColors(Color.white);
+                var weaponIndex = item.Index;
+                button.onClick.AddListener(() =>
+                {
+                    SetArsenalVisible(false);
+                    WeaponSelected?.Invoke(weaponIndex);
+                });
+
+                var icon = CreatePanel("Weapon Icon", slot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f), new Vector2(156f, 156f), new Vector2(0f, 0f), item.IsUsable ? Color.white : new Color(1f, 1f, 1f, 0.42f),
+                    LoadWeaponSprite(item.IconId));
+                icon.type = Image.Type.Simple;
+                icon.preserveAspect = true;
+                icon.raycastTarget = false;
+                DisableGraphicEffects(icon);
+
+                var badgeText = CreateText("Ammo Count", slot.transform, new Vector2(1f, 1f), new Vector2(1f, 1f),
+                    new Vector2(0.5f, 0.5f), new Vector2(74f, 48f), new Vector2(-45f, -24f), 26, TextAlignmentOptions.Center);
+                badgeText.text = item.HasLimitedAmmo ? Mathf.Max(0, item.AmmoRemaining).ToString() : "\u221E";
+                badgeText.fontStyle = FontStyles.Bold;
+                badgeText.color = item.IsUsable ? Color.white : new Color(1f, 1f, 1f, 0.56f);
+                badgeText.raycastTarget = false;
+            }
         }
 
         private void BuildResultOverlay(Transform root)
@@ -274,8 +460,7 @@ namespace Game.UI.Battle
 
             _resultTitleText = CreateText("Result Title", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-86f, 78f), new Vector2(0f, -26f), 47, TextAlignmentOptions.Center);
-            _resultTitleText.fontStyle = FontStyles.Bold;
-            _resultTitleText.color = new Color(1f, 0.88f, 0.42f, 1f);
+            SciFiTextStyle.Apply(_resultTitleText, GameTextRole.DisplayTitle, 47, TextAlignmentOptions.Center);
             _resultSubtitleText = CreateText("Result Subtitle", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-96f, 46f), new Vector2(0f, -112f), 27, TextAlignmentOptions.Center);
             _resultOutcomeText = CreateText("Result Outcome", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
@@ -284,13 +469,13 @@ namespace Game.UI.Battle
                 new Vector2(-110f, 42f), new Vector2(0f, -220f), 24, TextAlignmentOptions.Center);
             _resultUnlockText = CreateText("Result Unlock", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-110f, 42f), new Vector2(0f, -268f), 23, TextAlignmentOptions.Center);
-            _resultUnlockText.color = new Color(0.70f, 0.91f, 1f, 1f);
+            _resultUnlockText.color = SciFiTextStyle.CyanText;
             _resultContinueNoteText = CreateText("Result Continue Note", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(-120f, 34f), new Vector2(0f, -314f), 19, TextAlignmentOptions.Center);
-            _resultContinueNoteText.color = new Color(0.83f, 0.91f, 1f, 0.85f);
+            _resultContinueNoteText.color = SciFiTextStyle.SecondaryText;
 
             var retry = CreateGameButton("Result Retry", _resultPanel.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(286f, 78f),
-                new Vector2(44f, 36f), Neutral, "R", 30, GameText.Restart, 28, () => RestartRequested?.Invoke());
+                new Vector2(44f, 36f), Gold, "R", 30, GameText.Restart, 28, () => RestartRequested?.Invoke());
             _resultRetryLabel = retry.GetComponentInChildren<TMP_Text>();
             _resultContinueButton = CreateGameButton("Result Continue", _resultPanel.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(286f, 78f),
                 new Vector2(-44f, 36f), Fire, ">", 26, GameText.Continue, 28, () => ContinueRequested?.Invoke());
@@ -321,29 +506,16 @@ namespace Game.UI.Battle
             _resultRetryLabel.text = state.RetryLabel;
             _resultContinueLabel.text = state.ContinueLabel;
             _resultContinueButton.interactable = true;
-            _resultContinueLabel.color = Color.white;
+            _resultContinueLabel.color = SciFiTextStyle.MainText;
         }
 
-        private void RenderTutorialHighlight(string tutorialTargetId, string tutorialMessage)
+        private void RenderTutorialHighlight(string tutorialTargetId)
         {
             var pulse = 0.25f + Mathf.PingPong(Time.unscaledTime * 0.95f, 0.5f);
-            var movementColor = _moveLeftButton != null && _moveLeftButton.interactable ? Control : ControlDisabled;
-            var fireColor = _fireButton != null && _fireButton.interactable ? Fire : Disabled;
             ApplyHighlight(_statusPanel, TargetsStatus(tutorialTargetId), Color.white, pulse);
             ApplyHighlight(_turnPanel, tutorialTargetId == "battle.turn-label", Color.white, pulse);
-            ApplyHighlight(_moveLeftPanel, tutorialTargetId == "battle.move-controls", movementColor, pulse);
-            ApplyHighlight(_moveRightPanel, tutorialTargetId == "battle.move-controls", movementColor, pulse);
-            ApplyHighlight(_jumpLeftPanel, tutorialTargetId == "battle.move-controls", movementColor, pulse);
-            ApplyHighlight(_jumpRightPanel, tutorialTargetId == "battle.move-controls", movementColor, pulse);
-            ApplyHighlight(_firePanel, tutorialTargetId == "battle.fire-button" || tutorialTargetId == "battle.weapon-strip", fireColor, pulse);
             ApplyHighlight(_resultPanel, tutorialTargetId == "battle.result", InkSolid, pulse);
 
-            var showAimGuide = tutorialTargetId == "battle.aim-area";
-            _aimGuideRoot.SetActive(showAimGuide);
-            if (showAimGuide)
-            {
-                _aimGuideText.text = tutorialMessage;
-            }
         }
 
         private static void SetControlState(Button button, Image panel, bool enabled)
@@ -355,33 +527,26 @@ namespace Game.UI.Battle
 
             if (panel != null)
             {
-                panel.color = enabled ? Control : ControlDisabled;
+                panel.color = ControlVisual;
             }
         }
 
-        private void SetWeaponIcon(string iconId)
+        private Sprite LoadWeaponSprite(string iconId)
         {
             iconId ??= string.Empty;
-            if (_weaponIconId == iconId)
-            {
-                return;
-            }
-
-            _weaponIconId = iconId;
             if (!_weaponSprites.TryGetValue(iconId, out var sprite))
             {
                 sprite = LoadResourceSprite(WeaponResourceRoot + iconId, Vector4.zero);
                 _weaponSprites[iconId] = sprite;
             }
 
-            _fireIcon.sprite = sprite;
-            _fireIcon.enabled = sprite != null;
+            return sprite;
         }
 
         private Button CreateMovementButton(string name, Component parent, Vector2 anchor, Vector2 pivot, float size,
             Vector2 anchoredPosition, Sprite sprite, bool mirrorHorizontally, Action onClick)
         {
-            var image = CreatePanel(name, parent, anchor, anchor, pivot, new Vector2(size, size), anchoredPosition, Color.white, sprite ?? _circleSprite);
+            var image = CreatePanel(name, parent, anchor, anchor, pivot, new Vector2(size, size), anchoredPosition, ControlVisual, sprite ?? _circleSprite);
             image.type = Image.Type.Simple;
             image.preserveAspect = true;
             image.rectTransform.localScale = mirrorHorizontally ? new Vector3(-1f, 1f, 1f) : Vector3.one;
@@ -444,9 +609,10 @@ namespace Game.UI.Battle
         }
 
         private Button CreateGameButton(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 size,
-            Vector2 anchoredPosition, Color color, string icon, int iconSize, string label, int labelSize, Action onClick)
+            Vector2 anchoredPosition, Color color, string icon, int iconSize, string label, int labelSize, Action onClick,
+            Vector2? pivotOverride = null)
         {
-            var pivot = new Vector2(anchorMin.x, anchorMin.y);
+            var pivot = pivotOverride ?? new Vector2(anchorMin.x, anchorMin.y);
             var image = CreatePanel(name, parent, anchorMin, anchorMax, pivot, size, anchoredPosition, color, size.x <= 132f ? _circleSprite : _buttonSprite);
             AddOuterStroke(image.gameObject, Color.Lerp(color, Color.white, 0.28f), new Vector2(1.4f, -1.4f));
             AddTopSheen(image.transform, 0.18f);
@@ -468,7 +634,6 @@ namespace Game.UI.Battle
                     new Vector2(-22f, 28f), new Vector2(0f, 10f), labelSize, TextAlignmentOptions.Bottom);
                 labelText.text = label;
                 labelText.fontStyle = FontStyles.Bold;
-                labelText.characterSpacing = 3f;
             }
 
             return button;
@@ -498,20 +663,26 @@ namespace Game.UI.Battle
             return image;
         }
 
+        private static void DisableGraphicEffects(Graphic graphic)
+        {
+            foreach (var effect in graphic.GetComponents<Shadow>())
+            {
+                effect.enabled = false;
+            }
+        }
+
         private TMP_Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
             Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment)
         {
             var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
             var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
-            text.fontSize = fontSize;
-            text.color = Color.white;
-            text.alignment = alignment;
+            var role = fontSize >= 42 ? GameTextRole.ScreenTitle : GameTextRole.Body;
+            SciFiTextStyle.Apply(text, role, fontSize, alignment);
             text.textWrappingMode = TextWrappingModes.Normal;
             text.overflowMode = TextOverflowModes.Truncate;
-            text.raycastTarget = false;
 
             var shadow = rect.gameObject.AddComponent<Shadow>();
-            shadow.effectColor = new Color(0f, 0f, 0f, 0.62f);
+            shadow.effectColor = SciFiTextStyle.ShadowText;
             shadow.effectDistance = new Vector2(1.6f, -1.8f);
             return text;
         }
@@ -563,6 +734,43 @@ namespace Game.UI.Battle
             return Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, Vector4.one * border);
         }
 
+        private static Sprite CreateCircleFrameSprite(int size, float thickness)
+        {
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                name = "Battle Fire Ring",
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp
+            };
+
+            var pixels = new Color32[size * size];
+            var center = (size - 1) * 0.5f;
+            var outerRadius = center - 1f;
+            var innerRadius = outerRadius - Mathf.Max(1f, thickness);
+            for (var y = 0; y < size; y++)
+            {
+                for (var x = 0; x < size; x++)
+                {
+                    var distance = Vector2.Distance(new Vector2(x, y), new Vector2(center, center));
+                    var outerAlpha = Mathf.Clamp01(outerRadius + 0.5f - distance);
+                    var innerAlpha = Mathf.Clamp01(distance - innerRadius + 0.5f);
+                    pixels[y * size + x] = new Color(1f, 1f, 1f, outerAlpha * innerAlpha);
+                }
+            }
+
+            texture.SetPixels32(pixels);
+            texture.Apply(false, false);
+            var sprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, size, size),
+                new Vector2(0.5f, 0.5f),
+                100f,
+                0,
+                SpriteMeshType.FullRect);
+            sprite.name = "Battle Fire Ring";
+            return sprite;
+        }
+
         private static ColorBlock CreateButtonColors(Color baseColor)
         {
             return new ColorBlock
@@ -582,8 +790,8 @@ namespace Game.UI.Battle
             return new ColorBlock
             {
                 normalColor = Color.white,
-                highlightedColor = new Color(1f, 1f, 1f, 1f),
-                pressedColor = new Color(0.72f, 0.82f, 0.94f, 1f),
+                highlightedColor = Color.white,
+                pressedColor = Color.white,
                 selectedColor = Color.white,
                 disabledColor = Color.white,
                 colorMultiplier = 1f,

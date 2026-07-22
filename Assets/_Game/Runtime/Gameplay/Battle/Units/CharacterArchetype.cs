@@ -19,7 +19,8 @@ namespace Game.Gameplay.Battle.Units
             float frontJumpDistance,
             float frontJumpHeight,
             float backJumpDistance,
-            float backJumpHeight)
+            float backJumpHeight,
+            float maxWalkSlopeDegrees = 60f)
         {
             Id = string.IsNullOrWhiteSpace(id) ? "archetype.unknown" : id;
             DisplayName = displayName ?? string.Empty;
@@ -32,6 +33,7 @@ namespace Game.Gameplay.Battle.Units
             FrontJumpHeight = Mathf.Max(0.25f, frontJumpHeight);
             BackJumpDistance = Mathf.Max(0.35f, backJumpDistance);
             BackJumpHeight = Mathf.Max(0.25f, backJumpHeight);
+            MaxWalkSlopeDegrees = Mathf.Clamp(maxWalkSlopeDegrees, 20f, 80f);
         }
 
         public string Id { get; }
@@ -45,5 +47,8 @@ namespace Game.Gameplay.Battle.Units
         public float FrontJumpHeight { get; }
         public float BackJumpDistance { get; }
         public float BackJumpHeight { get; }
+
+        /// <summary>Steepest sustained incline this archetype can walk up.</summary>
+        public float MaxWalkSlopeDegrees { get; }
     }
 }
