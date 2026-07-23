@@ -45,7 +45,10 @@ namespace Game.Gameplay.Battle.Visuals
                 overlayLayers: new[]
                 {
                     new BattleVisualLayer(TrainingLaserKillZone, new Vector2(0f, -5.75f), new Vector2(5.7f, 4.55f), -6)
-                });
+                },
+                // The bright core of the laser_line art (sprite top ~-4.87,
+                // beam ~0.2 of the band below it). Feet below this line = death.
+                killZoneY: -5.05f);
         }
     }
 }

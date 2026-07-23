@@ -21,8 +21,10 @@ namespace Game.Gameplay.Battle.Visuals
             string opponentRigResourcePath = null,
             string backgroundPrefabResourcePath = null,
             IReadOnlyList<BattleVisualLayer> additionalDestructibleLayers = null,
-            IReadOnlyList<BattleVisualLayer> overlayLayers = null)
+            IReadOnlyList<BattleVisualLayer> overlayLayers = null,
+            float? killZoneY = null)
         {
+            KillZoneY = killZoneY;
             Background = background;
             Foreground = foreground;
             PlayerSkinResourcePath = playerSkinResourcePath ?? string.Empty;
@@ -51,6 +53,13 @@ namespace Game.Gameplay.Battle.Visuals
         public string BackgroundPrefabResourcePath { get; }
         public IReadOnlyList<BattleVisualLayer> AdditionalDestructibleLayers { get; }
         public IReadOnlyList<BattleVisualLayer> OverlayLayers { get; }
+
+        /// <summary>
+        /// World height of the lethal line matching the arena's kill-zone art
+        /// (e.g. the laser barrier). When set it overrides the terrain-derived
+        /// kill height, so dying lines up with what the player sees.
+        /// </summary>
+        public float? KillZoneY { get; }
 
         /// <summary>Which way the source art looks before any runtime flip.</summary>
         public int PlayerSkinFacingDirectionX { get; }

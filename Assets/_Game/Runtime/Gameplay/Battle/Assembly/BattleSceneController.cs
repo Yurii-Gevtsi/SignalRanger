@@ -866,8 +866,10 @@ namespace Game.Gameplay.Battle.Assembly
 
             // Must run before BuildUnits/CreateSimulationSettings: motors, the
             // simulation and the bot planners all take the kill height from
-            // GetFallDeathY().
-            _runtimeFallDeathY = ComputeFallDeathY(_battleTerrain.Grid, FallDeathY);
+            // GetFallDeathY(). An arena's kill-zone art (laser barrier) wins
+            // over the terrain-derived line so death matches what is on screen.
+            _runtimeFallDeathY = _visualTheme?.KillZoneY
+                ?? ComputeFallDeathY(_battleTerrain.Grid, FallDeathY);
         }
 
         private Rect ComputeArenaBounds(ArenaDefinition arena)

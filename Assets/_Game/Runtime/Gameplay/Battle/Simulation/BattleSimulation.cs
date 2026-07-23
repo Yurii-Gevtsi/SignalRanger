@@ -63,7 +63,7 @@ namespace Game.Gameplay.Battle.Simulation
         private const float FireBlobMaxTravelSeconds = 3f;
         private const float FirePuddleLifetimeSeconds = 3f;
         private const float FirePuddleTickSeconds = 0.25f;
-        private const float DrillRocketTerrainDurationSeconds = 3f;
+        private const float DrillRocketTerrainDurationSeconds = 2f;
         private const float DrillRocketTerrainSpeedRetain = 1f;
         private const float DrillRocketTunnelRadius = 0.24f;
         private const float BounceSpeedRetain = 0.46f;
@@ -1041,11 +1041,10 @@ namespace Game.Gameplay.Battle.Simulation
                     while (effect.TerrainTickAccumulator >= DrillTerrainTickSeconds)
                     {
                         effect.TerrainTickAccumulator -= DrillTerrainTickSeconds;
+                        // Track the beam visual exactly (same 0.25->max growth
+                        // curve), so destruction never outruns what is drawn.
                         var terrainRange01 = Mathf.Clamp01(effect.Elapsed / DrillVisualGrowthSeconds);
-                        var terrainRange = Mathf.Lerp(1.05f, DrillMaxRange, terrainRange01);
-                        // Carve radius matches the fat beam; the endpoint is a
-                        // terrain raycast hit, so once the beam is fully grown
-                        // each tick keeps boring deeper along the same line.
+                        var terrainRange = Mathf.Lerp(0.25f, DrillMaxRange, terrainRange01);
                         ApplyLinearTerrain(effect, terrainRange, 0.6f);
                     }
 
@@ -1054,7 +1053,7 @@ namespace Game.Gameplay.Battle.Simulation
                     {
                         effect.TickAccumulator -= DrillTickSeconds;
                         var range01 = Mathf.Clamp01(effect.Elapsed / DrillVisualGrowthSeconds);
-                        var range = Mathf.Lerp(1.05f, DrillMaxRange, range01);
+                        var range = Mathf.Lerp(0.25f, DrillMaxRange, range01);
                         ApplyLinearDamageAndTerrain(effect, range, Mathf.Max(1, Mathf.CeilToInt(effect.Weapon.Damage / 3f)), 0f, false);
                     }
 
@@ -1115,8 +1114,11 @@ namespace Game.Gameplay.Battle.Simulation
                     puddle.Point += Vector2.down * 0.045f;
                     // Small scorch bites: about a third of the flame sprite's
                     // area per bite - the fire chews through slowly instead of
-                    // demolishing the ground.
-                    var terrainChanged = _terrain?.ApplyCrater(puddle.Point + Vector2.down * 0.08f, 0.1f) ?? false;
+                    // demolishing the ground. A deterministic sideways wobble
+                    // (hashed from puddle id + burn time) keeps the burn holes
+                    // ragged instead of drilling perfectly vertical shafts.
+                    var wobble = Mathf.Sin(puddle.Id * 12.9898f + puddle.Elapsed * 9.7f) * 0.09f;
+                    var terrainChanged = _terrain?.ApplyCrater(puddle.Point + new Vector2(wobble, -0.08f), 0.1f) ?? false;
                     if (terrainChanged)
                     {
                         // The fire just burned through its own floor - chase the
@@ -1372,15 +1374,26 @@ namespace Game.Gameplay.Battle.Simulation
             UnitsMoved?.Invoke();
         }
 
-        private void ApplyLinearTerrain(ActiveTimedEffect effect, float range, float craterRadius)
+        /// <summary>
+        /// Burns a channel along the whole beam. Crater centers are spaced so
+        /// the farthest crater's edge lands exactly on the beam tip: terrain
+        /// never crumbles ahead of the laser, and destruction stops together
+        /// with the beam (the beam is drawn through walls at its full length,
+        /// so everything it overlaps must burn).
+        /// </summary>
+        private void ApplyLinearTerrain(ActiveTimedEffect effect, float beamLength, float craterRadius)
         {
             if (_terrain == null)
             {
                 return;
             }
 
-            var endpoint = ResolveLineEndpoint(effect.Origin, effect.Direction, range);
-            _terrain.ApplyCrater(endpoint, craterRadius);
+            var carveEnd = beamLength - craterRadius;
+            for (var distance = 0.45f; distance <= carveEnd; distance += craterRadius)
+            {
+                _terrain.ApplyCrater(effect.Origin + effect.Direction * distance, craterRadius);
+            }
+
             UnitsMoved?.Invoke();
         }
 

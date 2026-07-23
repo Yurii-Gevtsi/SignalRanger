@@ -820,7 +820,7 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Terrain.StampSolidRect(new Vector2(-0.75f, 4f), new Vector2(0.5f, 1.5f));
             harness.Terrain.StampSolidRect(new Vector2(5.25f, 4f), new Vector2(9.5f, 1.5f));
 
-            // Slow shot (3 m/s) so the 3 s drill budget genuinely runs out inside
+            // Slow shot (3 m/s) so the 2 s drill budget genuinely runs out inside
             // the long second section instead of the rocket tunnelling through.
             var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.right, 3f, true));
             Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
@@ -828,11 +828,11 @@ namespace Game.Tests.EditMode.Gameplay
             TickMany(harness.Simulation, 120, 1f / 120f);
             Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight, "the rocket exits the first terrain section without exploding");
             Assert.That(harness.Simulation.Projectiles[0].Velocity.magnitude, Is.EqualTo(3f).Within(0.01f));
-            Assert.Less(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 3f);
-            Assert.Greater(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 2f);
+            Assert.Less(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 2f);
+            Assert.Greater(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 1f);
 
             TickMany(harness.Simulation, 600, 1f / 120f);
-            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight, "the rocket explodes after consuming three cumulative seconds inside terrain");
+            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight, "the rocket explodes after consuming two cumulative seconds inside terrain");
         }
 
         [Test]
