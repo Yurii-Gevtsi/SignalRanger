@@ -27,6 +27,8 @@ namespace Game.Data.Save
 
         public SaveData Current { get; private set; }
 
+        public event Action<SaveData> Saved;
+
         public SaveLoadResult LoadOrCreate()
         {
             if (!File.Exists(_savePath))
@@ -68,8 +70,10 @@ namespace Game.Data.Save
                 Directory.CreateDirectory(directory);
             }
 
+            data.lastWriteUtcTicks = DateTime.UtcNow.Ticks;
             File.WriteAllText(_savePath, SaveDataSerializer.ToJson(data));
             Current = data;
+            Saved?.Invoke(data);
         }
 
         public void Delete()

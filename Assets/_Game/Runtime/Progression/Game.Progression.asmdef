@@ -3,7 +3,8 @@
     "rootNamespace": "Game.Progression",
     "references": [
         "Game.Core",
-        "Game.Data"
+        "Game.Data",
+        "Game.Economy"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -492,6 +492,7 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.AreEqual(84, player.Health);
             Assert.AreEqual(BattleTeamId.Player, harness.State.Turn.ActiveTeam);
             Assert.IsTrue(harness.Simulation.CanAcceptMovementInput());
+            Assert.IsFalse(harness.Simulation.ActiveInventory.CanFireSelected);
         }
 
         [Test]
@@ -554,11 +555,19 @@ namespace Game.Tests.EditMode.Gameplay
                 timeoutSeconds: 0.2f);
             var harness = CreateHarness(mortar);
             var fragments = new List<SimProjectile>();
+            var fragmentImpacts = new List<WeaponDefinition>();
             harness.Simulation.ProjectileSpawned += projectile =>
             {
                 if (projectile.Definition.ProjectileId.EndsWith(".fragment", System.StringComparison.Ordinal))
                 {
                     fragments.Add(projectile);
+                }
+            };
+            harness.Simulation.ImpactResolved += impact =>
+            {
+                if (impact.Weapon?.WeaponId == "weapon.mortira.fragment")
+                {
+                    fragmentImpacts.Add(impact.Weapon);
                 }
             };
 
@@ -571,6 +580,10 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(fragments[0].Definition.Radius, Is.EqualTo(mortar.ProjectileRadius * 0.5f).Within(0.001f));
             Assert.AreEqual(24, fragments[0].Definition.Damage);
             Assert.That(fragments[0].Definition.ImpactRadius, Is.EqualTo(0.9f).Within(0.001f));
+
+            TickMany(harness.Simulation, 420, 1f / 120f);
+            Assert.AreEqual(3, fragmentImpacts.Count);
+            Assert.That(fragmentImpacts[0].ImpactRadius, Is.EqualTo(mortar.ImpactRadius * 0.5f).Within(0.001f));
         }
 
         [Test]

@@ -201,6 +201,20 @@ UGS Analytics, кастомні події точно за §14.2 дизайн-�
 `IEconomyService` з транзакційним форматом (transactionId у локальному
 ledger) — тоді підключення Cloud Code буде заміною адаптера.
 
+Клієнтська підготовка (виконано 2026-07-23):
+
+- [x] `SaveData` v4: секція `ledger` (`SaveLedgerData`/`SaveLedgerEntry` з
+      transactionId, sourceType/sourceId, deltas, `pendingSync` для майбутньої
+      офлайн-черги, вікно ідемпотентності на 200 записів) + `SaveMigrationV3ToV4`
+- [x] `IEconomyService` з транзакційним API; `EconomyService` пише ledger,
+      дублікати transactionId не застосовуються повторно
+- [x] Нарахування місій (`CampaignProgressionService`) і покупки магазину
+      (`ShopScreenController`) переведені з прямого запису `softCurrency`
+      на транзакції з детермінованими id (`mission.first.<id>`, `shop.weapon.<id>`)
+- [x] Інтерфейси онлайн-сервісів `IAuthService`, `ICloudSyncService`,
+      `IServerTimeService`, `IPremiumStatusService` + no-op реалізації,
+      зареєстровані в `AppServices`
+
 ### Дизайн-етап 3 «мета й soft launch» → бекенд-етапи 1 + A
 
 - [ ] UGS фундамент за `ugs-setup.md` (проєкт, environments, Auth+GPGS, Cloud Save дзеркало, Remote Config)

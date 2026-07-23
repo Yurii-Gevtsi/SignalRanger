@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Game.Data.Save;
+using Game.Economy;
 
 namespace Game.Progression.Missions
 {
@@ -8,13 +9,15 @@ namespace Game.Progression.Missions
     {
         private readonly SaveData _saveData;
         private readonly MissionDefinition[] _missions;
+        private readonly IEconomyService _economy;
 
-        public CampaignProgressionService(SaveData saveData, MissionDefinition[] missions)
+        public CampaignProgressionService(SaveData saveData, MissionDefinition[] missions, IEconomyService economy = null)
         {
             _saveData = saveData ?? throw new ArgumentNullException(nameof(saveData));
             _saveData.EnsureDefaults();
             _missions = missions?.Where(mission => mission != null && mission.IsValid()).ToArray()
                 ?? Array.Empty<MissionDefinition>();
+            _economy = economy ?? new EconomyService(_saveData);
         }
 
         public int MissionCount => _missions.Length;
@@ -59,7 +62,10 @@ namespace Game.Progression.Missions
             UnlockNextMission(missionIndex);
 
             var reward = mission.Reward;
-            _saveData.economy.softCurrency += reward.softCurrency;
+            // Детермінований transactionId: повторна фіксація тієї самої першої
+            // перемоги не може продублювати нагороду навіть в обхід completedMissionIds.
+            _economy.Grant(reward.softCurrency, "mission.first", mission.MissionId,
+                $"mission.first.{mission.MissionId}");
 
             var unlockedWeaponId = string.Empty;
             if (!string.IsNullOrWhiteSpace(reward.unlockWeaponId)

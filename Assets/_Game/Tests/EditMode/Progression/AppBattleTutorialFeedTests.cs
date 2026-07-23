@@ -18,6 +18,10 @@ namespace Game.Tests.EditMode.Progression
             public int SaveCount { get; private set; }
             public SaveData Current { get; }
 
+#pragma warning disable 67
+            public event System.Action<SaveData> Saved;
+#pragma warning restore 67
+
             public SaveLoadResult LoadOrCreate() => default;
 
             public void Save(SaveData data) => SaveCount++;

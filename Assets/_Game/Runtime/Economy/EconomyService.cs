@@ -3,7 +3,7 @@ using Game.Data.Save;
 
 namespace Game.Economy
 {
-    public sealed class EconomyService
+    public sealed class EconomyService : IEconomyService
     {
         private readonly SaveData _saveData;
 
@@ -17,13 +17,24 @@ namespace Game.Economy
 
         public EconomyTransactionResult Grant(int amount, string reason)
         {
+            return Grant(amount, reason, string.Empty, null);
+        }
+
+        public EconomyTransactionResult Grant(int amount, string sourceType, string sourceId, string transactionId)
+        {
             if (amount <= 0)
             {
-                return new EconomyTransactionResult(false, SoftCurrency, reason);
+                return new EconomyTransactionResult(false, SoftCurrency, sourceType);
+            }
+
+            if (_saveData.ledger.ContainsTransaction(transactionId))
+            {
+                return new EconomyTransactionResult(true, SoftCurrency, sourceType, transactionId, true);
             }
 
             _saveData.economy.softCurrency += amount;
-            return new EconomyTransactionResult(true, SoftCurrency, reason);
+            var recordedId = RecordTransaction(transactionId, sourceType, sourceId, amount);
+            return new EconomyTransactionResult(true, SoftCurrency, sourceType, recordedId, false);
         }
 
         public bool CanSpend(int amount)
@@ -33,13 +44,48 @@ namespace Game.Economy
 
         public EconomyTransactionResult TrySpend(int amount, string reason)
         {
-            if (amount < 0 || !CanSpend(amount))
+            return TrySpend(amount, reason, string.Empty, null);
+        }
+
+        public EconomyTransactionResult TrySpend(int amount, string sourceType, string sourceId, string transactionId)
+        {
+            if (amount < 0)
             {
-                return new EconomyTransactionResult(false, SoftCurrency, reason);
+                return new EconomyTransactionResult(false, SoftCurrency, sourceType);
+            }
+
+            if (_saveData.ledger.ContainsTransaction(transactionId))
+            {
+                return new EconomyTransactionResult(true, SoftCurrency, sourceType, transactionId, true);
+            }
+
+            if (!CanSpend(amount))
+            {
+                return new EconomyTransactionResult(false, SoftCurrency, sourceType);
             }
 
             _saveData.economy.softCurrency -= amount;
-            return new EconomyTransactionResult(true, SoftCurrency, reason);
+            var recordedId = RecordTransaction(transactionId, sourceType, sourceId, -amount);
+            return new EconomyTransactionResult(true, SoftCurrency, sourceType, recordedId, false);
+        }
+
+        private string RecordTransaction(string transactionId, string sourceType, string sourceId, int delta)
+        {
+            var recordedId = string.IsNullOrWhiteSpace(transactionId)
+                ? Guid.NewGuid().ToString("N")
+                : transactionId;
+
+            _saveData.ledger.Append(new SaveLedgerEntry
+            {
+                transactionId = recordedId,
+                sourceType = sourceType ?? string.Empty,
+                sourceId = sourceId ?? string.Empty,
+                softCurrencyDelta = delta,
+                createdUtcTicks = DateTime.UtcNow.Ticks,
+                pendingSync = true
+            });
+
+            return recordedId;
         }
     }
 }

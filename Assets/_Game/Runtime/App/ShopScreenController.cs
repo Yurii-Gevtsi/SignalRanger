@@ -498,10 +498,12 @@ namespace Game.App
             if (_selectedIndex < 0 || _selectedIndex >= _items.Count) return;
             var item = _items[_selectedIndex];
             var save = AppServices.SaveService.Current;
-            if (save == null || AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId)
-                || save.economy.softCurrency < item.CoinPrice) return;
+            if (save == null || AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId)) return;
 
-            save.economy.softCurrency -= item.CoinPrice;
+            var spend = AppServices.Economy.TrySpend(item.CoinPrice, "shop.weapon", item.Definition.WeaponId,
+                $"shop.weapon.{item.Definition.WeaponId}");
+            if (!spend.Success) return;
+
             AppServices.Inventory.UnlockWeapon(item.Definition.WeaponId);
             AppServices.SaveService.Save(save);
             SelectWeapon(_selectedIndex);

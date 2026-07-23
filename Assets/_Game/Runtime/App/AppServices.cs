@@ -24,7 +24,7 @@ namespace Game.App
         public static MissionDefinition[] Missions { get; private set; }
         public static CampaignProgressionService Campaign { get; private set; }
         public static TutorialService Tutorial { get; private set; }
-        public static EconomyService Economy { get; private set; }
+        public static IEconomyService Economy { get; private set; }
         public static InventoryService Inventory { get; private set; }
         public static IAudioService Audio { get; private set; }
         public static IAnalyticsService Analytics { get; private set; }
@@ -32,6 +32,10 @@ namespace Game.App
         public static IPurchaseService Purchases { get; private set; }
         public static IRemoteConfigService RemoteConfig { get; private set; }
         public static INotificationService Notifications { get; private set; }
+        public static IAuthService Auth { get; private set; }
+        public static ICloudSyncService CloudSync { get; private set; }
+        public static IServerTimeService ServerTime { get; private set; }
+        public static IPremiumStatusService PremiumStatus { get; private set; }
         public static MissionCompletionResult LastMissionCompletionResult { get; set; }
 
         public static void Initialize()
@@ -52,9 +56,13 @@ namespace Game.App
             Purchases = new NoOpPurchaseService();
             RemoteConfig = new NoOpRemoteConfigService();
             Notifications = new NoOpNotificationService();
+            Auth = new NoOpAuthService(SaveService.Current);
+            CloudSync = new NoOpCloudSyncService();
+            ServerTime = new NoOpServerTimeService();
+            PremiumStatus = new NoOpPremiumStatusService();
             Content = DefaultGameContentCatalog.Create();
             Missions = Content.Missions;
-            Campaign = new CampaignProgressionService(SaveService.Current, Missions);
+            Campaign = new CampaignProgressionService(SaveService.Current, Missions, Economy);
             Tutorial = new TutorialService(SaveService.Current, TutorialStepLibrary.CreateCampaignSteps());
             Game.Core.BattleTutorialBridge.Feed = new AppBattleTutorialFeed(Tutorial, SaveService);
             Game.Core.BattleFeedbackBridge.Sink = new AppBattleFeedbackSink(Audio);
@@ -65,6 +73,45 @@ namespace Game.App
             LastMissionCompletionResult = default;
             IsInitialized = true;
         }
+
+        /// <summary>
+        /// Викликається онлайн-бутстрапом після успішного входу: замінює no-op
+        /// реалізації на живі адаптери і запускає зведення сейву з хмарою.
+        /// </summary>
+        public static void AttachOnlineServices(
+            IAuthService auth,
+            ICloudSyncService cloudSync,
+            IRemoteConfigService remoteConfig)
+        {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
+            if (auth != null)
+            {
+                Auth = auth;
+            }
+
+            if (remoteConfig != null)
+            {
+                RemoteConfig = remoteConfig;
+            }
+
+            if (cloudSync != null)
+            {
+                CloudSync = cloudSync;
+                _cloudSyncCoordinator?.Dispose();
+                _cloudSyncCoordinator = new CloudSaveSyncCoordinator(
+                    SaveService,
+                    cloudSync,
+                    LastSaveLoadResult.Status == SaveLoadStatus.CreatedNew);
+                _cloudSyncCoordinator.OnSignedIn(decision =>
+                    Analytics?.TrackEvent($"cloud_sync_resolved.{decision}"));
+            }
+        }
+
+        private static CloudSaveSyncCoordinator _cloudSyncCoordinator;
 
         public static bool TryConsumeFirstSessionAutoStart()
         {

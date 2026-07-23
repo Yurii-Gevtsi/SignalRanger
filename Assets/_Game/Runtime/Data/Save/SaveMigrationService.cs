@@ -13,7 +13,8 @@ namespace Game.Data.Save
             {
                 new SaveMigrationV0ToV1(),
                 new SaveMigrationV1ToV2(),
-                new SaveMigrationV2ToV3()
+                new SaveMigrationV2ToV3(),
+                new SaveMigrationV3ToV4()
             })
         {
         }

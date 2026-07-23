@@ -113,6 +113,86 @@ namespace Game.Tests.EditMode.Data
         }
 
         [Test]
+        public void Serializer_MigratesVersionThreeSaveToCurrentWithLedger()
+        {
+            var json = @"{
+                ""schemaVersion"": 3,
+                ""profile"": {
+                    ""profileId"": ""v3-profile""
+                },
+                ""economy"": {
+                    ""softCurrency"": 40
+                }
+            }";
+
+            var restored = SaveDataSerializer.FromJson(json);
+
+            Assert.That(restored.schemaVersion, Is.EqualTo(SaveData.CurrentSchemaVersion));
+            Assert.That(restored.profile.profileId, Is.EqualTo("v3-profile"));
+            Assert.That(restored.economy.softCurrency, Is.EqualTo(40));
+            Assert.That(restored.ledger, Is.Not.Null);
+            Assert.That(restored.ledger.entries, Is.Empty);
+        }
+
+        [Test]
+        public void Serializer_RoundTripsLedgerEntries()
+        {
+            var saveData = SaveData.CreateNew();
+            saveData.ledger.Append(new SaveLedgerEntry
+            {
+                transactionId = "tx-1",
+                sourceType = "mission.first",
+                sourceId = "mission.training.01",
+                softCurrencyDelta = 25,
+                createdUtcTicks = 123456789,
+                pendingSync = true
+            });
+
+            var restored = SaveDataSerializer.FromJson(SaveDataSerializer.ToJson(saveData));
+
+            Assert.That(restored.ledger.entries, Has.Count.EqualTo(1));
+            Assert.That(restored.ledger.entries[0].transactionId, Is.EqualTo("tx-1"));
+            Assert.That(restored.ledger.entries[0].softCurrencyDelta, Is.EqualTo(25));
+            Assert.That(restored.ledger.entries[0].pendingSync, Is.True);
+            Assert.That(restored.ledger.ContainsTransaction("tx-1"), Is.True);
+        }
+
+        [Test]
+        public void Ledger_TrimsOldestSyncedEntriesBeyondWindow()
+        {
+            var ledger = SaveLedgerData.CreateDefault();
+            for (var index = 0; index < SaveLedgerData.MaxEntries; index++)
+            {
+                ledger.Append(new SaveLedgerEntry
+                {
+                    transactionId = $"tx-{index}",
+                    pendingSync = index == 0
+                });
+            }
+
+            ledger.Append(new SaveLedgerEntry { transactionId = "tx-overflow", pendingSync = true });
+
+            Assert.That(ledger.entries, Has.Count.EqualTo(SaveLedgerData.MaxEntries));
+            Assert.That(ledger.ContainsTransaction("tx-0"), Is.True, "pendingSync запис не можна витісняти");
+            Assert.That(ledger.ContainsTransaction("tx-1"), Is.False, "найстаріший синхронізований запис витісняється");
+            Assert.That(ledger.ContainsTransaction("tx-overflow"), Is.True);
+        }
+
+        [Test]
+        public void MigrationService_MigratesV3ToV4CreatingLedger()
+        {
+            var saveData = SaveData.CreateNew();
+            saveData.schemaVersion = 3;
+            saveData.ledger = null;
+
+            new SaveMigrationService().MigrateToCurrent(saveData);
+
+            Assert.That(saveData.schemaVersion, Is.EqualTo(SaveData.CurrentSchemaVersion));
+            Assert.That(saveData.ledger, Is.Not.Null);
+            Assert.That(saveData.ledger.entries, Is.Empty);
+        }
+
+        [Test]
         public void MigrationService_RejectsNewerSchema()
         {
             var saveData = SaveData.CreateNew();

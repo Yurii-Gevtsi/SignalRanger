@@ -32,5 +32,27 @@ namespace Game.Data.Save
             new SaveMigrationService().MigrateToCurrent(data);
             return data;
         }
+
+        /// <summary>
+        /// Переписує вміст наявного інстанса даними з іншого сейву, не змінюючи
+        /// саму референцію: сервіси, що тримають цей SaveData, лишаються валідними
+        /// (потрібно для прийняття хмарного сейву в живій сесії).
+        /// </summary>
+        public static void OverwriteInto(SaveData source, SaveData target)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
+            new SaveMigrationService().MigrateToCurrent(source);
+            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(source), target);
+            target.EnsureDefaults();
+        }
     }
 }
