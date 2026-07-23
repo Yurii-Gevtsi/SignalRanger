@@ -545,7 +545,62 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void Mortar_MainImpact_SpawnsThreeHalfStrengthFragments()
+        public void Blaster_OutOfAmmoMidBurst_EndsTurnAfterImpact()
+        {
+            var blaster = CreateWeapon(
+                "weapon.blaster-caset",
+                WeaponRole.DirectProjectile,
+                ammo: 1,
+                gravityScale: 0f,
+                timeoutSeconds: 0.12f);
+            var harness = CreateHarness(blaster);
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 14f, true)).Outcome);
+            Assert.IsFalse(harness.Simulation.CanContinueBlasterBurst);
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.AreEqual(
+                BattleTeamId.Opponent,
+                harness.State.Turn.ActiveTeam,
+                "the turn does not hang when the magazine empties mid-burst");
+        }
+
+        [Test]
+        public void Mine_BlocksSecondAttackInSameTurn_AndCapsRetreatTime()
+        {
+            var mine = CreateWeapon(
+                "weapon.mine",
+                damage: 54,
+                ammo: 2,
+                gravityScale: 1.05f,
+                timeoutSeconds: 8f);
+            var harness = CreateHarness(mine);
+            SettleUnits(harness);
+            var deployed = false;
+            harness.Simulation.MineDeployed += value => deployed = true;
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome);
+            for (var i = 0; i < 600 && !deployed; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.IsTrue(deployed);
+            Assert.AreEqual(
+                BattleFireOutcome.Blocked,
+                harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                "a planted mine is the turn's attack - no second weapon use");
+            Assert.LessOrEqual(
+                harness.Simulation.MovementTimeRemaining,
+                5f,
+                "planting a mine leaves only a short retreat window");
+        }
+
+        [Test]
+        public void Mortar_MainImpact_SpawnsFiveHalfStrengthFragments()
         {
             var mortar = CreateWeapon(
                 "weapon.mortira",
@@ -576,13 +631,17 @@ namespace Game.Tests.EditMode.Gameplay
                 harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true)).Outcome);
             TickMany(harness.Simulation, 30, 1f / 120f);
 
-            Assert.AreEqual(3, fragments.Count);
+            Assert.AreEqual(5, fragments.Count);
             Assert.That(fragments[0].Definition.Radius, Is.EqualTo(mortar.ProjectileRadius * 0.5f).Within(0.001f));
             Assert.AreEqual(24, fragments[0].Definition.Damage);
             Assert.That(fragments[0].Definition.ImpactRadius, Is.EqualTo(0.9f).Within(0.001f));
+            foreach (var fragment in fragments)
+            {
+                Assert.Less(fragment.Velocity.y, 0f, "fragments launch back against the shell's travel direction");
+            }
 
             TickMany(harness.Simulation, 420, 1f / 120f);
-            Assert.AreEqual(3, fragmentImpacts.Count);
+            Assert.AreEqual(5, fragmentImpacts.Count);
             Assert.That(fragmentImpacts[0].ImpactRadius, Is.EqualTo(mortar.ImpactRadius * 0.5f).Within(0.001f));
         }
 
@@ -609,12 +668,12 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void Grenade_StartsThreeSecondFuseAfterItsLastBounce()
+        public void Grenade_FuseCountsFromThrow_AndExplodesWhileResting()
         {
             var grenade = CreateWeapon(
                 "weapon.granata",
                 gravityScale: 1.1f,
-                timeoutSeconds: 8f);
+                timeoutSeconds: 3f);
             var harness = CreateHarness(grenade);
             var exploded = false;
             harness.Simulation.ProjectileExploded += (id, impact) => exploded = true;
@@ -632,12 +691,18 @@ namespace Game.Tests.EditMode.Gameplay
             }
 
             Assert.AreEqual(1, harness.Simulation.Projectiles.Count);
-            Assert.IsTrue(harness.Simulation.Projectiles[0].IsRestingFuse);
+            var projectile = harness.Simulation.Projectiles[0];
+            Assert.IsTrue(projectile.IsRestingFuse);
             Assert.IsFalse(exploded);
-            TickMany(harness.Simulation, 350, 1f / 120f);
-            Assert.IsFalse(exploded, "the grenade remains visible during its three-second ground fuse");
-            TickMany(harness.Simulation, 20, 1f / 120f);
-            Assert.IsTrue(exploded);
+            Assert.LessOrEqual(
+                projectile.RestingFuseRemaining,
+                3f,
+                "the ground fuse continues the from-throw timer instead of restarting");
+
+            TickMany(harness.Simulation, 100, 1f / 120f);
+            Assert.IsFalse(exploded, "the resting grenade waits out the remainder of its fuse");
+            TickMany(harness.Simulation, 300, 1f / 120f);
+            Assert.IsTrue(exploded, "the grenade explodes once the from-throw fuse expires");
             Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
         }
 
@@ -714,12 +779,14 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Terrain.StampSolidRect(new Vector2(-0.75f, 4f), new Vector2(0.5f, 1.5f));
             harness.Terrain.StampSolidRect(new Vector2(5.25f, 4f), new Vector2(9.5f, 1.5f));
 
-            var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.right, 6f, true));
+            // Slow shot (3 m/s) so the 3 s drill budget genuinely runs out inside
+            // the long second section instead of the rocket tunnelling through.
+            var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.right, 3f, true));
             Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
 
             TickMany(harness.Simulation, 120, 1f / 120f);
             Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight, "the rocket exits the first terrain section without exploding");
-            Assert.That(harness.Simulation.Projectiles[0].Velocity.magnitude, Is.EqualTo(6f).Within(0.01f));
+            Assert.That(harness.Simulation.Projectiles[0].Velocity.magnitude, Is.EqualTo(3f).Within(0.01f));
             Assert.Less(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 3f);
             Assert.Greater(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 2f);
 

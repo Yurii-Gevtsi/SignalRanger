@@ -10,7 +10,9 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.blaster-caset", WeaponRole.DirectProjectile, 30, 0.9f, 0.09f, 0f, 4.5f, 14f, 14f, 3, "blaster_caset", "straight-long", "burst"),
                 Weapon("weapon.bur", WeaponRole.ShortRangeBurst, 18, 0.7f, 0.08f, 0f, 1.2f, 3f, 3f, 3, "bur", "straight-close", "engineering", "drill"),
                 Weapon("weapon.mortira", WeaponRole.ArcingExplosive, 48, 1.8f, 0.16f, 1.15f, 9f, 4f, 12f, 2, "mortira", "arc", "fragment"),
-                Weapon("weapon.granata", WeaponRole.ArcingExplosive, 42, 1.55f, 0.14f, 1.1f, 8f, 8f, 24f, 3, "granata", "arc", "grenade"),
+                // Timeout doubles as the grenade fuse: it counts from the throw
+                // (reference behaviour), whether the grenade is rolling or resting.
+                Weapon("weapon.granata", WeaponRole.ArcingExplosive, 42, 1.55f, 0.14f, 1.1f, 4.5f, 8f, 24f, 3, "granata", "arc", "grenade"),
                 Weapon("weapon.teleport", WeaponRole.MovementTool, 0, 2.5f, 0.11f, 1.1f, 8f, 8f, 24f, 2, "teleport", "arc-utility", "teleport"),
                 Weapon("weapon.c4", WeaponRole.ShortRangeBurst, 74, 2.25f, 0.19f, 0.9f, 5f, 3f, 8f, 1, "C4", "ground", "explosive"),
                 Weapon("weapon.mine", WeaponRole.ArcingExplosive, 54, 1.7f, 0.14f, 1.05f, 8f, 3f, 10f, 2, "mine_off", "ground", "mine"),

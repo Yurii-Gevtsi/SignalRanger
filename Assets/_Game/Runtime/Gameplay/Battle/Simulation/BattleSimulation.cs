@@ -42,8 +42,11 @@ namespace Game.Gameplay.Battle.Simulation
         private const int BlasterShotsPerTurn = 3;
         private const float MineThrowHorizontalSpeed = 1.75f;
         private const float MineThrowVerticalSpeed = 2.1f;
-        private const float MineActivationDelaySeconds = 3f;
-        private const float MineTriggerDelaySeconds = 3f;
+        // Reference feel: the mine arms shortly after it stops and pops fast
+        // once someone steps into its radius - a long trigger delay let units
+        // simply walk out of the blast.
+        private const float MineActivationDelaySeconds = 2f;
+        private const float MineTriggerDelaySeconds = 1f;
         private const float C4FuseSeconds = 3f;
         private const float C4DropDurationSeconds = 0.35f;
         private const float C4DeployDistance = 0.82f;
@@ -62,11 +65,16 @@ namespace Game.Gameplay.Battle.Simulation
         private const float FirePuddleTickSeconds = 0.25f;
         private const float DrillRocketTerrainDurationSeconds = 3f;
         private const float DrillRocketTerrainSpeedRetain = 1f;
-        private const float DrillRocketTunnelRadius = 0.16f;
+        private const float DrillRocketTunnelRadius = 0.24f;
         private const float BounceSpeedRetain = 0.46f;
         private const int MaxBounces = 5;
         private const float RestingFuseMinSpeed = 0.35f;
-        private const float GrenadeRestingFuseSeconds = 3f;
+        private const float MineRetreatSeconds = 5f;
+        private const float MissileHomingDelaySeconds = 0.45f;
+        private const float MissileSteerDegreesPerSecond = 210f;
+        private const int MortarFragmentCount = 5;
+        private const float MortarFragmentSpreadDegrees = 45f;
+        private const float MortarFragmentSpeed = 3.4f;
 
         private readonly BattleState _state;
         private readonly TurnService _turnService;
@@ -259,7 +267,7 @@ namespace Game.Gameplay.Battle.Simulation
         public BattleFireResult TryFire(AimState aim)
         {
             if (Result.IsFinished || HasProjectilesInFlight || HasActiveMotion || HasActiveWeaponEffect
-                || HasPendingGroundAction || _state.Turn.ActionSpent)
+                || HasPendingGroundAction || _mineDeployedThisTurn || _state.Turn.ActionSpent)
             {
                 return new BattleFireResult(BattleFireOutcome.Blocked, BattleTeamId.None, null);
             }
@@ -544,6 +552,11 @@ namespace Game.Gameplay.Battle.Simulation
             UnitsMoved?.Invoke();
         }
 
+        /// <summary>
+        /// The reference mortar shell bursts into shards launched back along the
+        /// incoming trajectory (reflected out of the crater) inside a +-45 degree
+        /// fan. Directions are evenly spaced (deterministic) so replays match.
+        /// </summary>
         private void SpawnMortarFragments(ProjectileImpact impact, WeaponDefinition weapon)
         {
             var fragmentWeapon = CreateMortarFragmentWeapon(weapon);
@@ -554,20 +567,19 @@ namespace Game.Gameplay.Battle.Simulation
                 3f,
                 fragmentWeapon.Damage,
                 fragmentWeapon.ImpactRadius);
-            var launchDirections = new[]
-            {
-                new Vector2(-0.72f, 1f).normalized,
-                Vector2.up,
-                new Vector2(0.72f, 1f).normalized
-            };
 
-            foreach (var direction in launchDirections)
+            var incoming = impact.Velocity.sqrMagnitude > 0.01f ? impact.Velocity.normalized : Vector2.down;
+            var baseAngle = Mathf.Atan2(-incoming.y, -incoming.x) * Mathf.Rad2Deg;
+            for (var i = 0; i < MortarFragmentCount; i++)
             {
+                var t = MortarFragmentCount > 1 ? i / (float)(MortarFragmentCount - 1) : 0.5f;
+                var angle = (baseAngle + Mathf.Lerp(-MortarFragmentSpreadDegrees, MortarFragmentSpreadDegrees, t)) * Mathf.Deg2Rad;
+                var direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
                 Spawn(new ProjectileSpawnRequest(
                     fragmentDefinition,
                     impact.OwnerUnitId,
                     impact.Point + direction * 0.08f,
-                    direction * 3.4f,
+                    direction * MortarFragmentSpeed,
                     fragmentDefinition.Radius * 2f,
                     ProjectileWeaponEffect.GetProjectileColor(weapon.Role)));
             }
@@ -677,7 +689,12 @@ namespace Game.Gameplay.Battle.Simulation
 
             _activeShotWeapon = weapon;
             _blasterShotsThisTurn++;
-            _activeShotEndsTurn = _blasterShotsThisTurn >= BlasterShotsPerTurn;
+            // The turn ends on the third shot, when the magazine runs dry
+            // mid-burst (otherwise the turn would never resolve), and always for
+            // the bot - it fires a single planned shot per turn.
+            _activeShotEndsTurn = _blasterShotsThisTurn >= BlasterShotsPerTurn
+                || !inventory.CanFireSelected
+                || unit.TeamId == BattleTeamId.Opponent;
             if (_activeShotEndsTurn)
             {
                 _turnService.SpendAction(_state);
@@ -1121,7 +1138,20 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void SpawnFireBlob(ActiveTimedEffect effect)
         {
-            var initialVelocity = effect.Direction * FireBlobSpeed;
+            // Reference flame thrower ramps projectile power over the burst and
+            // wobbles the angle slightly, so the fire lays down a strip instead
+            // of pooling in a single point. Deterministic per blob index.
+            var blobIndex = effect.SpawnedBlobs++;
+            var totalBlobs = Mathf.Max(2, Mathf.RoundToInt(FireStreamDurationSeconds / FireStreamSpawnIntervalSeconds));
+            var ramp01 = Mathf.Clamp01(blobIndex / (float)(totalBlobs - 1));
+            var speed = FireBlobSpeed * Mathf.Lerp(0.65f, 1.35f, ramp01);
+            var jitterRadians = ((blobIndex % 3) - 1) * 2.5f * Mathf.Deg2Rad;
+            var cos = Mathf.Cos(jitterRadians);
+            var sin = Mathf.Sin(jitterRadians);
+            var direction = new Vector2(
+                effect.Direction.x * cos - effect.Direction.y * sin,
+                effect.Direction.x * sin + effect.Direction.y * cos);
+            var initialVelocity = direction * speed;
             var gravity = _projectileGravityPerScale * FireBlobGravityScale;
             TraceFireBlobTrajectory(
                 effect.OwnerUnitId,
@@ -1558,9 +1588,13 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void StepPlayerTurnTimer(float tickSeconds)
         {
+            // HasPendingGroundAction: a burning C4 fuse must resolve within the
+            // owner's turn - if the timer expired mid-fuse the turn would pass
+            // to the bot while TryFire stays blocked, deadlocking its turn.
             if (_state.Turn.ActiveTeam != BattleTeamId.Player
                 || _state.Turn.ActionSpent
                 || HasProjectilesInFlight
+                || HasPendingGroundAction
                 || Result.IsFinished)
             {
                 return;
@@ -1661,24 +1695,26 @@ namespace Game.Gameplay.Battle.Simulation
                     continue;
                 }
 
+                // The homing missile mirrors the reference: a short ballistic
+                // free-flight phase, then gravity switches off and it steers
+                // toward the target at constant speed.
+                var isHomingMissile = projectileWeapon?.WeaponId == MissileWeaponId;
+                var age = projectile.Definition.TimeoutSeconds - projectile.RemainingLifetime;
+                var homingActive = isHomingMissile && age >= MissileHomingDelaySeconds;
+
                 var velocity = isControlledDrone
                     ? _controlledProjectileInput * Mathf.Max(0.1f, projectileWeapon?.MaxPower ?? 1f)
                     : projectile.Velocity;
-                if (!isControlledDrone && !(isDrillRocket && projectile.IsTraversingTerrain))
+                if (!isControlledDrone && !homingActive)
                 {
+                    // Gravity also keeps acting inside terrain for the drill
+                    // rocket, so its tunnels curve like in the reference.
                     velocity += _projectileGravityPerScale * projectile.Definition.GravityScale * deltaTime;
                 }
 
-                if (!isControlledDrone && !(isDrillRocket && projectile.IsTraversingTerrain))
+                if (homingActive)
                 {
                     velocity = ApplyProjectileSteering(projectile, velocity, deltaTime);
-                }
-                if (isDrillRocket
-                    && projectile.IsTraversingTerrain
-                    && projectile.TerrainDrillSpeed > 0f
-                    && projectile.TerrainDrillDirection.sqrMagnitude > 0.0001f)
-                {
-                    velocity = projectile.TerrainDrillDirection.normalized * projectile.TerrainDrillSpeed;
                 }
                 projectile.SetVelocity(velocity);
 
@@ -1712,9 +1748,6 @@ namespace Game.Gameplay.Battle.Simulation
                         if (!projectile.IsTraversingTerrain)
                         {
                             projectile.EnterTerrain(DrillRocketTerrainSpeedRetain);
-                            velocity = projectile.TerrainDrillDirection * projectile.TerrainDrillSpeed;
-                            projectile.SetVelocity(velocity);
-                            step = velocity * deltaTime / stepCount;
                         }
 
                         projectile.ConsumeTerrainDrillTime(deltaTime / stepCount);
@@ -1738,17 +1771,15 @@ namespace Game.Gameplay.Battle.Simulation
 
                         if (projectileWeapon?.WeaponId == GrenadeWeaponId)
                         {
-                            projectile.StartRestingFuse(position - step, GrenadeRestingFuseSeconds);
+                            projectile.StartRestingFuse(position - step, projectile.RemainingLifetime);
                             break;
                         }
 
-                        if (projectileWeapon?.WeaponId == TeleportWeaponId)
-                        {
-                            ResolveProjectileAt(i, position - step);
-                            break;
-                        }
-
-                        ResolveProjectileAt(i, position);
+                        // Resolve at the last free sub-step point, matching the
+                        // reference which explodes at the pre-collision position:
+                        // craters bite the surface and radial damage is not
+                        // attenuated by originating inside solid ground.
+                        ResolveProjectileAt(i, position - step);
                         break;
                     }
 
@@ -1848,12 +1879,26 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 _activeShotEndsTurn = true;
             }
+
+            // Planting a mine is the turn's attack. The bot yields immediately;
+            // the player keeps a short retreat window (movement only - TryFire is
+            // blocked by _mineDeployedThisTurn) before the timer hands the turn over.
+            if (_state.Turn.ActiveUnitId == projectile.OwnerUnitId && !_state.Turn.ActionSpent)
+            {
+                if (teamId == BattleTeamId.Opponent)
+                {
+                    CompleteInstantAction();
+                }
+                else
+                {
+                    _playerMovement.CapRemaining(MineRetreatSeconds);
+                }
+            }
         }
 
         private Vector2 ApplyProjectileSteering(SimProjectile projectile, Vector2 velocity, float deltaTime)
         {
-            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
-            if (weapon?.WeaponId != MissileWeaponId || velocity.sqrMagnitude < 0.01f)
+            if (velocity.sqrMagnitude < 0.01f)
             {
                 return velocity;
             }
@@ -1872,7 +1917,7 @@ namespace Game.Gameplay.Battle.Simulation
             var speed = velocity.magnitude;
             var currentAngle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
             var desiredAngle = Mathf.Atan2(desired.y, desired.x) * Mathf.Rad2Deg;
-            var steeredAngle = Mathf.MoveTowardsAngle(currentAngle, desiredAngle, 95f * deltaTime);
+            var steeredAngle = Mathf.MoveTowardsAngle(currentAngle, desiredAngle, MissileSteerDegreesPerSecond * deltaTime);
             var angleRad = steeredAngle * Mathf.Deg2Rad;
             return new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad)) * speed;
         }
@@ -1890,13 +1935,63 @@ namespace Game.Gameplay.Battle.Simulation
                 return false;
             }
 
-            var reflected = Mathf.Abs(velocity.y) >= Mathf.Abs(velocity.x)
-                ? new Vector2(velocity.x, -velocity.y)
-                : new Vector2(-velocity.x, velocity.y);
+            var reflected = ReflectOffTerrain(safePosition, velocity, projectile.Definition.Radius);
             projectile.RegisterBounce();
             projectile.MoveTo(safePosition);
             projectile.SetVelocity(reflected * BounceSpeedRetain);
             return true;
+        }
+
+        /// <summary>
+        /// Reflects a bouncing projectile by sampling which sides of the contact
+        /// point are solid (left/right/top/bottom), mirroring the reference
+        /// grenade model: each axis is inverted independently based on the hit
+        /// sides, so corner and slope bounces behave naturally instead of
+        /// guessing from the dominant velocity component.
+        /// </summary>
+        private Vector2 ReflectOffTerrain(Vector2 contactPoint, Vector2 velocity, float projectileRadius)
+        {
+            var reflected = velocity;
+            if (_terrain == null)
+            {
+                return new Vector2(velocity.x, -velocity.y);
+            }
+
+            var sample = Mathf.Max(projectileRadius, 0.06f) + ProjectileSubStepLength;
+            var grid = _terrain.Grid;
+            var hitLeft = grid.IsSolidWorld(contactPoint + Vector2.left * sample);
+            var hitRight = grid.IsSolidWorld(contactPoint + Vector2.right * sample);
+            var hitTop = grid.IsSolidWorld(contactPoint + Vector2.up * sample);
+            var hitBottom = grid.IsSolidWorld(contactPoint + Vector2.down * sample);
+
+            if (hitLeft && !hitRight)
+            {
+                reflected.x = Mathf.Abs(reflected.x);
+            }
+            else if (hitRight && !hitLeft)
+            {
+                reflected.x = -Mathf.Abs(reflected.x);
+            }
+
+            if (hitBottom && !hitTop)
+            {
+                reflected.y = Mathf.Abs(reflected.y);
+            }
+            else if (hitTop && !hitBottom)
+            {
+                reflected.y = -Mathf.Abs(reflected.y);
+            }
+
+            if (reflected == velocity)
+            {
+                // Corner or thin sliver the axis probes missed: fall back to a
+                // velocity-based reflection so the projectile never tunnels.
+                reflected = Mathf.Abs(velocity.y) >= Mathf.Abs(velocity.x)
+                    ? new Vector2(velocity.x, -velocity.y)
+                    : new Vector2(-velocity.x, velocity.y);
+            }
+
+            return reflected;
         }
 
         private bool TryFindTargetFor(string ownerUnitId, out BattleUnitState target)
@@ -2128,6 +2223,7 @@ namespace Game.Gameplay.Battle.Simulation
             public float Elapsed { get; set; }
             public float TickAccumulator { get; set; }
             public float TerrainTickAccumulator { get; set; }
+            public int SpawnedBlobs { get; set; }
 
             public static ActiveTimedEffect Drill(string ownerUnitId, BattleTeamId teamId, WeaponDefinition weapon, Vector2 origin, Vector2 direction)
             {

@@ -23,6 +23,12 @@ namespace Game.Gameplay.Battle.Domain
             RemainingTurnSeconds = TurnDurationSeconds;
         }
 
+        /// <summary>Shortens the remaining time to at most <paramref name="seconds"/> (never extends it).</summary>
+        public void CapRemaining(float seconds)
+        {
+            RemainingTurnSeconds = Mathf.Clamp(seconds, 0f, RemainingTurnSeconds);
+        }
+
         public void Tick(float deltaTime)
         {
             if (deltaTime <= 0f || RemainingTurnSeconds <= 0f)
