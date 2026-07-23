@@ -5,6 +5,7 @@ using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
 using Unity.Services.Core;
 using UnityEngine;
+using GameSaveData = Game.Data.Save.SaveData;
 
 namespace Game.Infrastructure.Ugs
 {
@@ -20,7 +21,7 @@ namespace Game.Infrastructure.Ugs
             UnityServices.State == ServicesInitializationState.Initialized
             && AuthenticationService.Instance.IsSignedIn;
 
-        public async void PushSnapshot(SaveData saveData, Action<bool> onCompleted = null)
+        public async void PushSnapshot(GameSaveData saveData, Action<bool> onCompleted = null)
         {
             if (saveData == null)
             {
@@ -42,7 +43,7 @@ namespace Game.Infrastructure.Ugs
             }
         }
 
-        public async void PullSnapshot(Action<SaveData> onCompleted)
+        public async void PullSnapshot(Action<GameSaveData> onCompleted)
         {
             try
             {

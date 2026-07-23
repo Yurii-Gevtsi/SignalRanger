@@ -4,6 +4,40 @@
 Виконується на етапі 1 (фундамент онлайну); секції IAP/Economy — на етапі 1.5,
 PvP — на етапі 2.
 
+## 0. Що вже готово в коді (2026-07-23)
+
+Клієнт повністю підготовлений; після створення акаунтів достатньо
+**залінкувати Project ID** — далі все підхоплюється саме:
+
+- пакети `services.core` 1.18.0, `authentication` 3.7.3, `cloudsave` 3.4.1,
+  `remote-config` 4.2.5 вже в `Packages/manifest.json`;
+- збірка `Game.Infrastructure.Ugs` (адаптери) компілюється лише за наявності
+  пакетів (defineConstraints) і сама стартує через
+  `UgsOnlineBootstrap` (RuntimeInitializeOnLoad): ініціалізація UGS
+  (environment `development` у dev-білдах/редакторі, `production` у релізі),
+  анонімний вхід, підміна no-op сервісів живими;
+- без залінкованого проєкту/мережі ініціалізація тихо падає у warning
+  і гра лишається офлайн — нічого не ламається;
+- дзеркало сейву: пуш у Cloud Save (ключ `save`) після кожного локального
+  збереження, зведення при вході за `CloudSyncPolicy`
+  (новіший виграє; розбіжність >24h → рішення гравця, поки що консервативний no-op);
+- Remote Config читається через наявний `IRemoteConfigService`.
+
+**Хендофф-чекліст: що потрібно від вас після створення акаунтів**
+
+1. Unity Cloud: створити org + проєкт → в Unity Editor
+   **Project Settings → Services** увійти й залінкувати проєкт (це все;
+   Project ID запишеться в `ProjectSettings/ProjectVersion`-сусідні файли
+   і потрапить у git звичайним комітом).
+2. Dashboard: створити environment `development`, увімкнути
+   Authentication, Cloud Save, Remote Config (див. §1, §4–6).
+3. Додати платіжну картку + алерти free tier (§1.4).
+4. (пізніше, для GPGS-автовходу) Play Console + Web Client ID/Secret → §4.2;
+   тоді ж у код додається `LinkWithGooglePlayGamesAsync` — місце позначене
+   в `UgsAuthService`.
+5. (пізніше, етап 1.5) service account для CI → §10; ключі **не** в репозиторій
+   (патерни вже в `.gitignore`).
+
 ## 1. Unity Cloud проєкт
 
 1. [cloud.unity.com](https://cloud.unity.com) → створити організацію (якщо нема) і проєкт.

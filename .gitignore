@@ -119,3 +119,9 @@ InitTestScene*.unity*
 
 # JetBrains Rider project metadata
 .idea/
+
+# UGS/бекенд секрети: ключі service account, ключі Android Publisher тощо.
+# Секрети живуть у змінних середовища CI або локально поза репозиторієм.
+*.service-account.json
+ugs-credentials*
+.ugs/
