@@ -39,6 +39,18 @@ namespace Game.Gameplay.Battle.Simulation
         private Vector2 _lastTunnelCarvePoint;
         private bool _hasCarvedTunnel;
 
+        /// <summary>
+        /// The projectile has left its owner's hitbox at least once; from then
+        /// on the owner is a valid target (reference behaviour - you can shoot
+        /// yourself with a shot that comes back or clips you).
+        /// </summary>
+        public bool HasClearedOwner { get; private set; }
+
+        internal void MarkClearedOwner()
+        {
+            HasClearedOwner = true;
+        }
+
         internal void MoveTo(Vector2 position)
         {
             Position = position;

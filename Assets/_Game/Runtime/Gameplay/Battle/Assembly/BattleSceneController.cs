@@ -577,6 +577,14 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            // Steering a controlled projectile (FPV drone) owns the pointer -
+            // camera zoom would fight the piloting input.
+            if (_simulation != null && _simulation.HasActiveControlledProjectile)
+            {
+                _hasPreviousPinchDistance = false;
+                return;
+            }
+
             if (TryGetPinchDistance(out var pinchDistance))
             {
                 if (_hasPreviousPinchDistance)
@@ -627,6 +635,7 @@ namespace Game.Gameplay.Battle.Assembly
                 || _battleState.Turn.ActiveTeam != BattleTeamId.Player
                 || _simulation == null
                 || _simulation.Result.IsFinished
+                || _simulation.HasActiveControlledProjectile
                 || TryGetPinchDistance(out _))
             {
                 _cameraPanActive = false;
@@ -2648,7 +2657,7 @@ namespace Game.Gameplay.Battle.Assembly
                 "weapon.blaster-caset" => (1f, new Vector2(-0.56f, 0.34f), 0f),
                 // Positive offsets counter the art's built-in downward barrel
                 // tilt so the barrel axis matches the aim/trajectory exactly.
-                "weapon.bur" => (1.5f, new Vector2(-0.54f, 0.42f), 12f),
+                "weapon.bur" => (1.5f, new Vector2(-0.54f, 0.42f), 15f),
                 "weapon.mortira" => (1.12f, new Vector2(-0.55f, 0.40f), 7f),
                 "weapon.granata" => (0.76f, new Vector2(-0.50f, 0.29f), 0f),
                 "weapon.teleport" => (0.82f, new Vector2(-0.60f, 0.40f), 0f),

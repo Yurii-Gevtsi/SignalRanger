@@ -866,6 +866,13 @@ namespace Game.Gameplay.Battle.Simulation
             var deployPoint = ResolveGroundDeployPoint(
                 unit.Position + new Vector2(facing * C4DeployDistance, 0.08f),
                 unit.TeamId);
+            // In an enclosed pocket the surface scan starts above the roof and
+            // "teleports" the charge on top of it. Keep it at the unit's feet.
+            var feetY = unit.Position.y - ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
+            if (deployPoint.y > feetY + 0.6f)
+            {
+                deployPoint = new Vector2(unit.Position.x + facing * 0.3f, feetY + 0.06f);
+            }
             var charge = new ActiveCharge(
                 ++_nextProjectileId,
                 unit.UnitId,
@@ -1036,7 +1043,10 @@ namespace Game.Gameplay.Battle.Simulation
                         effect.TerrainTickAccumulator -= DrillTerrainTickSeconds;
                         var terrainRange01 = Mathf.Clamp01(effect.Elapsed / DrillVisualGrowthSeconds);
                         var terrainRange = Mathf.Lerp(1.05f, DrillMaxRange, terrainRange01);
-                        ApplyLinearTerrain(effect, terrainRange, 0.34f);
+                        // Carve radius matches the fat beam; the endpoint is a
+                        // terrain raycast hit, so once the beam is fully grown
+                        // each tick keeps boring deeper along the same line.
+                        ApplyLinearTerrain(effect, terrainRange, 0.6f);
                     }
 
                     effect.TickAccumulator += deltaTime;
@@ -1103,9 +1113,10 @@ namespace Game.Gameplay.Battle.Simulation
                     puddle.TickAccumulator -= FirePuddleTickSeconds;
                     hasSupport &= TryDropFirePuddleToSurface(puddle);
                     puddle.Point += Vector2.down * 0.045f;
-                    // Small scorch bites: the fire eats through slowly and only
-                    // right under itself, not a demolition-scale crater.
-                    var terrainChanged = _terrain?.ApplyCrater(puddle.Point + Vector2.down * 0.08f, 0.18f) ?? false;
+                    // Small scorch bites: about a third of the flame sprite's
+                    // area per bite - the fire chews through slowly instead of
+                    // demolishing the ground.
+                    var terrainChanged = _terrain?.ApplyCrater(puddle.Point + Vector2.down * 0.08f, 0.1f) ?? false;
                     if (terrainChanged)
                     {
                         // The fire just burned through its own floor - chase the
@@ -1346,7 +1357,7 @@ namespace Game.Gameplay.Battle.Simulation
                     }
 
                     var distance = DistanceToSegment(unit.Position, effect.Origin, endpoint);
-                    if (distance > 0.42f)
+                    if (distance > 0.7f)
                     {
                         continue;
                     }
@@ -1894,8 +1905,19 @@ namespace Game.Gameplay.Battle.Simulation
                         break;
                     }
 
+                    // The owner is only shielded until the projectile clears
+                    // their hitbox once; after that a clipping shot hurts them
+                    // too (reference behaviour).
+                    if (!projectile.HasClearedOwner
+                        && !IsTouchingUnit(position, projectile.Definition.Radius, projectile.OwnerUnitId))
+                    {
+                        projectile.MarkClearedOwner();
+                    }
+
+                    var ignoredUnitId = projectile.HasClearedOwner ? null : projectile.OwnerUnitId;
+
                     if (isDrillRocket
-                        && TryHitUnit(position, projectile.Definition.Radius, projectile.OwnerUnitId, out var drillHitPoint))
+                        && TryHitUnit(position, projectile.Definition.Radius, ignoredUnitId, out var drillHitPoint))
                     {
                         ResolveProjectileAt(i, drillHitPoint);
                         break;
@@ -1961,7 +1983,7 @@ namespace Game.Gameplay.Battle.Simulation
                         || projectile.Definition.ProjectileId == MineDeployProjectileId;
                     if (!isDrillRocket
                         && !ignoresUnitsInFlight
-                        && TryHitUnit(position, projectile.Definition.Radius, projectile.OwnerUnitId, out var hitPoint))
+                        && TryHitUnit(position, projectile.Definition.Radius, ignoredUnitId, out var hitPoint))
                     {
                         ResolveProjectileAt(i, hitPoint);
                         break;
@@ -2196,6 +2218,26 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             return target != null;
+        }
+
+        /// <summary>Box-overlap test against one specific unit (used to detect
+        /// when a projectile leaves its owner's hitbox after launch).</summary>
+        private bool IsTouchingUnit(Vector2 point, float radius, string unitId)
+        {
+            if (string.IsNullOrEmpty(unitId))
+            {
+                return false;
+            }
+
+            var unit = _state.GetUnit(unitId);
+            if (unit == null || unit.IsDefeated)
+            {
+                return false;
+            }
+
+            var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
+            return Mathf.Abs(point.x - unit.Position.x) <= _settings.UnitCollisionHalfWidth + radius
+                && Mathf.Abs(point.y - unit.Position.y) <= halfHeight + radius;
         }
 
         private bool TryHitUnit(Vector2 point, float radius, string ignoredUnitId, out Vector2 hitPoint)
