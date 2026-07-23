@@ -151,7 +151,7 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.AreEqual(new Color(0.06f, 1f, 0.10f, 1f), healthLabel.color);
                 Assert.AreEqual(healthLabel.transform.localScale.x, healthLabel.transform.localScale.y);
                 Assert.That(healthLabel.transform.localPosition.y, Is.EqualTo(2f).Within(0.0001f));
-                Assert.That(healthLabel.transform.localScale.x, Is.EqualTo(0.20f).Within(0.0001f));
+                Assert.That(healthLabel.transform.localScale.x, Is.EqualTo(0.15f).Within(0.0001f));
 
                 weaponSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f),
                     new Vector2(0.5f, 0.5f), 1f);

@@ -29,6 +29,12 @@ namespace Game.Gameplay.Battle.Simulation
         public Vector2 Velocity { get; private set; }
         public float RemainingLifetime { get; private set; }
         public int BounceCount { get; private set; }
+        public float TerrainDrillTimeRemaining { get; private set; }
+        public float TerrainDrillSpeed { get; private set; }
+        public Vector2 TerrainDrillDirection { get; private set; } = Vector2.right;
+        public bool IsTraversingTerrain { get; private set; }
+        public bool IsRestingFuse { get; private set; }
+        public float RestingFuseRemaining { get; private set; }
 
         internal void MoveTo(Vector2 position)
         {
@@ -48,6 +54,47 @@ namespace Game.Gameplay.Battle.Simulation
         internal void RegisterBounce()
         {
             BounceCount++;
+        }
+
+        internal void StartRestingFuse(Vector2 position, float durationSeconds)
+        {
+            Position = position;
+            Velocity = Vector2.zero;
+            IsRestingFuse = true;
+            RestingFuseRemaining = Mathf.Max(0f, durationSeconds);
+        }
+
+        internal void ReduceRestingFuse(float deltaTime)
+        {
+            RestingFuseRemaining = Mathf.Max(0f, RestingFuseRemaining - deltaTime);
+        }
+
+        internal void ConfigureTerrainDrill(float durationSeconds)
+        {
+            TerrainDrillTimeRemaining = Mathf.Max(0f, durationSeconds);
+        }
+
+        internal void EnterTerrain(float speedRetain)
+        {
+            if (IsTraversingTerrain)
+            {
+                return;
+            }
+
+            IsTraversingTerrain = true;
+            Velocity *= Mathf.Clamp01(speedRetain);
+            TerrainDrillSpeed = Velocity.magnitude;
+            TerrainDrillDirection = Velocity.sqrMagnitude > 0.0001f ? Velocity.normalized : Vector2.right;
+        }
+
+        internal void ExitTerrain()
+        {
+            IsTraversingTerrain = false;
+        }
+
+        internal void ConsumeTerrainDrillTime(float deltaTime)
+        {
+            TerrainDrillTimeRemaining = Mathf.Max(0f, TerrainDrillTimeRemaining - deltaTime);
         }
     }
 }

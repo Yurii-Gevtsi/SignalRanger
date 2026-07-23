@@ -300,6 +300,12 @@ namespace Game.Gameplay.Battle.AI
             }
 
             var target = SelectTarget(unit);
+            if (target == null)
+            {
+                return null;
+            }
+
+            _scatteredTarget = TargetScatter.Apply(target.Position, unit.Position, _profile, _random);
             var bodies = BuildBodies(unit, target);
             var plan = _profile.EvaluateAllWeapons
                 ? PlanBestWeapon(unit.Position, bodies)

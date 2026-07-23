@@ -10,19 +10,19 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.blaster-caset", WeaponRole.DirectProjectile, 30, 0.9f, 0.09f, 0f, 4.5f, 14f, 14f, 3, "blaster_caset", "straight-long", "burst"),
                 Weapon("weapon.bur", WeaponRole.ShortRangeBurst, 18, 0.7f, 0.08f, 0f, 1.2f, 3f, 3f, 3, "bur", "straight-close", "engineering", "drill"),
                 Weapon("weapon.mortira", WeaponRole.ArcingExplosive, 48, 1.8f, 0.16f, 1.15f, 9f, 4f, 12f, 2, "mortira", "arc", "fragment"),
-                Weapon("weapon.granata", WeaponRole.ArcingExplosive, 42, 1.55f, 0.14f, 1.1f, 8f, 4f, 12f, 3, "granata", "arc", "grenade"),
-                Weapon("weapon.teleport", WeaponRole.MovementTool, 0, 2.5f, 0.11f, 0.5f, 6f, 4f, 11f, 2, "teleport", "arc-utility", "teleport"),
+                Weapon("weapon.granata", WeaponRole.ArcingExplosive, 42, 1.55f, 0.14f, 1.1f, 8f, 8f, 24f, 3, "granata", "arc", "grenade"),
+                Weapon("weapon.teleport", WeaponRole.MovementTool, 0, 2.5f, 0.11f, 1.1f, 8f, 8f, 24f, 2, "teleport", "arc-utility", "teleport"),
                 Weapon("weapon.c4", WeaponRole.ShortRangeBurst, 74, 2.25f, 0.19f, 0.9f, 5f, 3f, 8f, 1, "C4", "ground", "explosive"),
                 Weapon("weapon.mine", WeaponRole.ArcingExplosive, 54, 1.7f, 0.14f, 1.05f, 8f, 3f, 10f, 2, "mine_off", "ground", "mine"),
                 Weapon("weapon.bur-rocket", WeaponRole.ArcingExplosive, 46, 1.25f, 0.12f, 0.8f, 8f, 5f, 13f, 2, "bur_rocket", "arc-special", "drill"),
-                Weapon("weapon.heal", WeaponRole.DefensiveTool, 34, 1.4f, 0.12f, 0.65f, 6f, 3f, 9f, 2, "heal", "bonus", "repair"),
+                Weapon("weapon.heal", WeaponRole.DefensiveTool, 34, 1.4f, 0.12f, 0.65f, 6f, 3f, 9f, 1, "heal", "bonus", "repair"),
                 Weapon("weapon.bonus-box", WeaponRole.DefensiveTool, 22, 1.25f, 0.12f, 0.85f, 7f, 3f, 10f, 2, "bonus_box", "drop", "random"),
                 Weapon("weapon.toxic", WeaponRole.DirectProjectile, 30, 1.2f, 0.11f, 0f, 4.5f, 13f, 13f, 3, "toxic", "straight-close", "toxic"),
-                Weapon("weapon.emp", WeaponRole.DirectProjectile, 38, 1.5f, 0.13f, 0f, 5f, 15f, 15f, 2, "emp", "straight-long", "emp"),
+                Weapon("weapon.emp", WeaponRole.DirectProjectile, 38, 1.5f, 0.13f, 0f, 7f, 9f, 9f, 2, "emp", "straight-long", "emp"),
                 Weapon("weapon.freeze", WeaponRole.ArcingExplosive, 36, 1.35f, 0.12f, 1.05f, 8f, 4f, 12f, 2, "freeze", "arc", "freeze"),
-                Weapon("weapon.fire-gun", WeaponRole.ShortRangeBurst, 40, 1.45f, 0.13f, 0f, 1.5f, 3.5f, 3.5f, 3, "fire_gun", "straight-close", "fire"),
+                Weapon("weapon.fire-gun", WeaponRole.ShortRangeBurst, 40, 1.45f, 0.13f, 0.82f, 3f, 6.4f, 6.4f, 3, "fire_gun", "straight-close", "fire"),
                 Weapon("weapon.missle", WeaponRole.ArcingExplosive, 52, 1.4f, 0.13f, 0.8f, 8f, 5f, 13f, 2, "missle", "arc-homing", "homing"),
-                Weapon("weapon.fpv-drone", WeaponRole.DirectProjectile, 58, 1.35f, 0.14f, 0.35f, 8f, 5f, 13f, 1, "fpv_0", "controlled", "drone")
+                Weapon("weapon.fpv-drone", WeaponRole.DirectProjectile, 58, 1.35f, 0.14f, 0f, 8f, 8.5f, 8.5f, 1, "fpv_0", "controlled", "drone")
             };
         }
 

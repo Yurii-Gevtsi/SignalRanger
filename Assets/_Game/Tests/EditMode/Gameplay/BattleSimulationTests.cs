@@ -479,6 +479,242 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void RepairKit_UsesWithoutAimAndKeepsPlayerTurn()
+        {
+            var repair = CreateWeapon("weapon.heal", WeaponRole.DefensiveTool, damage: 34, ammo: 1);
+            var harness = CreateHarness(repair);
+            var player = harness.State.GetUnit("player.test.01");
+            player.ApplyDamage(50, "test.damage");
+
+            var result = harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false));
+
+            Assert.AreEqual(BattleFireOutcome.UtilityUsed, result.Outcome);
+            Assert.AreEqual(84, player.Health);
+            Assert.AreEqual(BattleTeamId.Player, harness.State.Turn.ActiveTeam);
+            Assert.IsTrue(harness.Simulation.CanAcceptMovementInput());
+        }
+
+        [Test]
+        public void C4_DropsWithoutAim_AllowsEscape_ThenExplodesAndEndsTurn()
+        {
+            var c4 = CreateWeapon("weapon.c4", WeaponRole.ShortRangeBurst, damage: 74, ammo: 1);
+            var harness = CreateHarness(c4);
+            var player = harness.State.GetUnit("player.test.01");
+            SettleUnits(harness);
+            var startX = player.Position.x;
+            var exploded = false;
+            harness.Simulation.ProjectileExploded += (id, impact) => exploded = true;
+
+            var result = harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false));
+
+            Assert.AreEqual(BattleFireOutcome.UtilityUsed, result.Outcome);
+            Assert.IsTrue(harness.Simulation.HasPendingGroundAction);
+            Assert.AreEqual(BattleTeamId.Player, harness.State.Turn.ActiveTeam);
+            Assert.AreEqual(BattleWalkOutcome.Moved, harness.Simulation.Walk(-1, 0f));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            harness.Simulation.Walk(0, 0f);
+            Assert.Less(player.Position.x, startX, "the player can move away while the fuse is burning");
+            Assert.IsFalse(exploded);
+
+            TickMany(harness.Simulation, 340, 1f / 120f);
+            Assert.IsTrue(exploded);
+            Assert.IsFalse(harness.Simulation.HasPendingGroundAction);
+            Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
+        }
+
+        [Test]
+        public void Blaster_KeepsBurstAvailableUntilThirdResolvedShot()
+        {
+            var blaster = CreateWeapon(
+                "weapon.blaster-caset",
+                WeaponRole.DirectProjectile,
+                ammo: 3,
+                gravityScale: 0f,
+                timeoutSeconds: 0.12f);
+            var harness = CreateHarness(blaster);
+            var aim = new AimState(new Vector2(-3f, 4f), Vector2.up, 14f, true);
+
+            for (var shot = 1; shot <= 3; shot++)
+            {
+                Assert.AreEqual(BattleFireOutcome.Fired, harness.Simulation.TryFire(aim).Outcome);
+                Assert.AreEqual(shot < 3, harness.Simulation.CanContinueBlasterBurst);
+                TickMany(harness.Simulation, 20, 1f / 120f);
+                Assert.AreEqual(shot < 3 ? BattleTeamId.Player : BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
+            }
+        }
+
+        [Test]
+        public void Mortar_MainImpact_SpawnsThreeHalfStrengthFragments()
+        {
+            var mortar = CreateWeapon(
+                "weapon.mortira",
+                damage: 48,
+                impactRadius: 1.8f,
+                gravityScale: 0f,
+                timeoutSeconds: 0.2f);
+            var harness = CreateHarness(mortar);
+            var fragments = new List<SimProjectile>();
+            harness.Simulation.ProjectileSpawned += projectile =>
+            {
+                if (projectile.Definition.ProjectileId.EndsWith(".fragment", System.StringComparison.Ordinal))
+                {
+                    fragments.Add(projectile);
+                }
+            };
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true)).Outcome);
+            TickMany(harness.Simulation, 30, 1f / 120f);
+
+            Assert.AreEqual(3, fragments.Count);
+            Assert.That(fragments[0].Definition.Radius, Is.EqualTo(mortar.ProjectileRadius * 0.5f).Within(0.001f));
+            Assert.AreEqual(24, fragments[0].Definition.Damage);
+            Assert.That(fragments[0].Definition.ImpactRadius, Is.EqualTo(0.9f).Within(0.001f));
+        }
+
+        [Test]
+        public void Teleport_RepositionsWhenProjectileStopsWithoutExtraDelay()
+        {
+            var teleport = CreateWeapon(
+                "weapon.teleport",
+                WeaponRole.MovementTool,
+                damage: 0,
+                gravityScale: 0f,
+                timeoutSeconds: 0.15f);
+            var harness = CreateHarness(teleport);
+            var player = harness.State.GetUnit("player.test.01");
+            var startX = player.Position.x;
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 1f), Vector2.right, 8f, true)).Outcome);
+            TickMany(harness.Simulation, 25, 1f / 120f);
+
+            Assert.Greater(player.Position.x, startX + 0.5f);
+            Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
+        }
+
+        [Test]
+        public void Grenade_StartsThreeSecondFuseAfterItsLastBounce()
+        {
+            var grenade = CreateWeapon(
+                "weapon.granata",
+                gravityScale: 1.1f,
+                timeoutSeconds: 8f);
+            var harness = CreateHarness(grenade);
+            var exploded = false;
+            harness.Simulation.ProjectileExploded += (id, impact) => exploded = true;
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.down, 6f, true)).Outcome);
+            for (var i = 0;
+                 i < 600
+                 && harness.Simulation.Projectiles.Count > 0
+                 && !harness.Simulation.Projectiles[0].IsRestingFuse;
+                 i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.AreEqual(1, harness.Simulation.Projectiles.Count);
+            Assert.IsTrue(harness.Simulation.Projectiles[0].IsRestingFuse);
+            Assert.IsFalse(exploded);
+            TickMany(harness.Simulation, 350, 1f / 120f);
+            Assert.IsFalse(exploded, "the grenade remains visible during its three-second ground fuse");
+            TickMany(harness.Simulation, 20, 1f / 120f);
+            Assert.IsTrue(exploded);
+            Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
+        }
+
+        [Test]
+        public void Mine_IsThrownBeforeItBecomesDeployed()
+        {
+            var mine = CreateWeapon(
+                "weapon.mine",
+                damage: 54,
+                ammo: 1,
+                gravityScale: 1.05f,
+                timeoutSeconds: 8f);
+            var harness = CreateHarness(mine);
+            SettleUnits(harness);
+            var deployed = false;
+            harness.Simulation.MineDeployed += value => deployed = true;
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome);
+            Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight);
+            Assert.IsFalse(deployed);
+
+            for (var i = 0; i < 360 && !deployed; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.IsTrue(deployed);
+            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight);
+            Assert.AreEqual(BattleTeamId.Player, harness.State.Turn.ActiveTeam);
+        }
+
+        [Test]
+        public void Fpv_HoversWithoutInput_AndMovesOnlyWhileDirected()
+        {
+            var fpv = CreateWeapon(
+                "weapon.fpv-drone",
+                WeaponRole.DirectProjectile,
+                damage: 58,
+                ammo: 1,
+                gravityScale: 0f,
+                timeoutSeconds: 8f);
+            var harness = CreateHarness(fpv);
+
+            Assert.IsFalse(BattleSimulation.RequiresAim(fpv));
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome);
+            Assert.IsTrue(harness.Simulation.HasActiveControlledProjectile);
+            var spawnPoint = harness.Simulation.Projectiles[0].Position;
+
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(harness.Simulation.Projectiles[0].Position, Is.EqualTo(spawnPoint));
+
+            harness.Simulation.SetControlledProjectileInput(Vector2.up);
+            TickMany(harness.Simulation, 10, 1f / 120f);
+            var movedPoint = harness.Simulation.Projectiles[0].Position;
+            Assert.Greater(movedPoint.y, spawnPoint.y + 1f);
+
+            harness.Simulation.SetControlledProjectileInput(Vector2.zero);
+            TickMany(harness.Simulation, 10, 1f / 120f);
+            Assert.That(harness.Simulation.Projectiles[0].Position, Is.EqualTo(movedPoint));
+        }
+
+        [Test]
+        public void DrillRocket_CarriesRemainingDrillTimeBetweenTerrainSections()
+        {
+            var drillRocket = CreateWeapon(
+                "weapon.bur-rocket",
+                gravityScale: 0f,
+                timeoutSeconds: 8f);
+            var harness = CreateHarness(drillRocket);
+            harness.Terrain.StampSolidRect(new Vector2(-0.75f, 4f), new Vector2(0.5f, 1.5f));
+            harness.Terrain.StampSolidRect(new Vector2(5.25f, 4f), new Vector2(9.5f, 1.5f));
+
+            var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.right, 6f, true));
+            Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
+
+            TickMany(harness.Simulation, 120, 1f / 120f);
+            Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight, "the rocket exits the first terrain section without exploding");
+            Assert.That(harness.Simulation.Projectiles[0].Velocity.magnitude, Is.EqualTo(6f).Within(0.01f));
+            Assert.Less(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 3f);
+            Assert.Greater(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 2f);
+
+            TickMany(harness.Simulation, 600, 1f / 120f);
+            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight, "the rocket explodes after consuming three cumulative seconds inside terrain");
+        }
+
+        [Test]
         public void ProjectileTimeout_ExplodesAndAdvancesTurn()
         {
             var weapon = CreateWeapon("weapon.test.timeout", gravityScale: 0f, timeoutSeconds: 0.12f);
@@ -632,6 +868,8 @@ namespace Game.Tests.EditMode.Gameplay
                     hash = hash * 31 + projectile.Velocity.x.GetHashCode();
                     hash = hash * 31 + projectile.Velocity.y.GetHashCode();
                     hash = hash * 31 + projectile.RemainingLifetime.GetHashCode();
+                    hash = hash * 31 + projectile.TerrainDrillTimeRemaining.GetHashCode();
+                    hash = hash * 31 + projectile.IsTraversingTerrain.GetHashCode();
                 }
 
                 return hash;

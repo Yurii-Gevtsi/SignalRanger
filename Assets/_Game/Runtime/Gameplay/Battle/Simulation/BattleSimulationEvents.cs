@@ -145,16 +145,44 @@ namespace Game.Gameplay.Battle.Simulation
         public BattleTeamId Team { get; }
     }
 
+    public readonly struct ChargeDeployedEvent
+    {
+        public ChargeDeployedEvent(int chargeId, Vector2 origin, Vector2 point, float dropDurationSeconds, WeaponDefinition weapon, BattleTeamId team)
+        {
+            ChargeId = chargeId;
+            Origin = origin;
+            Point = point;
+            DropDurationSeconds = dropDurationSeconds;
+            Weapon = weapon;
+            Team = team;
+        }
+
+        public int ChargeId { get; }
+        public Vector2 Origin { get; }
+        public Vector2 Point { get; }
+        public float DropDurationSeconds { get; }
+        public WeaponDefinition Weapon { get; }
+        public BattleTeamId Team { get; }
+    }
+
     public readonly struct LinearWeaponEffectEvent
     {
-        public LinearWeaponEffectEvent(WeaponDefinition weapon, BattleTeamId team, Vector2 origin, Vector2 direction, float range, float durationSeconds)
+        public LinearWeaponEffectEvent(
+            WeaponDefinition weapon,
+            BattleTeamId team,
+            Vector2 origin,
+            Vector2 direction,
+            float range,
+            float growthDurationSeconds,
+            float lifetimeSeconds)
         {
             Weapon = weapon;
             Team = team;
             Origin = origin;
             Direction = direction;
             Range = range;
-            DurationSeconds = durationSeconds;
+            GrowthDurationSeconds = growthDurationSeconds;
+            LifetimeSeconds = lifetimeSeconds;
         }
 
         public WeaponDefinition Weapon { get; }
@@ -162,24 +190,39 @@ namespace Game.Gameplay.Battle.Simulation
         public Vector2 Origin { get; }
         public Vector2 Direction { get; }
         public float Range { get; }
-        public float DurationSeconds { get; }
+        public float GrowthDurationSeconds { get; }
+        public float LifetimeSeconds { get; }
     }
 
     public readonly struct FireBlobEvent
     {
-        public FireBlobEvent(WeaponDefinition weapon, BattleTeamId team, Vector2 origin, Vector2 impactPoint, float lifetimeSeconds)
+        public FireBlobEvent(
+            WeaponDefinition weapon,
+            BattleTeamId team,
+            Vector2 origin,
+            Vector2 initialVelocity,
+            Vector2 gravity,
+            Vector2 impactPoint,
+            float travelSeconds,
+            float lifetimeSeconds)
         {
             Weapon = weapon;
             Team = team;
             Origin = origin;
+            InitialVelocity = initialVelocity;
+            Gravity = gravity;
             ImpactPoint = impactPoint;
+            TravelSeconds = travelSeconds;
             LifetimeSeconds = lifetimeSeconds;
         }
 
         public WeaponDefinition Weapon { get; }
         public BattleTeamId Team { get; }
         public Vector2 Origin { get; }
+        public Vector2 InitialVelocity { get; }
+        public Vector2 Gravity { get; }
         public Vector2 ImpactPoint { get; }
+        public float TravelSeconds { get; }
         public float LifetimeSeconds { get; }
     }
 }

@@ -34,6 +34,11 @@ namespace Game.Gameplay.Battle.Runtime
             _view.SetEquippedWeapon(sprite, sourceFacesRight);
         }
 
+        public void SetWeaponPresentation(float scaleMultiplier, Vector2 localPosition, float aimAngleOffset)
+        {
+            _view.SetWeaponPresentation(scaleMultiplier, localPosition, aimAngleOffset);
+        }
+
         public void ClearEquippedWeapon()
         {
             _view.ClearEquippedWeapon();

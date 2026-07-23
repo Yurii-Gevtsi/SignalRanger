@@ -77,6 +77,9 @@ namespace Game.Gameplay.Battle.Assembly
         private const float CameraZoomOutMultiplier = 1.25f;
         private const float CameraZoomStep = 0.62f;
         private const float PinchZoomSensitivity = 0.008f;
+        private const float DirectAimCenterDeadZone = 0.32f;
+        private const float DirectAimSmoothingSpeed = 5.5f;
+        private const float ControlledPointerDeadZonePixels = 2f;
 
         private readonly Color _playerColor = new(0.18f, 0.56f, 0.96f);
         private readonly Color _opponentColor = new(0.95f, 0.28f, 0.22f);
@@ -130,6 +133,8 @@ namespace Game.Gameplay.Battle.Assembly
         private bool _aimDragActive;
         private bool _aimDragHadValidPull;
         private Vector2 _aimAnchorWorld;
+        private bool _controlledPointerActive;
+        private Vector2 _controlledPointerPreviousScreenPosition;
         private int _uiWalkInputDirection;
         private int _keyboardWalkInputDirection;
         private float _minimumCameraSize;
@@ -149,6 +154,8 @@ namespace Game.Gameplay.Battle.Assembly
         private bool HasActiveMotion => _simulation != null && _simulation.HasActiveMotion;
 
         private bool HasActiveWeaponEffect => _simulation != null && _simulation.HasActiveWeaponEffect;
+
+        private bool HasPendingGroundAction => _simulation != null && _simulation.HasPendingGroundAction;
 
         private void Awake()
         {
@@ -310,6 +317,13 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            if (_simulation.HasActiveControlledProjectile)
+            {
+                UpdateControlledProjectileInput();
+                _simulation.Tick(Time.deltaTime);
+                return;
+            }
+
             if (HasActiveMotion || HasProjectilesInFlight || HasActiveWeaponEffect)
             {
                 _simulation.Tick(Time.deltaTime);
@@ -464,6 +478,8 @@ namespace Game.Gameplay.Battle.Assembly
             simulation.ProjectileSpawned += OnSimulationProjectileSpawned;
             simulation.ProjectileExploded += OnSimulationProjectileExploded;
             simulation.MineDeployed += OnSimulationMineDeployed;
+            simulation.MineTriggered += OnSimulationMineTriggered;
+            simulation.ChargeDeployed += OnSimulationChargeDeployed;
             simulation.LinearWeaponEffectStarted += OnSimulationLinearWeaponEffectStarted;
             simulation.FireBlobSpawned += OnSimulationFireBlobSpawned;
             simulation.UnitsMoved += OnSimulationUnitsMoved;
@@ -494,6 +510,7 @@ namespace Game.Gameplay.Battle.Assembly
                 || HasProjectilesInFlight
                 || HasActiveMotion
                 || HasActiveWeaponEffect
+                || HasPendingGroundAction
                 || IsWeaponSwitchBlockedByGuideBeforeWeaponSelected())
             {
                 return;
@@ -1001,8 +1018,8 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (state.TeamId == BattleTeamId.Player)
             {
-                view.SetHealthLabelPositionY(1.78f);
-                view.SetHealthLabelScale(0.17f);
+                view.SetHealthLabelPositionY(1.3f);
+                view.SetHealthLabelScale(0.15f);
             }
 
             return view;
@@ -1068,6 +1085,13 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            if (!BattleSimulation.RequiresAim(_inventory?.Selected))
+            {
+                _aimDragActive = false;
+                _aimDragHadValidPull = false;
+                return;
+            }
+
             if (TryGetPinchDistance(out _))
             {
                 _aimDragActive = false;
@@ -1103,8 +1127,15 @@ namespace Game.Gameplay.Battle.Assembly
             if (_aimDragActive && pressed)
             {
                 var pull = ScreenToWorld(screenPosition) - _aimAnchorWorld;
+                var previousAim = _aimState;
 
-                if (_aimDragHadValidPull)
+                if (_aimDragHadValidPull
+                    && UsesSmoothedDirectAim(_inventory.Selected)
+                    && pull.magnitude < DirectAimCenterDeadZone)
+                {
+                    _aimState = new AimState(origin, previousAim.Direction, previousAim.Power, true);
+                }
+                else if (_aimDragHadValidPull)
                 {
                     // Aim is live in this drag: keep tracking the finger everywhere,
                     // including through the dead zone around the anchor — no freeze,
@@ -1130,6 +1161,15 @@ namespace Game.Gameplay.Battle.Assembly
                     // not yank the frozen arc until it pulls past the dead zone.
                 }
 
+                if (UsesSmoothedDirectAim(_inventory.Selected)
+                    && previousAim.HasInput
+                    && _aimState.HasInput)
+                {
+                    var smoothing = 1f - Mathf.Exp(-DirectAimSmoothingSpeed * Time.deltaTime);
+                    var direction = Vector2.Lerp(previousAim.Direction, _aimState.Direction, smoothing).normalized;
+                    _aimState = new AimState(origin, direction, _aimState.Power, true);
+                }
+
                 FaceUnitTowardAim(activePresenter);
 
                 _firstBattleGuide?.ObserveAimState(_aimState.HasInput);
@@ -1149,6 +1189,64 @@ namespace Game.Gameplay.Battle.Assembly
                 // the player fires it with the Fire button.
                 _aimDragActive = false;
             }
+        }
+
+        private void UpdateControlledProjectileInput()
+        {
+            var keyboardDirection = Vector2.zero;
+            if (Keyboard.current != null)
+            {
+                keyboardDirection = new Vector2(
+                    (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed ? 1f : 0f)
+                    - (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed ? 1f : 0f),
+                    (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed ? 1f : 0f)
+                    - (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed ? 1f : 0f));
+            }
+
+            if (keyboardDirection.sqrMagnitude > 0.01f)
+            {
+                _controlledPointerActive = false;
+                _simulation.SetControlledProjectileInput(keyboardDirection);
+                return;
+            }
+
+            if (!TryReadPointer(out var pressed, out var pressStarted, out var released, out var screenPosition, out var pointerOverUi)
+                || pointerOverUi)
+            {
+                _controlledPointerActive = false;
+                _simulation.SetControlledProjectileInput(Vector2.zero);
+                return;
+            }
+
+            if (pressStarted || (pressed && !_controlledPointerActive))
+            {
+                _controlledPointerActive = true;
+                _controlledPointerPreviousScreenPosition = screenPosition;
+                _simulation.SetControlledProjectileInput(Vector2.zero);
+                return;
+            }
+
+            if (_controlledPointerActive && pressed)
+            {
+                var delta = screenPosition - _controlledPointerPreviousScreenPosition;
+                _controlledPointerPreviousScreenPosition = screenPosition;
+                _simulation.SetControlledProjectileInput(
+                    delta.magnitude >= ControlledPointerDeadZonePixels ? delta.normalized : Vector2.zero);
+                return;
+            }
+
+            if (released)
+            {
+                _controlledPointerActive = false;
+            }
+
+            _simulation.SetControlledProjectileInput(Vector2.zero);
+        }
+
+        private static bool UsesSmoothedDirectAim(WeaponDefinition weapon)
+        {
+            return weapon?.Role == WeaponRole.DirectProjectile
+                && weapon.WeaponId != "weapon.fpv-drone";
         }
 
         private void FaceUnitTowardAim(BattleUnitPresenter presenter)
@@ -1355,18 +1453,19 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var impactWeapon = ResolveWeaponFromProjectileId(impact.ProjectileId);
-            if (impactWeapon?.WeaponId == "weapon.mine")
-            {
-                SpawnMineDetonationVisual(impact.Point);
-            }
-            else if (impactWeapon?.WeaponId == "weapon.teleport")
+            if (impactWeapon?.WeaponId == "weapon.teleport")
             {
                 SpawnTeleportMarkerVisual(impact.Point);
             }
 
-            if (impactWeapon?.WeaponId != "weapon.teleport")
+            if (impactWeapon?.WeaponId != "weapon.teleport"
+                && impact.ProjectileId != "projectile.weapon.mine.deploy")
             {
-                SpawnImpactFlash(impact.Point);
+                var flashScale = impact.ProjectileId != null
+                    && impact.ProjectileId.StartsWith("projectile.weapon.mortira.fragment", System.StringComparison.Ordinal)
+                        ? 0.6f
+                        : 1.2f;
+                SpawnImpactFlash(impact.Point, new Color(1f, 0.74f, 0.18f, 0.85f), flashScale);
             }
             if (!string.IsNullOrWhiteSpace(impact.OwnerUnitId)
                 && impact.OwnerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
@@ -1384,7 +1483,38 @@ namespace Game.Gameplay.Battle.Assembly
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = LoadWeaponIconSprite("mine_off");
             renderer.sortingOrder = 27;
-            visual.transform.localScale = Vector3.one * 0.28f;
+            visual.transform.localScale = Vector3.one * 0.11f;
+        }
+
+        private void OnSimulationMineTriggered(int mineId)
+        {
+            if (_mineVisuals.TryGetValue(mineId, out var visual)
+                && visual != null
+                && visual.TryGetComponent<SpriteRenderer>(out var renderer))
+            {
+                renderer.sprite = LoadWeaponIconSprite("mine_on");
+            }
+        }
+
+        private void OnSimulationChargeDeployed(ChargeDeployedEvent charge)
+        {
+            var visual = new GameObject("Ground Charge");
+            _arenaObjects.Add(visual);
+            _mineVisuals[charge.ChargeId] = visual;
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = LoadWeaponIconSprite(charge.Weapon.IconId);
+            renderer.sortingOrder = 27;
+            visual.transform.localScale = Vector3.one * 0.18f;
+            visual.AddComponent<GroundDropVisual>().Play(
+                charge.Origin,
+                charge.Point,
+                charge.DropDurationSeconds);
+
+            if (charge.Team == BattleTeamId.Player)
+            {
+                _playerWeaponSelected = false;
+                RefreshPlayerWeaponVisual();
+            }
         }
 
         private void OnSimulationLinearWeaponEffectStarted(LinearWeaponEffectEvent effect)
@@ -1395,8 +1525,8 @@ namespace Game.Gameplay.Battle.Assembly
             renderer.sprite = LoadWeaponIconSprite(effect.Weapon.WeaponId == "weapon.bur" ? "bur_lazer" : effect.Weapon.IconId);
             renderer.sortingOrder = 32;
             var animator = visual.AddComponent<LinearWeaponEffectVisual>();
-            animator.Play(effect.Origin, effect.Direction, effect.Range, effect.DurationSeconds);
-            Destroy(visual, effect.DurationSeconds + 0.08f);
+            animator.Play(effect.Origin, effect.Direction, effect.Range, effect.GrowthDurationSeconds);
+            Destroy(visual, effect.LifetimeSeconds + 0.08f);
         }
 
         private void OnSimulationFireBlobSpawned(FireBlobEvent effect)
@@ -1411,9 +1541,15 @@ namespace Game.Gameplay.Battle.Assembly
             animator.SetFrames(LoadWeaponIconSprite("fire_shot_1"), LoadWeaponIconSprite("fire_shot_2"),
                 LoadWeaponIconSprite("fire_shot_3"), LoadWeaponIconSprite("fire_shot_4"));
             var mover = visual.AddComponent<FireBlobVisual>();
-            mover.Play(effect.Origin, effect.ImpactPoint, 0.18f);
-            visual.transform.localScale = Vector3.one * 0.18f;
-            Destroy(visual, effect.LifetimeSeconds + 0.25f);
+            mover.Play(
+                effect.Origin,
+                effect.InitialVelocity,
+                effect.Gravity,
+                effect.ImpactPoint,
+                effect.TravelSeconds,
+                effect.LifetimeSeconds);
+            visual.transform.localScale = Vector3.one * 0.072f;
+            Destroy(visual, effect.TravelSeconds + effect.LifetimeSeconds + 0.25f);
         }
 
         private void ApplyProjectileVisualTransform(Transform projectileTransform, SimProjectile projectile)
@@ -1427,22 +1563,28 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             projectileTransform.localScale = ResolveProjectileVisualScale(weapon, diameter);
-            projectileTransform.rotation = Quaternion.Euler(0f, 0f,
-                Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg);
+            if (weapon.WeaponId != "weapon.fpv-drone")
+            {
+                projectileTransform.rotation = Quaternion.Euler(0f, 0f,
+                    Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg);
+            }
         }
 
         private static Vector3 ResolveProjectileVisualScale(WeaponDefinition weapon, float diameter)
         {
+            diameter *= 0.5f;
             return weapon.WeaponId switch
             {
-                "weapon.blaster-caset" => Vector3.one * (diameter * 0.78f),
-                "weapon.impulse" => Vector3.one * (diameter * 0.92f),
-                "weapon.freeze" => Vector3.one * (diameter * 0.9f),
-                "weapon.mortira" => Vector3.one * (diameter * 1.2f),
-                "weapon.granata" => Vector3.one * (diameter * 1.05f),
-                "weapon.teleport" => Vector3.one * (diameter * 0.9f),
+                "weapon.blaster-caset" => Vector3.one * (diameter * 0.936f),
+                "weapon.impulse" => Vector3.one * (diameter * 0.40572f),
+                "weapon.freeze" => Vector3.one * (diameter * 0.315f),
+                "weapon.mortira" => Vector3.one * (diameter * 0.36f),
+                "weapon.granata" => Vector3.one * (diameter * 0.35f),
+                "weapon.teleport" => Vector3.one * (diameter * 0.72f),
                 "weapon.toxic" => Vector3.one * (diameter * 1.05f),
-                "weapon.emp" => new Vector3(diameter * 1.15f, diameter * 0.82f, 1f),
+                "weapon.emp" => new Vector3(diameter * 0.46f, diameter * 0.33f, 1f),
+                "weapon.mine" => Vector3.one * (diameter * 0.55f),
+                "weapon.bur-rocket" => Vector3.one * (diameter * 0.68f),
                 "weapon.missle" => Vector3.one * (diameter * 1.25f),
                 "weapon.fpv-drone" => Vector3.one * (diameter * 1.4f),
                 _ => Vector3.one * (diameter * 1.15f)
@@ -1486,18 +1628,6 @@ namespace Game.Gameplay.Battle.Assembly
             return LoadWeaponIconSprite(spriteId);
         }
 
-        private void SpawnMineDetonationVisual(Vector2 point)
-        {
-            var visual = new GameObject("Mine Detonation");
-            _arenaObjects.Add(visual);
-            visual.transform.position = point;
-            var renderer = visual.AddComponent<SpriteRenderer>();
-            renderer.sprite = LoadWeaponIconSprite("mine_on");
-            renderer.sortingOrder = 31;
-            visual.transform.localScale = Vector3.one * 0.32f;
-            Destroy(visual, 0.22f);
-        }
-
         private void SpawnTeleportMarkerVisual(Vector2 point)
         {
             var visual = new GameObject("Teleport Marker");
@@ -1507,11 +1637,22 @@ namespace Game.Gameplay.Battle.Assembly
             renderer.sprite = LoadWeaponIconSprite("teleport");
             renderer.sortingOrder = 31;
             visual.transform.localScale = Vector3.one * 0.22f;
-            Destroy(visual, 3f);
+            Destroy(visual, 0.35f);
         }
 
         private WeaponDefinition ResolveWeaponFromProjectileId(string projectileId)
         {
+            if (projectileId == "projectile.weapon.mine.deploy")
+            {
+                return _weaponsById.TryGetValue("weapon.mine", out var mine) ? mine : null;
+            }
+
+            if (projectileId != null
+                && projectileId.StartsWith("projectile.weapon.mortira.fragment", System.StringComparison.Ordinal))
+            {
+                return _weaponsById.TryGetValue("weapon.mortira", out var mortar) ? mortar : null;
+            }
+
             if (!string.IsNullOrWhiteSpace(projectileId)
                 && projectileId.StartsWith("projectile.", System.StringComparison.Ordinal))
             {
@@ -1531,14 +1672,49 @@ namespace Game.Gameplay.Battle.Assembly
             if (team == BattleTeamId.Player)
             {
                 RefreshArsenalHudItems();
+                ClearSelectedWeaponIfDepleted(weapon);
             }
             if (setsShotStatus)
             {
                 _status = GameText.ShotStatus(DescribeTeam(team), DescribeWeapon(weapon));
             }
 
-            ResetAimState();
+            if (team == BattleTeamId.Player && HidesHeldWeaponAfterUse(weapon))
+            {
+                _playerWeaponSelected = false;
+                RefreshPlayerWeaponVisual();
+            }
+
+            if (team != BattleTeamId.Player || !_simulation.CanContinueBlasterBurst)
+            {
+                ResetAimState();
+            }
             EmitFeedback(BattleFeedbackEventType.ShotFired);
+        }
+
+        private void ClearSelectedWeaponIfDepleted(WeaponDefinition weapon)
+        {
+            if (weapon == null
+                || !weapon.HasLimitedAmmo
+                || _inventory?.Selected?.WeaponId != weapon.WeaponId
+                || _inventory.GetSelectedRemainingAmmo() > 0)
+            {
+                return;
+            }
+
+            _playerWeaponSelected = false;
+            ResetAimState();
+            RefreshPlayerWeaponVisual();
+        }
+
+        private static bool HidesHeldWeaponAfterUse(WeaponDefinition weapon)
+        {
+            return weapon?.WeaponId == "weapon.granata"
+                || weapon?.WeaponId == "weapon.teleport"
+                || weapon?.WeaponId == "weapon.mine"
+                || weapon?.WeaponId == "weapon.bur-rocket"
+                || weapon?.WeaponId == "weapon.missle"
+                || weapon?.WeaponId == "weapon.fpv-drone";
         }
 
         private void OnSimulationImpactResolved(ImpactResolvedEvent impact)
@@ -1554,6 +1730,8 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void OnSimulationTurnAdvanced(BattleTeamId newActiveTeam, TurnAdvanceReason reason)
         {
+            _playerWeaponSelected = false;
+            _controlledPointerActive = false;
             if (reason == TurnAdvanceReason.PlayerTimerExpired)
             {
                 _firstBattleGuide?.ObservePlayerTurnExpired();
@@ -1637,7 +1815,9 @@ namespace Game.Gameplay.Battle.Assembly
                 if (_projectileVisuals.TryGetValue(projectile.Id, out var projectileObject) && projectileObject != null)
                 {
                     projectileObject.transform.position = projectile.Position;
-                    if (projectileObject.transform.childCount > 0 && projectile.Velocity.sqrMagnitude > 0.01f)
+                    if (projectileObject.transform.childCount > 0
+                        && projectile.Velocity.sqrMagnitude > 0.01f
+                        && ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId)?.WeaponId != "weapon.fpv-drone")
                     {
                         projectileObject.transform.GetChild(0).rotation = Quaternion.Euler(0f, 0f,
                             Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg);
@@ -1911,7 +2091,9 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (_inventory.Selected.Role == WeaponRole.ShortRangeBurst)
+            if (_inventory.Selected.Role == WeaponRole.ShortRangeBurst
+                && _inventory.Selected.WeaponId != "weapon.bur"
+                && _inventory.Selected.WeaponId != "weapon.fire-gun")
             {
                 HideTrajectoryPreview();
                 return;
@@ -1942,7 +2124,9 @@ namespace Game.Gameplay.Battle.Assembly
         {
             _trajectoryLine.enabled = false;
 
-            var power01 = Mathf.InverseLerp(_aimSettings.MinPower, _aimSettings.MaxPower, _aimState.Power);
+            var power01 = Mathf.Approximately(_aimSettings.MinPower, _aimSettings.MaxPower)
+                ? 1f
+                : Mathf.InverseLerp(_aimSettings.MinPower, _aimSettings.MaxPower, _aimState.Power);
             var previewLength = Mathf.Lerp(MinTrajectoryPreviewLength, MaxTrajectoryPreviewLength, Mathf.Sqrt(power01));
             var previewEndTime = FindTrajectoryPreviewEndTime(firePoint, weapon, previewLength);
             var upwardAim01 = Mathf.InverseLerp(0.12f, 0.86f, _aimState.Direction.y);
@@ -1952,15 +2136,20 @@ namespace Game.Gameplay.Battle.Assembly
 
             // More dots at higher power. Because the length grows faster than the
             // count, the gap between dots widens with power as well.
-            var activeDotCount = Mathf.Clamp(
-                Mathf.RoundToInt(Mathf.Lerp(MinTrajectoryDotCount, MaxTrajectoryDotCount, power01)),
-                MinTrajectoryDotCount,
-                _trajectoryDots.Count);
+            var isLongDirectWeapon = IsLongDirectWeapon(weapon);
+            var activeDotCount = isLongDirectWeapon
+                ? 10
+                : Mathf.Clamp(
+                    Mathf.RoundToInt(Mathf.Lerp(MinTrajectoryDotCount, MaxTrajectoryDotCount, power01)),
+                    MinTrajectoryDotCount,
+                    _trajectoryDots.Count);
 
             // Training mission: extend the arc all the way to the predicted
             // landing point so a new player sees exactly where the shell falls.
             Vector2? trajectoryEndPoint = null;
-            if (_impactGuideEnabled && TryProbeTrajectoryEnd(firePoint, weapon, out var impactReport))
+            if (!isLongDirectWeapon
+                && _impactGuideEnabled
+                && TryProbeTrajectoryEnd(firePoint, weapon, out var impactReport))
             {
                 var impactArcLength = CalculateTrajectoryArcLength(firePoint, weapon, impactReport.FlightTime);
                 activeDotCount = CalculateFullTrajectoryDotCount(impactArcLength);
@@ -1995,6 +2184,12 @@ namespace Game.Gameplay.Battle.Assembly
                 dot.transform.localScale = new Vector3(scale, scale, 1f);
                 dot.color = Color.white;
             }
+        }
+
+        private static bool IsLongDirectWeapon(WeaponDefinition weapon)
+        {
+            return weapon?.WeaponId == "weapon.blaster-caset"
+                || weapon?.WeaponId == "weapon.emp";
         }
 
         /// <summary>
@@ -2345,6 +2540,11 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var weapon = _inventory.Selected;
+            var presentation = ResolveHeldWeaponPresentation(weapon.WeaponId);
+            presenter.SetWeaponPresentation(
+                presentation.Scale,
+                presentation.Position,
+                presentation.AimAngleOffset);
             presenter.SetEquippedWeapon(
                 LoadWeaponIconSprite(weapon.IconId),
                 WeaponIconFacesRight(weapon.IconId));
@@ -2354,9 +2554,32 @@ namespace Game.Gameplay.Battle.Assembly
             presenter.SetWeaponAim(direction);
         }
 
+        private static (float Scale, Vector2 Position, float AimAngleOffset) ResolveHeldWeaponPresentation(string weaponId)
+        {
+            return weaponId switch
+            {
+                "weapon.impulse" => (1f, new Vector2(-0.48f, 0.27f), 0f),
+                "weapon.blaster-caset" => (1f, new Vector2(-0.56f, 0.34f), 0f),
+                "weapon.bur" => (1.5f, new Vector2(-0.54f, 0.42f), -8f),
+                "weapon.mortira" => (1.12f, new Vector2(-0.55f, 0.40f), -7f),
+                "weapon.granata" => (0.76f, new Vector2(-0.50f, 0.29f), 0f),
+                "weapon.teleport" => (0.82f, new Vector2(-0.60f, 0.40f), 0f),
+                "weapon.mine" => (0.82f, new Vector2(-0.58f, 0.36f), 0f),
+                "weapon.toxic" => (1f, new Vector2(-0.68f, 0.42f), -7f),
+                "weapon.emp" => (1f, new Vector2(-0.55f, 0.42f), 0f),
+                "weapon.freeze" => (1f, new Vector2(-0.55f, 0.42f), -7f),
+                "weapon.fire-gun" => (1.5f, new Vector2(-0.68f, 0.42f), 0f),
+                "weapon.missle" => (1.5f, new Vector2(-0.54f, 0.30f), 0f),
+                "weapon.heal" => (1f, new Vector2(-0.54f, 0.38f), 180f),
+                "weapon.fpv-drone" => (1f, new Vector2(-0.28f, 1.08f), 0f),
+                _ => (1f, new Vector2(-0.68f, 0.42f), 0f)
+            };
+        }
+
         private static bool WeaponIconFacesRight(string iconId)
         {
-            return iconId != "bazooka_simple"
+            return iconId != "bur"
+                && iconId != "bazooka_simple"
                 && iconId != "bazooka"
                 && iconId != "drobovik";
         }
@@ -2469,14 +2692,16 @@ namespace Game.Gameplay.Battle.Assembly
 
             var weapon = _inventory.Selected;
             var playerHasTime = _simulation.MovementTimeRemaining > 0f;
+            var fireInputReady = !BattleSimulation.RequiresAim(weapon) || _aimState.HasInput;
             var canFire = !_simulation.Result.IsFinished
                 && !HasProjectilesInFlight
                 && !HasActiveMotion
                 && !HasActiveWeaponEffect
+                && !HasPendingGroundAction
                 && playerHasTime
                 && _playerWeaponSelected
                 && _inventory.CanFireSelected
-                && _aimState.HasInput;
+                && fireInputReady;
             var guideActive = _firstBattleGuide != null && _firstBattleGuide.IsActive;
             var status = guideActive
                 ? _firstBattleGuide.Message
@@ -2492,6 +2717,7 @@ namespace Game.Gameplay.Battle.Assembly
                 && !HasProjectilesInFlight
                 && !HasActiveMotion
                 && !HasActiveWeaponEffect
+                && !HasPendingGroundAction
                 && playerHasTime;
 
             var state = new BattleHudState(
@@ -2512,7 +2738,7 @@ namespace Game.Gameplay.Battle.Assembly
                 _arsenalHudItems,
                 _playerWeaponSelected ? _inventory.SelectedIndex : -1,
                 _playerWeaponSelected,
-                _playerWeaponSelected && _aimState.HasInput,
+                _playerWeaponSelected && fireInputReady,
                 canOpenArsenal,
                 tutorialTargetId,
                 guideActive && _firstBattleGuide.BlocksWeaponSwitch,

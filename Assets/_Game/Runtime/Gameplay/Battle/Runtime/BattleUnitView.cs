@@ -15,8 +15,8 @@ namespace Game.Gameplay.Battle.Runtime
         private const float WeaponVisualScale = 0.085f;
         private const string HeadingFontResourcePath = "Fonts/Orbitron";
         private static readonly Vector3 WeaponMountPosition = new(-0.68f, 0.42f, 0f);
-        private static readonly Vector3 HealthLabelPosition = new(0f, 1.48f, 0f);
-        private static readonly Vector3 HealthLabelScale = new(0.20f, 0.20f, 1f);
+        private static readonly Vector3 HealthLabelPosition = new(0f, 1.3f, 0f);
+        private static readonly Vector3 HealthLabelScale = new(0.15f, 0.15f, 1f);
         private static Sprite _solidWhiteSprite;
         private static Font _headingFont;
 
@@ -33,6 +33,9 @@ namespace Game.Gameplay.Battle.Runtime
         private Vector3 _baseScale;
         private int _artFacingDirectionX = 1;
         private Transform _visualRoot;
+        private float _weaponScaleMultiplier = 1f;
+        private Vector3 _weaponMountPosition = WeaponMountPosition;
+        private float _weaponAimAngleOffset;
         private Vector3 _visualRootBaseScale = Vector3.one;
         private Animator _locomotionAnimator;
         private Transform _weaponMount;
@@ -198,6 +201,17 @@ namespace Game.Gameplay.Battle.Runtime
             UpdateWeaponMountPosition();
         }
 
+        public void SetWeaponPresentation(float scaleMultiplier, Vector2 localPosition, float aimAngleOffset)
+        {
+            EnsureWeaponMount();
+            _weaponScaleMultiplier = Mathf.Max(0.1f, scaleMultiplier);
+            _weaponMountPosition = new Vector3(localPosition.x, localPosition.y, 0f);
+            _weaponAimAngleOffset = aimAngleOffset;
+            var scale = WeaponVisualScale * _weaponScaleMultiplier;
+            _weaponMount.localScale = new Vector3(scale, scale, 1f);
+            UpdateWeaponMountPosition();
+        }
+
         public void ClearEquippedWeapon()
         {
             if (_weaponRenderer == null)
@@ -216,7 +230,7 @@ namespace Game.Gameplay.Battle.Runtime
                 return;
             }
 
-            var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + _weaponAimAngleOffset;
             _weaponMount.localRotation = Quaternion.Euler(0f, 0f, angle);
         }
 
@@ -331,7 +345,8 @@ namespace Game.Gameplay.Battle.Runtime
             var mountObject = new GameObject("Weapon Mount");
             _weaponMount = mountObject.transform;
             _weaponMount.SetParent(transform, false);
-            _weaponMount.localScale = new Vector3(WeaponVisualScale, WeaponVisualScale, 1f);
+            var scale = WeaponVisualScale * _weaponScaleMultiplier;
+            _weaponMount.localScale = new Vector3(scale, scale, 1f);
             _weaponRenderer = mountObject.AddComponent<SpriteRenderer>();
             _weaponRenderer.sortingOrder = 24;
             _weaponRenderer.color = Color.white;
@@ -347,9 +362,9 @@ namespace Game.Gameplay.Battle.Runtime
             }
 
             _weaponMount.localPosition = new Vector3(
-                WeaponMountPosition.x * _facingDirectionX,
-                WeaponMountPosition.y,
-                WeaponMountPosition.z);
+                _weaponMountPosition.x * _facingDirectionX,
+                _weaponMountPosition.y,
+                _weaponMountPosition.z);
         }
 
         private void EnsureReferences()
