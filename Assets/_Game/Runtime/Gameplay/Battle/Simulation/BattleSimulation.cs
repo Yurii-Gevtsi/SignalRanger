@@ -69,7 +69,19 @@ namespace Game.Gameplay.Battle.Simulation
         private const float BounceSpeedRetain = 0.46f;
         private const int MaxBounces = 5;
         private const float RestingFuseMinSpeed = 0.35f;
-        private const float MineRetreatSeconds = 5f;
+        /// <summary>
+        /// Movement-only window the player keeps after an attack: walk away from
+        /// the blast, but no weapon switching or second shot. Capped by the turn
+        /// timer - it never adds time on top of it.
+        /// </summary>
+        private const float RetreatSeconds = 3f;
+        /// <summary>
+        /// Minimum travel between tunnel craters. Each crater uploads the
+        /// destructible texture to the GPU, so carving every sub-step made the
+        /// drill rocket stutter; the tunnel radius comfortably covers this gap.
+        /// </summary>
+        private const float DrillCarveSpacing = 0.09f;
+        private const float FirePuddleDropSearchDistance = 40f;
         private const float MissileHomingDelaySeconds = 0.45f;
         private const float MissileSteerDegreesPerSecond = 210f;
         private const int MortarFragmentCount = 5;
@@ -104,6 +116,8 @@ namespace Game.Gameplay.Battle.Simulation
         private int _walkIntentDirection;
         private int _controlledProjectileId = -1;
         private Vector2 _controlledProjectileInput;
+        private float _retreatRemaining = -1f;
+        private TurnAdvanceReason _pendingRetreatReason;
 
         public static BattleSimulation CreatePlayerFirst(
             BattleState state,
@@ -179,6 +193,8 @@ namespace Game.Gameplay.Battle.Simulation
         public event Action<ChargeDeployedEvent> ChargeDeployed;
         public event Action<LinearWeaponEffectEvent> LinearWeaponEffectStarted;
         public event Action<FireBlobEvent> FireBlobSpawned;
+        public event Action<int, Vector2> FirePuddleMoved;
+        public event Action<int> FirePuddleExtinguished;
         public event Action UnitsMoved;
 
         public BattleState State => _state;
@@ -195,7 +211,22 @@ namespace Game.Gameplay.Battle.Simulation
             && _blasterShotsThisTurn < BlasterShotsPerTurn
             && _playerInventory.Selected?.WeaponId == BlasterWeaponId
             && _playerInventory.CanFireSelected;
-        public float MovementTimeRemaining => _playerMovement.RemainingTurnSeconds;
+        public float MovementTimeRemaining => IsPlayerRetreatActive
+            ? Mathf.Max(0f, _retreatRemaining)
+            : _playerMovement.RemainingTurnSeconds;
+
+        /// <summary>
+        /// The player fired a turn-ending shot and is inside the short
+        /// movement-only retreat window before the turn hands over.
+        /// </summary>
+        public bool IsPlayerRetreatActive => _retreatRemaining > 0f
+            && _state.Turn.ActiveTeam == BattleTeamId.Player;
+
+        /// <summary>
+        /// The turn's attack is already committed (action spent, retreating, or
+        /// a mine went down) - weapon switching no longer makes sense.
+        /// </summary>
+        public bool IsAttackCommitted => _state.Turn.ActionSpent || _mineDeployedThisTurn;
 
         public WeaponInventoryRuntime ActiveInventory => GetInventoryFor(_state.Turn.ActiveTeam);
 
@@ -248,7 +279,14 @@ namespace Game.Gameplay.Battle.Simulation
         /// </summary>
         public bool CanAcceptMovementInput()
         {
-            if (Result.IsFinished || HasProjectilesInFlight || HasActiveWeaponEffect || _state.Turn.ActionSpent)
+            if (Result.IsFinished || HasProjectilesInFlight || HasActiveWeaponEffect)
+            {
+                return false;
+            }
+
+            // A spent action normally freezes movement, except during the
+            // retreat window: movement stays live while firing remains blocked.
+            if (_state.Turn.ActionSpent && !IsPlayerRetreatActive)
             {
                 return false;
             }
@@ -482,6 +520,7 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 _simulationAccumulator -= _settings.SimulationTickSeconds;
                 StepPlayerTurnTimer(_settings.SimulationTickSeconds);
+                StepRetreat(_settings.SimulationTickSeconds);
                 StepWalkIntent(_settings.SimulationTickSeconds);
                 StepProjectiles(_settings.SimulationTickSeconds);
                 StepTimedWeaponEffects(_settings.SimulationTickSeconds);
@@ -546,10 +585,56 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
+            AdvanceTurnOrStartRetreat(TurnAdvanceReason.ProjectileImpactResolved);
+        }
+
+        /// <summary>
+        /// Ends the acting team's turn. The player gets the movement-only
+        /// retreat window first (bounded by the turn timer); the bot hands the
+        /// turn over immediately.
+        /// </summary>
+        private void AdvanceTurnOrStartRetreat(TurnAdvanceReason reason)
+        {
+            if (_state.Turn.ActiveTeam == BattleTeamId.Player)
+            {
+                var retreat = Mathf.Min(RetreatSeconds, _playerMovement.RemainingTurnSeconds);
+                if (retreat > 0.01f)
+                {
+                    // Instant utilities (C4, heal) reach here without a spent
+                    // action; spending it here keeps TryFire blocked while
+                    // movement stays allowed via IsPlayerRetreatActive.
+                    _turnService.SpendAction(_state);
+                    _retreatRemaining = retreat;
+                    _pendingRetreatReason = reason;
+                    UnitsMoved?.Invoke();
+                    return;
+                }
+            }
+
+            AdvanceTurnNow(reason);
+        }
+
+        private void AdvanceTurnNow(TurnAdvanceReason reason)
+        {
             _turnService.AdvanceTurn(_state);
             ResetMotionForNewTurn();
-            TurnAdvanced?.Invoke(_state.Turn.ActiveTeam, TurnAdvanceReason.ProjectileImpactResolved);
+            TurnAdvanced?.Invoke(_state.Turn.ActiveTeam, reason);
             UnitsMoved?.Invoke();
+        }
+
+        private void StepRetreat(float deltaTime)
+        {
+            if (_retreatRemaining <= 0f || Result.IsFinished)
+            {
+                return;
+            }
+
+            _retreatRemaining -= deltaTime;
+            if (_retreatRemaining <= 0f)
+            {
+                _retreatRemaining = -1f;
+                AdvanceTurnNow(_pendingRetreatReason);
+            }
         }
 
         /// <summary>
@@ -655,6 +740,7 @@ namespace Game.Gameplay.Battle.Simulation
         private void ResetMotionForNewTurn()
         {
             _walkIntentDirection = 0;
+            _retreatRemaining = -1f;
             _controlledProjectileInput = Vector2.zero;
             if (_projectiles.Count == 0)
             {
@@ -927,10 +1013,7 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
-            _turnService.AdvanceTurn(_state);
-            ResetMotionForNewTurn();
-            TurnAdvanced?.Invoke(_state.Turn.ActiveTeam, TurnAdvanceReason.InstantActionCompleted);
-            UnitsMoved?.Invoke();
+            AdvanceTurnOrStartRetreat(TurnAdvanceReason.InstantActionCompleted);
         }
 
         private void StepTimedWeaponEffects(float deltaTime)
@@ -1013,50 +1096,82 @@ namespace Game.Gameplay.Battle.Simulation
 
                 puddle.Elapsed += deltaTime;
                 puddle.TickAccumulator += deltaTime;
+                var startPoint = puddle.Point;
+                var hasSupport = true;
                 while (puddle.TickAccumulator >= FirePuddleTickSeconds)
                 {
                     puddle.TickAccumulator -= FirePuddleTickSeconds;
-                    TryDropFirePuddleToSurface(puddle);
+                    hasSupport &= TryDropFirePuddleToSurface(puddle);
                     puddle.Point += Vector2.down * 0.045f;
-                    var terrainChanged = _terrain?.ApplyCrater(puddle.Point + Vector2.down * 0.08f, 0.31f) ?? false;
+                    // Small scorch bites: the fire eats through slowly and only
+                    // right under itself, not a demolition-scale crater.
+                    var terrainChanged = _terrain?.ApplyCrater(puddle.Point + Vector2.down * 0.08f, 0.18f) ?? false;
                     if (terrainChanged)
                     {
-                        TryDropFirePuddleToSurface(puddle);
+                        // The fire just burned through its own floor - chase the
+                        // new surface below instead of burning in mid-air.
+                        hasSupport &= TryDropFirePuddleToSurface(puddle);
                     }
 
                     ApplyPointDamage(puddle.Point, puddle.Weapon, puddle.OwnerUnitId, 0.48f, Mathf.Max(1, Mathf.CeilToInt(puddle.Weapon.Damage / 12f)));
                     UnitsMoved?.Invoke();
                 }
 
+                if (!hasSupport || puddle.Point.y < _settings.FallDeathY)
+                {
+                    // Nothing left underneath anywhere - the fire drains out of
+                    // the world instead of hovering.
+                    _activeFirePuddles.RemoveAt(i);
+                    FirePuddleExtinguished?.Invoke(puddle.Id);
+                    continue;
+                }
+
+                if ((puddle.Point - startPoint).sqrMagnitude > 0.0004f)
+                {
+                    FirePuddleMoved?.Invoke(puddle.Id, puddle.Point);
+                }
+
                 if (puddle.Elapsed >= FirePuddleLifetimeSeconds)
                 {
                     _activeFirePuddles.RemoveAt(i);
+                    FirePuddleExtinguished?.Invoke(puddle.Id);
                 }
             }
         }
 
-        private void TryDropFirePuddleToSurface(ActiveFirePuddle puddle)
+        /// <summary>
+        /// Keeps a burning puddle glued to the terrain surface. Returns false
+        /// when no surface exists anywhere below - the puddle has nothing to
+        /// burn on and should be removed.
+        /// </summary>
+        private bool TryDropFirePuddleToSurface(ActiveFirePuddle puddle)
         {
             if (_terrain == null)
             {
-                return;
+                return true;
             }
 
             var probePoint = puddle.Point + Vector2.down * 0.12f;
             if (_terrain.Grid.IsSolidWorld(probePoint))
             {
-                return;
+                return true;
             }
 
             if (_terrain.Grid.TryFindSurfaceBelow(
                     puddle.Point.x,
                     puddle.Point.y - 0.08f,
-                    4f,
-                    out var surfaceY)
-                && puddle.Point.y - surfaceY > 0.12f)
+                    FirePuddleDropSearchDistance,
+                    out var surfaceY))
             {
-                puddle.Point = new Vector2(puddle.Point.x, surfaceY + 0.08f);
+                if (puddle.Point.y - surfaceY > 0.12f)
+                {
+                    puddle.Point = new Vector2(puddle.Point.x, surfaceY + 0.08f);
+                }
+
+                return true;
             }
+
+            return false;
         }
 
         private void StepMines(float deltaTime)
@@ -1138,6 +1253,7 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void SpawnFireBlob(ActiveTimedEffect effect)
         {
+            var puddleId = ++_nextProjectileId;
             // Reference flame thrower ramps projectile power over the burst and
             // wobbles the angle slightly, so the fire lays down a strip instead
             // of pooling in a single point. Deterministic per blob index.
@@ -1161,6 +1277,7 @@ namespace Game.Gameplay.Battle.Simulation
                 out var endpoint,
                 out var travelSeconds);
             FireBlobSpawned?.Invoke(new FireBlobEvent(
+                puddleId,
                 effect.Weapon,
                 effect.TeamId,
                 effect.Origin,
@@ -1169,7 +1286,7 @@ namespace Game.Gameplay.Battle.Simulation
                 endpoint,
                 travelSeconds,
                 FirePuddleLifetimeSeconds));
-            _activeFirePuddles.Add(new ActiveFirePuddle(effect.OwnerUnitId, effect.Weapon, endpoint, travelSeconds));
+            _activeFirePuddles.Add(new ActiveFirePuddle(puddleId, effect.OwnerUnitId, effect.Weapon, endpoint, travelSeconds));
         }
 
         private void TraceFireBlobTrajectory(
@@ -1396,6 +1513,18 @@ namespace Game.Gameplay.Battle.Simulation
             var target = ResolveUnitLandingPosition(impactPoint, owner.TeamId);
             if (impactWeapon.Role == WeaponRole.MovementTool)
             {
+                var bodyHalf = ArchetypeFor(owner.TeamId).BodyHeight * 0.5f;
+                var desiredCenter = impactPoint + Vector2.up * bodyHalf;
+                if (target.y > desiredCenter.y + 0.35f)
+                {
+                    // The landing spot is too tight for the body (the surface
+                    // snap pushed the unit on top of an obstacle). Teleport into
+                    // the exact spot anyway: arrival blasts a pocket in the
+                    // terrain, as if the unit displaces the ground to fit.
+                    CarveArrivalPocket(desiredCenter, bodyHalf);
+                    target = desiredCenter;
+                }
+
                 owner.MoveTo(target);
                 GetMotor(owner.UnitId)?.Teleport(target);
                 OwnerRepositioned?.Invoke(owner.UnitId);
@@ -1413,6 +1542,38 @@ namespace Game.Gameplay.Battle.Simulation
             owner.MoveTo(ResolveUnitLandingPosition(new Vector2(owner.Position.x + deltaX, target.y), owner.TeamId));
             GetMotor(owner.UnitId)?.Teleport(owner.Position);
             OwnerRepositioned?.Invoke(owner.UnitId);
+        }
+
+        /// <summary>
+        /// Blasts a body-sized capsule out of the terrain so a teleporting unit
+        /// can materialise inside a spot it would not otherwise fit.
+        /// </summary>
+        private void CarveArrivalPocket(Vector2 center, float bodyHalfHeight)
+        {
+            if (_terrain == null)
+            {
+                return;
+            }
+
+            var radius = Mathf.Max(0.5f, _settings.UnitCollisionHalfWidth * 1.6f);
+            var offset = Vector2.up * Mathf.Max(0.12f, bodyHalfHeight * 0.45f);
+            var changed = _terrain.ApplyCrater(center - offset, radius);
+            changed |= _terrain.ApplyCrater(center + offset, radius);
+            if (!changed)
+            {
+                return;
+            }
+
+            foreach (var team in _state.Teams)
+            {
+                foreach (var unit in team.Units)
+                {
+                    if (!unit.IsDefeated)
+                    {
+                        GetMotor(unit.UnitId)?.WakeIfUnsupported();
+                    }
+                }
+            }
         }
 
         private bool ResolveImpact(ProjectileImpact impact, WeaponDefinition impactWeapon)
@@ -1751,7 +1912,14 @@ namespace Game.Gameplay.Battle.Simulation
                         }
 
                         projectile.ConsumeTerrainDrillTime(deltaTime / stepCount);
-                        _terrain.ApplyCrater(position, DrillRocketTunnelRadius);
+                        // Carving uploads the destructible texture to the GPU;
+                        // spacing the craters out keeps the tunnel continuous
+                        // (radius >> spacing) without a hitch every sub-step.
+                        if (projectile.ShouldCarveTunnelAt(position, DrillCarveSpacing))
+                        {
+                            _terrain.ApplyCrater(position, DrillRocketTunnelRadius);
+                        }
+
                         projectile.MoveTo(position);
                         if (projectile.TerrainDrillTimeRemaining <= 0f)
                         {
@@ -1891,7 +2059,7 @@ namespace Game.Gameplay.Battle.Simulation
                 }
                 else
                 {
-                    _playerMovement.CapRemaining(MineRetreatSeconds);
+                    _playerMovement.CapRemaining(RetreatSeconds);
                 }
             }
         }
@@ -2287,14 +2455,16 @@ namespace Game.Gameplay.Battle.Simulation
 
         private sealed class ActiveFirePuddle
         {
-            public ActiveFirePuddle(string ownerUnitId, WeaponDefinition weapon, Vector2 point, float delaySeconds)
+            public ActiveFirePuddle(int id, string ownerUnitId, WeaponDefinition weapon, Vector2 point, float delaySeconds)
             {
+                Id = id;
                 OwnerUnitId = ownerUnitId;
                 Weapon = weapon;
                 Point = point;
                 DelayRemaining = Mathf.Max(0f, delaySeconds);
             }
 
+            public int Id { get; }
             public string OwnerUnitId { get; }
             public WeaponDefinition Weapon { get; }
             public Vector2 Point { get; set; }

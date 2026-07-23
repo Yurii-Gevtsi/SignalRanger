@@ -136,7 +136,7 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsTrue(spawned, "default weapon fire spawns a simulation projectile");
             Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight);
 
-            for (var i = 0; i < 240 && !turnAdvanced; i++)
+            for (var i = 0; i < 240 && !exploded; i++)
             {
                 harness.Simulation.Tick(1f / 60f);
             }
@@ -145,7 +145,16 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight);
             Assert.Less(opponent.Health, startHealth, "radial damage reduced the target's health");
             Assert.IsFalse(opponentMotor.IsStable, "explosion knockback pushed the target off its feet");
-            Assert.IsTrue(turnAdvanced, "turn advances once the last in-flight shot resolves");
+            Assert.IsFalse(turnAdvanced, "the player keeps a movement-only retreat window before the turn hands over");
+            Assert.IsTrue(harness.Simulation.IsPlayerRetreatActive);
+            Assert.IsTrue(harness.Simulation.IsAttackCommitted, "weapon switching is blocked during the retreat window");
+
+            for (var i = 0; i < 420 && !turnAdvanced; i++)
+            {
+                harness.Simulation.Tick(1f / 60f);
+            }
+
+            Assert.IsTrue(turnAdvanced, "turn advances once the retreat window runs out");
             Assert.AreEqual(TurnAdvanceReason.ProjectileImpactResolved, turnAdvanceReason);
             Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
         }
@@ -520,6 +529,7 @@ namespace Game.Tests.EditMode.Gameplay
             TickMany(harness.Simulation, 340, 1f / 120f);
             Assert.IsTrue(exploded);
             Assert.IsFalse(harness.Simulation.HasPendingGroundAction);
+            TickMany(harness.Simulation, 380, 1f / 120f);
             Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
         }
 
@@ -539,7 +549,9 @@ namespace Game.Tests.EditMode.Gameplay
             {
                 Assert.AreEqual(BattleFireOutcome.Fired, harness.Simulation.TryFire(aim).Outcome);
                 Assert.AreEqual(shot < 3, harness.Simulation.CanContinueBlasterBurst);
-                TickMany(harness.Simulation, 20, 1f / 120f);
+                // The third shot ends the burst: its impact starts the retreat
+                // window, so give it three extra seconds to hand the turn over.
+                TickMany(harness.Simulation, shot < 3 ? 20 : 400, 1f / 120f);
                 Assert.AreEqual(shot < 3 ? BattleTeamId.Player : BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
             }
         }
@@ -559,7 +571,7 @@ namespace Game.Tests.EditMode.Gameplay
                 BattleFireOutcome.Fired,
                 harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 14f, true)).Outcome);
             Assert.IsFalse(harness.Simulation.CanContinueBlasterBurst);
-            TickMany(harness.Simulation, 30, 1f / 120f);
+            TickMany(harness.Simulation, 400, 1f / 120f);
             Assert.AreEqual(
                 BattleTeamId.Opponent,
                 harness.State.Turn.ActiveTeam,
@@ -595,7 +607,7 @@ namespace Game.Tests.EditMode.Gameplay
                 "a planted mine is the turn's attack - no second weapon use");
             Assert.LessOrEqual(
                 harness.Simulation.MovementTimeRemaining,
-                5f,
+                3f,
                 "planting a mine leaves only a short retreat window");
         }
 
@@ -664,7 +676,35 @@ namespace Game.Tests.EditMode.Gameplay
             TickMany(harness.Simulation, 25, 1f / 120f);
 
             Assert.Greater(player.Position.x, startX + 0.5f);
+            TickMany(harness.Simulation, 400, 1f / 120f);
             Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
+        }
+
+        [Test]
+        public void Teleport_IntoTightSpot_CarvesArrivalPocketInsteadOfClimbingOnTop()
+        {
+            var teleport = CreateWeapon(
+                "weapon.teleport",
+                WeaponRole.MovementTool,
+                damage: 0,
+                gravityScale: 0f,
+                timeoutSeconds: 0.55f);
+            var harness = CreateHarness(teleport);
+            // Roof over the floor: the 1 m gap underneath is too low for the
+            // 1.1 m body, so the old surface snap would climb onto the roof.
+            harness.Terrain.StampSolidRect(new Vector2(2.5f, 0.5f), new Vector2(3f, 1f));
+            var player = harness.State.GetUnit("player.test.01");
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, -0.2f), Vector2.right, 8f, true)).Outcome);
+            TickMany(harness.Simulation, 90, 1f / 120f);
+
+            Assert.Less(player.Position.y, 0.5f, "the unit materialises inside the gap, not on top of the roof");
+            Assert.Greater(player.Position.x, 0.5f, "the unit arrived at the teleport landing spot");
+            Assert.IsFalse(
+                harness.Terrain.Grid.IsSolidWorld(player.Position + Vector2.up * 0.6f),
+                "arrival blasts a pocket so the body fits");
         }
 
         [Test]
@@ -703,6 +743,7 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsFalse(exploded, "the resting grenade waits out the remainder of its fuse");
             TickMany(harness.Simulation, 300, 1f / 120f);
             Assert.IsTrue(exploded, "the grenade explodes once the from-throw fuse expires");
+            TickMany(harness.Simulation, 400, 1f / 120f);
             Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
         }
 
@@ -808,13 +849,13 @@ namespace Game.Tests.EditMode.Gameplay
             var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true));
             Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
 
-            for (var i = 0; i < 60 && !advanced; i++)
+            for (var i = 0; i < 300 && !advanced; i++)
             {
                 harness.Simulation.Tick(1f / 60f);
             }
 
             Assert.IsTrue(exploded, "projectile timeout resolves without a scene object");
-            Assert.IsTrue(advanced, "timeout of the last projectile advances the turn");
+            Assert.IsTrue(advanced, "timeout of the last projectile advances the turn (after the retreat window)");
             Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight);
         }
 

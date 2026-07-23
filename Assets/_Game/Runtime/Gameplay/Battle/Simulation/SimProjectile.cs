@@ -36,6 +36,9 @@ namespace Game.Gameplay.Battle.Simulation
         public bool IsRestingFuse { get; private set; }
         public float RestingFuseRemaining { get; private set; }
 
+        private Vector2 _lastTunnelCarvePoint;
+        private bool _hasCarvedTunnel;
+
         internal void MoveTo(Vector2 position)
         {
             Position = position;
@@ -95,6 +98,23 @@ namespace Game.Gameplay.Battle.Simulation
         internal void ConsumeTerrainDrillTime(float deltaTime)
         {
             TerrainDrillTimeRemaining = Mathf.Max(0f, TerrainDrillTimeRemaining - deltaTime);
+        }
+
+        /// <summary>
+        /// Rate-limits tunnel carving by travelled distance: returns true (and
+        /// records the point) only when the projectile moved at least
+        /// <paramref name="spacing"/> since the previous carve.
+        /// </summary>
+        internal bool ShouldCarveTunnelAt(Vector2 position, float spacing)
+        {
+            if (_hasCarvedTunnel && (position - _lastTunnelCarvePoint).sqrMagnitude < spacing * spacing)
+            {
+                return false;
+            }
+
+            _hasCarvedTunnel = true;
+            _lastTunnelCarvePoint = position;
+            return true;
         }
     }
 }

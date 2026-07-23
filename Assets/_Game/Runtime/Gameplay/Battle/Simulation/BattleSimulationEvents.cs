@@ -197,6 +197,7 @@ namespace Game.Gameplay.Battle.Simulation
     public readonly struct FireBlobEvent
     {
         public FireBlobEvent(
+            int puddleId,
             WeaponDefinition weapon,
             BattleTeamId team,
             Vector2 origin,
@@ -206,6 +207,7 @@ namespace Game.Gameplay.Battle.Simulation
             float travelSeconds,
             float lifetimeSeconds)
         {
+            PuddleId = puddleId;
             Weapon = weapon;
             Team = team;
             Origin = origin;
@@ -216,6 +218,10 @@ namespace Game.Gameplay.Battle.Simulation
             LifetimeSeconds = lifetimeSeconds;
         }
 
+        /// <summary>Identity of the burning puddle this blob turns into; used by
+        /// <see cref="BattleSimulation.FirePuddleMoved"/> and
+        /// <see cref="BattleSimulation.FirePuddleExtinguished"/>.</summary>
+        public int PuddleId { get; }
         public WeaponDefinition Weapon { get; }
         public BattleTeamId Team { get; }
         public Vector2 Origin { get; }

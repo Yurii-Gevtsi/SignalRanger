@@ -78,7 +78,12 @@ namespace Game.Gameplay.Battle.Assembly
         private const float CameraZoomStep = 0.62f;
         private const float PinchZoomSensitivity = 0.008f;
         private const float DirectAimCenterDeadZone = 0.32f;
-        private const float DirectAimSmoothingSpeed = 5.5f;
+        // High enough that the barrel visibly sticks to the finger (time
+        // constant ~70 ms); the old 5.5 made straight-shot aiming feel laggy.
+        private const float DirectAimSmoothingSpeed = 14f;
+        // Barrels of these weapons visually match the aim only after this art
+        // correction, and their resting pose tilts slightly toward the ground.
+        private const float RestingWeaponTiltDegrees = 10f;
         private const float ControlledPointerDeadZonePixels = 2f;
 
         private readonly Color _playerColor = new(0.18f, 0.56f, 0.96f);
@@ -90,6 +95,8 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Dictionary<string, Sprite> _spriteResourceCache = new(System.StringComparer.Ordinal);
         private readonly Dictionary<int, GameObject> _projectileVisuals = new();
         private readonly Dictionary<int, GameObject> _mineVisuals = new();
+        private readonly Dictionary<int, FireBlobVisual> _firePuddleVisuals = new();
+        private float _runtimeFallDeathY = FallDeathY;
         private BattleWeaponHudItem[] _arsenalHudItems = System.Array.Empty<BattleWeaponHudItem>();
 
         private ArenaDefinition[] _arenas;
@@ -482,6 +489,8 @@ namespace Game.Gameplay.Battle.Assembly
             simulation.ChargeDeployed += OnSimulationChargeDeployed;
             simulation.LinearWeaponEffectStarted += OnSimulationLinearWeaponEffectStarted;
             simulation.FireBlobSpawned += OnSimulationFireBlobSpawned;
+            simulation.FirePuddleMoved += OnSimulationFirePuddleMoved;
+            simulation.FirePuddleExtinguished += OnSimulationFirePuddleExtinguished;
             simulation.UnitsMoved += OnSimulationUnitsMoved;
         }
 
@@ -511,6 +520,7 @@ namespace Game.Gameplay.Battle.Assembly
                 || HasActiveMotion
                 || HasActiveWeaponEffect
                 || HasPendingGroundAction
+                || _simulation.IsAttackCommitted
                 || IsWeaponSwitchBlockedByGuideBeforeWeaponSelected())
             {
                 return;
@@ -844,6 +854,11 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 _battleTerrain.StampSolidRect(block.Position, block.Size);
             }
+
+            // Must run before BuildUnits/CreateSimulationSettings: motors, the
+            // simulation and the bot planners all take the kill height from
+            // GetFallDeathY().
+            _runtimeFallDeathY = ComputeFallDeathY(_battleTerrain.Grid, FallDeathY);
         }
 
         private Rect ComputeArenaBounds(ArenaDefinition arena)
@@ -910,7 +925,29 @@ namespace Game.Gameplay.Battle.Assembly
 
         private float GetFallDeathY()
         {
-            return FallDeathY;
+            return _runtimeFallDeathY;
+        }
+
+        /// <summary>
+        /// Kill line derived from the loaded terrain: just below the deepest
+        /// solid cell. The old fixed constant sat far below sprite arenas, so a
+        /// unit knocked past the island's visible bottom kept falling
+        /// off-screen without dying (or landed on unseen deep soil and lived).
+        /// </summary>
+        private static float ComputeFallDeathY(TerrainGrid grid, float fallback)
+        {
+            for (var y = 0; y < grid.Height; y++)
+            {
+                for (var x = 0; x < grid.Width; x++)
+                {
+                    if (grid.IsSolidCell(x, y))
+                    {
+                        return grid.Origin.y + y * grid.CellSize.y - 0.75f;
+                    }
+                }
+            }
+
+            return fallback;
         }
 
         private static UnitMotionProfile CreateMotionProfile(CharacterArchetype archetype)
@@ -934,6 +971,8 @@ namespace Game.Gameplay.Battle.Assembly
             _impactGuideProbe = null;
             _projectileVisuals.Clear();
             _mineVisuals.Clear();
+            _firePuddleVisuals.Clear();
+            _runtimeFallDeathY = FallDeathY;
 
             foreach (var presenter in _unitPresenters)
             {
@@ -1504,7 +1543,9 @@ namespace Game.Gameplay.Battle.Assembly
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = LoadWeaponIconSprite(charge.Weapon.IconId);
             renderer.sortingOrder = 27;
-            visual.transform.localScale = Vector3.one * 0.18f;
+            // Same visual size as the charge held in the robot's hands
+            // (weapon mount scale), so the drop does not "grow" the dynamite.
+            visual.transform.localScale = Vector3.one * 0.085f;
             visual.AddComponent<GroundDropVisual>().Play(
                 charge.Origin,
                 charge.Point,
@@ -1549,7 +1590,28 @@ namespace Game.Gameplay.Battle.Assembly
                 effect.TravelSeconds,
                 effect.LifetimeSeconds);
             visual.transform.localScale = Vector3.one * 0.072f;
+            _firePuddleVisuals[effect.PuddleId] = mover;
             Destroy(visual, effect.TravelSeconds + effect.LifetimeSeconds + 0.25f);
+        }
+
+        private void OnSimulationFirePuddleMoved(int puddleId, Vector2 point)
+        {
+            if (_firePuddleVisuals.TryGetValue(puddleId, out var visual) && visual != null)
+            {
+                visual.SetBurnPoint(point);
+            }
+        }
+
+        private void OnSimulationFirePuddleExtinguished(int puddleId)
+        {
+            if (_firePuddleVisuals.TryGetValue(puddleId, out var visual))
+            {
+                _firePuddleVisuals.Remove(puddleId);
+                if (visual != null)
+                {
+                    Destroy(visual.gameObject);
+                }
+            }
         }
 
         private void ApplyProjectileVisualTransform(Transform projectileTransform, SimProjectile projectile)
@@ -2550,8 +2612,32 @@ namespace Game.Gameplay.Battle.Assembly
                 WeaponIconFacesRight(weapon.IconId));
             var direction = _aimState.HasInput
                 ? _aimState.Direction
-                : Vector2.right * presenter.State.FacingDirectionX;
+                : RestingWeaponDirection(weapon.WeaponId, presenter.State.FacingDirectionX);
             presenter.SetWeaponAim(direction);
+        }
+
+        /// <summary>
+        /// Barrel direction while no aim is committed: heavy tube weapons rest
+        /// slightly tilted toward the ground; everything else sits horizontal.
+        /// </summary>
+        private static Vector2 RestingWeaponDirection(string weaponId, int facingDirectionX)
+        {
+            var facing = facingDirectionX >= 0 ? 1f : -1f;
+            if (!HasRestingTilt(weaponId))
+            {
+                return Vector2.right * facing;
+            }
+
+            var radians = RestingWeaponTiltDegrees * Mathf.Deg2Rad;
+            return new Vector2(facing * Mathf.Cos(radians), -Mathf.Sin(radians));
+        }
+
+        private static bool HasRestingTilt(string weaponId)
+        {
+            return weaponId == "weapon.bur"
+                || weaponId == "weapon.mortira"
+                || weaponId == "weapon.toxic"
+                || weaponId == "weapon.freeze";
         }
 
         private static (float Scale, Vector2 Position, float AimAngleOffset) ResolveHeldWeaponPresentation(string weaponId)
@@ -2560,14 +2646,16 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 "weapon.impulse" => (1f, new Vector2(-0.48f, 0.27f), 0f),
                 "weapon.blaster-caset" => (1f, new Vector2(-0.56f, 0.34f), 0f),
-                "weapon.bur" => (1.5f, new Vector2(-0.54f, 0.42f), -8f),
-                "weapon.mortira" => (1.12f, new Vector2(-0.55f, 0.40f), -7f),
+                // Positive offsets counter the art's built-in downward barrel
+                // tilt so the barrel axis matches the aim/trajectory exactly.
+                "weapon.bur" => (1.5f, new Vector2(-0.54f, 0.42f), 12f),
+                "weapon.mortira" => (1.12f, new Vector2(-0.55f, 0.40f), 7f),
                 "weapon.granata" => (0.76f, new Vector2(-0.50f, 0.29f), 0f),
                 "weapon.teleport" => (0.82f, new Vector2(-0.60f, 0.40f), 0f),
                 "weapon.mine" => (0.82f, new Vector2(-0.58f, 0.36f), 0f),
-                "weapon.toxic" => (1f, new Vector2(-0.68f, 0.42f), -7f),
+                "weapon.toxic" => (1f, new Vector2(-0.68f, 0.42f), 11f),
                 "weapon.emp" => (1f, new Vector2(-0.55f, 0.42f), 0f),
-                "weapon.freeze" => (1f, new Vector2(-0.55f, 0.42f), -7f),
+                "weapon.freeze" => (1f, new Vector2(-0.55f, 0.42f), 10f),
                 "weapon.fire-gun" => (1.5f, new Vector2(-0.68f, 0.42f), 0f),
                 "weapon.missle" => (1.5f, new Vector2(-0.54f, 0.30f), 0f),
                 "weapon.heal" => (1f, new Vector2(-0.54f, 0.38f), 180f),
@@ -2578,8 +2666,9 @@ namespace Game.Gameplay.Battle.Assembly
 
         private static bool WeaponIconFacesRight(string iconId)
         {
-            return iconId != "bur"
-                && iconId != "bazooka_simple"
+            // The drill ("bur") art has its bit on the right - mirroring it made
+            // the barrel point backwards against the aim line.
+            return iconId != "bazooka_simple"
                 && iconId != "bazooka"
                 && iconId != "drobovik";
         }
@@ -2718,6 +2807,7 @@ namespace Game.Gameplay.Battle.Assembly
                 && !HasActiveMotion
                 && !HasActiveWeaponEffect
                 && !HasPendingGroundAction
+                && !_simulation.IsAttackCommitted
                 && playerHasTime;
 
             var state = new BattleHudState(

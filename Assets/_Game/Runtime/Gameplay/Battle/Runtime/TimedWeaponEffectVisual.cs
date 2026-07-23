@@ -45,12 +45,16 @@ namespace Game.Gameplay.Battle.Runtime
 
     public sealed class FireBlobVisual : MonoBehaviour
     {
+        // How fast the flame visual glides toward the simulation's burn point
+        // (which creeps down as the fire eats the ground, or drops to a fresh
+        // surface after burning through).
+        private const float BurnPointFollowSpeed = 9f;
+
         private Vector2 _origin;
         private Vector2 _initialVelocity;
         private Vector2 _gravity;
-        private Vector2 _impactPoint;
+        private Vector2 _burnPoint;
         private float _travelSeconds = 0.2f;
-        private float _burnLifetimeSeconds = 3f;
         private float _elapsed;
 
         public void Play(
@@ -64,23 +68,30 @@ namespace Game.Gameplay.Battle.Runtime
             _origin = origin;
             _initialVelocity = initialVelocity;
             _gravity = gravity;
-            _impactPoint = impactPoint;
+            _burnPoint = impactPoint;
             _travelSeconds = Mathf.Max(0.01f, travelSeconds);
-            _burnLifetimeSeconds = Mathf.Max(0.01f, burnLifetimeSeconds);
             transform.position = origin;
+        }
+
+        /// <summary>
+        /// Simulation-driven burn position: the flame follows the puddle it
+        /// represents instead of animating an independent downward drift.
+        /// </summary>
+        public void SetBurnPoint(Vector2 point)
+        {
+            _burnPoint = point;
         }
 
         private void Update()
         {
+            _elapsed += Time.deltaTime;
             if (_elapsed >= _travelSeconds)
             {
-                var burnElapsed = Mathf.Min(_elapsed - _travelSeconds, _burnLifetimeSeconds);
-                transform.position = _impactPoint + Vector2.down * (burnElapsed * 0.62f);
-                _elapsed += Time.deltaTime;
+                var follow = 1f - Mathf.Exp(-BurnPointFollowSpeed * Time.deltaTime);
+                transform.position = Vector2.Lerp(transform.position, _burnPoint, follow);
                 return;
             }
 
-            _elapsed += Time.deltaTime;
             var t = Mathf.Min(_elapsed, _travelSeconds);
             transform.position = _origin + _initialVelocity * t + 0.5f * _gravity * (t * t);
         }
