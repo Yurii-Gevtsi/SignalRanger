@@ -2,6 +2,7 @@ using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.Units;
 using Game.Gameplay.Battle.Weapons;
 using Game.Progression.Missions;
+using Game.Core.Localization;
 
 namespace Game.App.Content
 {
@@ -26,8 +27,8 @@ namespace Game.App.Content
             {
                 CampaignChapterDefinition.CreateRuntime(
                     "chapter.basics",
-                    "Розділ 1. Основи пострілу",
-                    "Перші бої без зайвого шуму: приціл, сила, дуга, коротка дистанція та вибір правильного інструмента.",
+                    GameText.Localized("campaignText.chapter.basics.title", "Розділ 1. Основи пострілу"),
+                    GameText.Localized("campaignText.chapter.basics.summary", "Перші бої без зайвого шуму: приціл, сила, дуга, коротка дистанція та вибір правильного інструмента."),
                     new[]
                     {
                         "mission.training.01",
@@ -53,8 +54,8 @@ namespace Game.App.Content
                     }),
                 CampaignChapterDefinition.CreateRuntime(
                     "chapter.tactical-tools",
-                    "Розділ 2. Тактичні інструменти",
-                    "Коли пряма атака вже не найкраща, бій вчить використовувати укриття, захист і перепозиціювання.",
+                    GameText.Localized("campaignText.chapter.tactical-tools.title", "Розділ 2. Тактичні інструменти"),
+                    GameText.Localized("campaignText.chapter.tactical-tools.summary", "Коли пряма атака вже не найкраща, бій вчить використовувати укриття, захист і перепозиціювання."),
                     new[]
                     {
                         "mission.training.06",

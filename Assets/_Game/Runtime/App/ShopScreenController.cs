@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Game.Core.Localization;
 using Game.Gameplay.Battle.Weapons;
 using Game.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.App
@@ -23,9 +25,9 @@ namespace Game.App
         private static readonly Vector2 SettingsSize = new(104f, 104f);
         private static readonly Vector2 SettingsPosition = new(-26f, -10f);
         private static readonly Vector2 PreviewPosition = new(-35f, -18f);
-        private static readonly Vector2 DetailCardSize = new(1100f, 1000f);
+        private static readonly Vector2 DetailCardSize = new(1160f, 1000f);
         private static readonly Vector2 DetailCardPosition = new(120f, 90f);
-        private static readonly Vector2 PurchaseButtonSize = new(270f, 124f);
+        private static readonly Vector2 PurchaseButtonSize = new(324f, 149f);
         private static readonly Vector2 PurchaseIconSize = new(60f, 60f);
         private static readonly Vector2 CarouselArrowSize = new(200f, 250f);
         private static readonly Vector2 CarouselArrowOffset = new(46f, 135f);
@@ -55,6 +57,7 @@ namespace Game.App
         private Button _rightArrowButton;
         private int _selectedIndex;
         private int _pageStart;
+        private Vector2 _carouselDragStart;
 
         private readonly struct ShopWeaponItem
         {
@@ -124,7 +127,7 @@ namespace Game.App
                 var itemIndex = _items.Count;
                 var level = itemIndex + 1;
                 _items.Add(new ShopWeaponItem(weapon, weapon.IconId, WeaponDisplayNames.Get(weapon.WeaponId), level,
-                    $"{WeaponPresentationText.Describe(weapon)}\nТип: {WeaponPresentationText.DescribeCategory(weapon)}",
+                $"{WeaponPresentationText.Describe(weapon)}\n{GameText.WeaponType(WeaponPresentationText.DescribeCategory(weapon))}",
                     240 + itemIndex * 140, 8 + itemIndex * 4));
             }
         }
@@ -193,7 +196,7 @@ namespace Game.App
                 new Vector2(560f, 110f), new Vector2(128f, 0f), "info_panel", true, null, false);
             EnlargeForPhone(titlePanel);
             CreateText("Shop Title", titlePanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                new Vector2(-60f, -12f), new Vector2(-70f, 0f), 38, TextAlignmentOptions.Center, "Магазин зброї", GameTextRole.DisplayTitle);
+                new Vector2(-60f, -12f), new Vector2(-70f, 0f), 38, TextAlignmentOptions.Center, GameText.ShopTitle(), GameTextRole.DisplayTitle);
 
             var coins = CreateImage("Coins Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(310f, 155f), new Vector2(-486f, 0f), "Coin_panel", true, null, false);
@@ -237,18 +240,22 @@ namespace Game.App
             _levelText.enableAutoSizing = false;
             _levelText.color = SciFiTextStyle.CyanText;
 
-            _descriptionText = CreateText("Weapon Description", card.transform, new Vector2(0.19f, 0.525f), new Vector2(0.81f, 0.61f),
+            _descriptionText = CreateText("Weapon Description", card.transform, new Vector2(0.19f, 0.465f), new Vector2(0.81f, 0.61f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 29, TextAlignmentOptions.TopLeft, string.Empty, GameTextRole.Body);
             SetLeftOffset(_descriptionText.rectTransform, 40f);
             _descriptionText.enableAutoSizing = false;
-            _descriptionText.overflowMode = TextOverflowModes.Truncate;
+            _descriptionText.overflowMode = TextOverflowModes.Overflow;
             _descriptionText.textWrappingMode = TextWrappingModes.Normal;
 
-            _damageText = CreateStatLine(card.transform, "Damage Stat", new Vector2(0.19f, 0.465f), new Vector2(0.47f, 0.525f), "Урон", 40f);
-            _usesText = CreateStatLine(card.transform, "Uses Stat", new Vector2(0.52f, 0.465f), new Vector2(0.80f, 0.525f), "За бій");
+            _damageText = CreateStatLine(card.transform, "Damage Stat", new Vector2(0.19f, 0.465f), new Vector2(0.47f, 0.525f), GameText.Damage(), 40f);
+            _usesText = CreateStatLine(card.transform, "Uses Stat", new Vector2(0.52f, 0.465f), new Vector2(0.80f, 0.525f), GameText.UsesPerBattle());
+
+            MoveStatLine(_damageText, new Vector2(0.19f, 0.385f), new Vector2(0.47f, 0.445f));
+            MoveStatLine(_usesText, new Vector2(0.52f, 0.385f), new Vector2(0.80f, 0.445f));
 
             var coinButton = CreateImageButton("Buy Coins", card.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(0.5f, 0f), PurchaseButtonSize, new Vector2(-150f, 230f), "btn_green", BuySelectedWithCoins);
+            coinButton.anchoredPosition = new Vector2(-176f, 200f);
             coinButton.GetComponent<Image>().preserveAspect = false;
             _coinBuyButton = coinButton.GetComponent<Button>();
             var coinIcon = CreateImage("Buy Coins Icon", coinButton, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
@@ -259,6 +266,7 @@ namespace Game.App
 
             var crystalButton = CreateImageButton("Buy Crystals", card.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(0.5f, 0f), PurchaseButtonSize, new Vector2(150f, 230f), "btn_yellow", BuySelectedWithCrystals);
+            crystalButton.anchoredPosition = new Vector2(176f, 200f);
             crystalButton.GetComponent<Image>().preserveAspect = false;
             _crystalBuyButton = crystalButton.GetComponent<Button>();
             var crystalIcon = CreateImage("Buy Crystals Icon", crystalButton, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
@@ -298,11 +306,31 @@ namespace Game.App
             rect.offsetMin = new Vector2(left, rect.offsetMin.y);
         }
 
+        private static void MoveStatLine(TMP_Text valueText, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            if (valueText == null)
+            {
+                return;
+            }
+
+            var rect = valueText.transform.parent as RectTransform;
+            if (rect == null)
+            {
+                return;
+            }
+
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = Vector2.zero;
+        }
+
         private void BuildWeaponStrip(Transform root)
         {
             var strip = CreateRect("Weapon Strip", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(0.5f, 0f), new Vector2(1840f, 300f), WeaponStripPosition);
             EnlargeForPhone(strip);
+            AddCarouselInput(strip.gameObject);
 
             var startX = -840f;
             const float spacing = 240f;
@@ -313,6 +341,7 @@ namespace Game.App
                 var slotRoot = CreateImageButton($"Weapon Slot {i}", strip, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f), WeaponSlotSize, new Vector2(startX + i * spacing, 74f), "card",
                     () => SelectWeapon(index));
+                AddCarouselInput(slotRoot.gameObject);
                 var frame = slotRoot.GetComponent<Image>();
                 var weapon = CreateImage($"Weapon Slot Art {i}", slotRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f), WeaponArtSize, new Vector2(0f, 12f), _items[i].Art, true, null, true);
@@ -350,6 +379,69 @@ namespace Game.App
         private static void EnlargeForPhone(RectTransform rect)
         {
             rect.localScale = new Vector3(PhoneElementScale, PhoneElementScale, 1f);
+        }
+
+        private void AddCarouselInput(GameObject target)
+        {
+            var graphic = target.GetComponent<Graphic>();
+            if (graphic == null)
+            {
+                var hitArea = target.AddComponent<Image>();
+                hitArea.sprite = _whiteSprite;
+                hitArea.color = new Color(1f, 1f, 1f, 0f);
+                hitArea.raycastTarget = true;
+            }
+            else
+            {
+                graphic.raycastTarget = true;
+            }
+
+            var trigger = target.GetComponent<EventTrigger>() ?? target.AddComponent<EventTrigger>();
+            trigger.triggers ??= new List<EventTrigger.Entry>();
+            AddEvent(trigger, EventTriggerType.PointerDown, eventData =>
+            {
+                if (eventData is PointerEventData pointer)
+                {
+                    _carouselDragStart = pointer.position;
+                }
+            });
+            AddEvent(trigger, EventTriggerType.BeginDrag, eventData =>
+            {
+                if (eventData is PointerEventData pointer)
+                {
+                    _carouselDragStart = pointer.position;
+                }
+            });
+            AddEvent(trigger, EventTriggerType.EndDrag, eventData =>
+            {
+                var pointer = eventData as PointerEventData;
+                if (pointer == null)
+                {
+                    return;
+                }
+
+                var delta = pointer.position - _carouselDragStart;
+                if (Mathf.Abs(delta.x) < 90f || Mathf.Abs(delta.x) < Mathf.Abs(delta.y) * 1.2f)
+                {
+                    return;
+                }
+
+                ChangePage(delta.x < 0f ? 1 : -1);
+            });
+            AddEvent(trigger, EventTriggerType.Scroll, eventData =>
+            {
+                if (eventData is PointerEventData pointer && Mathf.Abs(pointer.scrollDelta.y) > 0.01f)
+                {
+                    ChangePage(pointer.scrollDelta.y < 0f ? 1 : -1);
+                }
+            });
+        }
+
+        private static void AddEvent(EventTrigger trigger, EventTriggerType type, Action<BaseEventData> callback)
+        {
+            var entry = new EventTrigger.Entry { eventID = type };
+            entry.callback.AddListener(data => callback?.Invoke(data));
+            trigger.triggers.Add(entry);
         }
 
         private void ChangePage(int direction)
@@ -419,7 +511,7 @@ namespace Game.App
             _previewImage.sprite = LoadSprite(item.Art, true);
             ApplyPreviewWeaponVisual(item.Definition.WeaponId);
             _nameText.text = item.DisplayName;
-            _levelText.text = $"Потрібен рівень {item.RequiredLevel}";
+            _levelText.text = GameText.RequiredLevel(item.RequiredLevel);
             _descriptionText.text = item.Description;
             _damageText.text = item.Definition.Damage.ToString();
             _usesText.text = item.Definition.HasLimitedAmmo ? item.Definition.AmmoCount.ToString() : "∞";

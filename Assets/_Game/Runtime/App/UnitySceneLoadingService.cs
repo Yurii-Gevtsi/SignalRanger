@@ -1,6 +1,5 @@
 using System.Collections;
 using Game.Core;
-using UnityEngine.SceneManagement;
 
 namespace Game.App
 {
@@ -8,16 +7,12 @@ namespace Game.App
     {
         public void Load(string sceneName)
         {
-            SceneManager.LoadScene(sceneName);
+            LoadingScreenController.LoadScene(sceneName);
         }
 
         public IEnumerator LoadAsync(string sceneName)
         {
-            var operation = SceneManager.LoadSceneAsync(sceneName);
-            while (operation != null && !operation.isDone)
-            {
-                yield return null;
-            }
+            yield return LoadingScreenController.LoadSceneAsync(sceneName);
         }
     }
 }

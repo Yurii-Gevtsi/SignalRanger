@@ -59,6 +59,12 @@ namespace Game.App
             if (scene.name == GameSceneNames.Menu)
             {
                 ApplyPendingMissionCompletion();
+                if (IntroSceneController.ShouldShow())
+                {
+                    IntroSceneController.EnsureCreated();
+                    return;
+                }
+
                 MenuSceneController.EnsureCreated();
                 return;
             }

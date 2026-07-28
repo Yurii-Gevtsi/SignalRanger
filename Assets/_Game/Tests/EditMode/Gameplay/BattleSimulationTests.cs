@@ -878,6 +878,43 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void ExplosionNearOwner_DamagesOwnerAtNormalStrength()
+        {
+            var weapon = CreateWeapon("weapon.test.self-damage", damage: 60, impactRadius: 2.5f, gravityScale: 0f);
+            var harness = CreateHarness(weapon);
+            var player = harness.State.GetUnit("player.test.01");
+
+            var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, -0.85f), Vector2.down, 6f, true));
+            Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
+
+            for (var i = 0; i < 120 && harness.Simulation.ProjectilesInFlight > 0; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.Less(player.Health, 70, "owner takes full radial damage when caught in their own blast");
+        }
+
+        [Test]
+        public void DrillLaser_DoesNotDamageOwner()
+        {
+            var drill = CreateWeapon("weapon.bur", WeaponRole.ShortRangeBurst, damage: 18, impactRadius: 0.7f, ammo: 1, gravityScale: 0f);
+            var harness = CreateHarness(drill);
+            var player = harness.State.GetUnit("player.test.01");
+            var startHealth = player.Health;
+
+            var result = harness.Simulation.TryFire(new AimState(player.Position, Vector2.right, 3f, true));
+            Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
+
+            for (var i = 0; i < 420; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            Assert.AreEqual(startHealth, player.Health);
+        }
+
+        [Test]
         public void CommandScript_ReplaysWithMatchingHashes()
         {
             var first = RunDeterministicScript();

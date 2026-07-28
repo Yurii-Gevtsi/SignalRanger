@@ -2749,12 +2749,20 @@ namespace Game.Gameplay.Battle.Assembly
                 GameSessionContext.ReportMissionCompleted();
             }
 
-            SceneManager.LoadScene(GameSceneNames.Menu);
+            LoadMenuScene();
         }
 
         private void ExitToMenu()
         {
-            SceneManager.LoadScene(GameSceneNames.Menu);
+            LoadMenuScene();
+        }
+
+        private static void LoadMenuScene()
+        {
+            if (!SceneLoadingBridge.TryLoad(GameSceneNames.Menu))
+            {
+                SceneManager.LoadScene(GameSceneNames.Menu);
+            }
         }
 
         private void CancelAim()
@@ -2944,13 +2952,7 @@ namespace Game.Gameplay.Battle.Assembly
         {
             return arena == null
                 ? GameText.ArenaFallback()
-                : arena.ArenaId switch
-                {
-                    "arena.training-meadow" => "Тренувальна галявина",
-                    "arena.split-ridge" => "Розділений хребет",
-                    "arena.central-cover" => "Центральне укриття",
-                    _ => arena.DisplayName
-                };
+                : GameText.ArenaName(arena.ArenaId, arena.DisplayName);
         }
 
         private static string DescribeWeapon(WeaponDefinition weapon)

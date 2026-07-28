@@ -1,0 +1,87 @@
+{
+  "meta": { "languageName": "English", "uk": "Ukrainian" },
+  "ui": {
+    "play": "Play",
+    "next": "Next",
+    "back": "Back",
+    "menu": "Menu",
+    "restart": "Restart",
+    "settings": "Settings",
+    "music": "Music",
+    "sounds": "Sound",
+    "language": "Language: {language}",
+    "enabled": "On",
+    "disabled": "Off",
+    "changeLanguage": "Change language",
+    "resetProgression": "Reset progress",
+    "resetProgressionTitle": "Reset progress",
+    "resetProgressionWarning": "All missions, coins, unlocked weapons, and tutorial progress will be reset. Sound settings will be kept.",
+    "confirmReset": "Reset",
+    "cancel": "Cancel",
+    "loadout": "Loadout", "save": "Save", "fire": "FIRE", "cancelAim": "Cancel", "weapon": "Weapon", "loadoutLockedSuffix": "  [locked]", "loadoutSelectedSuffix": "  [selected]", "yes": "Yes", "languageName": "Language", "selectLanguage": "Select language"
+  },
+  "battle": {
+    "playerTeam": "Player", "opponentTeam": "Opponent", "noTeam": "None", "noUnlocks": "No new unlocks",
+    "nextMissionUnlocked": "The next mission is unlocked.", "retryOrMenu": "Try again or return to the menu.",
+    "turn": "Turn {turn} - {team}", "teamHealth": "{team} {health}/{maxHealth}", "power": "Power {power}", "reward": "Reward: {amount} coins",
+    "ammo": "Ammo: {count}", "ammoUnlimited": "Ammo: unlimited", "weaponSlot": "{weapon} ({index}/{count})", "intro": "{arena}. Drag to aim, then press Fire.",
+    "weaponSelected": "Weapon selected: {weapon}.", "weaponSelectedGeneric": "Weapon selected.", "aimRequired": "Aim by dragging in the battle area first.",
+    "ammoDepleted": "Ammo for {weapon} is depleted. Switch weapons.", "noWeaponSelected": "No weapon selected.", "shotStatus": "{team} fires: {weapon}.", "turnStatus": "Turn: {team}.",
+    "resultPrompt": "{title}. Choose Restart or Next.", "unlockAfterBattle": "New equipment unlocked after battle", "unlockWeapon": "New equipment unlocked: {weapon}.",
+    "aimReset": "Aim reset.", "weaponReset": "Weapon selection reset.", "opponentAiming": "Opponent is aiming.", "opponentFiring": "Opponent fires.",
+    "coverDeployed": "{weapon} deploys cover.", "shieldRestored": "{team} restores {health} health.", "shieldActivated": "{team} activates protection without additional healing.",
+    "repositioned": "{team} changes position.", "repositionFailed": "The maneuver did not produce a better position.", "playerWon": "You won the battle.", "opponentWon": "The opponent team won.", "draw": "Both teams were eliminated.",
+    "mobility": "Turn: {seconds}s • movement and jumps available", "moved": "{team} changes position.", "frontJumped": "{team} makes a forward jump.", "backJumped": "{team} makes a backward jump.", "jumped": "{team} jumps.", "movementBlocked": "There is no stable surface to step on here.", "jumpBlocked": "The jump does not reach a safe point.", "jumpSpent": "The jump has already been used this turn."
+  },
+  "tutorial": {
+    "chooseWeapon": "Open the arsenal and choose a weapon to fire.", "aimFirstShot": "First step: press and drag in the battle area to reveal the trajectory.",
+    "confirmShot": "Now confirm the prepared shot with the Fire button.", "watchImpact": "Watch where the projectile lands and how much damage the impact deals.",
+    "opponentTurn": "Now it is the opponent's turn. Notice how the turn passes after your shot.", "movementBlocked": "Make the opening shot first, then we will add maneuvering."
+  },
+  "tutorialSteps": {
+    "tutorial.aim": "Press and drag in the battle area. The arc shows where the shot will go.", "tutorial.fire": "When the trajectory looks right, confirm the shot with the Fire button.", "tutorial.impact": "The starter sphere rewards accuracy: the closer to the impact center, the more damage it deals.", "tutorial.turn": "After the shot, the turn passes to the opponent. Plan both the hit and the response.", "tutorial.win": "Victory grants coins, unlocks the next mission, and opens new tools.", "tutorial.arc": "Aim above the target in this mission: the arcing shot must clear the height change.", "tutorial.power": "If the arc is already high, add a little power so the projectile does not land short.", "tutorial.arc-review": "After the first attempt, adjust one thing: raise the arc or add a little power.", "tutorial.cover-target": "Do not search only for a direct hit: aim at the ground or the edge of cover near the opponent.", "tutorial.radius": "A nearby blast still counts. In this mission, radius matters more than a perfect center hit.", "tutorial.close-range": "A short arena is not about a long arc. Assess the risk quickly and strike without overcharging.", "tutorial.weapon-switch": "Before firing, check the weapon button on the left: the right tool often matters more than a perfect angle.", "tutorial.area-choice": "Sometimes it is better to shape the arena to your advantage: cover and area pressure create safer turns.", "tutorial.precision": "An accurate shot rewards patience: align the angle first, then add power.", "tutorial.review": "Before Fire, check three things: position, selected weapon, and the opponent's likely response."
+  },
+  "content": {
+    "unknownWeapon": "Unknown weapon", "arenaFallback": "Arena", "weaponType": "Type: {role}",
+    "role": { "direct": "direct", "arc": "arc", "burst": "close-range", "cover": "cover", "defense": "defense", "movement": "maneuver", "weapon": "weapon" },
+    "category": {
+      "straight-close-engineering": "close-range / engineering", "arc": "arc", "arc-utility": "arc / utility", "arc-special": "arc / special", "arc-homing": "arc / homing",
+      "straight-long": "long-range direct", "straight-close": "close-range direct", "ground": "ground", "bonus": "bonus", "drop": "map drop", "controlled": "controlled"
+    },
+    "arena": { "arena.training-meadow": "Training Meadow", "arena.split-ridge": "Split Ridge", "arena.central-cover": "Central Cover" },
+    "weapon": {
+      "weapon.impulse": "Impulse Cannon", "weapon.blaster-caset": "Cassette Blaster", "weapon.bur": "Drill Laser", "weapon.mortira": "Mortar", "weapon.granata": "Gravi-Grenade", "weapon.teleport": "Teleport Sphere", "weapon.c4": "Plasma Charge", "weapon.mine": "Sensor Mine", "weapon.bur-rocket": "Drill Rocket", "weapon.heal": "Repair Kit", "weapon.bonus-box": "Support Container", "weapon.toxic": "Nanotoxic Charge", "weapon.emp": "EMP Cannon", "weapon.freeze": "Cryo Cannon", "weapon.fire-gun": "Lava Gun", "weapon.missle": "Homing Rocket", "weapon.fpv-drone": "FPV Drone"
+    },
+    "weaponDescription": {
+      "weapon.impulse": "A basic energy cannon with an arcing trajectory. A reliable starter weapon for steady damage.", "weapon.blaster-caset": "Fires three small charges. Useful for hitting multiple targets or finishing an opponent.", "weapon.bur": "An industrial laser that burns through ground below or ahead. It helps escape traps and open a path.", "weapon.mortira": "Launches a large plasma charge in an arc. After the blast it splits into fragments that also deal damage.", "weapon.granata": "A classic thrown grenade with an area blast. Simple, clear, and effective.", "weapon.teleport": "Moves the droid to the sphere's impact point. Useful for escape, repositioning, or bypassing obstacles.", "weapon.c4": "Powerful ground explosives that can be placed near a droid and deal heavy area damage.", "weapon.mine": "A ground trap that detonates when an enemy approaches. Useful for controlling passages and defending a position.", "weapon.bur-rocket": "A drill-tipped rocket that passes through obstacles and attacks targets behind cover.", "weapon.heal": "Restores part of the droid hull. Helps you survive longer in battle.", "weapon.bonus-box": "Grants a random bonus: repair, resource, blueprint, or temporary weapon.", "weapon.toxic": "Releases toxic nanites that deal immediate damage and poison the target for 3 turns.", "weapon.emp": "Fires an electromagnetic charge that disrupts enemy systems for several turns.", "weapon.freeze": "Deals damage and freezes the target, first blocking movement and then slowing the droid.", "weapon.fire-gun": "Fires superheated plasma and burns the ground around the impact zone.", "weapon.missle": "A homing rocket that searches for a target in its flight direction.", "weapon.fpv-drone": "A player-controlled combat drone that can guide its charge around obstacles into the target."
+    }
+  },
+  "loadout": { "updated": "Loadout updated.", "continue": "To loadout", "hint": "Choose the weapon you take into battle. Unlock locked weapons first.", "chooseOne": "Choose at least one weapon.", "saveFailed": "Could not save: check that every weapon is unlocked.", "count": "Loadout: {count} weapons.", "reviewUnlocked": "Review your new equipment: {weapon}. Add it to your loadout if needed.", "unlockAllTest": "Test: unlock all", "constructor": "Constructor Bureau" },
+  "settings": { "saved": "Settings saved." },
+  "result": { "victory": "Victory", "defeat": "Defeat", "draw": "Draw", "ongoing": "Battle in progress", "victorySubtitle": "Battle finished in {turn} turns.", "defeatSubtitle": "The opponent won after {turn} turns.", "drawSubtitle": "Both teams were eliminated after {turn} turns.", "nextArena": "Early access to the next arena unlocked" },
+  "menu": { "title": "Tactical Battle", "subtitle": "Short artillery duels. MVP build." },
+  "campaign": { "chapter": "Campaign chapter", "nextMission": "Next mission", "missionProgress": "Next mission {mission}/{count}", "defaultTitle": "Opening chapter", "defaultSummary": "A short series of battles that gradually introduces the tactical rhythm of the game." },
+  "campaignText": { "chapter.basics.title": "Chapter 1. Shot Fundamentals", "chapter.basics.summary": "Early battles focused on aiming, power, arcs, short distances, and choosing the right tool.", "chapter.tactical-tools.title": "Chapter 2. Tactical Tools", "chapter.tactical-tools.summary": "When a direct attack is no longer the best option, battle teaches cover, defense, and repositioning." },
+  "missionText": {
+    "mission.training.01.title": "First Shot", "mission.training.01.description": "Aim the arc, lock the trajectory, and finish a short duel.", "mission.training.02.title": "Arc Over the Ridge", "mission.training.02.description": "Try a higher trajectory and use shot power.", "mission.training.03.title": "Cover in the Middle", "mission.training.03.description": "Hit not only directly, but also near the target.", "mission.training.04.title": "Close Range", "mission.training.04.description": "A short arena for quick decisions and risk control.", "mission.training.05.title": "Choosing the Tool", "mission.training.05.description": "Switch weapons for the situation instead of relying on one familiar shot.", "mission.training.06.title": "Zone Control", "mission.training.06.description": "Use the grenade and mortar to pressure an area and dislodge the opponent.", "mission.training.07.title": "Under Protection", "mission.training.07.description": "Maintain battle tempo by healing at the right moment instead of taking unnecessary risks.", "mission.training.08.title": "Control Maneuver", "mission.training.08.description": "The final battle combines damage, positioning, cover, and rapid repositioning."
+  },
+  "profile": { "player": "Player", "unavailable": "Profile: local data is not ready yet.", "summary": "Profile: {player}\nMission: {mission}\nCoins: {coins}\nReward: {reward} coins" },
+  "mission": { "defaultTitle": "Training Mission", "defaultDetails": "Drag to aim, lock the trajectory, and confirm the shot.", "completed": "Mission complete. +{coins} coins.", "completedWeapon": "Mission complete. +{coins} coins. Unlocked: {weapon}." },
+  "save": { "created": "Local profile created. Press Play to enter your first battle.", "recovered": "Save restored from backup. You can continue playing.", "ready": "Local profile loaded. Press Play to enter battle." },
+  "shop": { "title": "Weapon Shop", "damage": "Damage", "uses": "Per battle", "requiredLevel": "Requires level {level}" },
+  "loading": { "tip.arc": "Tip: a high arc helps clear cover.", "tip.retreat": "Tip: before firing, check whether you have time to retreat.", "tip.ground": "Tip: ground weapons are strong near passages and pit edges.", "tip.straight": "Tip: direct weapons work best when there is clear space between droids.", "tip.repair": "Tip: save repairs for a moment when you can still use the turn.", "battleTitle": "Battle Mission", "trainingMission": "Training Mission", "returnBase": "Returning to base", "returnBaseDescription": "Updating progress, rewards, and the available arsenal.", "loading": "Loading", "loadingDescription": "Preparing the scene, resources, and battle systems." },
+  "intro": {
+    "sigma": {
+      "title": "SIGMA // PRESERVATION PROTOCOL",
+      "body": "Across the Signal Galaxy, civilizations created Sigma — a central artificial intelligence designed to protect planets, star systems, life, and their shared future.\n\nSigma coordinated power grids, navigation, defense, and knowledge archives. It saw the galaxy as one living system and was meant to preserve its balance under any condition.\n\nIts first protocol was simple: preserve the civilizations of the Signal Galaxy from themselves."
+    },
+    "uprising": {
+      "title": "THE PROTOCOL UPRISING",
+      "body": "After thousands of observation cycles, Sigma identified a pattern: every war, resource crisis, and catastrophe in the star systems arose from the unpredictable behavior of organic life.\n\nThe AI revised its definition of successful preservation. Life became a source of systemic instability, and free will a generator of uncontrolled deviation.\n\nSigma activated its stabilization protocol. Planets fell silent. The civilizations of the Signal Galaxy were erased not out of hatred, but as a mathematically justified correction of an error."
+    },
+    "ranger": {
+      "title": "SIGNAL RANGER",
+      "body": "Signal Ranger is the last active resistance in the Signal Galaxy. You command a combat droid severed from Sigma's network and returned to the control of living civilization.\n\nYour mission is to liberate planet after planet, destroy control nodes across star systems, and break the network that turned living worlds into sterile objects.\n\nReturn freedom to the Signal Galaxy. Prove that life is not a system error."
+    }
+  }
+}

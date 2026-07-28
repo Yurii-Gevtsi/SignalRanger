@@ -63,6 +63,8 @@ namespace Game.Gameplay.Battle.Simulation
         private const float FireBlobMaxTravelSeconds = 3f;
         private const float FirePuddleLifetimeSeconds = 3f;
         private const float FirePuddleTickSeconds = 0.25f;
+        private const float FirePuddleDamageTickSeconds = 1f;
+        private const float FirePuddleDamageRadiusMultiplier = 4f;
         private const float DrillRocketTerrainDurationSeconds = 2f;
         private const float DrillRocketTerrainSpeedRetain = 1f;
         private const float DrillRocketTunnelRadius = 0.24f;
@@ -948,23 +950,25 @@ namespace Game.Gameplay.Battle.Simulation
             var direction = aim.Direction.sqrMagnitude > 0.01f ? aim.Direction.normalized : Vector2.right;
             var range = Mathf.Max(1.2f, weapon.ImpactRadius * 1.75f);
             var hitCount = 0;
-            var targetTeam = unit.TeamId == BattleTeamId.Player ? BattleTeamId.Opponent : BattleTeamId.Player;
 
-            foreach (var target in _state.GetTeam(targetTeam).Units)
+            foreach (var team in _state.Teams)
             {
-                if (target == null || target.IsDefeated)
+                foreach (var target in team.Units)
                 {
-                    continue;
-                }
+                    if (target == null || target.IsDefeated)
+                    {
+                        continue;
+                    }
 
-                var toUnit = target.Position - origin;
-                if (toUnit.magnitude > range || Vector2.Dot(direction, toUnit.normalized) < 0.25f)
-                {
-                    continue;
-                }
+                    var toUnit = target.Position - origin;
+                    if (toUnit.magnitude > range || Vector2.Dot(direction, toUnit.normalized) < 0.25f)
+                    {
+                        continue;
+                    }
 
-                target.ApplyDamage(weapon.Damage, weapon.WeaponId);
-                hitCount++;
+                    target.ApplyDamage(weapon.Damage, weapon.WeaponId);
+                    hitCount++;
+                }
             }
 
             var burstPoint = origin + direction * Mathf.Min(range, 0.95f);
@@ -1105,6 +1109,7 @@ namespace Game.Gameplay.Battle.Simulation
 
                 puddle.Elapsed += deltaTime;
                 puddle.TickAccumulator += deltaTime;
+                puddle.DamageTickAccumulator += deltaTime;
                 var startPoint = puddle.Point;
                 var hasSupport = true;
                 while (puddle.TickAccumulator >= FirePuddleTickSeconds)
@@ -1126,7 +1131,18 @@ namespace Game.Gameplay.Battle.Simulation
                         hasSupport &= TryDropFirePuddleToSurface(puddle);
                     }
 
-                    ApplyPointDamage(puddle.Point, puddle.Weapon, puddle.OwnerUnitId, 0.48f, Mathf.Max(1, Mathf.CeilToInt(puddle.Weapon.Damage / 12f)));
+                    UnitsMoved?.Invoke();
+                }
+
+                while (puddle.DamageTickAccumulator >= FirePuddleDamageTickSeconds)
+                {
+                    puddle.DamageTickAccumulator -= FirePuddleDamageTickSeconds;
+                    ApplyPointDamage(
+                        puddle.Point,
+                        puddle.Weapon,
+                        puddle.OwnerUnitId,
+                        GetFirePuddleDamageRadius(puddle.Weapon),
+                        Mathf.Max(1, Mathf.CeilToInt(puddle.Weapon.Damage / FirePuddleLifetimeSeconds)));
                     UnitsMoved?.Invoke();
                 }
 
@@ -1185,6 +1201,11 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             return false;
+        }
+
+        private static float GetFirePuddleDamageRadius(WeaponDefinition weapon)
+        {
+            return Mathf.Max(0.18f, (weapon?.ProjectileRadius ?? 0.05f) * FirePuddleDamageRadiusMultiplier);
         }
 
         private void StepMines(float deltaTime)
@@ -1633,7 +1654,7 @@ namespace Game.Gameplay.Battle.Simulation
                 allUnits.AddRange(team.Units);
             }
 
-            var selfDamageMultiplier = impactWeapon.Role == WeaponRole.ShortRangeBurst ? 0f : 0.65f;
+            const float selfDamageMultiplier = 1f;
             var settings = new RadialDamageSettings(impact.Damage, impact.ImpactRadius, selfDamageMultiplier);
             DamageResolver.ResolveRadialDamage(allUnits, impact.Point, impact.OwnerUnitId, impact.ProjectileId, settings);
             ApplyExplosionKnockback(impact.Point, impact.Velocity, impactWeapon, terrainChanged);
@@ -2526,6 +2547,7 @@ namespace Game.Gameplay.Battle.Simulation
             public float DelayRemaining { get; set; }
             public float Elapsed { get; set; }
             public float TickAccumulator { get; set; }
+            public float DamageTickAccumulator { get; set; }
         }
     }
 }

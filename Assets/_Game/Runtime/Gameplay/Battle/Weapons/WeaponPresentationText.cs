@@ -11,13 +11,13 @@ namespace Game.Gameplay.Battle.Weapons
 
         public static string DescribeCategory(WeaponDefinition weapon)
         {
-            if (weapon == null || weapon.Tags.Count == 0) return "зброя";
+            if (weapon == null || weapon.Tags.Count == 0) return Game.Core.Localization.GameText.RoleFallback();
             if (weapon.Tags[0] == "straight-close" && HasTag(weapon, "engineering"))
             {
-                return "пряма ближня / інженерна";
+                return Game.Core.Localization.GameText.WeaponCategory("straight-close-engineering", "пряма ближня / інженерна");
             }
 
-            return weapon.Tags[0] switch
+            var fallback = weapon.Tags[0] switch
             {
                 "arc" => "навісна",
                 "arc-utility" => "навісна / утилітарна",
@@ -31,6 +31,7 @@ namespace Game.Gameplay.Battle.Weapons
                 "controlled" => "керована",
                 _ => "зброя"
             };
+            return Game.Core.Localization.GameText.WeaponCategory(weapon.Tags[0], fallback);
         }
 
         private static bool HasTag(WeaponDefinition weapon, string tag)
@@ -48,7 +49,8 @@ namespace Game.Gameplay.Battle.Weapons
 
         public static string Describe(WeaponDefinition weapon)
         {
-            return weapon?.WeaponId switch
+            var weaponId = weapon?.WeaponId;
+            var fallback = weaponId switch
             {
                 "weapon.impulse" => "Базова енергетична гармата з навісною траєкторією. Надійна стартова зброя для стабільної шкоди.",
                 "weapon.blaster-caset" => "Має три постріли малими зарядами. Добре підходить для ураження кількох цілей або добивання.",
@@ -69,6 +71,7 @@ namespace Game.Gameplay.Battle.Weapons
                 "weapon.fpv-drone" => "Керований гравцем бойовий дрон. Дозволяє вручну довести заряд до цілі або облетіти перешкоди, детонує при зіткненні.",
                 _ => string.Empty
             };
+            return Game.Core.Localization.GameText.WeaponDescription(weaponId, fallback);
         }
 
         public static string DescribeBattleHint(WeaponDefinition weapon) => Describe(weapon);

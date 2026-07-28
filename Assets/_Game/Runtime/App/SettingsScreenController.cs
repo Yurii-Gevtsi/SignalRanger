@@ -1,6 +1,7 @@
 ﻿using System;
 using Game.Core;
 using Game.Core.Localization;
+using System.Collections.Generic;
 using Game.UI;
 using TMPro;
 using UnityEngine;
@@ -20,6 +21,7 @@ namespace Game.App
         private const string ButtonGreenResource = "UI/Shop/btn_green";
         private const string ButtonRedResource = "UI/Shop/btn_red";
         private const string ButtonYellowResource = "UI/Shop/btn_yellow";
+        private const string FlagResourceRoot = "UI/Flags/CircleFlags/";
 
         private static readonly Color OverlayColor = new(0.04f, 0.06f, 0.08f, 0.92f);
         private static readonly Color PanelColor = new(0.10f, 0.13f, 0.16f, 1f);
@@ -32,7 +34,11 @@ namespace Game.App
         private Action _onClosed;
         private Action _onRestart;
         private Action _onMenu;
+        private Action _onLanguageSelected;
         private GameObject _resetConfirmationRoot;
+        private GameObject _languageOptionsRoot;
+        private GameObject _canvasObject;
+        private bool _isLanguagePickerOnly;
 
         private float _music;
         private float _sfx;
@@ -57,17 +63,59 @@ namespace Game.App
             root.SetActive(true);
         }
 
+        public static void OpenLanguagePicker(Action onLanguageSelected)
+        {
+            if (FindAnyObjectByType<SettingsScreenController>() != null)
+            {
+                return;
+            }
+
+            var root = new GameObject("Initial Language Picker");
+            root.SetActive(false);
+            var controller = root.AddComponent<SettingsScreenController>();
+            controller._isLanguagePickerOnly = true;
+            controller._onLanguageSelected = onLanguageSelected;
+            root.SetActive(true);
+        }
+
         private void Awake()
         {
             _whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
             _music = Mathf.Clamp01(AppServices.Audio.MusicVolume);
             _sfx = Mathf.Clamp01(AppServices.Audio.SfxVolume);
-            Build();
+            if (_isLanguagePickerOnly)
+            {
+                BuildLanguagePickerCanvas();
+            }
+            else
+            {
+                Build();
+            }
+        }
+
+        private void BuildLanguagePickerCanvas()
+        {
+            var canvasObject = new GameObject("Initial Language Picker Canvas");
+            _canvasObject = canvasObject;
+            canvasObject.transform.SetParent(transform, false);
+            var canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 1100;
+
+            var scaler = canvasObject.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+            canvasObject.AddComponent<GraphicRaycaster>();
+
+            ShowLanguageOptions();
         }
 
         private void Build()
         {
             var canvasObject = new GameObject("Settings Canvas");
+            _canvasObject = canvasObject;
             canvasObject.transform.SetParent(transform, false);
             var canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -98,28 +146,27 @@ namespace Game.App
             panelBlocker.transition = Selectable.Transition.None;
 
             CreateText("Title", panel.transform, new Vector2(0.18f, 0.70f), new Vector2(0.82f, 0.78f), new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, 48, TextAlignmentOptions.Center, GameText.SettingsTitle(), GameTextRole.DisplayTitle);
+                Vector2.zero, Vector2.zero, 48, TextAlignmentOptions.Center, T("ui.settings"), GameTextRole.DisplayTitle);
             CreateCloseButton(panel.transform);
 
-            CreateToggleRow(panel.transform, 0.58f, GameText.Music(), out _musicValue, out _musicToggleImage, ToggleMusic);
-            CreateToggleRow(panel.transform, 0.48f, GameText.Sounds(), out _sfxValue, out _sfxToggleImage, ToggleSfx);
+            CreateToggleRow(panel.transform, 0.64f, T("ui.music"), out _musicValue, out _musicToggleImage, ToggleMusic);
+            CreateToggleRow(panel.transform, 0.53f, T("ui.sounds"), out _sfxValue, out _sfxToggleImage, ToggleSfx);
 
-            CreateText("Language", panel.transform, new Vector2(0.18f, 0.39f), new Vector2(0.82f, 0.45f), new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, 26, TextAlignmentOptions.Center, GameText.LanguageLabel());
+            CreateLanguageRow(panel.transform);
 
             if (_onRestart != null || _onMenu != null)
             {
                 CreateButton("Restart Battle", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                    new Vector2(210f, 104f), new Vector2(-120f, 275f), ResetColor, GameText.Restart, 30,
+                    new Vector2(252f, 125f), new Vector2(-138f, 275f), ResetColor, T("ui.restart"), 30,
                     RestartBattle, ButtonYellowResource);
                 CreateButton("Exit To Menu", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                    new Vector2(210f, 104f), new Vector2(120f, 275f), BackColor, GameText.Menu, 30,
+                    new Vector2(252f, 125f), new Vector2(138f, 275f), BackColor, T("ui.menu"), 30,
                     ExitBattleToMenu, ButtonBlueResource);
             }
             else
             {
                 CreateButton("Reset Progression", panel.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                    new Vector2(400f, 104f), new Vector2(0f, 260f), ResetColor, GameText.ResetProgressionLabel(), 28,
+                    new Vector2(480f, 125f), new Vector2(0f, 260f), ResetColor, T("ui.resetProgression"), 28,
                     () => ShowResetConfirmation(panel.transform), ButtonRedResource);
             }
 
@@ -161,7 +208,7 @@ namespace Game.App
             if (_musicValue != null)
             {
                 var enabled = _music > 0f;
-                _musicValue.text = enabled ? "Вкл" : "Викл";
+                _musicValue.text = enabled ? T("ui.enabled") : T("ui.disabled");
                 if (_musicToggleImage != null)
                 {
                     _musicToggleImage.sprite = LoadResourceSprite(enabled ? ButtonGreenResource : ButtonRedResource, Vector4.zero);
@@ -171,7 +218,7 @@ namespace Game.App
             if (_sfxValue != null)
             {
                 var enabled = _sfx > 0f;
-                _sfxValue.text = enabled ? "Вкл" : "Викл";
+                _sfxValue.text = enabled ? T("ui.enabled") : T("ui.disabled");
                 if (_sfxToggleImage != null)
                 {
                     _sfxToggleImage.sprite = LoadResourceSprite(enabled ? ButtonGreenResource : ButtonRedResource, Vector4.zero);
@@ -193,15 +240,15 @@ namespace Game.App
             var dialog = CreatePanel("Confirmation Dialog", overlay.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), new Vector2(700f, 430f), Vector2.zero, PanelColor);
             CreateText("Confirmation Title", dialog.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-80f, 64f), new Vector2(0f, -52f), 34, TextAlignmentOptions.Center, GameText.ResetProgressionTitle(), GameTextRole.DisplayTitle);
+                new Vector2(-80f, 64f), new Vector2(0f, -52f), 34, TextAlignmentOptions.Center, T("ui.resetProgressionTitle"), GameTextRole.DisplayTitle);
             CreateText("Confirmation Warning", dialog.transform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(-100f, 150f), new Vector2(0f, 16f), 24, TextAlignmentOptions.Center, GameText.ResetProgressionWarning());
+                new Vector2(-100f, 150f), new Vector2(0f, 16f), 24, TextAlignmentOptions.Center, T("ui.resetProgressionWarning"));
 
             CreateButton("Confirm Reset", dialog.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(280f, 84f), new Vector2(-154f, 62f), ResetColor, GameText.ConfirmResetProgression(), 26,
+                new Vector2(336f, 101f), new Vector2(-182f, 62f), ResetColor, T("ui.confirmReset"), 26,
                 ConfirmResetProgression, ButtonRedResource);
             CreateButton("Cancel Reset", dialog.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(280f, 84f), new Vector2(154f, 62f), StepColor, GameText.Cancel(), 26,
+                new Vector2(336f, 101f), new Vector2(182f, 62f), StepColor, T("ui.cancel"), 26,
                 HideResetConfirmation, ButtonBlueResource);
         }
 
@@ -223,6 +270,272 @@ namespace Game.App
             _onClosed = null;
             Destroy(gameObject);
             AppServices.SceneLoader.Load(GameSceneNames.Menu);
+        }
+
+        private void CreateLanguageRow(Transform parent)
+        {
+            CreateText("Language Label", parent, new Vector2(0.24f, 0.385f), new Vector2(0.49f, 0.475f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 34, TextAlignmentOptions.MidlineLeft,
+                T("ui.languageName"));
+
+            var languageButton = CreatePanel("Language Value", parent, new Vector2(0.50f, 0.365f), new Vector2(0.74f, 0.495f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, Color.white,
+                LoadResourceSprite(ButtonBlueResource, Vector4.zero));
+            languageButton.preserveAspect = false;
+            var button = languageButton.gameObject.AddComponent<Button>();
+            button.targetGraphic = languageButton;
+            button.onClick.AddListener(ToggleLanguageOptions);
+            CreateText("Language Value Label", languageButton.transform, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 27, TextAlignmentOptions.Center,
+                AppServices.Localization.GetLanguageDisplayName());
+        }
+
+        private void ToggleLanguageOptions()
+        {
+            if (_languageOptionsRoot != null)
+            {
+                HideLanguageOptions();
+                return;
+            }
+
+            if (_canvasObject == null || AppServices.Localization == null)
+            {
+                return;
+            }
+
+            ShowLanguageOptions();
+        }
+
+        private void ShowLanguageOptions()
+        {
+            if (_languageOptionsRoot != null || _canvasObject == null || AppServices.Localization == null)
+            {
+                return;
+            }
+
+            var overlay = CreatePanel("Language Picker Overlay", _canvasObject.transform, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, Color.clear);
+            _languageOptionsRoot = overlay.gameObject;
+            if (!_isLanguagePickerOnly)
+            {
+                var overlayButton = overlay.gameObject.AddComponent<Button>();
+                overlayButton.targetGraphic = overlay;
+                overlayButton.transition = Selectable.Transition.None;
+                overlayButton.onClick.AddListener(HideLanguageOptions);
+            }
+
+            var panel = CreatePanel("Language Picker Panel", overlay.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(980f, 1080f), new Vector2(0f, -20f), Color.white,
+                LoadResourceSprite(BattleResourceRoot + "card", new Vector4(250f, 250f, 250f, 250f)));
+            panel.type = Image.Type.Sliced;
+            panel.preserveAspect = false;
+            var panelBlocker = panel.gameObject.AddComponent<Button>();
+            panelBlocker.targetGraphic = panel;
+            panelBlocker.transition = Selectable.Transition.None;
+            CreateText("Language Picker Title", panel.transform, new Vector2(0.18f, 0.70f), new Vector2(0.82f, 0.78f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 48, TextAlignmentOptions.Center,
+                T("ui.selectLanguage"), GameTextRole.DisplayTitle);
+            if (!_isLanguagePickerOnly)
+            {
+                CreateLanguagePickerCloseButton(panel.transform);
+            }
+
+            var languages = AppServices.Localization.AvailableLanguageCodes;
+            CreateLanguageScrollList(panel.transform, languages);
+        }
+
+        private void CreateLanguageScrollList(Transform parent, IReadOnlyList<string> languages)
+        {
+            var viewport = CreatePanel("Language Scroll Viewport", parent, new Vector2(0.13f, 0.16f), new Vector2(0.87f, 0.65f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.14f));
+            viewport.rectTransform.offsetMin = new Vector2(100f, 60f);
+            viewport.rectTransform.offsetMax = new Vector2(-100f, 60f);
+            viewport.raycastTarget = true;
+            viewport.gameObject.AddComponent<RectMask2D>();
+
+            var scrollRect = viewport.gameObject.AddComponent<ScrollRect>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Elastic;
+            scrollRect.scrollSensitivity = 34f;
+            scrollRect.viewport = viewport.rectTransform;
+
+            const int columns = 2;
+            var rowCount = Mathf.CeilToInt(languages.Count / (float)columns);
+            var content = CreateRect("Language Scroll Content", viewport.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(0f, Mathf.Max(viewport.rectTransform.rect.height, rowCount * 90f + 24f)), Vector2.zero);
+            scrollRect.content = content;
+
+            for (var index = 0; index < languages.Count; index++)
+            {
+                var row = index / columns;
+                var column = index % columns;
+                var y = -54f - row * 90f;
+                CreateLanguageLink(content, languages[index], column, y);
+            }
+        }
+
+        private void CreateLanguageLink(Transform parent, string languageCode, int column, float y)
+        {
+            var columnMin = column == 0 ? 0.03f : 0.51f;
+            var columnMax = column == 0 ? 0.49f : 0.97f;
+            var link = CreateRect($"Language Link {languageCode}", parent, new Vector2(columnMin, 1f), new Vector2(columnMax, 1f),
+                new Vector2(0.5f, 0.5f), new Vector2(0f, 68f), new Vector2(0f, y));
+            var hitArea = link.gameObject.AddComponent<Image>();
+            hitArea.sprite = _whiteSprite;
+            hitArea.color = new Color(0.1f, 0.55f, 0.85f, 0.01f);
+            var button = link.gameObject.AddComponent<Button>();
+            button.targetGraphic = hitArea;
+            button.transition = Selectable.Transition.ColorTint;
+            button.colors = new ColorBlock
+            {
+                normalColor = new Color(0.1f, 0.55f, 0.85f, 0.01f),
+                highlightedColor = new Color(0.16f, 0.68f, 1f, 0.2f),
+                pressedColor = new Color(0.1f, 0.42f, 0.7f, 0.32f),
+                selectedColor = new Color(0.16f, 0.68f, 1f, 0.2f),
+                disabledColor = Color.clear,
+                colorMultiplier = 1f,
+                fadeDuration = 0.06f
+            };
+            button.onClick.AddListener(() => SelectLanguage(languageCode));
+
+            CreateFlag(link, languageCode);
+            var label = CreateText($"Language Link Label {languageCode}", link, new Vector2(0.25f, 0.5f), new Vector2(0.96f, 0.5f),
+                new Vector2(0f, 0.5f), new Vector2(0f, 54f), Vector2.zero, 24, TextAlignmentOptions.MidlineLeft,
+                $"<u>{AppServices.Localization.GetLanguageDisplayName(languageCode)}</u>", GameTextRole.Button);
+            label.raycastTarget = false;
+            label.overflowMode = TextOverflowModes.Ellipsis;
+            label.color = string.Equals(languageCode, AppServices.Localization.LanguageCode, StringComparison.OrdinalIgnoreCase)
+                ? new Color(1f, 0.78f, 0.24f, 1f)
+                : new Color(0.40f, 0.85f, 1f, 1f);
+        }
+
+        private void CreateFlag(Transform parent, string languageCode)
+        {
+            var flag = CreateRect($"Flag {languageCode}", parent, new Vector2(0.06f, 0.5f), new Vector2(0.06f, 0.5f),
+                new Vector2(0f, 0.5f), new Vector2(34f, 34f), Vector2.zero);
+            var flagResourceName = GetFlagResourceName(languageCode);
+            var flagSprite = string.IsNullOrWhiteSpace(flagResourceName)
+                ? null
+                : LoadResourceSprite(FlagResourceRoot + flagResourceName, Vector4.zero);
+            if (flagSprite != null)
+            {
+                var image = flag.gameObject.AddComponent<Image>();
+                image.sprite = flagSprite;
+                image.preserveAspect = true;
+                image.raycastTarget = false;
+                return;
+            }
+
+            // A simple fallback keeps language selection usable if a future locale has no flag asset yet.
+            var definition = GetFlagDefinition(languageCode);
+            var border = flag.gameObject.AddComponent<Image>();
+            border.sprite = _whiteSprite;
+            border.color = new Color(0.92f, 0.96f, 1f, 0.88f);
+
+            for (var index = 0; index < definition.Colors.Length; index++)
+            {
+                var band = CreatePanel($"Band {index}", flag, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                    Vector2.zero, Vector2.zero, definition.Colors[index]);
+                var min = index / (float)definition.Colors.Length;
+                var max = (index + 1) / (float)definition.Colors.Length;
+                if (definition.Vertical)
+                {
+                    band.rectTransform.anchorMin = new Vector2(0.08f + 0.84f * min, 0.08f);
+                    band.rectTransform.anchorMax = new Vector2(0.08f + 0.84f * max, 0.92f);
+                }
+                else
+                {
+                    band.rectTransform.anchorMin = new Vector2(0.08f, 0.08f + 0.84f * min);
+                    band.rectTransform.anchorMax = new Vector2(0.92f, 0.08f + 0.84f * max);
+                }
+                band.rectTransform.offsetMin = Vector2.zero;
+                band.rectTransform.offsetMax = Vector2.zero;
+                band.raycastTarget = false;
+            }
+        }
+
+        private static string GetFlagResourceName(string languageCode)
+        {
+            return languageCode.ToLowerInvariant() switch
+            {
+                "uk" => "ua",
+                "en" => "gb",
+                "pl" => "pl",
+                "de" => "de",
+                "es" => "es",
+                "fr" => "fr",
+                "it" => "it",
+                "pt-br" => "br",
+                "ja" => "jp",
+                "ko" => "kr",
+                "tr" => "tr",
+                "ar" => "sa",
+                "zh-hans" => "cn",
+                _ => null
+            };
+        }
+
+        private static FlagDefinition GetFlagDefinition(string languageCode)
+        {
+            return languageCode.ToLowerInvariant() switch
+            {
+                "uk" => new FlagDefinition(false, new Color(0f, 0.34f, 0.71f), new Color(1f, 0.84f, 0f)),
+                "pl" => new FlagDefinition(false, Color.white, new Color(0.86f, 0.10f, 0.16f)),
+                "de" => new FlagDefinition(false, Color.black, new Color(0.82f, 0.05f, 0.10f), new Color(1f, 0.80f, 0f)),
+                "es" => new FlagDefinition(false, new Color(0.76f, 0.04f, 0.12f), new Color(1f, 0.78f, 0f), new Color(0.76f, 0.04f, 0.12f)),
+                "fr" => new FlagDefinition(true, new Color(0f, 0.33f, 0.64f), Color.white, new Color(0.94f, 0.16f, 0.23f)),
+                "it" => new FlagDefinition(true, new Color(0f, 0.57f, 0.30f), Color.white, new Color(0.81f, 0.10f, 0.16f)),
+                "pt-br" => new FlagDefinition(false, new Color(0f, 0.55f, 0.28f), new Color(1f, 0.85f, 0f), new Color(0f, 0.20f, 0.55f)),
+                "ja" => new FlagDefinition(false, Color.white, new Color(0.86f, 0.12f, 0.20f)),
+                "ko" => new FlagDefinition(false, Color.white, new Color(0f, 0.30f, 0.72f), new Color(0.82f, 0.12f, 0.18f)),
+                "tr" => new FlagDefinition(false, new Color(0.80f, 0.05f, 0.10f), Color.white),
+                "ar" => new FlagDefinition(false, new Color(0.05f, 0.05f, 0.05f), Color.white, new Color(0f, 0.48f, 0.25f)),
+                "zh-hans" => new FlagDefinition(false, new Color(0.85f, 0.06f, 0.10f), new Color(1f, 0.84f, 0f)),
+                _ => new FlagDefinition(false, new Color(0.12f, 0.35f, 0.75f), Color.white, new Color(0.85f, 0.12f, 0.18f))
+            };
+        }
+
+        private void SelectLanguage(string languageCode)
+        {
+            HideLanguageOptions();
+            AppServices.SetLanguage(languageCode);
+
+            if (_isLanguagePickerOnly)
+            {
+                var callback = _onLanguageSelected;
+                _onLanguageSelected = null;
+                Destroy(gameObject);
+                callback?.Invoke();
+                return;
+            }
+
+            HideResetConfirmation();
+            Destroy(_canvasObject);
+            Build();
+        }
+
+        private void HideLanguageOptions()
+        {
+            if (_languageOptionsRoot == null)
+            {
+                return;
+            }
+
+            Destroy(_languageOptionsRoot);
+            _languageOptionsRoot = null;
+        }
+
+        private readonly struct FlagDefinition
+        {
+            public FlagDefinition(bool vertical, params Color[] colors)
+            {
+                Vertical = vertical;
+                Colors = colors;
+            }
+
+            public bool Vertical { get; }
+            public Color[] Colors { get; }
         }
 
         private void RestartBattle()
@@ -325,6 +638,28 @@ namespace Game.App
             label.raycastTarget = false;
         }
 
+        private void CreateLanguagePickerCloseButton(Transform parent)
+        {
+            var rect = CreateRect("Close Language Picker", parent, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            rect.offsetMin = new Vector2(450f, 620f);
+            rect.offsetMax = new Vector2(0f, 0f);
+            var hitArea = rect.gameObject.AddComponent<Image>();
+            hitArea.sprite = _whiteSprite;
+            hitArea.color = new Color(1f, 1f, 1f, 0f);
+            hitArea.raycastTarget = true;
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = hitArea;
+            button.transition = Selectable.Transition.None;
+            button.onClick.AddListener(HideLanguageOptions);
+
+            var label = CreateText("Close Language Picker Label", rect, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, 72, TextAlignmentOptions.Center, "×");
+            label.rectTransform.localScale = new Vector3(1.5f, 1.5f, 1f);
+            label.color = new Color(1f, 0.18f, 0.16f, 1f);
+            label.raycastTarget = false;
+        }
+
         private static Sprite LoadResourceSprite(string path, Vector4 border)
         {
             var texture = Resources.Load<Texture2D>(path);
@@ -346,5 +681,8 @@ namespace Game.App
             rect.anchoredPosition = anchoredPosition;
             return rect;
         }
+
+        private static string T(string key, params LocalizationArgument[] arguments) =>
+            AppServices.Localization?.Translate(key, arguments) ?? $"[{key}]";
     }
 }

@@ -131,6 +131,8 @@ namespace Game.Progression.Missions
             string enemyLoadoutId = "",
             string difficultyProfileId = "")
         {
+            title = Game.Core.Localization.GameText.Localized("missionText." + missionId + ".title", title);
+            description = Game.Core.Localization.GameText.Localized("missionText." + missionId + ".description", description);
             return MissionDefinition.CreateRuntime(
                 missionId,
                 title,

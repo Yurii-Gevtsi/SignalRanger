@@ -66,6 +66,7 @@ namespace Game.Data.Save
         public string profileId;
         public string playerName;
         public long createdUtcTicks;
+        public bool introCompleted;
 
         public static SaveProfileData CreateDefault()
         {
@@ -212,6 +213,7 @@ namespace Game.Data.Save
     public sealed class SaveSettingsData
     {
         public string languageCode;
+        public bool hasSelectedLanguage;
         public bool hasVolumeSettings;
         public float musicVolume;
         public float sfxVolume;

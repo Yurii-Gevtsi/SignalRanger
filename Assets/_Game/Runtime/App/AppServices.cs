@@ -1,6 +1,7 @@
 using Game.Audio;
 using Game.App.Content;
 using Game.Core;
+using Game.Core.Localization;
 using Game.Data.Save;
 using Game.Economy;
 using Game.Inventory;
@@ -12,11 +13,11 @@ namespace Game.App
 {
     public static class AppServices
     {
-        private static bool _firstSessionAutoStartConsumed;
         private static bool _pendingLoadoutReviewConsumed;
 
         public static bool IsInitialized { get; private set; }
         public static ISceneLoadingService SceneLoader { get; private set; }
+        public static ILocalizationService Localization { get; private set; }
         public static GameSessionService Session { get; private set; }
         public static ISaveService SaveService { get; private set; }
         public static SaveLoadResult LastSaveLoadResult { get; private set; }
@@ -46,8 +47,11 @@ namespace Game.App
             }
 
             SceneLoader = new UnitySceneLoadingService();
+            SceneLoadingBridge.LoadHandler = SceneLoader.Load;
             SaveService = new JsonFileSaveService();
             LastSaveLoadResult = SaveService.LoadOrCreate();
+            Localization = new JsonLocalizationService(SaveService.Current.settings.languageCode);
+            LocalizationRuntime.Service = Localization;
             Economy = new EconomyService(SaveService.Current);
             Inventory = new InventoryService(SaveService.Current);
             Audio = new NoOpAudioService(SaveService.Current);
@@ -72,6 +76,19 @@ namespace Game.App
             Session = new GameSessionService(SaveService.Current, Campaign, Content);
             LastMissionCompletionResult = default;
             IsInitialized = true;
+        }
+
+        public static void SetLanguage(string languageCode)
+        {
+            if (!IsInitialized || Localization == null)
+            {
+                return;
+            }
+
+            Localization.SetLanguage(languageCode);
+            SaveService.Current.settings.languageCode = Localization.LanguageCode;
+            SaveService.Current.settings.hasSelectedLanguage = true;
+            SaveService.Save(SaveService.Current);
         }
 
         /// <summary>
@@ -111,34 +128,17 @@ namespace Game.App
             }
         }
 
-        private static CloudSaveSyncCoordinator _cloudSyncCoordinator;
-
-        public static bool TryConsumeFirstSessionAutoStart()
+        public static void AttachAdsService(IAdsService ads)
         {
-            if (_firstSessionAutoStartConsumed)
+            if (!IsInitialized || ads == null)
             {
-                return false;
+                return;
             }
 
-            var saveData = SaveService?.Current;
-            if (LastSaveLoadResult.Status != SaveLoadStatus.CreatedNew
-                || saveData?.campaign == null
-                || saveData.tutorial == null)
-            {
-                return false;
-            }
-
-            var shouldAutoStart = saveData.campaign.completedMissionIds.Count == 0
-                && saveData.campaign.highestUnlockedMissionIndex == 0
-                && saveData.tutorial.completedStepIds.Count == 0;
-            if (!shouldAutoStart)
-            {
-                return false;
-            }
-
-            _firstSessionAutoStartConsumed = true;
-            return true;
+            Ads = ads;
         }
+
+        private static CloudSaveSyncCoordinator _cloudSyncCoordinator;
 
         public static bool TryConsumePendingLoadoutReview()
         {
@@ -172,7 +172,6 @@ namespace Game.App
             saveData.ResetProgression();
             SaveService.Save(saveData);
             LastMissionCompletionResult = default;
-            _firstSessionAutoStartConsumed = true;
             _pendingLoadoutReviewConsumed = true;
             Session?.SelectNextMission();
             Analytics?.TrackEvent("progression_reset");

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Core.Localization;
 
 namespace Game.Gameplay.Battle.Weapons
 {
@@ -29,12 +30,13 @@ namespace Game.Gameplay.Battle.Weapons
 
         public static string Get(string weaponId)
         {
-            if (string.IsNullOrWhiteSpace(weaponId)) return "Зброя";
-            if (Names.TryGetValue(weaponId, out var name)) return name;
+            if (string.IsNullOrWhiteSpace(weaponId)) return GameText.Weapon;
+            if (Names.TryGetValue(weaponId, out var name)) return GameText.WeaponName(weaponId, name);
 
             var trimmed = weaponId.StartsWith("weapon.", StringComparison.Ordinal) ? weaponId.Substring(7) : weaponId;
-            return string.Join(" ", trimmed.Replace('-', ' ').Replace('.', ' ').Split(' ')
+            var fallback = string.Join(" ", trimmed.Replace('-', ' ').Replace('.', ' ').Split(' ')
                 .Where(part => part.Length > 0).Select(part => char.ToUpperInvariant(part[0]) + part.Substring(1)));
+            return GameText.WeaponName(weaponId, fallback);
         }
     }
 }

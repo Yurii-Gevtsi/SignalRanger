@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Core;
+using Game.Core.Localization;
 using Game.Data.Save;
 using Game.UI;
 using TMPro;
@@ -23,7 +24,10 @@ namespace Game.App
         private static readonly Vector2 CharacterPosition = new(40f, -10f);
         private static readonly Vector2 PlayButtonPosition = new(0f, -39f);
         private static readonly Vector2 SideButtonSize = new(220f, 220f);
+        private static readonly Vector2 ArchitectButtonSize = new(270f, 270f);
         private static readonly Vector2 InventoryButtonPosition = new(80f, -10f);
+        private static readonly Vector2 ArchitectButtonPosition = new(450f, 24f);
+        private static readonly Vector2 ArchitectButtonScale = new(0.9f, 1.2f);
         private static readonly Vector2 ShopButtonPosition = new(-80f, -10f);
         private static readonly Vector2 RewardsSize = new(220f, 220f);
         private static readonly Vector2 RewardsPosition = new(480f, -10f);
@@ -33,12 +37,19 @@ namespace Game.App
         private readonly Dictionary<string, Sprite> _sprites = new();
 
         private Sprite _whiteSprite;
+        private GameObject _canvasObject;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void CreateForMenuScene()
         {
             if (SceneManager.GetActiveScene().name != GameSceneNames.Menu)
             {
+                return;
+            }
+
+            if (IntroSceneController.ShouldShow())
+            {
+                IntroSceneController.EnsureCreated();
                 return;
             }
 
@@ -63,20 +74,26 @@ namespace Game.App
 
             BuildCamera();
             EnsureEventSystem();
+            if (AppServices.Localization != null)
+            {
+                AppServices.Localization.LanguageChanged += RefreshForLanguage;
+            }
             BuildMenu();
+        }
+
+        private void OnDestroy()
+        {
+            if (AppServices.Localization != null)
+            {
+                AppServices.Localization.LanguageChanged -= RefreshForLanguage;
+            }
         }
 
         private void Start()
         {
-            if (AppServices.TryConsumeFirstSessionAutoStart())
-            {
-                StartBattle();
-                return;
-            }
-
             if (AppServices.TryConsumePendingLoadoutReview())
             {
-                LoadoutScreenController.Open(null);
+                WeaponsScreenController.Open(null);
             }
         }
 
@@ -108,6 +125,7 @@ namespace Game.App
             var saveData = AppServices.SaveService.Current;
 
             var canvasObject = new GameObject("Menu Canvas");
+            _canvasObject = canvasObject;
             var canvas = canvasObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 50;
@@ -130,6 +148,16 @@ namespace Game.App
             BuildBottomActions(root);
         }
 
+        private void RefreshForLanguage()
+        {
+            if (_canvasObject != null)
+            {
+                Destroy(_canvasObject);
+            }
+
+            BuildMenu();
+        }
+
         private void BuildTopBar(Transform root, SaveData saveData)
         {
             var softCurrency = Mathf.Max(0, saveData?.economy.softCurrency ?? 0);
@@ -137,7 +165,7 @@ namespace Game.App
             var profile = CreateImage("Profile Panel", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
                 new Vector2(560f, 110f), new Vector2(80f, -40f), "UI/Shop/info_panel", true, null);
             var playerName = CreateLabel("Player Name", profile.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                46, TextAlignmentOptions.Center, "Гравець", GameTextRole.DisplayTitle);
+                46, TextAlignmentOptions.Center, ResolvePlayerName(saveData), GameTextRole.DisplayTitle);
             playerName.rectTransform.sizeDelta = new Vector2(360f, 90f);
             playerName.rectTransform.anchoredPosition = new Vector2(-100f, 0f);
 
@@ -160,10 +188,14 @@ namespace Game.App
             var play = CreateImageButton("Play Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
                 new Vector2(0.5f, 0f), new Vector2(620f, 413f), PlayButtonPosition, "play_btn", StartBattle);
             CreateLabel("Play Label", play.transform, new Vector2(0.20f, 0.19f), new Vector2(0.80f, 0.49f),
-                58, TextAlignmentOptions.Center, "Play");
+                58, TextAlignmentOptions.Center, T("ui.play"));
 
             var inventory = CreateImageButton("Inventory Button", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
                 new Vector2(0f, 0f), SideButtonSize, InventoryButtonPosition, "inventory_btn", OpenLoadout);
+
+            var architect = CreateImageButton("Architect Button", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
+                new Vector2(0f, 0f), ArchitectButtonSize, ArchitectButtonPosition, "UI/Common/architect_btn", () => { });
+            architect.localScale = new Vector3(ArchitectButtonScale.x, ArchitectButtonScale.y, 1f);
 
             var shop = CreateImageButton("Shop Button", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
                 new Vector2(1f, 0f), SideButtonSize, ShopButtonPosition, "shop_btn", OpenShop);
@@ -180,7 +212,7 @@ namespace Game.App
 
         private void OpenLoadout()
         {
-            LoadoutScreenController.Open(null);
+            WeaponsScreenController.Open(null);
         }
 
         private void OpenSettings()
@@ -287,6 +319,14 @@ namespace Game.App
             rect.sizeDelta = sizeDelta;
             rect.anchoredPosition = anchoredPosition;
             return rect;
+        }
+
+        private static string T(string key) => AppServices.Localization?.Translate(key) ?? $"[{key}]";
+
+        private static string ResolvePlayerName(SaveData saveData)
+        {
+            var name = saveData?.profile?.playerName;
+            return string.IsNullOrWhiteSpace(name) || name == "Гравець" ? T("profile.player") : name;
         }
     }
 }

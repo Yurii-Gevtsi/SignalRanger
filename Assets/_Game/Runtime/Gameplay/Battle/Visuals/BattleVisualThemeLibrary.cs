@@ -13,8 +13,9 @@ namespace Game.Gameplay.Battle.Visuals
         private const string TrainingRock = "Visuals/Arenas/Training/rock";
         private const string TrainingLaserKillZone = "Visuals/Arenas/KillZones/LaserLine/laser_line";
         private const string PlayerCharacter = "";
-        private const string OpponentCharacter = "Visuals/Characters/oct_full";
+        private const string OpponentCharacter = "";
         private const string PlayerRig = "Visuals/Characters/DroidRig";
+        private const string OpponentRig = "Visuals/Characters/SigmaRig";
 
         public static BattleVisualTheme ForArena(ArenaDefinition arena)
         {
@@ -35,6 +36,7 @@ namespace Game.Gameplay.Battle.Visuals
                 playerSkinFacingDirectionX: 1,
                 opponentSkinFacingDirectionX: 1,
                 playerRigResourcePath: PlayerRig,
+                opponentRigResourcePath: OpponentRig,
                 backgroundPrefabResourcePath: AnimatedSkyBackgroundPrefab,
                 additionalDestructibleLayers: new[]
                 {

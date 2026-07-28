@@ -51,7 +51,7 @@ namespace Game.Infrastructure.Ugs
                 var remoteConfig = new UgsRemoteConfigService();
                 remoteConfig.FetchInBackground();
                 AppServices.AttachOnlineServices(auth, new UgsCloudSaveSyncService(), remoteConfig);
-                Debug.Log($"[UGS] Online services attached. PlayerId: {auth.PlayerId}");
+                Debug.Log($"[UGS] Online services attached. Provider: {auth.Provider}. PlayerId: {auth.PlayerId}");
             });
         }
     }

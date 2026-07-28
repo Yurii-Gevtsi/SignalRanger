@@ -289,10 +289,8 @@ namespace Game.UI.Battle
             _fireButton.transition = Selectable.Transition.None;
             _fireButton.onClick.AddListener(() => FireRequested?.Invoke());
 
-            // Slightly above dead center: the ring art's visual middle sits a
-            // touch high, and icons hugging the bottom of the circle looked off.
             var fireIconRect = CreateRect("Selected Weapon Icon", _firePanel, Vector2.zero, Vector2.one,
-                new Vector2(0.5f, 0.5f), new Vector2(FireWeaponIconSize, FireWeaponIconSize), new Vector2(0f, 4f));
+                new Vector2(0.5f, 0.5f), new Vector2(FireWeaponIconSize, FireWeaponIconSize), new Vector2(0f, -10f));
             fireIconRect.localScale = new Vector3(0.8f, 0.8f, 1f);
             _fireIcon = fireIconRect.gameObject.AddComponent<Image>();
             _fireIcon.type = Image.Type.Simple;

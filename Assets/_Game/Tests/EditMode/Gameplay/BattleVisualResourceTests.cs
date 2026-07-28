@@ -1,4 +1,7 @@
 using NUnit.Framework;
+using Game.App;
+using Game.Core;
+using Game.Gameplay.Battle.Weapons;
 using Game.Gameplay.Battle.Assembly;
 using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.Domain;
@@ -67,12 +70,14 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void CharacterResources_ContainDroidBattleRigAndMenuRaccoon()
+        public void CharacterResources_ContainDroidAndSigmaBattleRigsAndMenuRaccoon()
         {
             var droidRig = Resources.Load<GameObject>("Visuals/Characters/DroidRig");
+            var sigmaRig = Resources.Load<GameObject>("Visuals/Characters/SigmaRig");
             Assert.IsNotNull(droidRig);
+            Assert.IsNotNull(sigmaRig);
             Assert.IsNotNull(Resources.Load<Sprite>("Visuals/Characters/racoon-full"));
-            Assert.IsNotNull(Resources.Load<Sprite>("Visuals/Characters/oct_full"));
+            Assert.IsNull(Resources.Load<Sprite>("Visuals/Characters/oct_full"));
 
             var animator = droidRig.GetComponent<Animator>();
             Assert.IsNotNull(animator);
@@ -98,8 +103,15 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsNull(Resources.Load<Sprite>("Visuals/Characters/cat-builder"));
             Assert.IsNull(Resources.Load<Sprite>("Visuals/Characters/cat2-clean"));
             Assert.IsNull(Resources.Load<Sprite>("Visuals/Characters/ent-guardian-clean"));
-            Assert.IsNull(Resources.Load<Sprite>("Visuals/Characters/octopus-enemy-clean"));
             Assert.IsNull(Resources.Load<Sprite>("Visuals/Characters/raccoon-agent-clean"));
+
+            var sigmaAnimator = sigmaRig.GetComponent<Animator>();
+            Assert.IsNotNull(sigmaAnimator);
+            Assert.IsTrue(System.Array.Exists(sigmaAnimator.parameters,
+                parameter => parameter.name == "IsMoving" && parameter.type == AnimatorControllerParameterType.Bool));
+            Assert.IsNotNull(sigmaRig.transform.Find("Platform")?.GetComponent<SpriteRenderer>());
+            Assert.IsNotNull(sigmaRig.transform.Find("Body")?.GetComponent<SpriteRenderer>());
+            Assert.IsNull(sigmaRig.transform.Find("Body/Face"));
         }
 
         [Test]
@@ -110,6 +122,145 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsNotNull(Resources.Load<Texture2D>("UI/Weapons/bazooka_simple"));
             Assert.IsNotNull(Resources.Load<Texture2D>("UI/Battle/card"));
             Assert.IsNotNull(Resources.Load<Texture2D>("UI/Menu/settings_btn"));
+        }
+
+        [Test]
+        public void WeaponsScreenResources_ContainShelfBackgroundAndOwnedWeaponIcons()
+        {
+            Assert.IsNotNull(Resources.Load<Texture2D>("UI/Menu/weapons_menu"));
+            Assert.IsNotNull(Resources.Load<Texture2D>("UI/Common/architect_btn"));
+
+            foreach (var weapon in PrototypeWeaponLibrary.CreateAll())
+            {
+                if (weapon == null || WeaponPresentationText.IsDropOnly(weapon))
+                {
+                    continue;
+                }
+
+                Assert.IsNotNull(Resources.Load<Texture2D>($"UI/Weapons/{weapon.IconId}"), weapon.WeaponId);
+            }
+        }
+
+        [Test]
+        public void LoadingScreenResources_ContainAllBackgroundsAndSpinner()
+        {
+            for (var i = 1; i <= 5; i++)
+            {
+                Assert.IsNotNull(Resources.Load<Texture2D>($"UI/Loaders/{i}"), $"Loader background {i} is missing.");
+            }
+
+            Assert.IsNotNull(Resources.Load<Texture2D>("UI/Loaders/loader"));
+            AssertMagentaBackgroundIsTransparent(Resources.Load<Texture2D>("UI/Loaders/loader"));
+            AssertMagentaBackgroundIsTransparent(Resources.Load<Texture2D>("UI/Common/architect_btn"));
+        }
+
+        [Test]
+        public void LoadingScreenPreview_BuildsMissionTextSpinnerAndPercent()
+        {
+            var root = new GameObject("Loading Screen Test");
+            try
+            {
+                var controller = root.AddComponent<LoadingScreenController>();
+                controller.InitializeForPreview(GameSceneNames.Battle);
+
+                var canvas = root.transform.Find("Loading Canvas");
+                Assert.IsNotNull(canvas);
+                Assert.IsNotNull(RequireRect(canvas, "Loading Background").GetComponent<Image>().sprite);
+                var missionTitle = RequireRect(canvas, "Mission Title");
+                Assert.IsNotNull(missionTitle.GetComponent<TMPro.TMP_Text>());
+                Assert.AreEqual(new Vector2(-270f, 270f), missionTitle.anchoredPosition);
+                var missionDescription = RequireRect(canvas, "Mission Description");
+                Assert.IsNotNull(missionDescription.GetComponent<TMPro.TMP_Text>());
+                Assert.AreEqual(new Vector2(-260f, 176f), missionDescription.anchoredPosition);
+                Assert.AreEqual("Навчальна місія", missionDescription.GetComponent<TMPro.TMP_Text>().text);
+                var tip = RequireRect(canvas, "Loading Tip");
+                Assert.IsNotNull(tip.GetComponent<TMPro.TMP_Text>());
+                Assert.AreEqual(new Vector2(1040f, 82f), tip.sizeDelta);
+                Assert.AreEqual(new Vector2(230f, -438f), tip.anchoredPosition);
+                Assert.AreEqual(TMPro.TextAlignmentOptions.MidlineLeft, tip.GetComponent<TMPro.TMP_Text>().alignment);
+
+                var ring = RequireRect(canvas, "Loading Ring");
+                Assert.AreEqual(new Vector2(224f, 224f), ring.sizeDelta);
+                Assert.AreEqual(new Vector2(0f, -230f), ring.anchoredPosition);
+                Assert.AreEqual("loader", ring.GetComponent<Image>().sprite.texture.name);
+
+                var percent = RequireRect(canvas, "Loading Percent");
+                Assert.AreEqual("0%", percent.GetComponent<TMPro.TMP_Text>().text);
+                Assert.AreEqual(ring.anchoredPosition, percent.anchoredPosition);
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [Test]
+        public void WeaponsScreen_ShowsShelfActionsAndDetailsWithoutPurchaseButtons()
+        {
+            var root = new GameObject("Weapons Screen Test");
+            try
+            {
+                root.AddComponent<WeaponsScreenController>();
+                var canvas = root.transform.Find("Weapons Canvas");
+                Assert.IsNotNull(canvas);
+
+                var settings = RequireRect(canvas, "Settings Button");
+                Assert.AreEqual(new Vector2(140f, 140f), settings.sizeDelta);
+                Assert.That(settings.anchoredPosition.x, Is.EqualTo(-26f).Within(0.01f));
+
+                var bureau = RequireRect(canvas, "Constructor Bureau Button");
+                Assert.AreEqual(new Vector2(220f, 220f), bureau.sizeDelta);
+                Assert.That(bureau.anchoredPosition.x, Is.EqualTo(-80f).Within(0.01f));
+                Assert.That(bureau.anchoredPosition.y, Is.EqualTo(30f).Within(0.01f));
+                Assert.That(bureau.localScale.x, Is.EqualTo(1.2f).Within(0.01f));
+                Assert.That(bureau.localScale.y, Is.EqualTo(1.5f).Within(0.01f));
+                Assert.AreEqual("architect_btn", bureau.GetComponent<Image>().sprite.texture.name);
+                Assert.IsNotNull(bureau.Find("Constructor Bureau Label"));
+
+                var firstWeapon = RequireRect(canvas, "Shelf Weapon 0");
+                Assert.AreEqual(new Vector2(195f, 195f), firstWeapon.sizeDelta);
+                Assert.That(firstWeapon.anchoredPosition.x, Is.EqualTo(-730f).Within(0.01f));
+                Assert.That(firstWeapon.anchoredPosition.y, Is.EqualTo(338f).Within(0.01f));
+                Assert.IsNotNull(firstWeapon.GetComponent<Button>());
+
+                var detailsOverlay = canvas.Find("Weapon Details Overlay");
+                Assert.IsNotNull(detailsOverlay);
+                Assert.IsFalse(detailsOverlay.gameObject.activeSelf);
+
+                firstWeapon.GetComponent<Button>().onClick.Invoke();
+                Assert.IsTrue(detailsOverlay.gameObject.activeSelf);
+                var details = RequireRect(detailsOverlay, "Weapon Details");
+                Assert.AreEqual(new Vector2(1400f, 940f), details.sizeDelta);
+                Assert.That(details.anchoredPosition.x, Is.EqualTo(400f).Within(0.01f));
+                Assert.IsFalse(details.GetComponent<Image>().raycastTarget);
+                var detailsHitArea = RequireRect(details, "Weapon Details Hit Area");
+                Assert.AreEqual(new Vector2(1240f, 760f), detailsHitArea.sizeDelta);
+                Assert.IsTrue(detailsHitArea.GetComponent<Image>().raycastTarget);
+                var detailChildren = detailsOverlay.GetComponentsInChildren<Transform>(true);
+                Assert.IsFalse(System.Array.Exists(detailChildren, child => child.name == "Buy Coins"));
+                Assert.IsFalse(System.Array.Exists(detailChildren, child => child.name == "Buy Crystals"));
+                Assert.IsFalse(System.Array.Exists(detailChildren, child => child.name == "Weapon Details Icon"));
+                Assert.IsFalse(System.Array.Exists(detailChildren, child => child.name == "Weapon Details Level"));
+                Assert.IsTrue(System.Array.Exists(detailChildren, child => child.name == "Close Weapon Details"));
+                var close = RequireRect(details, "Close Weapon Details");
+                Assert.AreEqual(new Vector2(-260f, -250f), close.anchoredPosition);
+                var name = RequireRect(details, "Weapon Details Name");
+                Assert.That(name.anchoredPosition.y, Is.EqualTo(-250f).Within(0.01f));
+                Assert.That(name.anchorMin.x, Is.EqualTo(0.20f).Within(0.01f));
+                Assert.That(name.anchorMax.x, Is.EqualTo(0.82f).Within(0.01f));
+                var description = RequireRect(details, "Weapon Details Description");
+                Assert.That(description.offsetMax.y, Is.EqualTo(-20f).Within(0.01f));
+                Assert.That(description.anchorMin.x, Is.EqualTo(0.20f).Within(0.01f));
+                Assert.That(description.anchorMax.x, Is.EqualTo(0.80f).Within(0.01f));
+
+                var rightSideWeapon = RequireRect(canvas, "Shelf Weapon 5");
+                rightSideWeapon.GetComponent<Button>().onClick.Invoke();
+                Assert.That(details.anchoredPosition.x, Is.EqualTo(-550f).Within(0.01f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
         }
 
         [Test]
@@ -301,6 +452,7 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.AreEqual("reset_btn", reset.GetComponent<Image>().sprite.texture.name);
                 var fireIcon = RequireRect(fire, "Selected Weapon Icon");
                 Assert.AreEqual(new Vector2(120f, 120f), fireIcon.sizeDelta);
+                Assert.That(fireIcon.anchoredPosition.y, Is.EqualTo(-10f).Within(0.01f));
                 Assert.AreEqual(new Vector3(0.8f, 0.8f, 1f), fireIcon.localScale);
                 Assert.IsFalse(fireIcon.GetComponent<Image>().raycastTarget);
 
@@ -323,6 +475,12 @@ namespace Game.Tests.EditMode.Gameplay
             var child = parent.Find(name) as RectTransform;
             Assert.IsNotNull(child, $"{name} must exist in the battle HUD.");
             return child;
+        }
+
+        private static void AssertMagentaBackgroundIsTransparent(Texture2D texture)
+        {
+            Assert.IsNotNull(texture);
+            Assert.AreEqual(0f, texture.GetPixel(0, 0).a, $"Top-left magenta background should be transparent for {texture.name}.");
         }
 
         [Test]

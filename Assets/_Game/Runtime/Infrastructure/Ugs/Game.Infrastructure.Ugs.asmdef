@@ -6,6 +6,7 @@
         "Game.Data",
         "Game.Infrastructure",
         "Game.App",
+        "Google.Play.Games",
         "Unity.Services.Core",
         "Unity.Services.Core.Environments",
         "Unity.Services.Authentication",
