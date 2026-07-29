@@ -44,6 +44,7 @@ namespace Game.Core.Battle
             int turnNumber,
             string activeTeam,
             float turnSecondsRemaining,
+            bool showTurnTimer,
             int playerHealth,
             int playerMaxHealth,
             int opponentHealth,
@@ -60,6 +61,7 @@ namespace Game.Core.Battle
             bool showFireButton,
             bool canOpenArsenal,
             string tutorialTargetId,
+            bool showTutorialCard,
             bool tutorialBlocksWeaponSwitch,
             bool tutorialBlocksCancel,
             bool tutorialBlocksMovement,
@@ -82,6 +84,7 @@ namespace Game.Core.Battle
             TurnNumber = turnNumber;
             ActiveTeam = activeTeam;
             TurnSecondsRemaining = UnityEngine.Mathf.Max(0f, turnSecondsRemaining);
+            ShowTurnTimer = showTurnTimer;
             PlayerHealth = playerHealth;
             PlayerMaxHealth = playerMaxHealth;
             OpponentHealth = opponentHealth;
@@ -98,6 +101,7 @@ namespace Game.Core.Battle
             ShowFireButton = showFireButton;
             CanOpenArsenal = canOpenArsenal;
             TutorialTargetId = tutorialTargetId ?? string.Empty;
+            ShowTutorialCard = showTutorialCard;
             TutorialBlocksWeaponSwitch = tutorialBlocksWeaponSwitch;
             TutorialBlocksCancel = tutorialBlocksCancel;
             TutorialBlocksMovement = tutorialBlocksMovement;
@@ -121,6 +125,7 @@ namespace Game.Core.Battle
         public int TurnNumber { get; }
         public string ActiveTeam { get; }
         public float TurnSecondsRemaining { get; }
+        public bool ShowTurnTimer { get; }
         public int PlayerHealth { get; }
         public int PlayerMaxHealth { get; }
         public int OpponentHealth { get; }
@@ -137,6 +142,7 @@ namespace Game.Core.Battle
         public bool ShowFireButton { get; }
         public bool CanOpenArsenal { get; }
         public string TutorialTargetId { get; }
+        public bool ShowTutorialCard { get; }
         public bool TutorialBlocksWeaponSwitch { get; }
         public bool TutorialBlocksCancel { get; }
         public bool TutorialBlocksMovement { get; }

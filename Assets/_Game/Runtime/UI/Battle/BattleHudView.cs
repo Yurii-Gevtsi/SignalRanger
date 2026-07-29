@@ -37,6 +37,7 @@ namespace Game.UI.Battle
         private static readonly Color FireControlVisual = new(1f, 1f, 1f, 0.68f);
 
         private readonly Dictionary<string, Sprite> _weaponSprites = new(StringComparer.Ordinal);
+        private readonly Dictionary<RectTransform, Vector3> _tutorialBaseScales = new();
         private Sprite _whiteSprite;
         private Sprite _panelSprite;
         private Sprite _pillSprite;
@@ -53,6 +54,7 @@ namespace Game.UI.Battle
         private Sprite _weaponsCardSprite;
         private Sprite _weaponMiniCardSprite;
 
+        private TMP_Text _statusTitleText;
         private TMP_Text _statusText;
         private TMP_Text _turnText;
         private Image _statusPanel;
@@ -70,12 +72,25 @@ namespace Game.UI.Battle
         private GameObject _arsenalRoot;
         private Image _arsenalWindow;
         private Transform _arsenalItemsRoot;
+        private Image _tutorialFirstWeaponPanel;
         private IReadOnlyList<BattleWeaponHudItem> _renderedArsenalWeapons;
         private int _renderedSelectedWeaponIndex = -1;
         private Button _fireButton;
         private Image _firePanel;
         private Image _fireIcon;
         private Button _weaponResetButton;
+        private GameObject _tutorialOverlayRoot;
+        private Image _tutorialDimOverlay;
+        private readonly List<Canvas> _tutorialCanvases = new();
+        private Canvas _statusTutorialCanvas;
+        private Canvas _turnTutorialCanvas;
+        private Canvas _moveLeftTutorialCanvas;
+        private Canvas _moveRightTutorialCanvas;
+        private Canvas _jumpLeftTutorialCanvas;
+        private Canvas _jumpRightTutorialCanvas;
+        private Canvas _arsenalTutorialCanvas;
+        private Canvas _arsenalOverlayTutorialCanvas;
+        private Canvas _fireTutorialCanvas;
         private GameObject _resultRoot;
         private Image _resultPanel;
         private TMP_Text _resultTitleText;
@@ -132,15 +147,22 @@ namespace Game.UI.Battle
                 return;
             }
 
-            _statusText.text = state.Status;
+            RenderTutorialCopy(state.Status);
+            _statusPanel.gameObject.SetActive(state.ShowTutorialCard);
+            _turnPanel.gameObject.SetActive(state.ShowTurnTimer);
             _turnText.text = Mathf.CeilToInt(state.TurnSecondsRemaining).ToString();
-            var movementEnabled = state.CanUseMovement && !state.TutorialBlocksMovement;
-            SetControlState(_moveLeftButton, _moveLeftPanel, movementEnabled);
-            SetControlState(_moveRightButton, _moveRightPanel, movementEnabled);
-            SetControlState(_jumpLeftButton, _jumpLeftPanel, movementEnabled);
-            SetControlState(_jumpRightButton, _jumpRightPanel, movementEnabled);
+            var tutorialTarget = state.TutorialTargetId;
+            var movementEnabled = state.CanUseMovement
+                && (!state.TutorialBlocksMovement
+                    || tutorialTarget == "battle.jump-left"
+                    || tutorialTarget == "battle.jump-right");
+            SetControlState(_moveLeftButton, _moveLeftPanel, movementEnabled && AllowsControl(tutorialTarget, "battle.move-left"));
+            SetControlState(_moveRightButton, _moveRightPanel, movementEnabled && AllowsControl(tutorialTarget, "battle.move-right"));
+            SetControlState(_jumpLeftButton, _jumpLeftPanel, movementEnabled && AllowsControl(tutorialTarget, "battle.jump-left"));
+            SetControlState(_jumpRightButton, _jumpRightPanel, movementEnabled && AllowsControl(tutorialTarget, "battle.jump-right"));
 
-            _arsenalButton.interactable = state.CanOpenArsenal;
+            _arsenalButton.interactable = state.CanOpenArsenal
+                && (AllowsControl(tutorialTarget, "battle.arsenal") || tutorialTarget == "battle.arsenal-impulse");
             _arsenalPanel.color = Color.white;
             RenderArsenal(state);
 
@@ -149,14 +171,14 @@ namespace Game.UI.Battle
             var fireIconScale = FireIconScale(state.WeaponIconId);
             _fireIcon.rectTransform.localScale = new Vector3(fireIconScale, fireIconScale, 1f);
             _firePanel.gameObject.SetActive(state.ShowFireButton && fireIcon != null);
-            _fireButton.interactable = state.CanFire;
+            _fireButton.interactable = state.CanFire && AllowsControl(tutorialTarget, "battle.fire-button");
             _firePanel.color = FireControlVisual;
             _fireIcon.color = Color.white;
 
             _weaponResetButton.gameObject.SetActive(state.HasSelectedWeapon);
             _weaponResetButton.interactable = state.HasSelectedWeapon && state.CanOpenArsenal;
 
-            RenderTutorialHighlight(state.TutorialTargetId);
+            RenderTutorialHighlight(state.TutorialTargetId, state.ShowTutorialCard);
             RenderResult(state);
         }
 
@@ -207,17 +229,21 @@ namespace Game.UI.Battle
             BuildTopLayer(root);
             BuildMovementControls(root);
             BuildWeaponControls(root);
+            BuildTutorialOverlay(root);
             BuildResultOverlay(root);
         }
 
         private void BuildTopLayer(Transform root)
         {
             _statusPanel = CreatePanel("Tutorial Card", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
-                new Vector2(500f, 500f), new Vector2(SafeMargin, TutorialCardPositionY), Color.white, _tutorialCardSprite);
+                new Vector2(620f, 500f), new Vector2(SafeMargin, TutorialCardPositionY), Color.white, _tutorialCardSprite);
             _statusPanel.type = Image.Type.Simple;
-            _statusPanel.preserveAspect = true;
-            _statusText = CreateText("Tutorial Text", _statusPanel.transform, new Vector2(0.22f, 0.20f), new Vector2(0.86f, 0.79f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 25, TextAlignmentOptions.TopLeft);
+            _statusPanel.preserveAspect = false;
+            _statusTitleText = CreateText("Tutorial Title", _statusPanel.transform, new Vector2(0.22f, 0.66f), new Vector2(0.79f, 0.81f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 30, TextAlignmentOptions.TopLeft);
+            SciFiTextStyle.Apply(_statusTitleText, GameTextRole.DisplayTitle, 30, TextAlignmentOptions.TopLeft);
+            _statusText = CreateText("Tutorial Description", _statusPanel.transform, new Vector2(0.22f, 0.20f), new Vector2(0.79f, 0.66f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 24, TextAlignmentOptions.TopLeft);
             _statusText.overflowMode = TextOverflowModes.Truncate;
 
             _turnPanel = CreatePanel("Turn Timer", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
@@ -239,6 +265,27 @@ namespace Game.UI.Battle
             settingsButton.targetGraphic = settingsImage;
             settingsButton.colors = CreateButtonColors(Color.white);
             settingsButton.onClick.AddListener(() => SettingsRequested?.Invoke());
+        }
+
+        private void BuildTutorialOverlay(Transform root)
+        {
+            var overlay = CreatePanel("Tutorial Dimming Overlay", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, new Color(0f, 0f, 0f, 0.62f), _whiteSprite);
+            overlay.type = Image.Type.Simple;
+            overlay.raycastTarget = false;
+            _tutorialOverlayRoot = overlay.gameObject;
+            _tutorialDimOverlay = overlay;
+            _tutorialOverlayRoot.SetActive(false);
+
+            _statusTutorialCanvas = RegisterTutorialCanvas(_statusPanel);
+            _turnTutorialCanvas = RegisterTutorialCanvas(_turnPanel);
+            _moveLeftTutorialCanvas = RegisterTutorialCanvas(_moveLeftPanel);
+            _moveRightTutorialCanvas = RegisterTutorialCanvas(_moveRightPanel);
+            _jumpLeftTutorialCanvas = RegisterTutorialCanvas(_jumpLeftPanel);
+            _jumpRightTutorialCanvas = RegisterTutorialCanvas(_jumpRightPanel);
+            _arsenalTutorialCanvas = RegisterTutorialCanvas(_arsenalPanel);
+            _arsenalOverlayTutorialCanvas = RegisterTutorialCanvas(_arsenalRoot.GetComponent<Image>());
+            _fireTutorialCanvas = RegisterTutorialCanvas(_firePanel);
         }
 
         private void BuildMovementControls(Transform root)
@@ -396,6 +443,7 @@ namespace Game.UI.Battle
 
             _renderedArsenalWeapons = state.ArsenalWeapons;
             _renderedSelectedWeaponIndex = state.SelectedWeaponIndex;
+            _tutorialFirstWeaponPanel = null;
             for (var index = _arsenalItemsRoot.childCount - 1; index >= 0; index--)
             {
                 Destroy(_arsenalItemsRoot.GetChild(index).gameObject);
@@ -433,6 +481,11 @@ namespace Game.UI.Battle
                 slot.preserveAspect = true;
                 slot.rectTransform.localScale = new Vector3(cardScaleX, cardScaleY, 1f);
                 DisableGraphicEffects(slot);
+
+                if (item.IconId == "impulse")
+                {
+                    _tutorialFirstWeaponPanel = slot;
+                }
 
                 var button = slot.gameObject.AddComponent<Button>();
                 button.targetGraphic = slot;
@@ -525,13 +578,118 @@ namespace Game.UI.Battle
             _resultContinueLabel.color = SciFiTextStyle.MainText;
         }
 
-        private void RenderTutorialHighlight(string tutorialTargetId)
+        private void RenderTutorialHighlight(string tutorialTargetId, bool showTutorialCard)
         {
-            var pulse = 0.25f + Mathf.PingPong(Time.unscaledTime * 0.95f, 0.5f);
-            ApplyHighlight(_statusPanel, TargetsStatus(tutorialTargetId), Color.white, pulse);
+            var pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 2.2f);
+            var spotlightActive = !string.IsNullOrWhiteSpace(tutorialTargetId) && showTutorialCard;
+            // Tutorial guidance uses a light pulse on the target controls. The
+            // battle scene remains fully visible so the player can understand
+            // the arena and the unit's position while learning.
+            _tutorialOverlayRoot.SetActive(false);
+            _tutorialDimOverlay.raycastTarget = false;
+
+            ApplyHighlight(_statusPanel, false, Color.white, pulse);
             ApplyHighlight(_turnPanel, tutorialTargetId == "battle.turn-label", Color.white, pulse);
+            ApplyHighlight(_moveLeftPanel, tutorialTargetId == "battle.move-left", ControlVisual, pulse);
+            ApplyHighlight(_moveRightPanel, tutorialTargetId == "battle.move-right", ControlVisual, pulse);
+            ApplyHighlight(_jumpLeftPanel, tutorialTargetId == "battle.jump-left", ControlVisual, pulse);
+            ApplyHighlight(_jumpRightPanel, tutorialTargetId == "battle.jump-right", ControlVisual, pulse);
+            ApplyHighlight(_arsenalPanel,
+                tutorialTargetId == "battle.arsenal" || tutorialTargetId == "battle.arsenal-impulse",
+                Color.white,
+                pulse);
+            ApplyHighlight(_tutorialFirstWeaponPanel, tutorialTargetId == "battle.arsenal-impulse", Color.white, pulse);
+            ApplyHighlight(_firePanel, tutorialTargetId == "battle.fire-button", FireControlVisual, pulse);
             ApplyHighlight(_resultPanel, tutorialTargetId == "battle.result", InkSolid, pulse);
 
+            SetTutorialLayer(_statusTutorialCanvas, spotlightActive && showTutorialCard, 122);
+            SetTutorialLayer(_turnTutorialCanvas, spotlightActive && tutorialTargetId == "battle.turn-label", 123);
+            SetTutorialLayer(_moveLeftTutorialCanvas, spotlightActive && tutorialTargetId == "battle.move-left", 123);
+            SetTutorialLayer(_moveRightTutorialCanvas, spotlightActive && tutorialTargetId == "battle.move-right", 123);
+            SetTutorialLayer(_jumpLeftTutorialCanvas, spotlightActive && tutorialTargetId == "battle.jump-left", 123);
+            SetTutorialLayer(_jumpRightTutorialCanvas, spotlightActive && tutorialTargetId == "battle.jump-right", 123);
+            SetTutorialLayer(_arsenalTutorialCanvas, spotlightActive && (tutorialTargetId == "battle.arsenal" || tutorialTargetId == "battle.arsenal-impulse"), 123);
+            SetTutorialLayer(_arsenalOverlayTutorialCanvas, spotlightActive && tutorialTargetId == "battle.arsenal" && _arsenalRoot.activeSelf, 124);
+            SetTutorialLayer(_fireTutorialCanvas, spotlightActive && tutorialTargetId == "battle.fire-button", 123);
+
+            if (spotlightActive)
+            {
+                // All controls share the same screen-space canvas. Raising the
+                // target sibling keeps it above the dimmer and preserves the
+                // original Button/GraphicRaycaster setup.
+                if (showTutorialCard)
+                {
+                    _statusPanel.transform.SetAsLastSibling();
+                }
+
+                GetTutorialTargetPanel(tutorialTargetId)?.transform.SetAsLastSibling();
+                if ((tutorialTargetId == "battle.arsenal" || tutorialTargetId == "battle.arsenal-impulse")
+                    && _arsenalRoot.activeSelf)
+                {
+                    _arsenalRoot.transform.SetAsLastSibling();
+                    _tutorialFirstWeaponPanel?.transform.SetAsLastSibling();
+                }
+            }
+
+            // The open arsenal is a modal interaction and must remain above the
+            // tutorial card even when the current tutorial target is elsewhere.
+            if (_arsenalRoot.activeSelf)
+            {
+                _arsenalRoot.transform.SetAsLastSibling();
+            }
+        }
+
+        private void RenderTutorialCopy(string copy)
+        {
+            copy ??= string.Empty;
+            var separatorIndex = copy.IndexOf('\n');
+            var hasTitle = separatorIndex >= 0;
+            _statusTitleText.gameObject.SetActive(hasTitle);
+            _statusTitleText.text = hasTitle ? copy[..separatorIndex].Trim() : string.Empty;
+            _statusText.rectTransform.anchorMax = new Vector2(0.79f, hasTitle ? 0.66f : 0.79f);
+            _statusText.text = hasTitle ? copy[(separatorIndex + 1)..].Trim() : copy;
+        }
+
+        private Canvas RegisterTutorialCanvas(Image panel)
+        {
+            // Panels already belong to the HUD Canvas. Adding nested Canvas
+            // components here breaks Unity's UI hierarchy on some versions.
+            return null;
+        }
+
+        private Image GetTutorialTargetPanel(string tutorialTargetId)
+        {
+            return tutorialTargetId switch
+            {
+                "battle.turn-label" => _turnPanel,
+                "battle.move-left" => _moveLeftPanel,
+                "battle.move-right" => _moveRightPanel,
+                "battle.jump-left" => _jumpLeftPanel,
+                "battle.jump-right" => _jumpRightPanel,
+                "battle.arsenal" => _arsenalRoot.activeSelf ? _arsenalRoot.GetComponent<Image>() : _arsenalPanel,
+                "battle.arsenal-impulse" => _arsenalRoot.activeSelf ? _arsenalRoot.GetComponent<Image>() : _arsenalPanel,
+                "battle.fire-button" => _firePanel,
+                _ => null
+            };
+        }
+
+        private static void SetTutorialLayer(Canvas canvas, bool elevated, int sortingOrder)
+        {
+            if (canvas == null)
+            {
+                return;
+            }
+
+            canvas.overrideSorting = elevated;
+            if (elevated)
+            {
+                canvas.sortingOrder = sortingOrder;
+            }
+        }
+
+        private static bool AllowsControl(string tutorialTargetId, string controlId)
+        {
+            return string.IsNullOrWhiteSpace(tutorialTargetId) || tutorialTargetId == controlId;
         }
 
         private static void SetControlState(Button button, Image panel, bool enabled)
@@ -580,18 +738,24 @@ namespace Game.UI.Battle
 
         private static void WireHold(GameObject target, Action onStart, Action onStop)
         {
-            var trigger = target.GetComponent<EventTrigger>() ?? target.AddComponent<EventTrigger>();
-            trigger.triggers ??= new List<EventTrigger.Entry>();
-            AddTrigger(trigger, EventTriggerType.PointerDown, onStart);
-            AddTrigger(trigger, EventTriggerType.PointerUp, onStop);
-            AddTrigger(trigger, EventTriggerType.PointerExit, onStop);
+            var relay = target.GetComponent<HoldInputRelay>() ?? target.AddComponent<HoldInputRelay>();
+            relay.Configure(onStart, onStop);
         }
 
-        private static void AddTrigger(EventTrigger trigger, EventTriggerType type, Action callback)
+        private sealed class HoldInputRelay : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
         {
-            var entry = new EventTrigger.Entry { eventID = type };
-            entry.callback.AddListener(_ => callback?.Invoke());
-            trigger.triggers.Add(entry);
+            private Action _onStart;
+            private Action _onStop;
+
+            public void Configure(Action onStart, Action onStop)
+            {
+                _onStart = onStart;
+                _onStop = onStop;
+            }
+
+            public void OnPointerDown(PointerEventData eventData) => _onStart?.Invoke();
+            public void OnPointerUp(PointerEventData eventData) => _onStop?.Invoke();
+            public void OnPointerExit(PointerEventData eventData) => _onStop?.Invoke();
         }
 
         private Sprite LoadResourceSprite(string path, Vector4 border)
@@ -614,14 +778,24 @@ namespace Game.UI.Battle
                 || tutorialTargetId == "battle.impact";
         }
 
-        private static void ApplyHighlight(Image image, bool highlighted, Color baseColor, float pulse)
+        private void ApplyHighlight(Image image, bool highlighted, Color baseColor, float pulse)
         {
             if (image == null)
             {
                 return;
             }
 
+            var rectTransform = image.rectTransform;
+            if (!_tutorialBaseScales.TryGetValue(rectTransform, out var baseScale))
+            {
+                baseScale = rectTransform.localScale;
+                _tutorialBaseScales[rectTransform] = baseScale;
+            }
+
             image.color = highlighted ? Color.Lerp(baseColor, TutorialHighlight, pulse) : baseColor;
+            rectTransform.localScale = highlighted
+                ? baseScale * (1f + 0.10f * pulse)
+                : baseScale;
         }
 
         private Button CreateGameButton(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 size,

@@ -120,6 +120,7 @@ namespace Game.Gameplay.Battle.Simulation
         private Vector2 _controlledProjectileInput;
         private float _retreatRemaining = -1f;
         private TurnAdvanceReason _pendingRetreatReason;
+        private bool _playerTurnTimerPaused;
 
         public static BattleSimulation CreatePlayerFirst(
             BattleState state,
@@ -216,6 +217,11 @@ namespace Game.Gameplay.Battle.Simulation
         public float MovementTimeRemaining => IsPlayerRetreatActive
             ? Mathf.Max(0f, _retreatRemaining)
             : _playerMovement.RemainingTurnSeconds;
+
+        public void SetPlayerTurnTimerPaused(bool paused)
+        {
+            _playerTurnTimerPaused = paused;
+        }
 
         /// <summary>
         /// The player fired a turn-ending shot and is inside the short
@@ -1797,7 +1803,8 @@ namespace Game.Gameplay.Battle.Simulation
             // HasPendingGroundAction: a burning C4 fuse must resolve within the
             // owner's turn - if the timer expired mid-fuse the turn would pass
             // to the bot while TryFire stays blocked, deadlocking its turn.
-            if (_state.Turn.ActiveTeam != BattleTeamId.Player
+            if (_playerTurnTimerPaused
+                || _state.Turn.ActiveTeam != BattleTeamId.Player
                 || _state.Turn.ActionSpent
                 || HasProjectilesInFlight
                 || HasPendingGroundAction

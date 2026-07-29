@@ -1,5 +1,5 @@
-using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Assembly;
+using Game.Gameplay.Battle.Domain;
 using NUnit.Framework;
 
 namespace Game.Tests.EditMode.Gameplay
@@ -7,13 +7,61 @@ namespace Game.Tests.EditMode.Gameplay
     public sealed class FirstBattleGuideStateTests
     {
         [Test]
-        public void FirstMission_StartsInArsenalPhase()
+        public void FirstMission_StartsWithLeftNavigationAndPausedTimer()
         {
             var guide = new FirstBattleGuideState("mission.training.01");
 
-            Assert.That(guide.IsActive, Is.True);
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.Arsenal));
-            Assert.That(guide.TargetId, Is.EqualTo("battle.arsenal"));
+            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.MoveLeft));
+            Assert.That(guide.TargetId, Is.EqualTo("battle.move-left"));
+            Assert.That(guide.PausesPlayerTimer, Is.True);
+            Assert.That(guide.ShowTurnTimer, Is.False);
+        }
+
+        [Test]
+        public void FirstMission_TeachesNavigationJumpsWeaponAndFirstShot()
+        {
+            var guide = new FirstBattleGuideState("mission.training.01");
+
+            guide.ObserveWalk(-1);
+            guide.ObserveWalk(1);
+            guide.ObserveJump(-1);
+            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.JumpRight));
+
+            guide.ObserveJump(1);
+            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.ChooseFirstWeapon));
+            Assert.That(guide.AllowsWeapon(FirstBattleGuideState.FirstWeaponId), Is.True);
+            Assert.That(guide.AllowsWeapon("weapon.mortira"), Is.False);
+
+            guide.ObserveWeaponSelected(FirstBattleGuideState.FirstWeaponId);
+            guide.ObserveAimState(true);
+            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.FirstFire));
+
+            guide.ObservePlayerShotFired();
+            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.OpponentTurn));
+            Assert.That(guide.PausesPlayerTimer, Is.False);
+            Assert.That(guide.ShowTurnTimer, Is.True);
+        }
+
+        [Test]
+        public void OpponentTurn_LeadsToFreeFinalInstruction()
+        {
+            var guide = new FirstBattleGuideState("mission.training.01");
+            guide.ObserveWalk(-1);
+            guide.ObserveWalk(1);
+            guide.ObserveJump(-1);
+            guide.ObserveJump(1);
+            guide.ObserveWeaponSelected(FirstBattleGuideState.FirstWeaponId);
+            guide.ObserveAimState(true);
+            guide.ObservePlayerShotFired();
+            guide.ObserveTurnAdvanced(BattleTeamId.Player);
+
+            Assert.That(guide.IsFinalInstruction, Is.True);
+            Assert.That(guide.AllowsWalkDirection(-1), Is.True);
+            Assert.That(guide.AllowsJumpDirection(1), Is.True);
+            Assert.That(guide.AllowsArsenal, Is.True);
+
+            guide.ObserveWeaponSelected("weapon.mortira");
+            Assert.That(guide.IsActive, Is.False);
         }
 
         [Test]
@@ -23,82 +71,6 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.That(guide.IsActive, Is.False);
             Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.None));
-        }
-
-        [Test]
-        public void FirstMission_TransitionsAcrossFirstTurn()
-        {
-            var guide = new FirstBattleGuideState("mission.training.01");
-
-            guide.ObserveWeaponSelected();
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.Aim));
-
-            guide.ObserveAimState(true);
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.Fire));
-
-            guide.ObservePlayerShotFired();
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.WatchImpact));
-
-            guide.ObserveProjectileImpact();
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.OpponentTurn));
-
-            guide.ObserveTurnAdvanced(BattleTeamId.Player);
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.Done));
-            Assert.That(guide.IsActive, Is.False);
-        }
-
-        [Test]
-        public void FirePhase_RevertsToAimWhenInputIsLost()
-        {
-            var guide = new FirstBattleGuideState("mission.training.01");
-
-            guide.ObserveWeaponSelected();
-            guide.ObserveAimState(true);
-            guide.ObserveAimState(false);
-
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.Aim));
-        }
-
-        [Test]
-        public void WeaponReset_ReturnsAimGuideToArsenal()
-        {
-            var guide = new FirstBattleGuideState("mission.training.01");
-            guide.ObserveWeaponSelected();
-            guide.ObserveAimState(true);
-
-            guide.ObserveWeaponReset();
-
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.Arsenal));
-            Assert.That(guide.BlocksWeaponSwitch, Is.False);
-        }
-
-        [TestCase(FirstBattleGuideState.GuidePhase.Arsenal)]
-        [TestCase(FirstBattleGuideState.GuidePhase.Aim)]
-        [TestCase(FirstBattleGuideState.GuidePhase.Fire)]
-        public void PlayerTimerExpired_RestartsGuideFromArsenalOnNextPlayerTurn(
-            FirstBattleGuideState.GuidePhase expiredPhase)
-        {
-            var guide = new FirstBattleGuideState("mission.training.01");
-            if (expiredPhase >= FirstBattleGuideState.GuidePhase.Aim)
-            {
-                guide.ObserveWeaponSelected();
-            }
-
-            if (expiredPhase >= FirstBattleGuideState.GuidePhase.Fire)
-            {
-                guide.ObserveAimState(true);
-            }
-
-            guide.ObservePlayerTurnExpired();
-
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.WaitingForRetry));
-            Assert.That(guide.TargetId, Is.EqualTo("battle.turn-label"));
-
-            guide.ObserveTurnAdvanced(BattleTeamId.Player);
-
-            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.Arsenal));
-            Assert.That(guide.BlocksWeaponSwitch, Is.False);
-            Assert.That(guide.IsActive, Is.True);
         }
     }
 }

@@ -78,6 +78,7 @@ namespace Game.Gameplay.Battle.Assembly
         private const float CameraZoomStep = 0.62f;
         private const float PinchZoomSensitivity = 0.008f;
         private const float DirectAimCenterDeadZone = 0.32f;
+        private const float FirstBattleNavigationDistance = 1.2f;
         // High enough that the barrel visibly sticks to the finger (time
         // constant ~70 ms); the old 5.5 made straight-shot aiming feel laggy.
         private const float DirectAimSmoothingSpeed = 14f;
@@ -144,6 +145,8 @@ namespace Game.Gameplay.Battle.Assembly
         private Vector2 _controlledPointerPreviousScreenPosition;
         private int _uiWalkInputDirection;
         private int _keyboardWalkInputDirection;
+        private int _pendingTutorialWalkDirection;
+        private float _pendingTutorialWalkStartX;
         private float _minimumCameraSize;
         private float _maximumCameraSize;
         private float _previousPinchDistance;
@@ -190,7 +193,7 @@ namespace Game.Gameplay.Battle.Assembly
             RefreshArsenalHudItems();
             _firstBattleGuide = new FirstBattleGuideState(GameSessionContext.SelectedMissionId);
             _impactGuideEnabled = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId);
-            SelectWeapon(_inventory.SelectedIndex);
+            SelectWeapon(_impactGuideEnabled ? 0 : _inventory.SelectedIndex);
             _playerWeaponSelected = false;
 
             LoadArena(GameSessionContext.SelectedArenaIndex);
@@ -297,6 +300,8 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            _simulation.SetPlayerTurnTimerPaused(_firstBattleGuide != null && _firstBattleGuide.PausesPlayerTimer);
+
             if (_coachTimer > 0f && !_arsenalMenuOpen)
             {
                 _coachTimer -= Time.deltaTime;
@@ -395,6 +400,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             UpdateWalking();
             _simulation.Tick(Time.deltaTime);
+            CompletePendingTutorialWalkIfMoved();
             UpdateAim();
             DrawAim();
             DrawTrajectoryPreview();
@@ -520,14 +526,19 @@ namespace Game.Gameplay.Battle.Assembly
                 || HasActiveMotion
                 || HasActiveWeaponEffect
                 || HasPendingGroundAction
-                || _simulation.IsAttackCommitted
-                || IsWeaponSwitchBlockedByGuideBeforeWeaponSelected())
+                || _simulation.IsAttackCommitted)
+            {
+                return;
+            }
+
+            var weapon = weaponIndex >= 0 && weaponIndex < _inventory.Count ? _inventory.Weapons[weaponIndex] : null;
+            if (weapon == null || (_firstBattleGuide != null && !_firstBattleGuide.AllowsWeapon(weapon.WeaponId)))
             {
                 return;
             }
 
             SelectWeapon(weaponIndex);
-            _firstBattleGuide?.ObserveWeaponSelected();
+            _firstBattleGuide?.ObserveWeaponSelected(weapon.WeaponId);
             _cameraPanActive = false;
         }
 
@@ -548,14 +559,14 @@ namespace Game.Gameplay.Battle.Assembly
                 || _battleState.Turn.ActiveTeam != BattleTeamId.Player
                 || HasProjectilesInFlight
                 || HasActiveMotion
-                || HasActiveWeaponEffect)
+                || HasActiveWeaponEffect
+                || (_firstBattleGuide != null && _firstBattleGuide.IsActive))
             {
                 return;
             }
 
             _playerWeaponSelected = false;
             ResetAimState();
-            _firstBattleGuide?.ObserveWeaponReset();
             _status = GameText.WeaponReset();
         }
 
@@ -1129,6 +1140,12 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void UpdateAim()
         {
+            if (_firstBattleGuide != null && _firstBattleGuide.IsActive && !_firstBattleGuide.AllowsAimInput)
+            {
+                _aimDragActive = false;
+                return;
+            }
+
             if (!_playerWeaponSelected)
             {
                 _aimDragActive = false;
@@ -1222,7 +1239,6 @@ namespace Game.Gameplay.Battle.Assembly
 
                 FaceUnitTowardAim(activePresenter);
 
-                _firstBattleGuide?.ObserveAimState(_aimState.HasInput);
                 if (_aimState.HasInput && !_aimHadInput)
                 {
                     ReportTutorial(BattleTutorialBridge.AimStarted);
@@ -1238,6 +1254,7 @@ namespace Game.Gameplay.Battle.Assembly
                 // Freeze the pulled aim so the arc stays on screen for review;
                 // the player fires it with the Fire button.
                 _aimDragActive = false;
+                _firstBattleGuide?.ObserveAimState(_aimState.HasInput);
             }
         }
 
@@ -1339,6 +1356,14 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void ReportTutorial(string triggerKey)
         {
+            // The first training battle owns its full lesson through
+            // FirstBattleGuideState. Generic short-lived cues would otherwise
+            // reopen the instruction card after its final required shot.
+            if (FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId))
+            {
+                return;
+            }
+
             var cue = BattleTutorialBridge.Report(triggerKey);
             if (!cue.IsEmpty)
             {
@@ -1425,6 +1450,11 @@ namespace Game.Gameplay.Battle.Assembly
             if (!_playerWeaponSelected)
             {
                 _status = GameText.NoWeaponSelected();
+                return;
+            }
+
+            if (_firstBattleGuide != null && _firstBattleGuide.IsActive && !_firstBattleGuide.AllowsFire)
+            {
                 return;
             }
 
@@ -1812,10 +1842,6 @@ namespace Game.Gameplay.Battle.Assembly
             else
             {
                 _firstBattleGuide?.ObserveTurnAdvanced(newActiveTeam);
-                if (newActiveTeam == BattleTeamId.Player && _playerWeaponSelected)
-                {
-                    _firstBattleGuide?.ObserveWeaponSelected();
-                }
             }
 
             ApplyAimSettingsForActiveTeam();
@@ -1927,6 +1953,14 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void SetUiWalkInput(int direction)
         {
+            if (_firstBattleGuide != null
+                && _firstBattleGuide.IsActive
+                && !_firstBattleGuide.AllowsWalkDirection(direction))
+            {
+                _uiWalkInputDirection = 0;
+                return;
+            }
+
             if (!CanPlayerAcceptMovementInput())
             {
                 _uiWalkInputDirection = 0;
@@ -1951,7 +1985,11 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void SetKeyboardWalkInput(int direction)
         {
-            _keyboardWalkInputDirection = CanPlayerAcceptMovementInput() ? NormalizeDirection(direction) : 0;
+            var normalizedDirection = NormalizeDirection(direction);
+            _keyboardWalkInputDirection = CanPlayerAcceptMovementInput()
+                && (_firstBattleGuide == null || !_firstBattleGuide.IsActive || _firstBattleGuide.AllowsWalkDirection(normalizedDirection))
+                    ? normalizedDirection
+                    : 0;
         }
 
         private static int NormalizeDirection(int direction)
@@ -1963,7 +2001,6 @@ namespace Game.Gameplay.Battle.Assembly
         {
             return IsBattleReady()
                 && IsPlayerControlTurn(_battleState.Turn.ActiveTeam)
-                && !IsMovementBlockedByGuide()
                 && _simulation.CanUseMovement();
         }
 
@@ -1971,7 +2008,6 @@ namespace Game.Gameplay.Battle.Assembly
         {
             return IsBattleReady()
                 && IsPlayerControlTurn(_battleState.Turn.ActiveTeam)
-                && !IsMovementBlockedByGuide()
                 && _simulation.CanAcceptMovementInput();
         }
 
@@ -1990,7 +2026,13 @@ namespace Game.Gameplay.Battle.Assembly
             var walkDirection = _keyboardWalkInputDirection != 0 ? _keyboardWalkInputDirection : _uiWalkInputDirection;
             if (walkDirection == 0)
             {
-                _simulation?.Walk(0, 0f);
+                // During the two mandatory navigation steps, preserve an accepted
+                // intent until at least one fixed simulation tick has moved the unit.
+                if (_pendingTutorialWalkDirection == 0)
+                {
+                    _simulation?.Walk(0, 0f);
+                }
+
                 return;
             }
 
@@ -2007,6 +2049,20 @@ namespace Game.Gameplay.Battle.Assembly
                 case BattleWalkOutcome.Moved:
                     ResetAimState();
                     _status = GameText.Moved(DescribeTeam(BattleTeamId.Player));
+                    if (_firstBattleGuide != null
+                        && (_firstBattleGuide.CurrentPhase == FirstBattleGuideState.GuidePhase.MoveLeft
+                            || _firstBattleGuide.CurrentPhase == FirstBattleGuideState.GuidePhase.MoveRight))
+                    {
+                        if (_pendingTutorialWalkDirection == 0)
+                        {
+                            _pendingTutorialWalkDirection = walkDirection;
+                            _pendingTutorialWalkStartX = GetPresenter(BattleTeamId.Player)?.State.Position.x ?? 0f;
+                        }
+                    }
+                    else
+                    {
+                        _firstBattleGuide?.ObserveWalk(walkDirection);
+                    }
                     break;
                 case BattleWalkOutcome.Blocked:
                     _status = GameText.MovementBlocked();
@@ -2023,11 +2079,37 @@ namespace Game.Gameplay.Battle.Assembly
         {
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
+            _pendingTutorialWalkDirection = 0;
             _simulation?.Walk(0, 0f);
+        }
+
+        private void CompletePendingTutorialWalkIfMoved()
+        {
+            if (_pendingTutorialWalkDirection == 0)
+            {
+                return;
+            }
+
+            var presenter = GetPresenter(BattleTeamId.Player);
+            if (presenter == null
+                || (presenter.State.Position.x - _pendingTutorialWalkStartX) * _pendingTutorialWalkDirection < FirstBattleNavigationDistance)
+            {
+                return;
+            }
+
+            var completedDirection = _pendingTutorialWalkDirection;
+            _pendingTutorialWalkDirection = 0;
+            _firstBattleGuide?.ObserveWalk(completedDirection);
+            ClearWalkInput();
         }
 
         private void TryStartJump(int direction)
         {
+            if (_firstBattleGuide != null && _firstBattleGuide.IsActive && !_firstBattleGuide.AllowsJumpDirection(direction))
+            {
+                return;
+            }
+
             if (!CanPlayerUseMovement())
             {
                 if (IsMovementBlockedByGuide())
@@ -2043,6 +2125,7 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 ResetAimState();
                 _status = GameText.Jumped(DescribeTeam(BattleTeamId.Player));
+                _firstBattleGuide?.ObserveJump(direction);
             }
         }
 
@@ -2811,6 +2894,7 @@ namespace Game.Gameplay.Battle.Assembly
                 && _inventory.CanFireSelected
                 && fireInputReady;
             var guideActive = _firstBattleGuide != null && _firstBattleGuide.IsActive;
+            var isFirstTrainingBattle = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId);
             var status = guideActive
                 ? _firstBattleGuide.Message
                 : _coachTimer > 0f && !string.IsNullOrEmpty(_coachMessage) ? _coachMessage : _status;
@@ -2818,7 +2902,9 @@ namespace Game.Gameplay.Battle.Assembly
                 ? _firstBattleGuide.TargetId
                 : _coachTimer > 0f ? _coachTargetId : string.Empty;
             var canUseMovement = IsPlayerControlTurn(_battleState.Turn.ActiveTeam)
-                && _simulation.CanAcceptMovementInput();
+                && _simulation.CanAcceptMovementInput()
+                && (!guideActive || _firstBattleGuide.AllowsWalkDirection(-1) || _firstBattleGuide.AllowsWalkDirection(1)
+                    || _firstBattleGuide.AllowsJumpDirection(-1) || _firstBattleGuide.AllowsJumpDirection(1));
             var mobilityLabel = GameText.MobilityLabel(_simulation.MovementTimeRemaining);
             var canOpenArsenal = !_simulation.Result.IsFinished
                 && _battleState.Turn.ActiveTeam == BattleTeamId.Player
@@ -2827,13 +2913,15 @@ namespace Game.Gameplay.Battle.Assembly
                 && !HasActiveWeaponEffect
                 && !HasPendingGroundAction
                 && !_simulation.IsAttackCommitted
-                && playerHasTime;
+                && playerHasTime
+                && (!guideActive || _firstBattleGuide.AllowsArsenal);
 
             var state = new BattleHudState(
                 status,
                 _battleState.Turn.TurnNumber,
                 DescribeTeam(_battleState.Turn.ActiveTeam),
                 _simulation.MovementTimeRemaining,
+                !guideActive || _firstBattleGuide.ShowTurnTimer,
                 GetTeamHealth(BattleTeamId.Player),
                 GetTeamMaxHealth(BattleTeamId.Player),
                 GetTeamHealth(BattleTeamId.Opponent),
@@ -2850,13 +2938,14 @@ namespace Game.Gameplay.Battle.Assembly
                 _playerWeaponSelected && fireInputReady,
                 canOpenArsenal,
                 tutorialTargetId,
+                !isFirstTrainingBattle || guideActive || _coachTimer > 0f,
                 guideActive && _firstBattleGuide.BlocksWeaponSwitch,
                 guideActive && _firstBattleGuide.BlocksCancelAim,
-                guideActive,
+                guideActive && !(_firstBattleGuide.AllowsWalkDirection(-1) || _firstBattleGuide.AllowsWalkDirection(1)),
                 _aimState.Power,
                 _aimSettings.MinPower,
                 _aimSettings.MaxPower,
-                canFire,
+                canFire && (!guideActive || _firstBattleGuide.AllowsFire),
                 canUseMovement,
                 _simulation.Result.IsFinished,
                 _resultScreenState.Title,
@@ -2901,7 +2990,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private bool IsWeaponSwitchBlockedByGuideBeforeWeaponSelected()
         {
-            return !_playerWeaponSelected && IsWeaponSwitchBlockedByGuide();
+            return IsWeaponSwitchBlockedByGuide();
         }
 
         private bool IsCancelBlockedByGuide()

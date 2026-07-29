@@ -9,7 +9,7 @@ namespace Game.Progression.Missions
                 Mission(
                     "mission.training.01",
                     "Перший постріл",
-                    "Наведи дугу, зафіксуй приціл і заверши коротку дуель.",
+                    "Освой рух, стрибок, навісний і прямий постріл у короткій дуелі.",
                     0,
                     "arena.training-meadow",
                     new[] { "weapon.impulse", "weapon.mortira" },
