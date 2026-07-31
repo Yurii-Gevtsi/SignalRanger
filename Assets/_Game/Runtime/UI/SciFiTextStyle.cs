@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore.LowLevel;
+using System.Collections.Generic;
 
 namespace Game.UI
 {
@@ -9,6 +11,14 @@ namespace Game.UI
         public const string HeadingFontResourcePath = "Fonts/Orbitron SDF";
         public const string BodyFontSourcePath = "Fonts/Exo2";
         public const string HeadingFontSourcePath = "Fonts/Orbitron";
+
+        private static readonly string[] FallbackFontSourcePaths =
+        {
+            "Fonts/NotoSansArabic-Regular",
+            "Fonts/NotoSansCJKjp-Regular",
+            "Fonts/NotoSansCJKkr-Regular",
+            "Fonts/NotoSansCJKsc-Regular"
+        };
 
         public static readonly Color MainText = new Color32(0xF2, 0xF7, 0xFF, 0xFF);
         public static readonly Color SecondaryText = new Color32(0xA9, 0xC7, 0xDA, 0xFF);
@@ -23,16 +33,28 @@ namespace Game.UI
         private static TMP_FontAsset _bodyFont;
         private static TMP_FontAsset _headingFont;
 
-        public static TMP_FontAsset BodyFont => _bodyFont ??= LoadFontAsset(BodyFontResourcePath, BodyFontSourcePath);
+        public static TMP_FontAsset BodyFont
+        {
+            get
+            {
+                _bodyFont ??= LoadFontAsset(BodyFontResourcePath, BodyFontSourcePath);
+                AddFallbackFonts(_bodyFont);
+                return _bodyFont;
+            }
+        }
 
         public static TMP_FontAsset HeadingFont
         {
             get
             {
                 _headingFont ??= LoadFontAsset(HeadingFontResourcePath, HeadingFontSourcePath);
+                AddFallbackFonts(_headingFont);
                 return _headingFont != null ? _headingFont : BodyFont;
             }
         }
+
+        private static readonly List<TMP_FontAsset> _fallbackFonts = new();
+        private static bool _fallbackFontsLoaded;
 
         public static void Apply(
             TMP_Text text,
@@ -121,6 +143,54 @@ namespace Game.UI
 
             var sourceFont = Resources.Load<Font>(sourceFontResourcePath);
             return sourceFont != null ? TMP_FontAsset.CreateFontAsset(sourceFont) : null;
+        }
+
+        private static void AddFallbackFonts(TMP_FontAsset fontAsset)
+        {
+            if (fontAsset == null)
+            {
+                return;
+            }
+
+            LoadFallbackFonts();
+            if (fontAsset.fallbackFontAssetTable == null)
+            {
+                fontAsset.fallbackFontAssetTable = new List<TMP_FontAsset>();
+            }
+
+            foreach (var fallback in _fallbackFonts)
+            {
+                if (!fontAsset.fallbackFontAssetTable.Contains(fallback))
+                {
+                    fontAsset.fallbackFontAssetTable.Add(fallback);
+                }
+            }
+        }
+
+        private static void LoadFallbackFonts()
+        {
+            if (_fallbackFontsLoaded)
+            {
+                return;
+            }
+
+            _fallbackFontsLoaded = true;
+            foreach (var sourcePath in FallbackFontSourcePaths)
+            {
+                var sourceFont = Resources.Load<Font>(sourcePath);
+                if (sourceFont == null)
+                {
+                    Debug.LogWarning($"[Fonts] Fallback font not found at Resources/{sourcePath}.");
+                    continue;
+                }
+
+                var fallback = TMP_FontAsset.CreateFontAsset(sourceFont, 90, 9, GlyphRenderMode.SDFAA,
+                    512, 512, AtlasPopulationMode.Dynamic, true);
+                if (fallback != null)
+                {
+                    _fallbackFonts.Add(fallback);
+                }
+            }
         }
 
         private static FontStyles FontStyleFor(GameTextRole role)

@@ -32,6 +32,7 @@ namespace Game.Inventory
             }
 
             _saveData.inventory.unlockedWeaponIds.Add(weaponId);
+            _saveData.inventory.GetOrCreateWeaponProgress(weaponId);
             return true;
         }
 

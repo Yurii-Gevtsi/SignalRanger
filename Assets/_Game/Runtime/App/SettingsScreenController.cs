@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Game.Core;
 using Game.Core.Localization;
 using System.Collections.Generic;
@@ -325,16 +325,22 @@ namespace Game.App
             }
 
             var panel = CreatePanel("Language Picker Panel", overlay.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(980f, 1080f), new Vector2(0f, -20f), Color.white,
+                new Vector2(0.5f, 0.5f), new Vector2(1470f, 1080f), new Vector2(0f, 80f), Color.white,
                 LoadResourceSprite(BattleResourceRoot + "card", new Vector4(250f, 250f, 250f, 250f)));
             panel.type = Image.Type.Sliced;
             panel.preserveAspect = false;
             var panelBlocker = panel.gameObject.AddComponent<Button>();
             panelBlocker.targetGraphic = panel;
             panelBlocker.transition = Selectable.Transition.None;
-            CreateText("Language Picker Title", panel.transform, new Vector2(0.18f, 0.70f), new Vector2(0.82f, 0.78f),
+            var languagePickerTitle = CreateText("Language Picker Title", panel.transform,
+                new Vector2(0.18f, 0.66f), new Vector2(0.82f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 48, TextAlignmentOptions.Center,
                 T("ui.selectLanguage"), GameTextRole.DisplayTitle);
+            languagePickerTitle.rectTransform.offsetMax = new Vector2(
+                languagePickerTitle.rectTransform.offsetMax.x,
+                70f);
+            languagePickerTitle.textWrappingMode = TextWrappingModes.Normal;
+            languagePickerTitle.maxVisibleLines = 2;
             if (!_isLanguagePickerOnly)
             {
                 CreateLanguagePickerCloseButton(panel.transform);

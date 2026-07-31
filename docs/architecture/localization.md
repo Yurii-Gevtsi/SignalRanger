@@ -8,6 +8,17 @@
 ```text
 uk.json
 en.json
+pl.json
+de.json
+es.json
+fr.json
+it.json
+pt-BR.json
+ja.json
+ko.json
+tr.json
+ar.json
+zh-Hans.json
 ```
 
 JSON групує рядки за контекстом (`ui`, `intro`, `battle`, `content`), а

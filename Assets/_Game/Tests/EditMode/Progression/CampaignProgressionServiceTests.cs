@@ -17,7 +17,9 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(result.Applied, Is.True);
             Assert.That(saveData.campaign.completedMissionIds, Contains.Item("mission.training.01"));
             Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.EqualTo(1));
-            Assert.That(saveData.economy.softCurrency, Is.EqualTo(25));
+            Assert.That(saveData.economy.softCurrency, Is.EqualTo(250));
+            Assert.That(saveData.profile.commanderExperience, Is.EqualTo(80));
+            Assert.That(saveData.inventory.GetOrCreateWeaponProgress("weapon.impulse").blueprints, Is.EqualTo(25));
         }
 
         [Test]
@@ -30,7 +32,7 @@ namespace Game.Tests.EditMode.Progression
             var secondResult = service.CompleteMission(0);
 
             Assert.That(secondResult.Applied, Is.False);
-            Assert.That(saveData.economy.softCurrency, Is.EqualTo(25));
+            Assert.That(saveData.economy.softCurrency, Is.EqualTo(250));
             Assert.That(saveData.campaign.completedMissionIds, Has.Count.EqualTo(1));
         }
 
@@ -60,7 +62,9 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(saveData.ledger.entries, Has.Count.EqualTo(1));
             Assert.That(saveData.ledger.entries[0].transactionId, Is.EqualTo("mission.first.mission.training.01"));
             Assert.That(saveData.ledger.entries[0].sourceType, Is.EqualTo("mission.first"));
-            Assert.That(saveData.ledger.entries[0].softCurrencyDelta, Is.EqualTo(25));
+            Assert.That(saveData.ledger.entries[0].softCurrencyDelta, Is.EqualTo(250));
+            Assert.That(saveData.ledger.entries[0].commanderExperienceDelta, Is.EqualTo(80));
+            Assert.That(saveData.ledger.entries[0].blueprintDelta, Is.EqualTo(25));
         }
 
         [Test]

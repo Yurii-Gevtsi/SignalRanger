@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Game.Data.Progression;
 using Game.Data.Save;
 using Game.Economy;
 
@@ -48,14 +49,14 @@ namespace Game.Progression.Missions
             var mission = GetMission(missionIndex);
             if (mission == null)
             {
-                return new MissionCompletionResult(false, 0, string.Empty, _saveData.campaign.highestUnlockedMissionIndex);
+                return EmptyResult();
             }
 
             var alreadyCompleted = _saveData.campaign.completedMissionIds.Contains(mission.MissionId);
             if (alreadyCompleted)
             {
                 UnlockNextMission(missionIndex);
-                return new MissionCompletionResult(false, 0, string.Empty, _saveData.campaign.highestUnlockedMissionIndex);
+                return EmptyResult();
             }
 
             _saveData.campaign.completedMissionIds.Add(mission.MissionId);
@@ -64,7 +65,12 @@ namespace Game.Progression.Missions
             var reward = mission.Reward;
             // Детермінований transactionId: повторна фіксація тієї самої першої
             // перемоги не може продублювати нагороду навіть в обхід completedMissionIds.
-            _economy.Grant(reward.softCurrency, "mission.first", mission.MissionId,
+            var progressionReward = new ProgressionReward(
+                reward.softCurrency,
+                reward.commanderExperience,
+                reward.blueprints,
+                reward.blueprintWeaponId);
+            _economy.Grant(progressionReward, "mission.first", mission.MissionId,
                 $"mission.first.{mission.MissionId}");
 
             var unlockedWeaponId = string.Empty;
@@ -72,13 +78,29 @@ namespace Game.Progression.Missions
                 && !_saveData.inventory.unlockedWeaponIds.Contains(reward.unlockWeaponId))
             {
                 _saveData.inventory.unlockedWeaponIds.Add(reward.unlockWeaponId);
+                _saveData.inventory.GetOrCreateWeaponProgress(reward.unlockWeaponId);
                 unlockedWeaponId = reward.unlockWeaponId;
             }
 
             return new MissionCompletionResult(
                 true,
                 reward.softCurrency,
+                reward.commanderExperience,
+                reward.blueprints,
+                reward.blueprintWeaponId,
                 unlockedWeaponId,
+                _saveData.campaign.highestUnlockedMissionIndex);
+        }
+
+        private MissionCompletionResult EmptyResult()
+        {
+            return new MissionCompletionResult(
+                false,
+                0,
+                0,
+                0,
+                string.Empty,
+                string.Empty,
                 _saveData.campaign.highestUnlockedMissionIndex);
         }
 

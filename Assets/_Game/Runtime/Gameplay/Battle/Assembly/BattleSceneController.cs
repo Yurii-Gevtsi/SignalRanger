@@ -220,7 +220,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             var selectedIds = GameSessionContext.SelectedOpponentWeaponIds != null && GameSessionContext.SelectedOpponentWeaponIds.Length > 0
                 ? GameSessionContext.SelectedOpponentWeaponIds
-                : new[] { "weapon.impulse", "weapon.mortira" };
+                : new[] { "weapon.impulse", "weapon.blaster-caset" };
 
             return selectedIds
                 .Where(byId.ContainsKey)
@@ -1356,6 +1356,11 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void ReportTutorial(string triggerKey)
         {
+            if (GameSessionContext.IsTrainingSkirmish)
+            {
+                return;
+            }
+
             // The first training battle owns its full lesson through
             // FirstBattleGuideState. Generic short-lived cues would otherwise
             // reopen the instruction card after its final required shot.
@@ -2895,6 +2900,8 @@ namespace Game.Gameplay.Battle.Assembly
                 && fireInputReady;
             var guideActive = _firstBattleGuide != null && _firstBattleGuide.IsActive;
             var isFirstTrainingBattle = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId);
+            var showTutorialCard = !GameSessionContext.IsTrainingSkirmish
+                && (!isFirstTrainingBattle || guideActive || _coachTimer > 0f);
             var status = guideActive
                 ? _firstBattleGuide.Message
                 : _coachTimer > 0f && !string.IsNullOrEmpty(_coachMessage) ? _coachMessage : _status;
@@ -2938,7 +2945,7 @@ namespace Game.Gameplay.Battle.Assembly
                 _playerWeaponSelected && fireInputReady,
                 canOpenArsenal,
                 tutorialTargetId,
-                !isFirstTrainingBattle || guideActive || _coachTimer > 0f,
+                showTutorialCard,
                 guideActive && _firstBattleGuide.BlocksWeaponSwitch,
                 guideActive && _firstBattleGuide.BlocksCancelAim,
                 guideActive && !(_firstBattleGuide.AllowsWalkDirection(-1) || _firstBattleGuide.AllowsWalkDirection(1)),

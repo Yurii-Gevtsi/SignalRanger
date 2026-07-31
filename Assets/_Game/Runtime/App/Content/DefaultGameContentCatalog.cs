@@ -48,9 +48,10 @@ namespace Game.App.Content
                     new[]
                     {
                         "weapon.impulse",
-                        "weapon.mortira",
                         "weapon.blaster-caset",
-                        "weapon.bur"
+                        "weapon.bur",
+                        "weapon.granata",
+                        "weapon.mine"
                     }),
                 CampaignChapterDefinition.CreateRuntime(
                     "chapter.tactical-tools",
@@ -72,6 +73,8 @@ namespace Game.App.Content
                     new[]
                     {
                         "weapon.granata",
+                        "weapon.mine",
+                        "weapon.c4",
                         "weapon.heal",
                         "weapon.teleport"
                     })
@@ -85,11 +88,11 @@ namespace Game.App.Content
                 EnemyLoadoutDefinition.CreateRuntime(
                     "enemy.training.direct",
                     "Direct Basics",
-                    new[] { "weapon.impulse", "weapon.mortira" }),
+                    new[] { "weapon.impulse", "weapon.blaster-caset" }),
                 EnemyLoadoutDefinition.CreateRuntime(
                     "enemy.training.arc",
                     "Arc Pressure",
-                    new[] { "weapon.mortira", "weapon.granata" }),
+                    new[] { "weapon.impulse", "weapon.granata" }),
                 EnemyLoadoutDefinition.CreateRuntime(
                     "enemy.training.precision",
                     "Precision Mix",
@@ -97,7 +100,7 @@ namespace Game.App.Content
                 EnemyLoadoutDefinition.CreateRuntime(
                     "enemy.training.utility",
                     "Utility Pressure",
-                    new[] { "weapon.mortira", "weapon.granata", "weapon.heal" })
+                    new[] { "weapon.mine", "weapon.granata", "weapon.heal" })
             };
         }
 

@@ -7,6 +7,7 @@ using Game.Economy;
 using Game.Inventory;
 using Game.Infrastructure;
 using Game.Progression.Missions;
+using Game.Progression;
 using Game.Tutorial;
 
 namespace Game.App
@@ -26,6 +27,8 @@ namespace Game.App
         public static CampaignProgressionService Campaign { get; private set; }
         public static TutorialService Tutorial { get; private set; }
         public static IEconomyService Economy { get; private set; }
+        public static WeaponUpgradeService WeaponUpgrades { get; private set; }
+        public static BattleRewardService BattleRewards { get; private set; }
         public static InventoryService Inventory { get; private set; }
         public static IAudioService Audio { get; private set; }
         public static IAnalyticsService Analytics { get; private set; }
@@ -53,6 +56,8 @@ namespace Game.App
             Localization = new JsonLocalizationService(SaveService.Current.settings.languageCode);
             LocalizationRuntime.Service = Localization;
             Economy = new EconomyService(SaveService.Current);
+            WeaponUpgrades = new WeaponUpgradeService(SaveService.Current, Economy);
+            BattleRewards = new BattleRewardService(Economy);
             Inventory = new InventoryService(SaveService.Current);
             Audio = new NoOpAudioService(SaveService.Current);
             Analytics = new NoOpAnalyticsService();

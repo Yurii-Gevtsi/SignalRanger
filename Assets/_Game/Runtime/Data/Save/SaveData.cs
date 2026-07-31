@@ -6,7 +6,7 @@ namespace Game.Data.Save
     [Serializable]
     public sealed class SaveData
     {
-        public const int CurrentSchemaVersion = 4;
+        public const int CurrentSchemaVersion = 6;
 
         public int schemaVersion;
         public long lastWriteUtcTicks;
@@ -51,6 +51,8 @@ namespace Game.Data.Save
 
         public void ResetProgression()
         {
+            profile ??= SaveProfileData.CreateDefault();
+            profile.commanderExperience = 0;
             campaign = SaveCampaignData.CreateDefault();
             inventory = SaveInventoryData.CreateDefault();
             economy = SaveEconomyData.CreateDefault();
@@ -67,6 +69,7 @@ namespace Game.Data.Save
         public string playerName;
         public long createdUtcTicks;
         public bool introCompleted;
+        public int commanderExperience;
 
         public static SaveProfileData CreateDefault()
         {
@@ -90,6 +93,11 @@ namespace Game.Data.Save
             if (createdUtcTicks <= 0)
             {
                 createdUtcTicks = DateTime.UtcNow.Ticks;
+            }
+
+            if (commanderExperience < 0)
+            {
+                commanderExperience = 0;
             }
         }
     }
@@ -123,6 +131,7 @@ namespace Game.Data.Save
     {
         public List<string> unlockedWeaponIds;
         public List<string> selectedLoadoutWeaponIds;
+        public List<SaveWeaponProgressData> weaponProgress;
 
         public static SaveInventoryData CreateDefault()
         {
@@ -135,6 +144,7 @@ namespace Game.Data.Save
         {
             unlockedWeaponIds ??= new List<string>();
             selectedLoadoutWeaponIds ??= new List<string>();
+            weaponProgress ??= new List<SaveWeaponProgressData>();
 
             ReplaceLegacyWeaponIds(unlockedWeaponIds);
             ReplaceLegacyWeaponIds(selectedLoadoutWeaponIds);
@@ -144,14 +154,48 @@ namespace Game.Data.Save
             if (unlockedWeaponIds.Count == 0)
             {
                 unlockedWeaponIds.Add("weapon.impulse");
-                unlockedWeaponIds.Add("weapon.mortira");
+                unlockedWeaponIds.Add("weapon.blaster-caset");
             }
 
             if (selectedLoadoutWeaponIds.Count == 0)
             {
                 selectedLoadoutWeaponIds.Add("weapon.impulse");
-                selectedLoadoutWeaponIds.Add("weapon.mortira");
+                selectedLoadoutWeaponIds.Add("weapon.blaster-caset");
             }
+
+            weaponProgress.RemoveAll(item => item == null || string.IsNullOrWhiteSpace(item.weaponId));
+            for (var index = 0; index < weaponProgress.Count; index++)
+            {
+                weaponProgress[index].EnsureDefaults();
+            }
+
+            for (var index = 0; index < unlockedWeaponIds.Count; index++)
+            {
+                GetOrCreateWeaponProgress(unlockedWeaponIds[index]);
+            }
+        }
+
+        public SaveWeaponProgressData GetOrCreateWeaponProgress(string weaponId)
+        {
+            if (string.IsNullOrWhiteSpace(weaponId))
+            {
+                return null;
+            }
+
+            weaponProgress ??= new List<SaveWeaponProgressData>();
+            for (var index = 0; index < weaponProgress.Count; index++)
+            {
+                if (weaponProgress[index].weaponId == weaponId)
+                {
+                    weaponProgress[index].EnsureDefaults();
+                    return weaponProgress[index];
+                }
+            }
+
+            var progress = new SaveWeaponProgressData { weaponId = weaponId, rank = 1 };
+            progress.EnsureDefaults();
+            weaponProgress.Add(progress);
+            return progress;
         }
 
         private static void ReplaceLegacyWeaponIds(List<string> weaponIds)
@@ -189,9 +233,35 @@ namespace Game.Data.Save
     }
 
     [Serializable]
+    public sealed class SaveWeaponProgressData
+    {
+        public string weaponId;
+        public int rank;
+        public int branch;
+        public int blueprints;
+
+        public void EnsureDefaults()
+        {
+            weaponId ??= string.Empty;
+            rank = rank < 1 ? 1 : rank > 10 ? 10 : rank;
+            branch = branch < 0 ? 0 : branch > 2 ? 2 : branch;
+            if (rank < 5)
+            {
+                branch = 0;
+            }
+
+            if (blueprints < 0)
+            {
+                blueprints = 0;
+            }
+        }
+    }
+
+    [Serializable]
     public sealed class SaveEconomyData
     {
         public int softCurrency;
+        public int premiumCurrency;
 
         public static SaveEconomyData CreateDefault()
         {
@@ -205,6 +275,11 @@ namespace Game.Data.Save
             if (softCurrency < 0)
             {
                 softCurrency = 0;
+            }
+
+            if (premiumCurrency < 0)
+            {
+                premiumCurrency = 0;
             }
         }
     }
@@ -285,6 +360,10 @@ namespace Game.Data.Save
         public string sourceType;
         public string sourceId;
         public int softCurrencyDelta;
+        public int premiumCurrencyDelta;
+        public int commanderExperienceDelta;
+        public string blueprintWeaponId;
+        public int blueprintDelta;
         public long createdUtcTicks;
         public bool pendingSync;
     }

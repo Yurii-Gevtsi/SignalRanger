@@ -74,6 +74,7 @@ namespace Game.Core.Localization
         public static string SettingsSaved() => T("settings.saved", "Налаштування збережено.");
         public static string MenuTitle() => T("menu.title", "Тактичний бій");
         public static string MenuSubtitle() => T("menu.subtitle", "Короткі артилерійські дуелі. MVP build.");
+        public static string CampaignMapTitle() => T("campaign.mapTitle", "Campaign");
         public static string ChapterLabel() => T("campaign.chapter", "Розділ кампанії");
         public static string NextMissionLabel() => T("campaign.nextMission", "Наступна місія");
         public static string MissionProgress(int missionNumber, int missionCount) => missionCount > 0
@@ -128,7 +129,7 @@ namespace Game.Core.Localization
         public static string Damage() => T("shop.damage", "Урон");
         public static string UsesPerBattle() => T("shop.uses", "За бій");
         public static string RequiredLevel(int level) => T("shop.requiredLevel", $"Потрібен рівень {level}", Arg("level", level));
-        public static string ConstructorBureau() => T("loadout.constructor", "Конструкторське бюро");
+        public static string ConstructorBureau() => T("loadout.constructor", "Майстерня");
         public static string Tip(string key, string fallback) => T("loading." + key, fallback);
         public static string Localized(string key, string fallback, params LocalizationArgument[] arguments) => T(key, fallback, arguments);
         public static string MobilityLabel(float remainingSeconds) => T("battle.mobility", $"Хід: {remainingSeconds:0}с • рух і стрибки вільні", Arg("seconds", remainingSeconds.ToString("0", CultureInfo.InvariantCulture)));

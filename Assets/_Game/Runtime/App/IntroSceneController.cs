@@ -40,8 +40,8 @@ namespace Game.App
 
         public static bool ShouldShow()
         {
-            // Temporary QA mode: show the intro once on every app launch.
-            return AppServices.IsInitialized && !_shownThisSession;
+            var profile = AppServices.SaveService?.Current?.profile;
+            return AppServices.IsInitialized && profile != null && !profile.introCompleted && !_shownThisSession;
         }
 
         public static void EnsureCreated()
@@ -64,7 +64,7 @@ namespace Game.App
             BuildIntro();
 
             var settings = AppServices.SaveService?.Current?.settings;
-            if (settings != null && !settings.hasSelectedLanguage)
+            if (settings == null || !settings.hasSelectedLanguage)
             {
                 _introContentRoot.SetActive(false);
                 SettingsScreenController.OpenLanguagePicker(BeginIntro);

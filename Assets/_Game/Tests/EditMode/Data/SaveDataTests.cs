@@ -16,6 +16,7 @@ namespace Game.Tests.EditMode.Data
             Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.EqualTo(0));
             Assert.That(saveData.inventory.unlockedWeaponIds, Contains.Item("weapon.impulse"));
             Assert.That(saveData.economy.softCurrency, Is.EqualTo(0));
+            Assert.That(saveData.economy.premiumCurrency, Is.EqualTo(0));
             Assert.That(saveData.settings.languageCode, Is.EqualTo("uk"));
             Assert.That(saveData.tutorial.completedStepIds, Is.Not.Null);
         }
@@ -28,6 +29,7 @@ namespace Game.Tests.EditMode.Data
             saveData.campaign.highestUnlockedMissionIndex = 2;
             saveData.campaign.completedMissionIds.Add("mission.training.01");
             saveData.economy.softCurrency = 75;
+            saveData.economy.premiumCurrency = 16;
             saveData.settings.musicVolume = 0f;
 
             var json = SaveDataSerializer.ToJson(saveData);
@@ -37,6 +39,7 @@ namespace Game.Tests.EditMode.Data
             Assert.That(restored.campaign.highestUnlockedMissionIndex, Is.EqualTo(2));
             Assert.That(restored.campaign.completedMissionIds, Contains.Item("mission.training.01"));
             Assert.That(restored.economy.softCurrency, Is.EqualTo(75));
+            Assert.That(restored.economy.premiumCurrency, Is.EqualTo(16));
             Assert.That(restored.settings.musicVolume, Is.EqualTo(0f));
         }
 
@@ -64,6 +67,7 @@ namespace Game.Tests.EditMode.Data
             saveData.inventory.selectedLoadoutWeaponIds.Clear();
             saveData.inventory.selectedLoadoutWeaponIds.Add("weapon.test");
             saveData.economy.softCurrency = 125;
+            saveData.profile.commanderExperience = 900;
             saveData.tutorial.completedStepIds.Add("tutorial.test");
 
             saveData.ResetProgression();
@@ -73,8 +77,9 @@ namespace Game.Tests.EditMode.Data
             Assert.That(saveData.settings.sfxVolume, Is.EqualTo(0.4f));
             Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.Zero);
             Assert.That(saveData.campaign.completedMissionIds, Is.Empty);
-            Assert.That(saveData.inventory.unlockedWeaponIds, Is.EquivalentTo(new[] { "weapon.impulse", "weapon.mortira" }));
-            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EquivalentTo(new[] { "weapon.impulse", "weapon.mortira" }));
+            Assert.That(saveData.inventory.unlockedWeaponIds, Is.EquivalentTo(new[] { "weapon.impulse", "weapon.blaster-caset" }));
+            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EquivalentTo(new[] { "weapon.impulse", "weapon.blaster-caset" }));
+            Assert.That(saveData.profile.commanderExperience, Is.Zero);
             Assert.That(saveData.economy.softCurrency, Is.Zero);
             Assert.That(saveData.tutorial.completedStepIds, Is.Empty);
         }

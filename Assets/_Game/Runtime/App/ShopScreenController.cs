@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Core.Localization;
+using Game.Data.Progression;
 using Game.Gameplay.Battle.Weapons;
 using Game.UI;
 using TMPro;
@@ -120,15 +121,27 @@ namespace Game.App
         private void BuildItems()
         {
             var weapons = PrototypeWeaponLibrary.CreateAll();
-            for (var index = 0; index < weapons.Length; index++)
+            for (var catalogIndex = 0; catalogIndex < WeaponProgressionCatalog.All.Count; catalogIndex++)
             {
-                var weapon = weapons[index];
-                if (weapon == null || WeaponPresentationText.IsDropOnly(weapon)) continue;
-                var itemIndex = _items.Count;
-                var level = itemIndex + 1;
-                _items.Add(new ShopWeaponItem(weapon, weapon.IconId, WeaponDisplayNames.Get(weapon.WeaponId), level,
-                $"{WeaponPresentationText.Describe(weapon)}\n{GameText.WeaponType(WeaponPresentationText.DescribeCategory(weapon))}",
-                    240 + itemIndex * 140, 8 + itemIndex * 4));
+                var progression = WeaponProgressionCatalog.All[catalogIndex];
+                for (var weaponIndex = 0; weaponIndex < weapons.Length; weaponIndex++)
+                {
+                    var weapon = weapons[weaponIndex];
+                    if (weapon == null || weapon.WeaponId != progression.WeaponId)
+                    {
+                        continue;
+                    }
+
+                    _items.Add(new ShopWeaponItem(
+                        weapon,
+                        weapon.IconId,
+                        WeaponDisplayNames.Get(weapon.WeaponId),
+                        progression.RequiredCommanderLevel,
+                        $"{WeaponPresentationText.Describe(weapon)}\n{GameText.WeaponType(WeaponPresentationText.DescribeCategory(weapon))}",
+                        progression.CreditPrice,
+                        progression.PremiumPrice));
+                    break;
+                }
             }
         }
 
@@ -187,6 +200,7 @@ namespace Game.App
         {
             var saveData = AppServices.SaveService.Current;
             var softCurrency = Mathf.Max(0, saveData?.economy.softCurrency ?? 0);
+            var premiumCurrency = Mathf.Max(0, saveData?.economy.premiumCurrency ?? 0);
 
             var backButton = CreateImageButton("Back Button", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
                 new Vector2(118f, 118f), new Vector2(30f, 0f), "back_btn", Close);
@@ -206,7 +220,7 @@ namespace Game.App
             var premium = CreateImage("Premium Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(310f, 155f), new Vector2(-166f, 0f), "vip_coins_panel", true, null, false);
             CreateText("Premium Value", premium.transform, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, "0", GameTextRole.CurrencyCrystal);
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, premiumCurrency.ToString(), GameTextRole.CurrencyCrystal);
 
             var settingsButton = CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 SettingsSize, SettingsPosition, "settings_btn", () => SettingsScreenController.Open(null));
@@ -337,7 +351,7 @@ namespace Game.App
             for (var i = 0; i < _items.Count; i++)
             {
                 var index = i;
-                var isLocked = !AppServices.Inventory.IsWeaponUnlocked(_items[i].Definition.WeaponId);
+                var isLocked = IsCatalogLocked(_items[i]);
                 var slotRoot = CreateImageButton($"Weapon Slot {i}", strip, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f), WeaponSlotSize, new Vector2(startX + i * spacing, 74f), "card",
                     () => SelectWeapon(index));
@@ -517,13 +531,16 @@ namespace Game.App
             _usesText.text = item.Definition.HasLimitedAmmo ? item.Definition.AmmoCount.ToString() : "∞";
             _coinPriceText.text = item.CoinPrice.ToString();
             _crystalPriceText.text = item.CrystalPrice.ToString();
-            var isLocked = !AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId);
-            _coinBuyButton.interactable = !isLocked;
-            _crystalBuyButton.interactable = !isLocked;
+            var isOwned = AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId);
+            var meetsLevel = GetCommanderLevel() >= item.RequiredLevel;
+            _coinBuyButton.interactable = !isOwned && meetsLevel && AppServices.Economy.CanSpend(item.CoinPrice);
+            _crystalBuyButton.interactable = !isOwned && meetsLevel
+                && item.CrystalPrice > 0
+                && AppServices.Economy.CanSpendPremium(item.CrystalPrice);
 
             for (var i = 0; i < _slots.Count; i++)
             {
-                var slotLocked = !AppServices.Inventory.IsWeaponUnlocked(_slots[i].WeaponId);
+                var slotLocked = IsCatalogLocked(_items[i]);
                 _slots[i].Frame.color = NormalSlotColor;
                 _slots[i].Weapon.GetComponent<Image>().color = Color.white;
                 ApplySlotWeaponVisual(_slots[i].Weapon, _slots[i].WeaponId);
@@ -590,19 +607,55 @@ namespace Game.App
             if (_selectedIndex < 0 || _selectedIndex >= _items.Count) return;
             var item = _items[_selectedIndex];
             var save = AppServices.SaveService.Current;
-            if (save == null || AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId)) return;
+            if (save == null
+                || AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId)
+                || GetCommanderLevel() < item.RequiredLevel)
+            {
+                return;
+            }
 
             var spend = AppServices.Economy.TrySpend(item.CoinPrice, "shop.weapon", item.Definition.WeaponId,
                 $"shop.weapon.{item.Definition.WeaponId}");
             if (!spend.Success) return;
 
             AppServices.Inventory.UnlockWeapon(item.Definition.WeaponId);
+            save.inventory.GetOrCreateWeaponProgress(item.Definition.WeaponId);
             AppServices.SaveService.Save(save);
             SelectWeapon(_selectedIndex);
         }
 
         private void BuySelectedWithCrystals()
         {
+            if (_selectedIndex < 0 || _selectedIndex >= _items.Count) return;
+            var item = _items[_selectedIndex];
+            var save = AppServices.SaveService.Current;
+            if (save == null
+                || AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId)
+                || GetCommanderLevel() < item.RequiredLevel
+                || item.CrystalPrice <= 0)
+            {
+                return;
+            }
+
+            var spend = AppServices.Economy.TrySpendPremium(item.CrystalPrice, "shop.weapon.premium",
+                item.Definition.WeaponId, $"shop.weapon.premium.{item.Definition.WeaponId}");
+            if (!spend.Success) return;
+
+            AppServices.Inventory.UnlockWeapon(item.Definition.WeaponId);
+            save.inventory.GetOrCreateWeaponProgress(item.Definition.WeaponId);
+            AppServices.SaveService.Save(save);
+            SelectWeapon(_selectedIndex);
+        }
+
+        private static int GetCommanderLevel()
+        {
+            return CommanderProgressionTable.GetLevel(AppServices.Economy?.CommanderExperience ?? 0);
+        }
+
+        private static bool IsCatalogLocked(ShopWeaponItem item)
+        {
+            return !AppServices.Inventory.IsWeaponUnlocked(item.Definition.WeaponId)
+                && GetCommanderLevel() < item.RequiredLevel;
         }
 
         private void Close()

@@ -16,6 +16,7 @@ namespace Game.Core
         public static int SelectedMissionRewardSoftCurrency { get; private set; }
         public static string SelectedMissionRewardUnlockWeaponId { get; private set; } = string.Empty;
         public static int SelectedAiDifficulty { get; private set; }
+        public static bool IsTrainingSkirmish { get; private set; }
         public static bool HasPendingMissionCompletion { get; private set; }
         public static int PendingCompletedMissionIndex { get; private set; }
 
@@ -47,6 +48,15 @@ namespace Game.Core
             SelectedMissionRewardSoftCurrency = rewardSoftCurrency < 0 ? 0 : rewardSoftCurrency;
             SelectedMissionRewardUnlockWeaponId = rewardUnlockWeaponId ?? string.Empty;
             SelectedAiDifficulty = aiDifficulty < 0 ? 0 : aiDifficulty > 2 ? 2 : aiDifficulty;
+            IsTrainingSkirmish = false;
+        }
+
+        public static void ConfigureTrainingSkirmish()
+        {
+            IsTrainingSkirmish = true;
+            SelectedDifficultyProfileId = "difficulty.normal";
+            SelectedOpponentArchetypeId = "archetype.striker";
+            SelectedAiDifficulty = 1;
         }
 
         public static void SelectLoadout(string[] loadoutWeaponIds)

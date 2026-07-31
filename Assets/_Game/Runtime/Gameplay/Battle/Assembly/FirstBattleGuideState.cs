@@ -1,3 +1,4 @@
+using Game.Core;
 using Game.Core.Localization;
 using Game.Gameplay.Battle.Domain;
 
@@ -28,11 +29,11 @@ namespace Game.Gameplay.Battle.Assembly
         public const string FirstWeaponId = "weapon.impulse";
         private const string FirstMissionId = "mission.training.01";
 
-        public static bool IsFirstMission(string missionId) => missionId == FirstMissionId;
+        public static bool IsFirstMission(string missionId) => missionId == FirstMissionId && !GameSessionContext.IsTrainingSkirmish;
 
         public FirstBattleGuideState(string missionId)
         {
-            CurrentPhase = missionId == FirstMissionId ? GuidePhase.MoveLeft : GuidePhase.None;
+            CurrentPhase = IsFirstMission(missionId) ? GuidePhase.MoveLeft : GuidePhase.None;
         }
 
         public GuidePhase CurrentPhase { get; private set; }

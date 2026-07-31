@@ -36,6 +36,12 @@ namespace Game.App
             PublishSelectedMission();
         }
 
+        public void SelectTrainingSkirmish()
+        {
+            SelectMission(0);
+            GameSessionContext.ConfigureTrainingSkirmish();
+        }
+
         private void PublishSelectedMission()
         {
             var mission = SelectedMission;

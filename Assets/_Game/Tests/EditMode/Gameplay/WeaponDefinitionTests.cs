@@ -57,6 +57,35 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void PrototypeWeapons_FollowCommanderUnlockOrder()
+        {
+            var selectableIds = PrototypeWeaponLibrary.CreateAll()
+                .Where(weapon => !WeaponPresentationText.IsDropOnly(weapon))
+                .Select(weapon => weapon.WeaponId)
+                .ToArray();
+
+            Assert.That(selectableIds, Is.EqualTo(new[]
+            {
+                "weapon.impulse",
+                "weapon.blaster-caset",
+                "weapon.bur",
+                "weapon.granata",
+                "weapon.mine",
+                "weapon.c4",
+                "weapon.heal",
+                "weapon.teleport",
+                "weapon.bur-rocket",
+                "weapon.mortira",
+                "weapon.emp",
+                "weapon.freeze",
+                "weapon.fire-gun",
+                "weapon.toxic",
+                "weapon.missle",
+                "weapon.fpv-drone"
+            }));
+        }
+
+        [Test]
         public void PrototypeWeapons_CannotOneShotFullHealthUnit()
         {
             const int startingUnitHealth = 100;
@@ -66,6 +95,19 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.That(weapon.Damage, Is.LessThan(startingUnitHealth),
                     $"{weapon.WeaponId} can delete a full-health unit in one hit.");
             }
+        }
+
+        [Test]
+        public void PlasmaChargeSitsSlightlyAboveMineInsteadOfLatePowerTier()
+        {
+            var weapons = PrototypeWeaponLibrary.CreateAll();
+            var plasmaCharge = weapons.Single(weapon => weapon.WeaponId == "weapon.c4");
+            var mine = weapons.Single(weapon => weapon.WeaponId == "weapon.mine");
+
+            Assert.That(plasmaCharge.Damage, Is.EqualTo(60));
+            Assert.That(plasmaCharge.ImpactRadius, Is.EqualTo(1.85f).Within(0.001f));
+            Assert.That(plasmaCharge.Damage, Is.GreaterThan(mine.Damage));
+            Assert.That(plasmaCharge.Damage - mine.Damage, Is.LessThanOrEqualTo(10));
         }
 
         [Test]

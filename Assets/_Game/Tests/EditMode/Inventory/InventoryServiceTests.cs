@@ -24,8 +24,8 @@ namespace Game.Tests.EditMode.Inventory
             var service = new InventoryService(saveData);
 
             Assert.That(service.TrySetLoadout(new[] { "weapon.test.locked" }), Is.False);
-            Assert.That(service.TrySetLoadout(new[] { "weapon.impulse", "weapon.mortira" }), Is.True);
-            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EqualTo(new[] { "weapon.impulse", "weapon.mortira" }));
+            Assert.That(service.TrySetLoadout(new[] { "weapon.impulse", "weapon.blaster-caset" }), Is.True);
+            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EqualTo(new[] { "weapon.impulse", "weapon.blaster-caset" }));
         }
 
         [Test]

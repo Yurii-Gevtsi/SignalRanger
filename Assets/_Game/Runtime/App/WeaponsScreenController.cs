@@ -147,7 +147,8 @@ namespace Game.App
         private void BuildConstructorBureauButton(Transform root)
         {
             var button = CreateImageButton("Constructor Bureau Button", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                new Vector2(1f, 0f), BureauButtonSize, BureauButtonPosition, "UI/Common/architect_btn", () => { });
+                new Vector2(1f, 0f), BureauButtonSize, BureauButtonPosition, "UI/Common/architect_btn",
+                () => ArchitectScreenController.Open(null));
             button.localScale = new Vector3(BureauButtonScale.x, BureauButtonScale.y, 1f);
 
             var label = CreateText("Constructor Bureau Label", button.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
