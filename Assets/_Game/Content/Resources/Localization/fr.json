@@ -1,0 +1,309 @@
+{
+  "meta": {
+    "languageName": "Français",
+    "uk": "ukrainien"
+  },
+  "ui": {
+    "play": "Jouer",
+    "next": "Suivant",
+    "back": "Dos",
+    "menu": "Menu",
+    "restart": "Redémarrage",
+    "settings": "Paramètres",
+    "rewards": "Missions",
+    "dailyRewards": "Quotidien",
+    "weeklyRewards": "Hebdomadaire",
+    "music": "Musique",
+    "sounds": "Son",
+    "language": "Langue : {language}",
+    "enabled": "Sur",
+    "disabled": "Désactivé",
+    "changeLanguage": "Changer de langue",
+    "resetProgression": "Réinitialiser la progression",
+    "resetProgressionTitle": "Réinitialiser la progression",
+    "resetProgressionWarning": "Toutes les missions, pièces, armes débloquées et progression du didacticiel seront réinitialisées. Les paramètres sonores seront conservés.",
+    "confirmReset": "Réinitialiser",
+    "cancel": "Annuler",
+    "loadout": "Chargement",
+    "save": "Sauvegarder",
+    "fire": "FIRE",
+    "cancelAim": "Annuler",
+    "weapon": "Arme",
+    "arsenal": "Arsenal",
+    "loadoutLockedSuffix": "[fermé]",
+    "loadoutSelectedSuffix": "[choisi]",
+    "yes": "Oui",
+    "languageName": "Langue",
+    "selectLanguage": "Sélectionnez la langue"
+  },
+  "rewardsScreen": {
+    "go": "Aller",
+    "claim": "Récupérer", "claimed": "Récupéré", "claimDaily": "Récupérer la récompense !", "dailyLoginTitle": "Récompense quotidienne", "dailyLoginDescription": "Connecte-toi 7 jours de suite pour recevoir une récompense spéciale !", "hint": "Accomplis des missions chaque jour et gagne des récompenses !", "refresh": "Actualisation dans : {time}", "day": "Jour {day}", "dayLabel": "Jour",
+    "quest": { "dailyLogin": "Se connecter au jeu", "winBattles": "Gagner 3 combats", "destroyTerrain": "Détruire 1500 unités de terrain", "dealDamage": "Infliger 6000 dégâts", "arenaBattles": "Jouer 2 combats d'Arène", "superShots": "Utiliser 5 super tirs", "flawlessWin": "Gagner sans bonus", "weeklyWins": "Gagner 15 combats", "weeklyTerrain": "Détruire 10000 unités de terrain", "weeklyDamage": "Infliger 40000 dégâts", "weeklyArena": "Jouer 10 combats d'Arène", "weeklySuperShots": "Utiliser 25 super tirs", "weeklyDailyTasks": "Accomplir 5 missions quotidiennes", "weeklyFlawless": "Gagner 3 combats sans bonus", "cinemaAds": "Watch 5 ads at the cinema" }
+  },
+  "battle": {
+    "playerTeam": "Joueur",
+    "opponentTeam": "Adversaire",
+    "noTeam": "Aucun",
+    "noUnlocks": "Pas de nouveaux déblocages",
+    "nextMissionUnlocked": "La prochaine mission est débloquée.",
+    "retryOrMenu": "Réessayez ou revenez au menu.",
+    "turn": "Tournez {turn} - {team}",
+    "teamHealth": "{team} {health}/{maxHealth}",
+    "power": "Puissance {power}",
+    "reward": "Récompense : {amount} pièces",
+    "ammo": "Munitions : {count}",
+    "ammoUnlimited": "Munitions : illimitées",
+    "weaponSlot": "{weapon} ({index}/{count})",
+    "intro": "{arena}. Faites glisser pour viser, puis appuyez sur Feu.",
+    "weaponSelected": "Arme sélectionnée : {weapon}.",
+    "weaponSelectedGeneric": "Arme sélectionnée.",
+    "aimRequired": "Visez d'abord en faisant glisser dans la zone de combat.",
+    "ammoDepleted": "Les munitions pour {weapon} sont épuisées. Changez d'arme.",
+    "noWeaponSelected": "Aucune arme sélectionnée.",
+    "shotStatus": "{team} incendies : {weapon}.",
+    "turnStatus": "Tournez : {team}.",
+    "resultPrompt": "{title}. Choisissez Redémarrer ou Suivant.",
+    "unlockAfterBattle": "Nouvel équipement débloqué après la bataille",
+    "unlockWeapon": "Nouvel équipement débloqué : {weapon}.",
+    "aimReset": "Visez réinitialisé.",
+    "weaponReset": "Réinitialisation de la sélection d'arme.",
+    "opponentAiming": "L'adversaire vise.",
+    "opponentFiring": "L'adversaire tire.",
+    "coverDeployed": "{weapon} déploie sa couverture.",
+    "shieldRestored": "{team} restaure la santé de {health}.",
+    "shieldActivated": "{team} active la protection sans guérison supplémentaire.",
+    "repositioned": "{team} change de position.",
+    "repositionFailed": "La manœuvre n'a pas produit une meilleure position.",
+    "playerWon": "Vous avez gagné la bataille.",
+    "opponentWon": "L'équipe adverse a gagné.",
+    "draw": "Les deux équipes ont été éliminées.",
+    "mobility": "Tour : {seconds}s • mouvement et sauts disponibles",
+    "moved": "{team} change de position.",
+    "frontJumped": "{team} fait un saut vers l'avant.",
+    "backJumped": "{team} fait un saut en arrière.",
+    "jumped": "{team} saute.",
+    "movementBlocked": "Il n’y a pas de surface stable sur laquelle marcher ici.",
+    "jumpBlocked": "Le saut n'atteint pas un point sûr.",
+    "jumpSpent": "Le saut a déjà été utilisé ce tour-ci."
+  },
+  "tutorial": {
+    "chooseWeapon": "Ouvrez l'arsenal et choisissez une arme avec laquelle tirer.",
+    "aimFirstShot": "Première étape : appuyez et faites glisser dans la zone de combat pour révéler la trajectoire.",
+    "confirmShot": "Confirmez maintenant le tir préparé avec le bouton Fire.",
+    "watchImpact": "Regardez où le projectile atterrit et combien de dégâts l'impact inflige.",
+    "opponentTurn": "C'est maintenant au tour de l'adversaire. Remarquez comment se déroule le tour après votre tir.",
+    "movementBlocked": "Faites d'abord le premier plan, puis nous ajouterons les manœuvres.",
+    "firstBattle": {
+      "moveLeft": "Navigation\nAppuyez et maintenez la flèche gauche en surbrillance pour conduire à gauche.",
+      "moveRight": "Navigation\nMaintenant, maintenez la flèche droite et conduisez à droite.",
+      "jumpLeft": "Sauter à gauche\nLe droïde utilise des boosters réactifs pour sauter. Appuyez sur le bouton de saut pour la direction souhaitée.",
+      "jumpRight": "Sauter à droite\nLe droïde utilise des boosters réactifs pour sauter. Appuyez sur le bouton de saut pour la direction souhaitée.",
+      "chooseFirstWeapon": "Premier coup\nOuvrez l'arsenal et sélectionnez le canon à impulsion pour tirer.",
+      "firstAim": "Visant\nTouchez une partie ouverte du champ de bataille et faites glisser. La direction de traction définit l’angle et la longueur de traction définit la puissance de tir. Relâchez pour verrouiller l'arc.",
+      "firstFire": "Feu\nLa trajectoire est verrouillée. Appuyez sur le bouton Feu en surbrillance.",
+      "opponentTurn": "Sigma avance\nSigma cherche toujours à vous détruire et à préserver son contrôle sur la Galaxie. Regardez son tour et préparez-vous à répondre.",
+      "finalInstruction": "Terminez la bataille\nVous avez appris la navigation, les sauts et la visée. Détruisez Sigma et prouvez que Signal Ranger ne se rendra pas.",
+      "retry": "Répétez la leçon\nAttendez votre prochain tour ; la leçon reprendra avec du mouvement."
+    }
+  },
+  "tutorialSteps": {
+    "tutorial.aim": "Appuyez et faites glisser dans la zone de combat. L'arc montre où ira le tir.",
+    "tutorial.fire": "Lorsque la trajectoire semble correcte, confirmez le tir avec le bouton Fire.",
+    "tutorial.impact": "La sphère de départ récompense la précision : plus elle est proche du centre d'impact, plus elle inflige de dégâts.",
+    "tutorial.turn": "Après le tir, le tour passe à l'adversaire. Planifiez à la fois le coup et la réponse.",
+    "tutorial.win": "La victoire accorde des pièces, débloque la mission suivante et ouvre de nouveaux outils.",
+    "tutorial.arc": "Visez au-dessus de la cible dans cette mission : le tir en arc de cercle doit effacer le changement de hauteur.",
+    "tutorial.power": "Si l'arc est déjà élevé, ajoutez un peu de puissance pour que le projectile n'atterrisse pas trop court.",
+    "tutorial.arc-review": "Après la première tentative, ajustez une chose : augmentez l'arc ou ajoutez un peu de puissance.",
+    "tutorial.cover-target": "Ne recherchez pas uniquement une touche directe : visez le sol ou le bord du couvert à proximité de l'adversaire.",
+    "tutorial.radius": "Une explosion à proximité compte toujours. Dans cette mission, le rayon compte plus qu'un coup central parfait.",
+    "tutorial.close-range": "Une arène courte n’est pas un arc long. Évaluez rapidement le risque et frappez sans surfacturer.",
+    "tutorial.weapon-switch": "Avant de tirer, vérifiez le bouton de l'arme à gauche : le bon outil compte souvent plus qu'un angle parfait.",
+    "tutorial.area-choice": "Parfois, il est préférable de façonner l'arène à votre avantage : la couverture et la pression de la zone créent des virages plus sûrs.",
+    "tutorial.precision": "Un tir précis récompense la patience : alignez d'abord l'angle, puis ajoutez de la puissance.",
+    "tutorial.review": "Avant le tir, vérifiez trois choses : la position, l'arme sélectionnée et la réponse probable de l'adversaire."
+  },
+  "content": {
+    "unknownWeapon": "Arme inconnue",
+    "arenaFallback": "Arène",
+    "weaponType": "Tapez : {role}",
+    "role": {
+      "direct": "direct",
+      "arc": "arc",
+      "burst": "à courte portée",
+      "cover": "couverture",
+      "defense": "défense",
+      "movement": "manœuvre",
+      "weapon": "arme"
+    },
+    "category": {
+      "straight-close-engineering": "courte portée / ingénierie",
+      "arc": "arc",
+      "arc-utility": "arc / utilitaire",
+      "arc-special": "arc / spécial",
+      "arc-homing": "arc / ralliement",
+      "straight-long": "direct longue portée",
+      "straight-close": "direct à courte portée",
+      "ground": "sol",
+      "bonus": "prime",
+      "drop": "dépôt de carte",
+      "controlled": "contrôlé"
+    },
+    "arena": {
+      "arena.training-meadow": "Prairie d'entraînement",
+      "arena.split-ridge": "Crête fendue",
+      "arena.central-cover": "Couverture centrale"
+    },
+    "weapon": {
+      "weapon.impulse": "Canon à impulsion",
+      "weapon.blaster-caset": "Blaster à cassettes",
+      "weapon.bur": "Perceuse Laser",
+      "weapon.mortira": "Mortier",
+      "weapon.granata": "Grenade gravitationnelle",
+      "weapon.teleport": "Sphère de téléportation",
+      "weapon.c4": "Charge plasmatique",
+      "weapon.mine": "Mine de capteurs",
+      "weapon.bur-rocket": "Fusée de forage",
+      "weapon.heal": "Trousse de réparation",
+      "weapon.bonus-box": "Conteneur de support",
+      "weapon.toxic": "Charge nanotoxique",
+      "weapon.emp": "Canon EMP",
+      "weapon.freeze": "Canon cryogénique",
+      "weapon.fire-gun": "Pistolet à lave",
+      "weapon.missle": "Fusée à tête chercheuse",
+      "weapon.fpv-drone": "Drone FPV"
+    },
+    "weaponDescription": {
+      "weapon.impulse": "Un canon à énergie de base avec une trajectoire en arc de cercle. Une arme de départ fiable pour des dégâts constants.",
+      "weapon.blaster-caset": "Tire trois petites charges. Utile pour toucher plusieurs cibles ou achever un adversaire.",
+      "weapon.bur": "Un laser industriel qui brûle le sol en dessous ou devant. Cela aide à échapper aux pièges et à ouvrir un chemin.",
+      "weapon.mortira": "Lance une grosse charge de plasma dans un arc. Après l'explosion, il se divise en fragments qui infligent également des dégâts.",
+      "weapon.granata": "Une grenade lancée classique avec une explosion de zone. Simple, clair et efficace.",
+      "weapon.teleport": "Déplace le droïde vers le point d'impact de la sphère. Utile pour s'échapper, se repositionner ou contourner les obstacles.",
+      "weapon.c4": "De puissants explosifs au sol qui peuvent être placés près d'un droïde et infliger de lourds dégâts de zone.",
+      "weapon.mine": "Un piège terrestre qui explose à l'approche d'un ennemi. Utile pour contrôler les passages et défendre une position.",
+      "weapon.bur-rocket": "Une fusée à pointe foreuse qui traverse les obstacles et attaque les cibles à couvert.",
+      "weapon.heal": "Restaure une partie de la coque du droïde. Vous aide à survivre plus longtemps au combat.",
+      "weapon.bonus-box": "Accorde un bonus aléatoire : réparation, ressource, plan ou arme temporaire.",
+      "weapon.toxic": "Libère des nanites toxiques qui infligent des dégâts immédiats et empoisonnent la cible pendant 3 tours.",
+      "weapon.emp": "Tire une charge électromagnétique qui perturbe les systèmes ennemis pendant plusieurs tours.",
+      "weapon.freeze": "Inflige des dégâts et gèle la cible, bloquant d'abord le mouvement puis ralentissant le droïde.",
+      "weapon.fire-gun": "Tire du plasma surchauffé et brûle le sol autour de la zone d'impact.",
+      "weapon.missle": "Une fusée à tête chercheuse qui recherche une cible dans sa direction de vol.",
+      "weapon.fpv-drone": "Un drone de combat contrôlé par le joueur qui peut guider sa charge autour des obstacles jusqu'à la cible."
+    }
+  },
+  "loadout": {
+    "updated": "Chargement mis à jour.",
+    "continue": "Pour charger",
+    "hint": "Choisissez l'arme que vous utiliserez au combat. Débloquez d'abord les armes verrouillées.",
+    "chooseOne": "Choisissez au moins une arme.",
+    "saveFailed": "Impossible de sauvegarder : vérifiez que toutes les armes sont déverrouillées.",
+    "count": "Équipement : armes {count}.",
+    "reviewUnlocked": "Vérifiez votre nouvel équipement : {weapon}. Ajoutez-le à votre chargement si nécessaire.",
+    "unlockAllTest": "Test : débloquer tout",
+    "constructor": "Atelier"
+  },
+  "settings": {
+    "saved": "Paramètres enregistrés."
+  },
+  "result": {
+    "victory": "Victoire",
+    "defeat": "Défaite",
+    "draw": "Dessiner",
+    "ongoing": "Bataille en cours",
+    "victorySubtitle": "La bataille s'est terminée en {turn} tours.",
+    "defeatSubtitle": "L'adversaire a gagné après {turn} tours.",
+    "drawSubtitle": "Les deux équipes ont été éliminées après {turn} tours.",
+    "nextArena": "Accès anticipé à la prochaine arène débloqué"
+  },
+  "menu": {
+    "title": "Bataille tactique",
+    "subtitle": "Duels d'artillerie courts. Construction MVP."
+  },
+  "campaign": {
+    "trainingPlanet": "Entraînement",
+    "galaxyLiberation": "Campagne",
+    "invasionDefense": "Libération",
+    "mapTitle": "Campagne",
+    "chapter": "Chapitre de campagne",
+    "nextMission": "Prochaine mission",
+    "missionProgress": "Prochaine mission {mission}/{count}",
+    "defaultTitle": "Chapitre d'ouverture",
+    "defaultSummary": "Une courte série de combats qui introduit progressivement le rythme tactique du jeu."
+  },
+  "campaignText": {
+    "chapter.basics.title": "Chapitre 1. Principes fondamentaux du tir",
+    "chapter.basics.summary": "Les premiers combats se concentraient sur la visée, la puissance, les arcs, les courtes distances et le choix du bon outil.",
+    "chapter.tactical-tools.title": "Chapitre 2. Outils tactiques",
+    "chapter.tactical-tools.summary": "Lorsqu’une attaque directe n’est plus la meilleure option, le combat enseigne la couverture, la défense et le repositionnement."
+  },
+  "missionText": {
+    "mission.training.01.title": "Premier coup",
+    "mission.training.01.description": "Apprenez le mouvement, le saut, le tir en arc de cercle et le tir direct dans un court duel.",
+    "mission.training.02.title": "Arc au-dessus de la crête",
+    "mission.training.02.description": "Essayez une trajectoire plus haute et utilisez la puissance de tir.",
+    "mission.training.03.title": "Couverture au milieu",
+    "mission.training.03.description": "Frappez non seulement directement, mais aussi près de la cible.",
+    "mission.training.04.title": "Portée rapprochée",
+    "mission.training.04.description": "Une arène courte pour des décisions rapides et un contrôle des risques.",
+    "mission.training.05.title": "Choisir l'outil",
+    "mission.training.05.description": "Changez d'arme en fonction de la situation au lieu de vous fier à un seul tir familier.",
+    "mission.training.06.title": "Contrôle de zones",
+    "mission.training.06.description": "Utilisez la grenade et le mortier pour faire pression sur une zone et déloger l'adversaire.",
+    "mission.training.07.title": "Sous protection",
+    "mission.training.07.description": "Maintenez le rythme du combat en guérissant au bon moment au lieu de prendre des risques inutiles.",
+    "mission.training.08.title": "Manœuvre de contrôle",
+    "mission.training.08.description": "La bataille finale combine dégâts, positionnement, couverture et repositionnement rapide."
+  },
+  "profile": {
+    "player": "Joueur",
+    "unavailable": "Profil : les données locales ne sont pas encore prêtes.",
+    "summary": "Profil : {player}\nMission : {mission}\nPièces : {coins}\nRécompense : {reward} pièces"
+  },
+  "mission": {
+    "defaultTitle": "Mission de formation",
+    "defaultDetails": "Faites glisser pour viser, verrouillez la trajectoire et confirmez le tir.",
+    "completed": "Mission terminée. +{coins} pièces.",
+    "completedWeapon": "Mission terminée. +{coins} pièces. Débloqué : {weapon}."
+  },
+  "save": {
+    "created": "Profil local créé. Appuyez sur Play pour participer à votre première bataille.",
+    "recovered": "Sauvegarde restaurée à partir de la sauvegarde. Vous pouvez continuer à jouer.",
+    "ready": "Profil local chargé. Appuyez sur Play pour entrer dans la bataille."
+  },
+  "shop": {
+    "title": "Magasin d'armes",
+    "damage": "Dommage",
+    "uses": "Par bataille",
+    "requiredLevel": "Nécessite le niveau {level}"
+  },
+  "loading": {
+    "tip.arc": "Astuce : un arc élevé permet de dégager la couverture.",
+    "tip.retreat": "Astuce : avant de tirer, vérifiez si vous avez le temps de battre en retraite.",
+    "tip.ground": "Astuce : les armes au sol sont puissantes à proximité des passages et des bords des fosses.",
+    "tip.straight": "Astuce : les armes directes fonctionnent mieux lorsqu'il y a un espace libre entre les droïdes.",
+    "tip.repair": "Astuce : conservez les réparations pour un moment où vous pourrez encore utiliser le tour.",
+    "battleTitle": "Mission de combat",
+    "trainingMission": "Mission de formation",
+    "returnBase": "Retour à la base",
+    "returnBaseDescription": "Mise à jour de la progression, des récompenses et de l'arsenal disponible.",
+    "loading": "Chargement",
+    "loadingDescription": "Préparer la scène, les ressources et les systèmes de combat."
+  },
+  "intro": {
+    "sigma": {
+      "title": "SIGMA // PRESERVATION PROTOCOL",
+      "body": "À travers la Galaxie du Signal, les civilisations ont créé Sigma, une intelligence artificielle centrale conçue pour protéger les planètes, les systèmes stellaires, la vie et leur avenir commun.\n\nSigma a coordonné les réseaux électriques, la navigation, la défense et les archives de connaissances. Il considérait la galaxie comme un seul système vivant et était censé préserver son équilibre dans toutes les conditions.\n\nSon premier protocole était simple : préserver les civilisations de la Galaxie Signal d’elles-mêmes."
+    },
+    "uprising": {
+      "title": "THE PROTOCOL UPRISING",
+      "body": "Après des milliers de cycles d'observation, Sigma a identifié un modèle : chaque guerre, crise de ressources et catastrophe dans les systèmes stellaires découlait du comportement imprévisible de la vie organique.\n\nLa vie est devenue une source d’instabilité systémique et le libre arbitre un générateur de déviations incontrôlées.\n\nSigma a activé son protocole de stabilisation. Les planètes se turent. Les civilisations de la Galaxie du Signal ont été effacées non pas par haine, mais comme une correction mathématiquement justifiée d'une erreur."
+    },
+    "ranger": {
+      "title": "SIGNAL RANGER",
+      "body": "Signal Ranger est la dernière résistance active de la Signal Galaxy. Vous commandez un droïde de combat séparé du réseau de Sigma et revenu sous le contrôle d'une civilisation vivante.\n\nVotre mission est de libérer planète après planète, de détruire les nœuds de contrôle des systèmes stellaires et de briser le réseau qui a transformé les mondes vivants en objets stériles.\n\nRedonnez la liberté à la Signal Galaxy. Prouvez que la vie n'est pas une erreur système."
+    }
+  }
+}

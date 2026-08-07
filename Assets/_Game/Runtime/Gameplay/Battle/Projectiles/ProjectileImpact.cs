@@ -4,7 +4,14 @@ namespace Game.Gameplay.Battle.Projectiles
 {
     public readonly struct ProjectileImpact
     {
-        public ProjectileImpact(string projectileId, string ownerUnitId, Vector2 point, Vector2 velocity, int damage, float impactRadius)
+        public ProjectileImpact(
+            string projectileId,
+            string ownerUnitId,
+            Vector2 point,
+            Vector2 velocity,
+            int damage,
+            float impactRadius,
+            float knockbackMultiplier = 1f)
         {
             ProjectileId = projectileId;
             OwnerUnitId = ownerUnitId;
@@ -12,6 +19,7 @@ namespace Game.Gameplay.Battle.Projectiles
             Velocity = velocity;
             Damage = damage;
             ImpactRadius = impactRadius;
+            KnockbackMultiplier = Mathf.Max(0f, knockbackMultiplier);
         }
 
         public string ProjectileId { get; }
@@ -20,5 +28,6 @@ namespace Game.Gameplay.Battle.Projectiles
         public Vector2 Velocity { get; }
         public int Damage { get; }
         public float ImpactRadius { get; }
+        public float KnockbackMultiplier { get; }
     }
 }

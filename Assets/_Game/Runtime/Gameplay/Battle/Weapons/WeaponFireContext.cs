@@ -14,7 +14,8 @@ namespace Game.Gameplay.Battle.Weapons
             Vector2 origin,
             Vector2 direction,
             float power,
-            IProjectileSpawner spawner)
+            IProjectileSpawner spawner,
+            WeaponEvolutionProfile evolution = default)
         {
             Weapon = weapon;
             OwnerUnitId = ownerUnitId;
@@ -22,6 +23,7 @@ namespace Game.Gameplay.Battle.Weapons
             Direction = direction;
             Power = power;
             Spawner = spawner;
+            Evolution = evolution;
         }
 
         public WeaponDefinition Weapon { get; }
@@ -30,5 +32,6 @@ namespace Game.Gameplay.Battle.Weapons
         public Vector2 Direction { get; }
         public float Power { get; }
         public IProjectileSpawner Spawner { get; }
+        public WeaponEvolutionProfile Evolution { get; }
     }
 }

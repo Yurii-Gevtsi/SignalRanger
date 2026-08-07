@@ -329,9 +329,11 @@ namespace Game.Tests.EditMode.Gameplay
             var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0f, 0.5f), KillY);
 
             motor.StartJump(1.6f, 0.75f);
+            Assert.IsTrue(motor.IsJumping, "jump state enables the jet trail");
             var outcome = Simulate(motor, 10f, out _);
 
             Assert.AreEqual(MotorStepOutcome.Landed, outcome);
+            Assert.IsFalse(motor.IsJumping, "jet trail stops as soon as the unit lands");
             Assert.AreEqual(1.6f, motor.Position.x, 0.5f);
             Assert.AreEqual(0.5f, motor.Position.y, 0.2f);
         }
@@ -348,6 +350,29 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.AreEqual(MotorStepOutcome.Landed, outcome);
             Assert.AreEqual(0.5f, motor.Position.y, 0.25f, "bounced off the ceiling and landed back down");
+        }
+
+        [Test]
+        public void JumpTrailScale_GrowsToApex_ThenFadesOnLanding()
+        {
+            var grid = CreateFlatGround();
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0f, 0.5f), KillY);
+
+            motor.StartJump(1.6f, 0.75f);
+            var initialScale = motor.JumpTrailScale;
+            var peakScale = initialScale;
+            var outcome = MotorStepOutcome.Airborne;
+            for (var elapsed = 0f; elapsed < 10f && !motor.IsStable; elapsed += Step)
+            {
+                outcome = motor.Step(Step);
+                peakScale = Mathf.Max(peakScale, motor.JumpTrailScale);
+            }
+
+            Assert.AreEqual(0.5f, initialScale, 0.001f, "trail starts at half size");
+            Assert.Less(initialScale, 1f, "trail grows during ascent");
+            Assert.Greater(peakScale, 0.95f, "trail reaches full size around the apex");
+            Assert.AreEqual(MotorStepOutcome.Landed, outcome);
+            Assert.AreEqual(0f, motor.JumpTrailScale, 0.001f, "trail fully fades on landing");
         }
 
         [Test]

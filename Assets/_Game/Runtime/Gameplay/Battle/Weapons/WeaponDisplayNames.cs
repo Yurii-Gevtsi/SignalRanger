@@ -12,7 +12,7 @@ namespace Game.Gameplay.Battle.Weapons
             { "weapon.impulse", "Імпульсна гармата" },
             { "weapon.blaster-caset", "Касетний бластер" },
             { "weapon.bur", "Буровий лазер" },
-            { "weapon.mortira", "Мортира" },
+            { "weapon.mortira", "Осколкова мортира" },
             { "weapon.granata", "Граві-граната" },
             { "weapon.teleport", "Телепорт-сфера" },
             { "weapon.c4", "Плазмовий заряд" },

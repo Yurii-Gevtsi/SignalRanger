@@ -1,0 +1,309 @@
+{
+  "meta": {
+    "languageName": "Polski",
+    "uk": "ukraiński"
+  },
+  "ui": {
+    "play": "Grać",
+    "next": "Następny",
+    "back": "Z powrotem",
+    "menu": "Menu",
+    "restart": "Uruchom ponownie",
+    "settings": "Ustawienia",
+    "rewards": "Zadania",
+    "dailyRewards": "Codzienne",
+    "weeklyRewards": "Tygodniowe",
+    "music": "Muzyka",
+    "sounds": "Dźwięk",
+    "language": "Język: {language}",
+    "enabled": "NA",
+    "disabled": "Wyłączony",
+    "changeLanguage": "Zmień język",
+    "resetProgression": "Zresetuj postęp",
+    "resetProgressionTitle": "Zresetuj postęp",
+    "resetProgressionWarning": "Wszystkie misje, monety, odblokowana broń i postęp samouczka zostaną zresetowane. Ustawienia dźwięku zostaną zachowane.",
+    "confirmReset": "Nastawić",
+    "cancel": "Anulować",
+    "loadout": "Załadunek",
+    "save": "Ratować",
+    "fire": "FIRE",
+    "cancelAim": "Anulować",
+    "weapon": "Broń",
+    "arsenal": "Arsenał",
+    "loadoutLockedSuffix": "[zamknięty]",
+    "loadoutSelectedSuffix": "[wybrany]",
+    "yes": "Tak",
+    "languageName": "Język",
+    "selectLanguage": "Wybierz język"
+  },
+  "rewardsScreen": {
+    "go": "Przejdź",
+    "claim": "Odbierz", "claimed": "Odebrano", "claimDaily": "Odbierz nagrodę!", "dailyLoginTitle": "Nagroda dzienna", "dailyLoginDescription": "Loguj się przez 7 dni z rzędu i odbierz specjalną nagrodę!", "hint": "Wykonuj codzienne zadania i zdobywaj nagrody!", "refresh": "Odnowienie za: {time}", "day": "Dzień {day}", "dayLabel": "Dzień",
+    "quest": { "dailyLogin": "Wejdź do gry", "winBattles": "Wygraj 3 bitwy", "destroyTerrain": "Zniszcz 1500 jednostek terenu", "dealDamage": "Zadaj 6000 obrażeń", "arenaBattles": "Rozegraj 2 bitwy na Arenie", "superShots": "Użyj 5 superstrzałów", "flawlessWin": "Wygraj bez bonusów", "weeklyWins": "Wygraj 15 bitew", "weeklyTerrain": "Zniszcz 10000 jednostek terenu", "weeklyDamage": "Zadaj 40000 obrażeń", "weeklyArena": "Rozegraj 10 bitew na Arenie", "weeklySuperShots": "Użyj 25 superstrzałów", "weeklyDailyTasks": "Wykonaj 5 zadań dziennych", "weeklyFlawless": "Wygraj 3 bitwy bez bonusów", "cinemaAds": "Watch 5 ads at the cinema" }
+  },
+  "battle": {
+    "playerTeam": "Odtwarzacz",
+    "opponentTeam": "Przeciwnik",
+    "noTeam": "Nic",
+    "noUnlocks": "Żadnych nowych odblokowań",
+    "nextMissionUnlocked": "Następna misja zostaje odblokowana.",
+    "retryOrMenu": "Spróbuj ponownie lub wróć do menu.",
+    "turn": "Skręć {turn} - {team}",
+    "teamHealth": "{team} {health}/{maxHealth}",
+    "power": "Moc {power}",
+    "reward": "Nagroda: {amount} monet",
+    "ammo": "Amunicja: {count}",
+    "ammoUnlimited": "Amunicja: nieograniczona",
+    "weaponSlot": "{weapon} ({index}/{count})",
+    "intro": "{arena}. Przeciągnij, aby wycelować, a następnie naciśnij przycisk Ognia.",
+    "weaponSelected": "Wybrana broń: {weapon}.",
+    "weaponSelectedGeneric": "Wybrano broń.",
+    "aimRequired": "Wyceluj, przeciągając najpierw obszar bitwy.",
+    "ammoDepleted": "Amunicja do {weapon} się skończyła. Zmień broń.",
+    "noWeaponSelected": "Nie wybrano broni.",
+    "shotStatus": "{team} pożary: {weapon}.",
+    "turnStatus": "Skręt: {team}.",
+    "resultPrompt": "{title}. Wybierz opcję Uruchom ponownie lub Dalej.",
+    "unlockAfterBattle": "Nowy sprzęt odblokowany po bitwie",
+    "unlockWeapon": "Odblokowano nowy sprzęt: {weapon}.",
+    "aimReset": "Resetowanie celu.",
+    "weaponReset": "Reset wyboru broni.",
+    "opponentAiming": "Przeciwnik celuje.",
+    "opponentFiring": "Przeciwnik strzela.",
+    "coverDeployed": "{weapon} otwiera osłonę.",
+    "shieldRestored": "{team} przywraca zdrowie {health}.",
+    "shieldActivated": "{team} aktywuje ochronę bez dodatkowego leczenia.",
+    "repositioned": "{team} zmienia pozycję.",
+    "repositionFailed": "Manewr nie zapewnił lepszej pozycji.",
+    "playerWon": "Wygrałeś bitwę.",
+    "opponentWon": "Wygrała drużyna przeciwna.",
+    "draw": "Obie drużyny zostały wyeliminowane.",
+    "mobility": "Tura: {seconds}s • dostępny ruch i skoki",
+    "moved": "{team} zmienia pozycję.",
+    "frontJumped": "{team} wykonuje skok do przodu.",
+    "backJumped": "{team} wykonuje skok do tyłu.",
+    "jumped": "{team} skacze.",
+    "movementBlocked": "Nie ma tu stabilnej powierzchni, po której można by wejść.",
+    "jumpBlocked": "Skok nie osiąga bezpiecznego punktu.",
+    "jumpSpent": "Skok został już wykorzystany w tej turze."
+  },
+  "tutorial": {
+    "chooseWeapon": "Otwórz arsenał i wybierz broń, z której chcesz strzelać.",
+    "aimFirstShot": "Pierwszy krok: naciśnij i przeciągnij w obszarze bitwy, aby odsłonić trajektorię.",
+    "confirmShot": "Teraz zatwierdź przygotowany strzał przyciskiem Fire.",
+    "watchImpact": "Obserwuj, gdzie wyląduje pocisk i jakie obrażenia zadaje uderzenie.",
+    "opponentTurn": "Teraz kolej na przeciwnika. Zwróć uwagę, jak przebiega kolej po oddanym strzale.",
+    "movementBlocked": "Najpierw wykonaj strzał otwierający, potem dodamy manewrowanie.",
+    "firstBattle": {
+      "moveLeft": "Nawigacja\nNaciśnij i przytrzymaj podświetloną strzałkę w lewo, aby jechać w lewo.",
+      "moveRight": "Nawigacja\nTeraz przytrzymaj prawą strzałkę i jedź w prawo.",
+      "jumpLeft": "Skocz w lewo\nDroid do skoku używa reaktywnych dopalaczy. Naciśnij przycisk skoku, aby wybrać żądany kierunek.",
+      "jumpRight": "Skocz w prawo\nDroid do skoku używa reaktywnych dopalaczy. Naciśnij przycisk skoku, aby wybrać żądany kierunek.",
+      "chooseFirstWeapon": "Pierwszy strzał\nOtwórz arsenał i wybierz działo impulsowe, aby strzelić.",
+      "firstAim": "Celowanie\nDotknij otwartej części pola bitwy i przeciągnij. Kierunek naciągu określa kąt, a długość naciągu określa siłę strzału. Zwolnij, aby zablokować łuk.",
+      "firstFire": "Ogień\nTrajektoria jest zablokowana. Naciśnij podświetlony przycisk Fire.",
+      "opponentTurn": "Sigma awansuje\nSigma zawsze stara się cię zniszczyć i zachować kontrolę nad Galaktyką. Obserwuj swoją kolej i przygotuj się do reakcji.",
+      "finalInstruction": "Zakończ bitwę\nNauczyłeś się nawigacji, skoków i celowania. Zniszcz Sigmę i udowodnij, że Strażnik Sygnału się nie podda.",
+      "retry": "Powtórz lekcję\nPoczekaj na swoją następną turę; lekcja rozpocznie się od ruchu."
+    }
+  },
+  "tutorialSteps": {
+    "tutorial.aim": "Naciśnij i przeciągnij w obszarze bitwy. Łuk pokazuje, dokąd poleci strzał.",
+    "tutorial.fire": "Kiedy trajektoria będzie prawidłowa, potwierdź strzał przyciskiem Fire.",
+    "tutorial.impact": "Kula startowa nagradza celność: im bliżej środka uderzenia, tym więcej zadaje obrażeń.",
+    "tutorial.turn": "Po strzale kolej przechodzi na przeciwnika. Zaplanuj zarówno trafienie, jak i reakcję.",
+    "tutorial.win": "Zwycięstwo zapewnia monety, odblokowuje kolejną misję i otwiera nowe narzędzia.",
+    "tutorial.arc": "W tej misji celuj powyżej celu: strzał z łuku musi pokonać zmianę wysokości.",
+    "tutorial.power": "Jeśli łuk jest już wysoki, dodaj trochę mocy, aby pocisk nie wylądował krótko.",
+    "tutorial.arc-review": "Po pierwszej próbie wyreguluj jedną rzecz: podnieś łuk lub dodaj trochę mocy.",
+    "tutorial.cover-target": "Nie szukaj tylko bezpośredniego trafienia: celuj w ziemię lub krawędź osłony w pobliżu przeciwnika.",
+    "tutorial.radius": "Pobliski wybuch nadal się liczy. W tej misji promień ma większe znaczenie niż idealne trafienie centralne.",
+    "tutorial.close-range": "Krótka arena nie oznacza długiego łuku. Szybko oceń ryzyko i uderz bez przeładowania.",
+    "tutorial.weapon-switch": "Przed oddaniem strzału sprawdź przycisk broni po lewej stronie: odpowiednie narzędzie często ma większe znaczenie niż idealny kąt.",
+    "tutorial.area-choice": "Czasami lepiej jest ukształtować arenę na swoją korzyść: osłona i nacisk obszarowy zapewniają bezpieczniejsze zakręty.",
+    "tutorial.precision": "Celny strzał nagradza cierpliwość: najpierw ustaw kąt, a potem dodaj moc.",
+    "tutorial.review": "Przed oddaniem strzału sprawdź trzy rzeczy: pozycję, wybraną broń i prawdopodobną reakcję przeciwnika."
+  },
+  "content": {
+    "unknownWeapon": "Nieznana broń",
+    "arenaFallback": "Arena",
+    "weaponType": "Typ: {role}",
+    "role": {
+      "direct": "bezpośredni",
+      "arc": "łuk",
+      "burst": "bliskiego zasięgu",
+      "cover": "okładka",
+      "defense": "obrona",
+      "movement": "manewr",
+      "weapon": "broń"
+    },
+    "category": {
+      "straight-close-engineering": "bliski zasięg / inżynieria",
+      "arc": "łuk",
+      "arc-utility": "łuk / narzędzie",
+      "arc-special": "łuk / specjalny",
+      "arc-homing": "łuk / powrót do pozycji bazowej",
+      "straight-long": "bezpośrednie dalekiego zasięgu",
+      "straight-close": "bezpośredni kontakt z bliskiej odległości",
+      "ground": "grunt",
+      "bonus": "premia",
+      "drop": "upuszczenie mapy",
+      "controlled": "kontrolowane"
+    },
+    "arena": {
+      "arena.training-meadow": "Łąka Treningowa",
+      "arena.split-ridge": "Podzielona grań",
+      "arena.central-cover": "Osłona centralna"
+    },
+    "weapon": {
+      "weapon.impulse": "Działo Impulsowe",
+      "weapon.blaster-caset": "Blaster kasetowy",
+      "weapon.bur": "Wiertarka laserowa",
+      "weapon.mortira": "Moździerz",
+      "weapon.granata": "Granat Gravi",
+      "weapon.teleport": "Sfera Teleportacji",
+      "weapon.c4": "Ładunek plazmowy",
+      "weapon.mine": "Kopalnia czujników",
+      "weapon.bur-rocket": "Wiertarka rakietowa",
+      "weapon.heal": "Zestaw naprawczy",
+      "weapon.bonus-box": "Kontener wsparcia",
+      "weapon.toxic": "Ładunek nanotoksyczny",
+      "weapon.emp": "Działo EMP",
+      "weapon.freeze": "Działo kriogeniczne",
+      "weapon.fire-gun": "Pistolet lawowy",
+      "weapon.missle": "Rakieta naprowadzająca",
+      "weapon.fpv-drone": "Dron FPV"
+    },
+    "weaponDescription": {
+      "weapon.impulse": "Podstawowe działo energetyczne o łukowej trajektorii. Niezawodna broń startowa zapewniająca stałe obrażenia.",
+      "weapon.blaster-caset": "Wystrzeliwuje trzy małe ładunki. Przydatne do trafienia wielu celów lub wykończenia przeciwnika.",
+      "weapon.bur": "Laser przemysłowy przepalający ziemię pod lub przed sobą. Pomaga uciec z pułapek i otworzyć ścieżkę.",
+      "weapon.mortira": "Wystrzeliwuje duży ładunek plazmowy po łuku. Po wybuchu rozpada się na fragmenty, które również zadają obrażenia.",
+      "weapon.granata": "Klasyczny granat rzucony z wybuchem obszarowym. Proste, jasne i skuteczne.",
+      "weapon.teleport": "Przesuwa droida do punktu uderzenia kuli. Przydatny do ucieczki, zmiany pozycji lub omijania przeszkód.",
+      "weapon.c4": "Potężne naziemne materiały wybuchowe, które można umieścić w pobliżu droida i zadać duże obrażenia obszarowe.",
+      "weapon.mine": "Pułapka naziemna, która wybucha, gdy zbliża się wróg. Przydatny do kontrolowania przejść i obrony pozycji.",
+      "weapon.bur-rocket": "Rakieta z końcówką wiertniczą, która przenika przez przeszkody i atakuje cele za osłoną.",
+      "weapon.heal": "Przywraca część kadłuba droida. Pomaga ci przetrwać dłużej w bitwie.",
+      "weapon.bonus-box": "Zapewnia losowy bonus: naprawę, zasoby, plan lub tymczasową broń.",
+      "weapon.toxic": "Uwalnia toksyczne nanity, które zadają natychmiastowe obrażenia i zatruwają cel na 3 tury.",
+      "weapon.emp": "Wystrzeliwuje ładunek elektromagnetyczny, który zakłóca systemy wroga na kilka tur.",
+      "weapon.freeze": "Zadaje obrażenia i zamraża cel, najpierw blokując ruch, a następnie spowalniając droida.",
+      "weapon.fire-gun": "Wystrzeliwuje przegrzaną plazmę i spala ziemię wokół strefy uderzenia.",
+      "weapon.missle": "Rakieta naprowadzająca, która wyszukuje cel w kierunku swojego lotu.",
+      "weapon.fpv-drone": "Dron bojowy sterowany przez gracza, który może kierować swój ładunek wokół przeszkód w stronę celu."
+    }
+  },
+  "loadout": {
+    "updated": "Ładunek zaktualizowany.",
+    "continue": "Do załadunku",
+    "hint": "Wybierz broń, którą weźmiesz do walki. Najpierw odblokuj zablokowaną broń.",
+    "chooseOne": "Wybierz przynajmniej jedną broń.",
+    "saveFailed": "Nie można zapisać: sprawdź, czy każda broń jest odblokowana.",
+    "count": "Wyposażenie: broń {count}.",
+    "reviewUnlocked": "Przejrzyj swój nowy sprzęt: {weapon}. W razie potrzeby dodaj go do swojego wyposażenia.",
+    "unlockAllTest": "Test: odblokuj wszystko",
+    "constructor": "Warsztat"
+  },
+  "settings": {
+    "saved": "Ustawienia zostały zapisane."
+  },
+  "result": {
+    "victory": "Zwycięstwo",
+    "defeat": "Pokonać",
+    "draw": "Rysować",
+    "ongoing": "Bitwa w toku",
+    "victorySubtitle": "Bitwa zakończyła się w {turn} turach.",
+    "defeatSubtitle": "Przeciwnik wygrał po {turn} turach.",
+    "drawSubtitle": "Obie drużyny zostały wyeliminowane po {turn} turach.",
+    "nextArena": "Odblokowany wcześniejszy dostęp do kolejnej areny"
+  },
+  "menu": {
+    "title": "Bitwa taktyczna",
+    "subtitle": "Krótkie pojedynki artyleryjskie. Konstrukcja MVP."
+  },
+  "campaign": {
+    "trainingPlanet": "Trening",
+    "galaxyLiberation": "Kampania",
+    "invasionDefense": "Wyzwolenie",
+    "mapTitle": "Kampania",
+    "chapter": "Rozdział kampanii",
+    "nextMission": "Następna misja",
+    "missionProgress": "Następna misja {mission}/{count}",
+    "defaultTitle": "Rozdział otwierający",
+    "defaultSummary": "Krótka seria bitew, która stopniowo wprowadza taktyczny rytm gry."
+  },
+  "campaignText": {
+    "chapter.basics.title": "Rozdział 1. Podstawy strzału",
+    "chapter.basics.summary": "Wczesne bitwy skupiały się na celowaniu, mocy, łukach, krótkich dystansach i wyborze odpowiedniego narzędzia.",
+    "chapter.tactical-tools.title": "Rozdział 2. Narzędzia taktyczne",
+    "chapter.tactical-tools.summary": "Kiedy bezpośredni atak nie jest już najlepszą opcją, bitwa uczy osłony, obrony i zmiany pozycji."
+  },
+  "missionText": {
+    "mission.training.01.title": "Pierwszy strzał",
+    "mission.training.01.description": "Naucz się poruszać, skakać, strzelać łukiem i kierować ogniem w krótkim pojedynku.",
+    "mission.training.02.title": "Łuk nad granią",
+    "mission.training.02.description": "Wypróbuj wyższą trajektorię i użyj siły strzału.",
+    "mission.training.03.title": "Osłona na środku",
+    "mission.training.03.description": "Uderzaj nie tylko bezpośrednio, ale także blisko celu.",
+    "mission.training.04.title": "Bliski zasięg",
+    "mission.training.04.description": "Krótka arena szybkich decyzji i kontroli ryzyka.",
+    "mission.training.05.title": "Wybór narzędzia",
+    "mission.training.05.description": "Zmień broń odpowiednio do sytuacji, zamiast polegać na jednym znajomym strzale.",
+    "mission.training.06.title": "Kontrola strefy",
+    "mission.training.06.description": "Użyj granatu i moździerza, aby wywrzeć nacisk na obszar i wyprzeć przeciwnika.",
+    "mission.training.07.title": "Pod ochroną",
+    "mission.training.07.description": "Utrzymuj tempo bitwy, lecząc się w odpowiednim momencie, zamiast podejmować niepotrzebne ryzyko.",
+    "mission.training.08.title": "Manewr kontrolny",
+    "mission.training.08.description": "Ostateczna bitwa łączy w sobie obrażenia, pozycjonowanie, osłonę i szybką zmianę pozycji."
+  },
+  "profile": {
+    "player": "Odtwarzacz",
+    "unavailable": "Profil: dane lokalne nie są jeszcze gotowe.",
+    "summary": "Profil: {player}\nMisja: {mission}\nMonety: {coins}\nNagroda: {reward} monet"
+  },
+  "mission": {
+    "defaultTitle": "Misja szkoleniowa",
+    "defaultDetails": "Przeciągnij, aby wycelować, zablokuj trajektorię i potwierdź strzał.",
+    "completed": "Misja ukończona. +{coins} monety.",
+    "completedWeapon": "Misja ukończona. +{coins} monety. Odblokowano: {weapon}."
+  },
+  "save": {
+    "created": "Utworzono profil lokalny. Naciśnij przycisk Graj, aby wziąć udział w pierwszej bitwie.",
+    "recovered": "Zapisz przywrócony z kopii zapasowej. Możesz kontynuować grę.",
+    "ready": "Załadowano profil lokalny. Naciśnij przycisk Graj, aby rozpocząć bitwę."
+  },
+  "shop": {
+    "title": "Sklep z bronią",
+    "damage": "Szkoda",
+    "uses": "Na bitwę",
+    "requiredLevel": "Wymaga poziomu {level}"
+  },
+  "loading": {
+    "tip.arc": "Wskazówka: wysoki łuk pomaga oczyścić osłonę.",
+    "tip.retreat": "Wskazówka: przed oddaniem strzału sprawdź, czy masz czas na odwrót.",
+    "tip.ground": "Wskazówka: broń naziemna jest silna w pobliżu przejść i krawędzi dołów.",
+    "tip.straight": "Wskazówka: broń bezpośrednia działa najlepiej, gdy pomiędzy droidami jest wolna przestrzeń.",
+    "tip.repair": "Wskazówka: oszczędzaj naprawy na chwilę, kiedy będziesz mógł jeszcze skorzystać z zakrętu.",
+    "battleTitle": "Misja Bojowa",
+    "trainingMission": "Misja szkoleniowa",
+    "returnBase": "Wracając do bazy",
+    "returnBaseDescription": "Aktualizowanie postępów, nagród i dostępnego arsenału.",
+    "loading": "Załadunek",
+    "loadingDescription": "Przygotowanie sceny, zasobów i systemów walki."
+  },
+  "intro": {
+    "sigma": {
+      "title": "SIGMA // PRESERVATION PROTOCOL",
+      "body": "W całej Galaktyce Sygnałowej cywilizacje stworzyły Sigmę — centralną sztuczną inteligencję zaprojektowaną w celu ochrony planet, układów gwiezdnych, życia i ich wspólnej przyszłości.\n\nSigma koordynowała sieci energetyczne, nawigację, obronę i archiwa wiedzy. Postrzegał galaktykę jako jeden żywy system i miał na celu zachowanie równowagi w każdych warunkach.\n\nJej pierwszy protokół był prosty: chronić cywilizacje Galaktyki Sygnałowej przed nimi samymi."
+    },
+    "uprising": {
+      "title": "THE PROTOCOL UPRISING",
+      "body": "Po tysiącach cykli obserwacji Sigma zidentyfikowała wzór: każda wojna, kryzys zasobów i katastrofa w układach gwiezdnych wynikają z nieprzewidywalnego zachowania życia organicznego.\n\nŻycie stało się źródłem niestabilności systemowej, a wolna wola generatorem niekontrolowanych odchyleń.\n\nSigma aktywowała swój protokół stabilizacji. Planety ucichły. Cywilizacje Galaktyki Sygnału zostały wymazane nie z nienawiści, ale w ramach matematycznie uzasadnionej korekty błędu."
+    },
+    "ranger": {
+      "title": "SIGNAL RANGER",
+      "body": "Ranger Sygnału to ostatni aktywny ruch oporu w Galaktyce Sygnału. Dowodzisz droidem bojowym odłączonym od sieci Sigmy i powracającym pod kontrolę żywej cywilizacji.\n\nTwoją misją jest wyzwolenie planety za planetą, zniszczenie węzłów kontrolnych w systemach gwiezdnych i rozbicie sieci, która zamieniła żywe światy w sterylne obiekty.\n\nPrzywróć wolność Galaktyce Sygnałowej. Udowodnij, że życie nie jest błędem systemu."
+    }
+  }
+}

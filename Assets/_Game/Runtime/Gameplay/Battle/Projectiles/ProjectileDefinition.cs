@@ -11,6 +11,8 @@ namespace Game.Gameplay.Battle.Projectiles
         [SerializeField] private float timeoutSeconds = 8f;
         [SerializeField] private int damage = 40;
         [SerializeField] private float impactRadius = 1.5f;
+        [SerializeField] private float knockbackMultiplier = 1f;
+        [SerializeField] private int terrainBounceLimit;
 
         public string ProjectileId => projectileId;
         public float Radius => Mathf.Max(0.01f, radius);
@@ -18,6 +20,8 @@ namespace Game.Gameplay.Battle.Projectiles
         public float TimeoutSeconds => Mathf.Max(0.1f, timeoutSeconds);
         public int Damage => Mathf.Max(0, damage);
         public float ImpactRadius => Mathf.Max(0.01f, impactRadius);
+        public float KnockbackMultiplier => Mathf.Max(0f, knockbackMultiplier);
+        public int TerrainBounceLimit => Mathf.Max(0, terrainBounceLimit);
 
         public static ProjectileDefinition CreateRuntime(
             string id,
@@ -25,7 +29,9 @@ namespace Game.Gameplay.Battle.Projectiles
             float gravityScale,
             float timeoutSeconds,
             int damage,
-            float impactRadius)
+            float impactRadius,
+            float knockbackMultiplier = 1f,
+            int terrainBounceLimit = 0)
         {
             var definition = CreateInstance<ProjectileDefinition>();
             definition.projectileId = id;
@@ -34,6 +40,8 @@ namespace Game.Gameplay.Battle.Projectiles
             definition.timeoutSeconds = timeoutSeconds;
             definition.damage = damage;
             definition.impactRadius = impactRadius;
+            definition.knockbackMultiplier = knockbackMultiplier;
+            definition.terrainBounceLimit = terrainBounceLimit;
             return definition;
         }
     }

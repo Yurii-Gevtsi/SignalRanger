@@ -56,6 +56,27 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void CarveCircle_RespectsMaterialPenetration()
+        {
+            var grid = new TerrainGrid(Vector2.zero, Vector2.one, 6, 1);
+            grid.StampRect(new Vector2(0.5f, 0.5f), Vector2.one, true, TerrainMaterial.Soil, out _);
+            grid.StampRect(new Vector2(2.5f, 0.5f), Vector2.one, true, TerrainMaterial.LightMetal, out _);
+            grid.StampRect(new Vector2(4.5f, 0.5f), Vector2.one, true, TerrainMaterial.Titanium, out _);
+
+            Assert.That(grid.CarveCircle(new Vector2(2.5f, 0.5f), 3f, TerrainMaterial.Soil, out _, out _), Is.True);
+            Assert.That(grid.IsSolidCell(0, 0), Is.False);
+            Assert.That(grid.IsSolidCell(2, 0), Is.True);
+            Assert.That(grid.IsSolidCell(4, 0), Is.True);
+
+            Assert.That(grid.CarveCircle(new Vector2(2.5f, 0.5f), 3f, TerrainMaterial.LightMetal, out _, out _), Is.True);
+            Assert.That(grid.IsSolidCell(2, 0), Is.False);
+            Assert.That(grid.IsSolidCell(4, 0), Is.True);
+
+            Assert.That(grid.CarveCircle(new Vector2(4.5f, 0.5f), 1f, TerrainMaterial.Titanium, out _, out _), Is.True);
+            Assert.That(grid.IsSolidCell(4, 0), Is.False);
+        }
+
+        [Test]
         public void TryFindSurfaceBelow_FindsGroundTop()
         {
             var grid = CreateFlatGround(out var surfaceY);

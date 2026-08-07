@@ -22,6 +22,7 @@ namespace Game.Progression.Missions
         [SerializeField] private string[] _tutorialStepIds;
         [SerializeField] private MissionRewardDefinition _reward;
         [SerializeField] private int _difficulty;
+        [SerializeField] private bool _supportDropsEnabled = true;
 
         public string MissionId => _missionId;
         public string ChapterId => _chapterId;
@@ -41,6 +42,7 @@ namespace Game.Progression.Missions
 
         /// <summary>AI difficulty tier for this mission: 0 = easy, 1 = normal, 2 = hard.</summary>
         public int Difficulty => Mathf.Clamp(_difficulty, 0, 2);
+        public bool SupportDropsEnabled => _supportDropsEnabled;
 
         public static MissionDefinition CreateRuntime(
             string missionId,
@@ -58,7 +60,8 @@ namespace Game.Progression.Missions
             string enemyLoadoutId = "",
             string difficultyProfileId = "",
             string playerTeamPresetId = "",
-            string winConditionId = "win.eliminate-all")
+            string winConditionId = "win.eliminate-all",
+            bool supportDropsEnabled = true)
         {
             var definition = CreateInstance<MissionDefinition>();
             definition._missionId = missionId ?? string.Empty;
@@ -81,6 +84,7 @@ namespace Game.Progression.Missions
             definition._tutorialStepIds = tutorialStepIds ?? Array.Empty<string>();
             definition._reward = reward ?? new MissionRewardDefinition(0);
             definition._difficulty = Mathf.Clamp(difficulty, 0, 2);
+            definition._supportDropsEnabled = supportDropsEnabled;
             return definition;
         }
 

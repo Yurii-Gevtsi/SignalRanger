@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Game.Data.Progression;
+using Game.Data.Save;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Motion;
 using Game.Gameplay.Battle.Projectiles;
@@ -40,7 +42,10 @@ namespace Game.Tests.EditMode.Gameplay
                 damage, impactRadius, 0.14f, gravityScale, timeoutSeconds, 6f, 20f, ammo, null, null);
         }
 
-        private static Harness CreateHarness(WeaponDefinition playerWeapon, WeaponDefinition opponentWeapon = null)
+        private static Harness CreateHarness(
+            WeaponDefinition playerWeapon,
+            WeaponDefinition opponentWeapon = null,
+            IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null)
         {
             var bounds = new Rect(-10f, -8f, 20f, 16f);
             var terrain = BattleTerrain.CreateProcedural(bounds);
@@ -97,7 +102,8 @@ namespace Game.Tests.EditMode.Gameplay
                 settings,
                 weaponsById,
                 playerArchetype,
-                opponentArchetype);
+                opponentArchetype,
+                playerWeaponEvolutions);
 
             return new Harness
             {
@@ -534,6 +540,53 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void C4Evolutions_ApplyConfiguredDamageRadiusAndKnockback()
+        {
+            var weapon = CreateWeapon("weapon.c4", WeaponRole.ShortRangeBurst, damage: 74, impactRadius: 1.85f, ammo: 1);
+            var enhanced = DetonateC4(weapon, new WeaponEvolutionProfile(
+                1,
+                0f,
+                1f,
+                c4DamageMultiplier: 1.15f,
+                c4ImpactRadiusMultiplier: 1.3f));
+            var shockwave = DetonateC4(weapon, new WeaponEvolutionProfile(
+                1,
+                0f,
+                3f,
+                c4ImpactRadiusMultiplier: 0.85f));
+
+            Assert.That(enhanced.Damage, Is.EqualTo(86));
+            Assert.That(enhanced.ImpactRadius, Is.EqualTo(2.405f).Within(0.0001f));
+            Assert.That(enhanced.KnockbackMultiplier, Is.EqualTo(1f).Within(0.0001f));
+            Assert.That(shockwave.Damage, Is.EqualTo(74));
+            Assert.That(shockwave.ImpactRadius, Is.EqualTo(1.5725f).Within(0.0001f));
+            Assert.That(shockwave.KnockbackMultiplier, Is.EqualTo(3f).Within(0.0001f));
+        }
+
+        private static ProjectileImpact DetonateC4(WeaponDefinition weapon, WeaponEvolutionProfile evolution)
+        {
+            var harness = CreateHarness(weapon, playerWeaponEvolutions: new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [weapon.WeaponId] = evolution
+            });
+            var hasImpact = false;
+            var impact = default(ProjectileImpact);
+            harness.Simulation.ProjectileExploded += (id, resolvedImpact) =>
+            {
+                hasImpact = true;
+                impact = resolvedImpact;
+            };
+
+            Assert.That(
+                harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            TickMany(harness.Simulation, 365, 1f / 120f);
+
+            Assert.That(hasImpact, Is.True);
+            return impact;
+        }
+
+        [Test]
         public void Blaster_KeepsBurstAvailableUntilThirdResolvedShot()
         {
             var blaster = CreateWeapon(
@@ -578,6 +631,49 @@ namespace Game.Tests.EditMode.Gameplay
                 "the turn does not hang when the magazine empties mid-burst");
         }
 
+        [TestCase(4)]
+        [TestCase(5)]
+        public void Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount(int shotCount)
+        {
+            var blaster = CreateWeapon(
+                "weapon.blaster-caset",
+                WeaponRole.DirectProjectile,
+                ammo: shotCount,
+                gravityScale: 0f,
+                timeoutSeconds: 0.12f);
+            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [blaster.WeaponId] = new WeaponEvolutionProfile(1, 0f, 1f, shotCount)
+            };
+            var harness = CreateHarness(blaster, playerWeaponEvolutions: evolutions);
+            var aim = new AimState(new Vector2(-3f, 4f), Vector2.up, 14f, true);
+
+            for (var shot = 1; shot <= shotCount; shot++)
+            {
+                Assert.AreEqual(BattleFireOutcome.Fired, harness.Simulation.TryFire(aim).Outcome);
+                Assert.AreEqual(shot < shotCount, harness.Simulation.CanContinueBlasterBurst);
+                TickMany(harness.Simulation, shot < shotCount ? 20 : 400, 1f / 120f);
+            }
+
+            Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
+        }
+
+        [Test]
+        public void Blaster_RicochetEvolutionSetsProjectileBounceLimit()
+        {
+            var blaster = CreateWeapon("weapon.blaster-caset", WeaponRole.DirectProjectile, ammo: 3);
+            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [blaster.WeaponId] = new WeaponEvolutionProfile(1, 0f, 1f, 3, 2)
+            };
+            var harness = CreateHarness(blaster, playerWeaponEvolutions: evolutions);
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 2f), Vector2.right, 8f, true)).Outcome);
+            Assert.That(harness.Simulation.Projectiles[0].Definition.TerrainBounceLimit, Is.EqualTo(2));
+        }
+
         [Test]
         public void Mine_BlocksSecondAttackInSameTurn_AndCapsRetreatTime()
         {
@@ -612,7 +708,44 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void Mortar_MainImpact_SpawnsFiveHalfStrengthFragments()
+        public void MineEvolution_AllowsFourSequentialPlacementsInOneTurn()
+        {
+            var mine = CreateWeapon(
+                "weapon.mine",
+                damage: 54,
+                ammo: 2,
+                gravityScale: 1.05f,
+                timeoutSeconds: 8f);
+            var harness = CreateHarness(mine, playerWeaponEvolutions: new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [mine.WeaponId] = new WeaponEvolutionProfile(1, 0f, 1f, mineDeployLimitPerTurn: 4)
+            });
+            SettleUnits(harness);
+            var deployedCount = 0;
+            harness.Simulation.MineDeployed += value => deployedCount++;
+
+            for (var expectedCount = 1; expectedCount <= 4; expectedCount++)
+            {
+                Assert.That(
+                    harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                    Is.EqualTo(BattleFireOutcome.Fired));
+                for (var tick = 0; tick < 600 && deployedCount < expectedCount; tick++)
+                {
+                    harness.Simulation.Tick(1f / 120f);
+                }
+
+                Assert.That(deployedCount, Is.EqualTo(expectedCount));
+            }
+
+            Assert.That(harness.Simulation.IsAttackCommitted, Is.True);
+            Assert.That(
+                harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Blocked));
+        }
+
+        [TestCase(4)]
+        [TestCase(5)]
+        public void Mortar_FragmentEvolution_SpawnsConfiguredHalfStrengthFragments(int fragmentCount)
         {
             var mortar = CreateWeapon(
                 "weapon.mortira",
@@ -620,7 +753,15 @@ namespace Game.Tests.EditMode.Gameplay
                 impactRadius: 1.8f,
                 gravityScale: 0f,
                 timeoutSeconds: 0.2f);
-            var harness = CreateHarness(mortar);
+            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [mortar.WeaponId] = new WeaponEvolutionProfile(
+                    1,
+                    0f,
+                    1f,
+                    mortarFragmentCount: fragmentCount)
+            };
+            var harness = CreateHarness(mortar, playerWeaponEvolutions: evolutions);
             var fragments = new List<SimProjectile>();
             var fragmentImpacts = new List<WeaponDefinition>();
             harness.Simulation.ProjectileSpawned += projectile =>
@@ -643,7 +784,7 @@ namespace Game.Tests.EditMode.Gameplay
                 harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true)).Outcome);
             TickMany(harness.Simulation, 30, 1f / 120f);
 
-            Assert.AreEqual(5, fragments.Count);
+            Assert.AreEqual(fragmentCount, fragments.Count);
             Assert.That(fragments[0].Definition.Radius, Is.EqualTo(mortar.ProjectileRadius * 0.5f).Within(0.001f));
             Assert.AreEqual(24, fragments[0].Definition.Damage);
             Assert.That(fragments[0].Definition.ImpactRadius, Is.EqualTo(0.9f).Within(0.001f));
@@ -653,8 +794,78 @@ namespace Game.Tests.EditMode.Gameplay
             }
 
             TickMany(harness.Simulation, 420, 1f / 120f);
-            Assert.AreEqual(5, fragmentImpacts.Count);
+            Assert.AreEqual(fragmentCount, fragmentImpacts.Count);
             Assert.That(fragmentImpacts[0].ImpactRadius, Is.EqualTo(mortar.ImpactRadius * 0.5f).Within(0.001f));
+        }
+
+        [Test]
+        public void Mortar_BaseWeapon_DoesNotSpawnEvolutionProjectiles()
+        {
+            var mortar = CreateWeapon(
+                "weapon.mortira",
+                damage: 48,
+                impactRadius: 1.8f,
+                gravityScale: 0f,
+                timeoutSeconds: 0.2f);
+            var harness = CreateHarness(mortar);
+            var spawnedEvolutionProjectile = false;
+            harness.Simulation.ProjectileSpawned += projectile =>
+            {
+                spawnedEvolutionProjectile |= projectile.Definition.ProjectileId.StartsWith(
+                    "projectile.weapon.mortira.fragment",
+                    System.StringComparison.Ordinal)
+                    || projectile.Definition.ProjectileId.StartsWith(
+                        "projectile.weapon.mortira.cascade.",
+                        System.StringComparison.Ordinal);
+            };
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true)).Outcome);
+            TickMany(harness.Simulation, 30, 1f / 120f);
+
+            Assert.That(spawnedEvolutionProjectile, Is.False);
+        }
+
+        [Test]
+        public void Mortar_CascadeEvolution_SpawnsTwoProgressivelySmallerCharges()
+        {
+            var mortar = CreateWeapon(
+                "weapon.mortira",
+                damage: 48,
+                impactRadius: 1.8f,
+                gravityScale: 0f,
+                timeoutSeconds: 0.2f);
+            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [mortar.WeaponId] = new WeaponEvolutionProfile(
+                    1,
+                    0f,
+                    1f,
+                    mortarCascadeCount: 2)
+            };
+            var harness = CreateHarness(mortar, playerWeaponEvolutions: evolutions);
+            var cascades = new List<SimProjectile>();
+            harness.Simulation.ProjectileSpawned += projectile =>
+            {
+                if (projectile.Definition.ProjectileId.StartsWith(
+                        "projectile.weapon.mortira.cascade.",
+                        System.StringComparison.Ordinal))
+                {
+                    cascades.Add(projectile);
+                }
+            };
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true)).Outcome);
+            TickMany(harness.Simulation, 540, 1f / 120f);
+
+            Assert.AreEqual(2, cascades.Count);
+            Assert.AreEqual(24, cascades[0].Definition.Damage);
+            Assert.That(cascades[0].Definition.ImpactRadius, Is.EqualTo(0.9f).Within(0.001f));
+            Assert.AreEqual(12, cascades[1].Definition.Damage);
+            Assert.That(cascades[1].Definition.ImpactRadius, Is.EqualTo(0.45f).Within(0.001f));
         }
 
         [Test]
@@ -820,19 +1031,126 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Terrain.StampSolidRect(new Vector2(-0.75f, 4f), new Vector2(0.5f, 1.5f));
             harness.Terrain.StampSolidRect(new Vector2(5.25f, 4f), new Vector2(9.5f, 1.5f));
 
-            // Slow shot (3 m/s) so the 2 s drill budget genuinely runs out inside
+            // Slow shot (3 m/s) so the 1 s drill budget genuinely runs out inside
             // the long second section instead of the rocket tunnelling through.
             var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.right, 3f, true));
             Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
+            Assert.That(
+                harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining,
+                Is.EqualTo(1f).Within(0.0001f));
 
             TickMany(harness.Simulation, 120, 1f / 120f);
             Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight, "the rocket exits the first terrain section without exploding");
             Assert.That(harness.Simulation.Projectiles[0].Velocity.magnitude, Is.EqualTo(3f).Within(0.01f));
-            Assert.Less(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 2f);
-            Assert.Greater(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 1f);
+            Assert.Less(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 1f);
+            Assert.Greater(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 0.5f);
 
             TickMany(harness.Simulation, 600, 1f / 120f);
-            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight, "the rocket explodes after consuming two cumulative seconds inside terrain");
+            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight, "the rocket explodes after consuming one cumulative second inside terrain");
+        }
+
+        [Test]
+        public void DrillRocket_UniversalEvolution_PassesThroughLightMetal()
+        {
+            var drillRocket = CreateWeapon(
+                "weapon.bur-rocket",
+                gravityScale: 0f,
+                timeoutSeconds: 8f);
+            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [drillRocket.WeaponId] = new WeaponEvolutionProfile(
+                    1,
+                    0f,
+                    1f,
+                    rocketDrillDurationSeconds: 1f,
+                    rocketDrillPenetration: TerrainMaterial.LightMetal)
+            };
+            var harness = CreateHarness(drillRocket, playerWeaponEvolutions: evolutions);
+            harness.Terrain.StampSolidRect(
+                new Vector2(-0.75f, 4f),
+                new Vector2(0.5f, 1.5f),
+                TerrainMaterial.LightMetal);
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.right, 3f, true)).Outcome);
+            TickMany(harness.Simulation, 100, 1f / 120f);
+
+            Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight);
+            Assert.Greater(harness.Simulation.Projectiles[0].Position.x, -0.5f);
+            Assert.That(
+                harness.Simulation.Projectiles[0].TerrainDrillPenetration,
+                Is.EqualTo(TerrainMaterial.LightMetal));
+        }
+
+        [TestCase(2)]
+        [TestCase(3)]
+        public void HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges(int chargeCount)
+        {
+            var missile = CreateWeapon(
+                "weapon.missle",
+                damage: 52,
+                impactRadius: 1.4f,
+                gravityScale: 1f,
+                timeoutSeconds: 8f);
+            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [missile.WeaponId] = new WeaponEvolutionProfile(
+                    1,
+                    0f,
+                    1f,
+                    missileSplitChargeCount: chargeCount)
+            };
+            var harness = CreateHarness(missile, playerWeaponEvolutions: evolutions);
+            var clusterCharges = new List<SimProjectile>();
+            harness.Simulation.ProjectileSpawned += projectile =>
+            {
+                if (projectile.Definition.ProjectileId.StartsWith(
+                        "projectile.weapon.missle.cluster.",
+                        System.StringComparison.Ordinal))
+                {
+                    clusterCharges.Add(projectile);
+                }
+            };
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 1f), Vector2.up, 10f, true)).Outcome);
+            TickMany(harness.Simulation, 720, 1f / 120f);
+
+            Assert.AreEqual(chargeCount, clusterCharges.Count);
+            Assert.AreEqual(Mathf.CeilToInt(missile.Damage / (float)chargeCount), clusterCharges[0].Definition.Damage);
+            Assert.That(
+                clusterCharges[0].Definition.ImpactRadius,
+                Is.EqualTo(missile.ImpactRadius * 0.58f).Within(0.001f));
+        }
+
+        [Test]
+        public void HomingMissile_ManeuverEvolution_CreatesDetourAroundTerrainObstacle()
+        {
+            var missile = CreateWeapon(
+                "weapon.missle",
+                gravityScale: 0f,
+                timeoutSeconds: 8f);
+            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [missile.WeaponId] = new WeaponEvolutionProfile(
+                    1,
+                    0f,
+                    1f,
+                    missileObstacleBypassCount: 1)
+            };
+            var harness = CreateHarness(missile, playerWeaponEvolutions: evolutions);
+            harness.Terrain.StampSolidRect(new Vector2(0f, 1f), new Vector2(1f, 4f));
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.up, 6f, true)).Outcome);
+            TickMany(harness.Simulation, 70, 1f / 120f);
+
+            Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight);
+            Assert.AreEqual(0, harness.Simulation.Projectiles[0].MissileObstacleBypassesRemaining);
+            Assert.That(harness.Simulation.Projectiles[0].HasMissileWaypoint, Is.True);
         }
 
         [Test]
@@ -915,6 +1233,25 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void DrillLaser_EvolvedRangeIsUsedForBattleEffect()
+        {
+            var drill = CreateWeapon("weapon.bur", WeaponRole.ShortRangeBurst, ammo: 1, gravityScale: 0f);
+            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [drill.WeaponId] = new WeaponEvolutionProfile(1, 0f, 1f, drillRange: 5.65f)
+            };
+            var harness = CreateHarness(drill, playerWeaponEvolutions: evolutions);
+            var reportedRange = 0f;
+            harness.Simulation.LinearWeaponEffectStarted += effect => reportedRange = effect.Range;
+
+            Assert.That(
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 3f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+
+            Assert.That(reportedRange, Is.EqualTo(5.65f).Within(0.0001f));
+        }
+
+        [Test]
         public void CommandScript_ReplaysWithMatchingHashes()
         {
             var first = RunDeterministicScript();
@@ -951,6 +1288,105 @@ namespace Game.Tests.EditMode.Gameplay
             TickMany(chunkedHarness.Simulation, 60, 1f / 60f);
 
             Assert.AreEqual(HashSimulation(fixedHarness.Simulation), HashSimulation(chunkedHarness.Simulation));
+        }
+
+        [Test]
+        public void ToxicEvolutionResolver_ReturnsConfiguredArmorWeakenAndMovementDamageValues()
+        {
+            var weapon = CreateWeapon("weapon.toxic", WeaponRole.DirectProjectile, 30, 1.2f, gravityScale: 0f);
+
+            var branchA5 = WeaponEvolutionRuntimeResolver.Resolve(weapon,
+                new SaveWeaponProgressData { weaponId = weapon.WeaponId, rank = 5, branch = (int)WeaponUpgradeBranch.A });
+            var branchA10 = WeaponEvolutionRuntimeResolver.Resolve(weapon,
+                new SaveWeaponProgressData { weaponId = weapon.WeaponId, rank = 10, branch = (int)WeaponUpgradeBranch.A });
+            var branchB5 = WeaponEvolutionRuntimeResolver.Resolve(weapon,
+                new SaveWeaponProgressData { weaponId = weapon.WeaponId, rank = 5, branch = (int)WeaponUpgradeBranch.B });
+            var branchB10 = WeaponEvolutionRuntimeResolver.Resolve(weapon,
+                new SaveWeaponProgressData { weaponId = weapon.WeaponId, rank = 10, branch = (int)WeaponUpgradeBranch.B });
+
+            Assert.Greater(branchA10.ToxicArmorWeakenPercent, branchA5.ToxicArmorWeakenPercent,
+                "10A weakens armor more than 5A");
+            Assert.GreaterOrEqual(branchA10.ToxicArmorWeakenTurns, branchA5.ToxicArmorWeakenTurns,
+                "10A holds the armor weaken at least as long as 5A");
+            Assert.Greater(branchB10.ToxicMovementDamagePerSecond, branchB5.ToxicMovementDamagePerSecond,
+                "10B hits harder per second of movement than 5B");
+            Assert.Greater(branchB10.ToxicDurationBonusTurns, branchB5.ToxicDurationBonusTurns,
+                "10B keeps the poison active a turn longer than 5B");
+            Assert.AreEqual(0, branchA5.ToxicMovementDamagePerSecond, "branch A does not add movement damage");
+            Assert.AreEqual(0, branchB5.ToxicArmorWeakenPercent, "branch B does not weaken armor");
+        }
+
+        [Test]
+        public void ToxicWeapon_PoisonsTarget_DamagesAtStartOfItsNextTurn()
+        {
+            var weapon = CreateWeapon("weapon.toxic", WeaponRole.DirectProjectile, 30, 1.2f, gravityScale: 0f);
+            var harness = CreateHarness(weapon);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+
+            var exploded = false;
+            var turnAdvanced = false;
+            harness.Simulation.ProjectileExploded += (id, impact) => exploded = true;
+            harness.Simulation.TurnAdvanced += (team, reason) => turnAdvanced = true;
+
+            harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 20f, true));
+            for (var i = 0; i < 240 && !exploded; i++)
+            {
+                harness.Simulation.Tick(1f / 60f);
+            }
+            Assert.IsTrue(exploded, "the toxic projectile resolves inside the simulation");
+
+            var healthAfterImpact = opponent.Health;
+
+            for (var i = 0; i < 420 && !turnAdvanced; i++)
+            {
+                harness.Simulation.Tick(1f / 60f);
+            }
+
+            Assert.IsTrue(turnAdvanced);
+            Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
+            Assert.AreEqual(healthAfterImpact - 6, opponent.Health,
+                "poison deals its base 6 damage-per-turn as soon as the poisoned unit's turn starts");
+        }
+
+        [Test]
+        public void ToxicWeaponBranchB_DealsExtraDamage_WhilePoisonedTargetMoves()
+        {
+            var weapon = CreateWeapon("weapon.toxic", WeaponRole.DirectProjectile, 30, 1.2f, gravityScale: 0f);
+            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            {
+                [weapon.WeaponId] = new WeaponEvolutionProfile(1, 0f, 1f,
+                    toxicMovementDamagePerSecond: 6f, toxicDurationBonusTurns: 0)
+            };
+            var harness = CreateHarness(weapon, playerWeaponEvolutions: evolutions);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+
+            var exploded = false;
+            var turnAdvanced = false;
+            harness.Simulation.ProjectileExploded += (id, impact) => exploded = true;
+            harness.Simulation.TurnAdvanced += (team, reason) => turnAdvanced = true;
+
+            harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 20f, true));
+            for (var i = 0; i < 240 && !exploded; i++)
+            {
+                harness.Simulation.Tick(1f / 60f);
+            }
+            Assert.IsTrue(exploded);
+
+            for (var i = 0; i < 420 && !turnAdvanced; i++)
+            {
+                harness.Simulation.Tick(1f / 60f);
+            }
+
+            Assert.IsTrue(turnAdvanced);
+            Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam,
+                "the poisoned opponent is now the active unit and can move itself");
+
+            var healthBeforeMovement = opponent.Health;
+            harness.Simulation.Walk(1, 0f);
+            TickMany(harness.Simulation, 240, 1f / 60f);
+
+            Assert.Less(opponent.Health, healthBeforeMovement,
+                "moving while poisoned by the mobile toxin (branch B) deals extra damage on top of the turn tick");
         }
 
         private static List<int> RunDeterministicScript()

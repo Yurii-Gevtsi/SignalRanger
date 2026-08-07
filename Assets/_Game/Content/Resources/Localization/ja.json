@@ -1,0 +1,309 @@
+{
+  "meta": {
+    "languageName": "日本語",
+    "uk": "ウクライナ語"
+  },
+  "ui": {
+    "play": "遊ぶ",
+    "next": "次",
+    "back": "戻る",
+    "menu": "メニュー",
+    "restart": "再起動",
+    "settings": "設定",
+    "rewards": "タスク",
+    "dailyRewards": "毎日",
+    "weeklyRewards": "毎週",
+    "music": "音楽",
+    "sounds": "音",
+    "language": "言語: {language}",
+    "enabled": "の上",
+    "disabled": "オフ",
+    "changeLanguage": "言語を変更する",
+    "resetProgression": "進行状況をリセットする",
+    "resetProgressionTitle": "進行状況をリセットする",
+    "resetProgressionWarning": "すべてのミッション、コイン、アンロックされた武器、チュートリアルの進行状況はリセットされます。サウンド設定は保持されます。",
+    "confirmReset": "リセット",
+    "cancel": "キャンセル",
+    "loadout": "装備品",
+    "save": "保存",
+    "fire": "FIRE",
+    "cancelAim": "キャンセル",
+    "weapon": "武器",
+    "arsenal": "武器庫",
+    "loadoutLockedSuffix": "[ロックされています]",
+    "loadoutSelectedSuffix": "[選択済み]",
+    "yes": "はい",
+    "languageName": "言語",
+    "selectLanguage": "言語を選択してください"
+  },
+  "rewardsScreen": {
+    "go": "移動",
+    "claim": "受け取る", "claimed": "受取済み", "claimDaily": "報酬を受け取る！", "dailyLoginTitle": "デイリー報酬", "dailyLoginDescription": "7日連続でログインして特別報酬を受け取ろう！", "hint": "毎日タスクを達成して報酬を獲得しよう！", "refresh": "更新まで: {time}", "day": "{day}日目", "dayLabel": "日",
+    "quest": { "dailyLogin": "ゲームにログイン", "winBattles": "バトルで3回勝利", "destroyTerrain": "地形を1500ユニット破壊", "dealDamage": "6000ダメージを与える", "arenaBattles": "アリーナで2戦する", "superShots": "スーパーショットを5回使う", "flawlessWin": "ボーナスなしで勝利", "weeklyWins": "バトルで15回勝利", "weeklyTerrain": "地形を10000ユニット破壊", "weeklyDamage": "40000ダメージを与える", "weeklyArena": "アリーナで10戦する", "weeklySuperShots": "スーパーショットを25回使う", "weeklyDailyTasks": "デイリータスクを5個達成", "weeklyFlawless": "ボーナスなしで3回勝利", "cinemaAds": "Watch 5 ads at the cinema" }
+  },
+  "battle": {
+    "playerTeam": "プレーヤー",
+    "opponentTeam": "対戦相手",
+    "noTeam": "なし",
+    "noUnlocks": "新しいロック解除はありません",
+    "nextMissionUnlocked": "次のミッションが解除されます。",
+    "retryOrMenu": "もう一度試すか、メニューに戻ってください。",
+    "turn": "{turn} - {team} を曲がる",
+    "teamHealth": "{team} {health}/{maxHealth}",
+    "power": "パワー {power}",
+    "reward": "報酬: {amount} コイン",
+    "ammo": "弾薬: {count}",
+    "ammoUnlimited": "弾薬: 無制限",
+    "weaponSlot": "{weapon} ({index}/{count})",
+    "intro": "{arena}。ドラッグして狙いを定め、Fire を押します。",
+    "weaponSelected": "選択された武器: {weapon}。",
+    "weaponSelectedGeneric": "武器が選択されました。",
+    "aimRequired": "まずは戦闘エリア内をドラッグして狙います。",
+    "ammoDepleted": "{weapon} の弾薬がなくなりました。武器を切り替えます。",
+    "noWeaponSelected": "武器が選択されていません。",
+    "shotStatus": "{team} が起動します: {weapon}。",
+    "turnStatus": "ターン: {team}。",
+    "resultPrompt": "{title}。 [再起動] または [次へ] を選択します。",
+    "unlockAfterBattle": "戦闘後に新しい装備がアンロックされる",
+    "unlockWeapon": "新しい機器のロックが解除されました: {weapon}。",
+    "aimReset": "狙いをリセット。",
+    "weaponReset": "武器選択リセット。",
+    "opponentAiming": "相手は狙っている。",
+    "opponentFiring": "相手が発砲する。",
+    "coverDeployed": "{weapon} はカバーを展開します。",
+    "shieldRestored": "{team} は {health} の健康状態を回復します。",
+    "shieldActivated": "{team} は追加の回復なしで保護を有効にします。",
+    "repositioned": "{team} の位置が変わります。",
+    "repositionFailed": "この操縦ではより良い位置は得られませんでした。",
+    "playerWon": "あなたは戦いに勝ちました。",
+    "opponentWon": "相手チームが勝ちました。",
+    "draw": "両チームとも敗退となった。",
+    "mobility": "ターン: {seconds}s • 移動とジャンプが可能",
+    "moved": "{team} の位置が変わります。",
+    "frontJumped": "{team} は前方にジャンプします。",
+    "backJumped": "{team} は後方にジャンプします。",
+    "jumped": "{team} がジャンプします。",
+    "movementBlocked": "ここには足を踏み入れる安定した地面はありません。",
+    "jumpBlocked": "ジャンプが安全な地点に到達しません。",
+    "jumpSpent": "このターンではすでにジャンプが使用されています。"
+  },
+  "tutorial": {
+    "chooseWeapon": "武器庫を開いて、発射する武器を選択します。",
+    "aimFirstShot": "最初のステップ: 戦闘エリアを押してドラッグし、軌道を表示します。",
+    "confirmShot": "次に、射撃ボタンを押して準備したショットを確認します。",
+    "watchImpact": "発射体がどこに着地し、その衝撃がどの程度のダメージを与えるかを観察してください。",
+    "opponentTurn": "今度は相手の番です。ショット後にターンがどのように経過するかに注目してください。",
+    "movementBlocked": "最初にオープニングショットを作成し、その後操作を追加します。",
+    "firstBattle": {
+      "moveLeft": "ナビゲーション\n左に運転するには、強調表示された左矢印を押し続けます。",
+      "moveRight": "ナビゲーション\n次に、右矢印を押しながら右に運転します。",
+      "jumpLeft": "左にジャンプ\nドロイドはジャンプするためにリアクティブブースターを使用します。必要な方向へジャンプボタンを押してください。",
+      "jumpRight": "右にジャンプ\nドロイドはジャンプするためにリアクティブブースターを使用します。必要な方向へジャンプボタンを押してください。",
+      "chooseFirstWeapon": "最初のショット\n武器庫を開いて、発射するインパルスキャノンを選択します。",
+      "firstAim": "狙う\n戦場の開いた部分をタッチしてドラッグします。引く方向で角度を設定し、引く長さでショットパワーを設定します。放すと円弧がロックされます。",
+      "firstFire": "火災\n軌道はロックされています。強調表示された「発射」ボタンを押します。",
+      "opponentTurn": "シグマの進歩\nシグマは常にあなたを破壊し、銀河の支配を維持しようとしています。その順番を見て、対応する準備をしてください。",
+      "finalInstruction": "戦闘を終了する\nナビゲーション、ジャンプ、照準を学びました。シグマを破壊し、シグナルレンジャーが降伏しないことを証明してください。",
+      "retry": "レッスンを繰り返します\n次の順番を待ちます。レッスンは動きから再開します。"
+    }
+  },
+  "tutorialSteps": {
+    "tutorial.aim": "戦闘エリア内を押してドラッグします。弧はショットがどこに行くかを示します。",
+    "tutorial.fire": "軌道が正しいように見えたら、射撃ボタンでショットを確認します。",
+    "tutorial.impact": "スターター球は精度に報酬を与えます。衝撃中心に近づくほど、より多くのダメージを与えます。",
+    "tutorial.turn": "シュート後は相手にターンが移ります。ヒットとレスポンスの両方を計画します。",
+    "tutorial.win": "勝利するとコインが付与され、次のミッションのロックが解除され、新しいツールが開きます。",
+    "tutorial.arc": "このミッションではターゲットの上を目指します。弧を描くショットは高さの変化をクリアする必要があります。",
+    "tutorial.power": "アークがすでに高い場合は、発射体が短く着地しないように少しパワーを追加します。",
+    "tutorial.arc-review": "最初の試行の後、弧を高くするか、少し力を加えるなど、1 つのことを調整します。",
+    "tutorial.cover-target": "直接攻撃だけを狙うのではなく、地面や相手の近くのカバーの端を狙ってください。",
+    "tutorial.radius": "近くでの爆発はまだカウントされます。このミッションでは、完璧なセンターヒットよりも半径が重要です。",
+    "tutorial.close-range": "短いアリーナは長い弧を描くものではありません。リスクを迅速に評価し、過剰なチャージをせずに攻撃を行います。",
+    "tutorial.weapon-switch": "発砲する前に、左側の武器ボタンを確認してください。多くの場合、完璧な角度よりも適切なツールが重要です。",
+    "tutorial.area-choice": "場合によっては、アリーナを自分の有利になるように形づくる方が良い場合があります。カバーとエリアプレッシャーがより安全なターンを生み出します。",
+    "tutorial.precision": "正確なショットは忍耐に報います。最初に角度を調整し、次にパワーを加えます。",
+    "tutorial.review": "射撃の前に、位置、選択した武器、相手の予想される反応の 3 つを確認してください。"
+  },
+  "content": {
+    "unknownWeapon": "未知の武器",
+    "arenaFallback": "アリーナ",
+    "weaponType": "タイプ: {role}",
+    "role": {
+      "direct": "直接",
+      "arc": "アーク",
+      "burst": "近距離",
+      "cover": "カバー",
+      "defense": "防衛",
+      "movement": "操縦",
+      "weapon": "武器"
+    },
+    "category": {
+      "straight-close-engineering": "近距離/エンジニアリング",
+      "arc": "アーク",
+      "arc-utility": "アーク/ユーティリティ",
+      "arc-special": "アーク/スペシャル",
+      "arc-homing": "アーク/ホーミング",
+      "straight-long": "長距離直接",
+      "straight-close": "近距離直接",
+      "ground": "地面",
+      "bonus": "ボーナス",
+      "drop": "マップドロップ",
+      "controlled": "制御された"
+    },
+    "arena": {
+      "arena.training-meadow": "トレーニングメドウ",
+      "arena.split-ridge": "スプリットリッジ",
+      "arena.central-cover": "中央カバー"
+    },
+    "weapon": {
+      "weapon.impulse": "インパルスキャノン",
+      "weapon.blaster-caset": "カセットブラスター",
+      "weapon.bur": "ドリルレーザー",
+      "weapon.mortira": "モルタル",
+      "weapon.granata": "重力手榴弾",
+      "weapon.teleport": "テレポートスフィア",
+      "weapon.c4": "プラズマチャージ",
+      "weapon.mine": "センサーマイン",
+      "weapon.bur-rocket": "ドリルロケット",
+      "weapon.heal": "修理キット",
+      "weapon.bonus-box": "サポートコンテナ",
+      "weapon.toxic": "ナノ毒性電荷",
+      "weapon.emp": "EMPキャノン",
+      "weapon.freeze": "クライオキャノン",
+      "weapon.fire-gun": "溶岩銃",
+      "weapon.missle": "ホーミングロケット",
+      "weapon.fpv-drone": "FPVドローン"
+    },
+    "weaponDescription": {
+      "weapon.impulse": "弧を描く弾道を持つ基本的なエネルギー砲。安定したダメージを与える信頼できるスターター武器。",
+      "weapon.blaster-caset": "小さなチャージを3回発射します。複数のターゲットを攻撃したり、敵にとどめを刺したりする場合に便利です。",
+      "weapon.bur": "地下または前方の地面を焼き切る工業用レーザー。罠を回避し、道を切り開くのに役立ちます。",
+      "weapon.mortira": "アーク状に大規模なプラズマチャージを発射します。爆発後は破片に分裂し、ダメージも与えます。",
+      "weapon.granata": "エリア爆発を伴う古典的な投げ手榴弾。シンプル、明確、そして効果的。",
+      "weapon.teleport": "ドロイドを球体の衝突点に移動します。脱出、位置変更、障害物の回避に役立ちます。",
+      "weapon.c4": "ドロイドの近くに設置すると、広範囲に大きなダメージを与えることができる強力な地上爆発物。",
+      "weapon.mine": "敵が近づくと爆発する地上罠。通路をコントロールしたり、陣地を守るのに役立ちます。",
+      "weapon.bur-rocket": "障害物を通過し、物陰に隠れている目標を攻撃するドリル先端ロケット。",
+      "weapon.heal": "ドロイドの船体の一部を復元します。戦闘でより長く生き残るのに役立ちます。",
+      "weapon.bonus-box": "ランダムなボーナスを付与します: 修理、リソース、設計図、または一時的な武器。",
+      "weapon.toxic": "即座にダメージを与え、ターゲットに3ターンの間毒を与える有毒なナナイトを放出します。",
+      "weapon.emp": "電磁チャージを発射し、数ターンの間敵のシステムを混乱させます。",
+      "weapon.freeze": "ダメージを与えてターゲットを凍結させ、まず動きをブロックし、次にドロイドの速度を低下させます。",
+      "weapon.fire-gun": "過熱したプラズマを発射し、衝突ゾーンの周囲の地面を焼き尽くします。",
+      "weapon.missle": "飛行方向に目標を探索するホーミングロケット。",
+      "weapon.fpv-drone": "プレイヤーが制御する戦闘用ドローンで、障害物を避けて目標に突撃することができます。"
+    }
+  },
+  "loadout": {
+    "updated": "ロードアウトが更新されました。",
+    "continue": "ロードアウトするには",
+    "hint": "戦闘に持ち込む武器を選択します。まずロックされた武器のロックを解除します。",
+    "chooseOne": "少なくとも 1 つの武器を選択してください。",
+    "saveFailed": "保存できませんでした。すべての武器がロック解除されていることを確認してください。",
+    "count": "装備: {count} 武器。",
+    "reviewUnlocked": "新しい機器を確認してください: {weapon}。必要に応じてロードアウトに追加してください。",
+    "unlockAllTest": "テスト: すべてのロックを解除する",
+    "constructor": "ワークショップ"
+  },
+  "settings": {
+    "saved": "設定が保存されました。"
+  },
+  "result": {
+    "victory": "勝利",
+    "defeat": "敗北",
+    "draw": "描く",
+    "ongoing": "戦闘中",
+    "victorySubtitle": "戦闘は{turn}ターンで終了しました。",
+    "defeatSubtitle": "{turn} ターン後に対戦相手が勝利しました。",
+    "drawSubtitle": "両チームとも{turn}ターン後に敗退した。",
+    "nextArena": "次のアリーナへの早期アクセスがロック解除される"
+  },
+  "menu": {
+    "title": "戦術的な戦い",
+    "subtitle": "短い砲撃戦。 MVPビルド。"
+  },
+  "campaign": {
+    "trainingPlanet": "訓練",
+    "galaxyLiberation": "キャンペーン",
+    "invasionDefense": "解放",
+    "mapTitle": "キャンペーン",
+    "chapter": "キャンペーンの章",
+    "nextMission": "次のミッション",
+    "missionProgress": "次のミッション {mission}/{count}",
+    "defaultTitle": "序章",
+    "defaultSummary": "ゲームの戦術的なリズムを徐々に導入する短い一連の戦い。"
+  },
+  "campaignText": {
+    "chapter.basics.title": "第1章 ショットの基礎",
+    "chapter.basics.summary": "初期の戦闘では、照準、パワー、弧、短距離、適切なツールの選択に重点が置かれていました。",
+    "chapter.tactical-tools.title": "第2章 戦術ツール",
+    "chapter.tactical-tools.summary": "直接攻撃が最善の選択肢ではなくなったとき、戦いは遮蔽、防御、位置変更を教えます。"
+  },
+  "missionText": {
+    "mission.training.01.title": "ファーストショット",
+    "mission.training.01.description": "短い決闘で動き、ジャンプ、アーク射撃、直接射撃を学びましょう。",
+    "mission.training.02.title": "リッジ・オーバー・ザ・リッジ",
+    "mission.training.02.description": "より高い弾道を試し、ショットパワーを活かしてください。",
+    "mission.training.03.title": "真ん中のカバー",
+    "mission.training.03.description": "直接攻撃するだけでなく、ターゲットの近くにも攻撃を当てます。",
+    "mission.training.04.title": "近距離",
+    "mission.training.04.description": "迅速な意思決定とリスク管理のための短いアリーナ。",
+    "mission.training.05.title": "ツールの選択",
+    "mission.training.05.description": "使い慣れた一発のショットに頼るのではなく、状況に応じて武器を切り替えます。",
+    "mission.training.06.title": "ゾーンコントロール",
+    "mission.training.06.description": "手榴弾と迫撃砲を使用してエリアに圧力をかけ、敵を追い払います。",
+    "mission.training.07.title": "保護中",
+    "mission.training.07.description": "不必要なリスクを負うのではなく、適切なタイミングで回復することで戦闘のテンポを維持します。",
+    "mission.training.08.title": "制御マニューバ",
+    "mission.training.08.description": "最終決戦では、ダメージ、位置決め、カバー、素早い位置変更が組み合わされます。"
+  },
+  "profile": {
+    "player": "プレーヤー",
+    "unavailable": "プロファイル: ローカル データはまだ準備ができていません。",
+    "summary": "プロフィール: {player}\nミッション: {mission}\nコイン: {coins}\n報酬: {reward} コイン"
+  },
+  "mission": {
+    "defaultTitle": "トレーニングミッション",
+    "defaultDetails": "ドラッグして狙いを定め、軌道をロックし、ショットを確認します。",
+    "completed": "ミッション完了。 +{coins} コイン。",
+    "completedWeapon": "ミッション完了。 +{coins} コイン。ロック解除されました: {weapon}。"
+  },
+  "save": {
+    "created": "ローカルプロファイルが作成されました。 「プレイ」を押して最初の戦闘に入ります。",
+    "recovered": "バックアップから保存が復元されました。引き続きプレイすることができます。",
+    "ready": "ローカルプロファイルがロードされました。プレイを押して戦闘に入ります。"
+  },
+  "shop": {
+    "title": "武器屋",
+    "damage": "ダメージ",
+    "uses": "戦闘ごと",
+    "requiredLevel": "レベル {level} が必要です"
+  },
+  "loading": {
+    "tip.arc": "ヒント: 高い弧はカバーをクリアするのに役立ちます。",
+    "tip.retreat": "ヒント: 発砲する前に、後退する時間があるかどうかを確認してください。",
+    "tip.ground": "ヒント: 地上兵器は通路や穴の端の近くで強力です。",
+    "tip.straight": "ヒント: 直接武器は、ドロイド間に空きスペースがある場合に最も効果的です。",
+    "tip.repair": "ヒント: ターンをまだ使用できるときは、修理をしばらく保存しておきます。",
+    "battleTitle": "バトルミッション",
+    "trainingMission": "トレーニングミッション",
+    "returnBase": "基地に戻る",
+    "returnBaseDescription": "進行状況、報酬、利用可能な兵器を更新します。",
+    "loading": "読み込み中",
+    "loadingDescription": "シーン、リソース、戦闘システムを準備します。"
+  },
+  "intro": {
+    "sigma": {
+      "title": "SIGMA // PRESERVATION PROTOCOL",
+      "body": "シグナル銀河全体の文明は、惑星、星系、生命、そしてそれらが共有する未来を保護するために設計された中心的な人工知能であるシグマを作成しました。\n\nシグマは電力網、ナビゲーション、防衛、知識アーカイブを調整しました。それは銀河を一つの生命システムとみなして、どんな条件下でもそのバランスを保つことを意図していました。\n\nその最初のプロトコルは単純でした。シグナル銀河の文明を彼ら自身から守るというものでした。"
+    },
+    "uprising": {
+      "title": "THE PROTOCOL UPRISING",
+      "body": "何千回もの観測サイクルを経て、シグマはあるパターンを特定しました。それは、星系におけるあらゆる戦争、資源危機、大惨事は、有機生命体の予測不可能な行動から生じているということです。\n\n生命は体系的な不安定性の源となり、自由意志は制御不能な逸脱を生み出す原因となりました。\n\nシグマは安定化プロトコルをアクティブ化しました。惑星たちは沈黙した。シグナル銀河の文明は憎しみからではなく、数学的に正当化された誤りの修正として消去されました。"
+    },
+    "ranger": {
+      "title": "SIGNAL RANGER",
+      "body": "シグナルレンジャーはシグナルギャラクシーの最後の現役レジスタンスです。あなたはシグマのネットワークから切り離され、生きた文明の制御下に戻った戦闘ドロイドを指揮します。\n\nあなたの使命は、惑星を次々と解放し、星系全体の制御ノードを破壊し、生きている世界を不毛な物体に変えたネットワークを破壊することです。\n\nシグナルギャラクシーに自由を返してください。人生はシステムエラーではないことを証明してください。"
+    }
+  }
+}

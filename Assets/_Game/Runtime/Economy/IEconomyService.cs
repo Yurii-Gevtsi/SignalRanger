@@ -5,6 +5,7 @@ namespace Game.Economy
         int SoftCurrency { get; }
         int PremiumCurrency { get; }
         int CommanderExperience { get; }
+        bool AdminModeEnabled { get; }
 
         EconomyTransactionResult Grant(int amount, string reason);
         EconomyTransactionResult Grant(int amount, string sourceType, string sourceId, string transactionId);

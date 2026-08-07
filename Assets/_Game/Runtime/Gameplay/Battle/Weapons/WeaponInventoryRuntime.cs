@@ -98,6 +98,20 @@ namespace Game.Gameplay.Battle.Weapons
         public int GetSelectedRemainingAmmo() => GetRemainingAmmo(Selected);
 
         /// <summary>
+        /// Applies a battle-only ammo override without changing the shared weapon definition.
+        /// Used by workshop evolutions that expand a limited weapon's magazine.
+        /// </summary>
+        public void SetRemainingAmmo(WeaponDefinition weapon, int amount)
+        {
+            if (weapon == null || !weapon.HasLimitedAmmo || !_remainingAmmo.ContainsKey(weapon.WeaponId))
+            {
+                return;
+            }
+
+            _remainingAmmo[weapon.WeaponId] = Mathf.Max(0, amount);
+        }
+
+        /// <summary>
         /// Consumes one round of the selected weapon.
         /// Unlimited weapons always succeed; limited weapons decrement and fail at zero.
         /// </summary>

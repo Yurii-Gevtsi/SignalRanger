@@ -75,9 +75,17 @@ namespace Game.Gameplay.Battle.Terrain
 
         public bool ApplyCrater(Vector2 worldCenter, float worldRadius)
         {
-            if (!Grid.CarveCircle(worldCenter, worldRadius, out _))
+            return ApplyCraterAndGetDestroyedCellCount(worldCenter, worldRadius) > 0;
+        }
+
+        public int ApplyCraterAndGetDestroyedCellCount(
+            Vector2 worldCenter,
+            float worldRadius,
+            TerrainMaterial maximumMaterial = TerrainMaterial.Titanium)
+        {
+            if (!Grid.CarveCircle(worldCenter, worldRadius, maximumMaterial, out _, out var destroyedCellCount))
             {
-                return false;
+                return 0;
             }
 
             for (var i = 0; i < _visuals.Count; i++)
@@ -85,12 +93,17 @@ namespace Game.Gameplay.Battle.Terrain
                 _visuals[i].ApplyCrater(worldCenter, worldRadius);
             }
 
-            return true;
+            return destroyedCellCount;
         }
 
         public void StampSolidRect(Vector2 worldCenter, Vector2 worldSize)
         {
-            Grid.StampRect(worldCenter, worldSize, true, out _);
+            StampSolidRect(worldCenter, worldSize, TerrainMaterial.Soil);
+        }
+
+        public void StampSolidRect(Vector2 worldCenter, Vector2 worldSize, TerrainMaterial material)
+        {
+            Grid.StampRect(worldCenter, worldSize, true, material, out _);
         }
 
         public void Dispose()

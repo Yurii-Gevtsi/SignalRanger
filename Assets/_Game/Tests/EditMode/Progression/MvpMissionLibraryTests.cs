@@ -18,6 +18,7 @@ namespace Game.Tests.EditMode.Progression
                 Assert.That(mission.ArenaId, Is.Not.Empty);
                 Assert.That(mission.EnemyLoadoutId, Is.Not.Empty);
                 Assert.That(mission.DifficultyProfileId, Is.Not.Empty);
+                Assert.That(mission.SupportDropsEnabled, Is.True);
             }
         }
 

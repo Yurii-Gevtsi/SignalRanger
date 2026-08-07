@@ -17,6 +17,7 @@ namespace Game.Core
         public static string SelectedMissionRewardUnlockWeaponId { get; private set; } = string.Empty;
         public static int SelectedAiDifficulty { get; private set; }
         public static bool IsTrainingSkirmish { get; private set; }
+        public static bool SupportDropsEnabled { get; private set; } = true;
         public static bool HasPendingMissionCompletion { get; private set; }
         public static int PendingCompletedMissionIndex { get; private set; }
 
@@ -33,7 +34,8 @@ namespace Game.Core
             string opponentArchetypeId,
             int rewardSoftCurrency,
             string rewardUnlockWeaponId,
-            int aiDifficulty)
+            int aiDifficulty,
+            bool supportDropsEnabled = true)
         {
             SelectedMissionIndex = missionIndex < 0 ? 0 : missionIndex;
             SelectedArenaIndex = arenaIndex < 0 ? 0 : arenaIndex;
@@ -48,6 +50,7 @@ namespace Game.Core
             SelectedMissionRewardSoftCurrency = rewardSoftCurrency < 0 ? 0 : rewardSoftCurrency;
             SelectedMissionRewardUnlockWeaponId = rewardUnlockWeaponId ?? string.Empty;
             SelectedAiDifficulty = aiDifficulty < 0 ? 0 : aiDifficulty > 2 ? 2 : aiDifficulty;
+            SupportDropsEnabled = supportDropsEnabled;
             IsTrainingSkirmish = false;
         }
 
@@ -57,6 +60,7 @@ namespace Game.Core
             SelectedDifficultyProfileId = "difficulty.normal";
             SelectedOpponentArchetypeId = "archetype.striker";
             SelectedAiDifficulty = 1;
+            SupportDropsEnabled = true;
         }
 
         public static void SelectLoadout(string[] loadoutWeaponIds)

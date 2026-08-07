@@ -45,6 +45,8 @@ namespace Game.Gameplay.Battle.Motion
         private readonly float _killY;
         private float _walkEnergy;
         private float _climbDebt;
+        private float _jumpElapsed;
+        private float _jumpDuration;
 
         public UnitMotor(TerrainGrid terrain, UnitMotionProfile profile, Vector2 position, float killY)
         {
@@ -61,6 +63,32 @@ namespace Game.Gameplay.Battle.Motion
         /// <summary>Stable units rest on ground and skip integration.</summary>
         public bool IsStable { get; private set; } = true;
 
+        /// <summary>True only for a player or bot initiated jump, not a fall or knockback.</summary>
+        public bool IsJumping { get; private set; }
+
+        /// <summary>
+        /// Jet-trail scale over the designed jump arc: it grows toward the apex,
+        /// then shrinks all the way to zero on the descent.
+        /// </summary>
+        public float JumpTrailScale
+        {
+            get
+            {
+                if (!IsJumping || _jumpDuration <= 0f)
+                {
+                    return 0f;
+                }
+
+                var phase = Mathf.Clamp01(_jumpElapsed / _jumpDuration);
+                if (phase <= 0.5f)
+                {
+                    return Mathf.Lerp(0.5f, 1f, Mathf.SmoothStep(0f, 1f, phase * 2f));
+                }
+
+                return Mathf.Lerp(1f, 0.5f, Mathf.SmoothStep(0f, 1f, (phase - 0.5f) * 2f));
+            }
+        }
+
         public UnitMotionProfile Profile => _profile;
 
         private float Skin => _terrain.CellSize.y * SkinCellFraction;
@@ -70,12 +98,16 @@ namespace Game.Gameplay.Battle.Motion
             Position = position;
             Velocity = Vector2.zero;
             IsStable = true;
+            IsJumping = false;
+            ResetJumpPhase();
             _climbDebt = 0f;
         }
 
         /// <summary>Knockback entry point: push the unit and let physics resolve the rest.</summary>
         public void AddImpulse(Vector2 velocity)
         {
+            IsJumping = false;
+            ResetJumpPhase();
             Velocity += velocity;
             if (Velocity.sqrMagnitude > 0.0001f)
             {
@@ -92,6 +124,8 @@ namespace Game.Gameplay.Battle.Motion
             }
 
             IsStable = false;
+            IsJumping = false;
+            ResetJumpPhase();
         }
 
         /// <summary>
@@ -105,6 +139,9 @@ namespace Game.Gameplay.Battle.Motion
             var flightTime = 2f * verticalSpeed / _profile.Gravity;
             Velocity = new Vector2(horizontalDistance / flightTime, verticalSpeed);
             IsStable = false;
+            IsJumping = true;
+            _jumpElapsed = 0f;
+            _jumpDuration = flightTime;
 
             // Lift off the surface so the first step does not immediately re-land.
             var liftedPosition = Position + Vector2.up * _terrain.CellSize.y;
@@ -123,6 +160,11 @@ namespace Game.Gameplay.Battle.Motion
             if (IsStable)
             {
                 return MotorStepOutcome.Resting;
+            }
+
+            if (IsJumping)
+            {
+                _jumpElapsed = Mathf.Min(_jumpDuration, _jumpElapsed + Mathf.Max(0f, deltaTime));
             }
 
             var velocity = Velocity;
@@ -148,6 +190,8 @@ namespace Game.Gameplay.Battle.Motion
 
                 if (Position.y + _profile.HalfHeight < _killY)
                 {
+                    IsJumping = false;
+                    ResetJumpPhase();
                     return MotorStepOutcome.FellOutOfBounds;
                 }
 
@@ -156,7 +200,14 @@ namespace Game.Gameplay.Battle.Motion
                     continue;
                 }
 
-                return ResolveCollision(previous);
+                var collisionOutcome = ResolveCollision(previous);
+                if (collisionOutcome == MotorStepOutcome.Landed)
+                {
+                    IsJumping = false;
+                    ResetJumpPhase();
+                }
+
+                return collisionOutcome;
             }
 
             return MotorStepOutcome.Airborne;
@@ -404,8 +455,16 @@ namespace Game.Gameplay.Battle.Motion
             Position = SnapFeetToSurface(position);
             Velocity = Vector2.zero;
             IsStable = true;
+            IsJumping = false;
+            ResetJumpPhase();
             _climbDebt = 0f;
             return MotorStepOutcome.Landed;
+        }
+
+        private void ResetJumpPhase()
+        {
+            _jumpElapsed = 0f;
+            _jumpDuration = 0f;
         }
 
         /// <summary>

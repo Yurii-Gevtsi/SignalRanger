@@ -1,4 +1,5 @@
 using System;
+using Game.Gameplay.Battle.Terrain;
 using UnityEngine;
 
 namespace Game.Gameplay.Battle.Arenas
@@ -12,8 +13,16 @@ namespace Game.Gameplay.Battle.Arenas
         [SerializeField] private Color _color;
         [SerializeField] private bool _solid;
         [SerializeField] private int _sortingOrder;
+        [SerializeField] private TerrainMaterial _material;
 
-        public ArenaTerrainBlock(string blockId, Vector2 position, Vector2 size, Color color, bool solid, int sortingOrder)
+        public ArenaTerrainBlock(
+            string blockId,
+            Vector2 position,
+            Vector2 size,
+            Color color,
+            bool solid,
+            int sortingOrder,
+            TerrainMaterial material = TerrainMaterial.Soil)
         {
             _blockId = blockId;
             _position = position;
@@ -21,6 +30,7 @@ namespace Game.Gameplay.Battle.Arenas
             _color = color;
             _solid = solid;
             _sortingOrder = sortingOrder;
+            _material = material;
         }
 
         public string BlockId => _blockId;
@@ -29,5 +39,6 @@ namespace Game.Gameplay.Battle.Arenas
         public Color Color => _color;
         public bool Solid => _solid;
         public int SortingOrder => _sortingOrder;
+        public TerrainMaterial Material => _material;
     }
 }

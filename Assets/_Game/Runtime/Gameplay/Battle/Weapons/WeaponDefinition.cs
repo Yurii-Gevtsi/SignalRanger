@@ -66,15 +66,21 @@ namespace Game.Gameplay.Battle.Weapons
             return CreateProjectileDefinition(Damage);
         }
 
-        public ProjectileDefinition CreateProjectileDefinition(int damageOverride)
+        public ProjectileDefinition CreateProjectileDefinition(
+            int damageOverride,
+            float knockbackMultiplier = 1f,
+            int terrainBounceLimit = 0,
+            float timeoutSecondsOverride = -1f)
         {
             return ProjectileDefinition.CreateRuntime(
                 $"projectile.{_weaponId}",
                 ProjectileRadius,
                 GravityScale,
-                TimeoutSeconds,
+                timeoutSecondsOverride > 0f ? timeoutSecondsOverride : TimeoutSeconds,
                 UnityEngine.Mathf.Max(0, damageOverride),
-                ImpactRadius);
+                ImpactRadius,
+                knockbackMultiplier,
+                terrainBounceLimit);
         }
 
         public static WeaponDefinition CreateRuntime(

@@ -1,0 +1,309 @@
+{
+  "meta": {
+    "languageName": "한국어",
+    "uk": "우크라이나어"
+  },
+  "ui": {
+    "play": "놀다",
+    "next": "다음",
+    "back": "뒤쪽에",
+    "menu": "메뉴",
+    "restart": "다시 시작",
+    "settings": "설정",
+    "rewards": "과제",
+    "dailyRewards": "일일",
+    "weeklyRewards": "주간",
+    "music": "음악",
+    "sounds": "소리",
+    "language": "언어: {language}",
+    "enabled": "~에",
+    "disabled": "끄다",
+    "changeLanguage": "언어 변경",
+    "resetProgression": "진행 상황 재설정",
+    "resetProgressionTitle": "진행 상황 재설정",
+    "resetProgressionWarning": "모든 미션, 코인, 잠금 해제된 무기, 튜토리얼 진행 상황이 초기화됩니다. 사운드 설정이 유지됩니다.",
+    "confirmReset": "다시 놓기",
+    "cancel": "취소",
+    "loadout": "로드아웃",
+    "save": "구하다",
+    "fire": "FIRE",
+    "cancelAim": "취소",
+    "weapon": "무기",
+    "arsenal": "무기고",
+    "loadoutLockedSuffix": "[잠김]",
+    "loadoutSelectedSuffix": "[선택된]",
+    "yes": "예",
+    "languageName": "언어",
+    "selectLanguage": "언어 선택"
+  },
+  "rewardsScreen": {
+    "go": "이동",
+    "claim": "받기", "claimed": "받음", "claimDaily": "보상 받기!", "dailyLoginTitle": "일일 보상", "dailyLoginDescription": "7일 연속 접속하고 특별 보상을 받으세요!", "hint": "매일 과제를 완료하고 보상을 획득하세요!", "refresh": "갱신까지: {time}", "day": "{day}일차", "dayLabel": "일",
+    "quest": { "dailyLogin": "게임에 접속하기", "winBattles": "전투 3회 승리", "destroyTerrain": "지형 1500만큼 파괴", "dealDamage": "피해 6000 주기", "arenaBattles": "아레나 전투 2회 플레이", "superShots": "슈퍼 샷 5회 사용", "flawlessWin": "보너스 없이 승리", "weeklyWins": "전투 15회 승리", "weeklyTerrain": "지형 10000만큼 파괴", "weeklyDamage": "피해 40000 주기", "weeklyArena": "아레나 전투 10회 플레이", "weeklySuperShots": "슈퍼 샷 25회 사용", "weeklyDailyTasks": "일일 과제 5개 완료", "weeklyFlawless": "보너스 없이 3회 승리", "cinemaAds": "Watch 5 ads at the cinema" }
+  },
+  "battle": {
+    "playerTeam": "플레이어",
+    "opponentTeam": "상대",
+    "noTeam": "없음",
+    "noUnlocks": "새로운 잠금 해제 없음",
+    "nextMissionUnlocked": "다음 미션이 잠금 해제됩니다.",
+    "retryOrMenu": "다시 시도하거나 메뉴로 돌아가세요.",
+    "turn": "{turn} - {team} 회전",
+    "teamHealth": "{team} {health}/{maxHealth}",
+    "power": "전원 {power}",
+    "reward": "보상: {amount} 코인",
+    "ammo": "탄약: {count}",
+    "ammoUnlimited": "탄약: 무제한",
+    "weaponSlot": "{weapon} ({index}/{count})",
+    "intro": "{arena}. 드래그하여 조준한 다음 발사를 누르세요.",
+    "weaponSelected": "선택한 무기: {weapon}.",
+    "weaponSelectedGeneric": "무기가 선택되었습니다.",
+    "aimRequired": "먼저 전투 지역을 드래그하여 조준하세요.",
+    "ammoDepleted": "{weapon}의 탄약이 고갈되었습니다. 무기를 전환하세요.",
+    "noWeaponSelected": "선택한 무기가 없습니다.",
+    "shotStatus": "{team} 화재: {weapon}.",
+    "turnStatus": "차례: {team}.",
+    "resultPrompt": "{title}. 다시 시작 또는 다음을 선택합니다.",
+    "unlockAfterBattle": "전투 후 새로운 장비 잠금 해제",
+    "unlockWeapon": "새로운 장비 잠금 해제: {weapon}.",
+    "aimReset": "목표 재설정.",
+    "weaponReset": "무기 선택 초기화.",
+    "opponentAiming": "상대방이 겨냥하고 있습니다.",
+    "opponentFiring": "상대가 발사합니다.",
+    "coverDeployed": "{weapon}이(가) 엄폐물을 전개합니다.",
+    "shieldRestored": "{team}은 {health} 건강을 회복합니다.",
+    "shieldActivated": "{team}은 추가 치유 없이 보호를 활성화합니다.",
+    "repositioned": "{team}이(가) 위치를 변경합니다.",
+    "repositionFailed": "기동은 더 나은 위치를 생성하지 못했습니다.",
+    "playerWon": "당신은 전투에서 승리했습니다.",
+    "opponentWon": "상대팀이 승리했습니다.",
+    "draw": "두 팀 모두 탈락했습니다.",
+    "mobility": "회전: {seconds}s • 이동 및 점프 가능",
+    "moved": "{team}이(가) 위치를 변경합니다.",
+    "frontJumped": "{team}이(가) 앞으로 점프합니다.",
+    "backJumped": "{team}이(가) 뒤로 점프합니다.",
+    "jumped": "{team} 점프합니다.",
+    "movementBlocked": "여기에는 밟을 수 있는 안정적인 표면이 없습니다.",
+    "jumpBlocked": "점프가 안전한 지점에 도달하지 못했습니다.",
+    "jumpSpent": "점프는 이번 턴에 이미 사용되었습니다."
+  },
+  "tutorial": {
+    "chooseWeapon": "무기고를 열고 발사할 무기를 선택하세요.",
+    "aimFirstShot": "첫 번째 단계: 전투 지역을 누르고 드래그하여 궤적을 표시합니다.",
+    "confirmShot": "이제 발사 버튼으로 준비된 샷을 확인하십시오.",
+    "watchImpact": "발사체가 어디에 착지하는지, 충격으로 인해 얼마나 많은 피해가 발생하는지 확인하세요.",
+    "opponentTurn": "이제 상대 차례입니다. 사격 후 회전이 어떻게 진행되는지 확인하십시오.",
+    "movementBlocked": "오프닝 샷을 먼저 만든 다음 조작을 추가합니다.",
+    "firstBattle": {
+      "moveLeft": "네비게이션\n왼쪽으로 운전하려면 강조 표시된 왼쪽 화살표를 길게 누르세요.",
+      "moveRight": "네비게이션\n이제 오른쪽 화살표를 잡고 오른쪽으로 운전하세요.",
+      "jumpLeft": "왼쪽으로 점프\n드로이드는 반응성 부스터를 사용하여 점프합니다. 원하는 방향으로 점프 버튼을 누르세요.",
+      "jumpRight": "오른쪽으로 점프\n드로이드는 반응성 부스터를 사용하여 점프합니다. 원하는 방향으로 점프 버튼을 누르세요.",
+      "chooseFirstWeapon": "첫 번째 샷\n무기고를 열고 임펄스 캐논을 선택해 발사하세요.",
+      "firstAim": "조준\n전장의 열린 부분을 터치하고 드래그하세요. 당기는 방향에 따라 각도가 설정되고 당기는 길이에 따라 샷의 힘이 설정됩니다. 호를 잠그려면 손을 떼세요.",
+      "firstFire": "불\n궤적이 잠겨 있습니다. 강조 표시된 발사 버튼을 누르세요.",
+      "opponentTurn": "시그마의 발전\n시그마는 항상 당신을 파괴하고 은하계에 대한 통제권을 유지하려고 노력합니다. 차례를 지켜보고 대응할 준비를 하십시오.",
+      "finalInstruction": "전투를 마무리하세요\n탐색, 점프, 조준을 배웠습니다. 시그마를 파괴하고 시그널 레인저가 항복하지 않는다는 것을 증명하세요.",
+      "retry": "수업을 반복하세요\n다음 차례를 기다리십시오. 수업은 움직임으로 다시 시작됩니다."
+    }
+  },
+  "tutorialSteps": {
+    "tutorial.aim": "전투 지역을 누르고 드래그하세요. 호는 샷이 어디로 갈지 보여줍니다.",
+    "tutorial.fire": "궤도가 올바르게 보이면 발사 버튼을 눌러 사격을 확인하세요.",
+    "tutorial.impact": "스타터 구체는 정확도를 보상합니다. 충격 중심에 가까울수록 더 많은 피해를 입힙니다.",
+    "tutorial.turn": "슛이 끝나면 차례는 상대방에게 넘어갑니다. 히트와 응답을 모두 계획하십시오.",
+    "tutorial.win": "승리하면 코인이 지급되고, 다음 임무가 잠금 해제되며, 새로운 도구가 열립니다.",
+    "tutorial.arc": "이 임무에서는 목표물 위로 조준하세요. 호칭 사격은 높이 변화를 막아야 합니다.",
+    "tutorial.power": "호가 이미 높으면 발사체가 짧게 착지하지 않도록 약간의 힘을 추가하십시오.",
+    "tutorial.arc-review": "첫 번째 시도 후에 한 가지를 조정하십시오. 호를 높이거나 약간의 힘을 추가하십시오.",
+    "tutorial.cover-target": "직접적인 타격만을 찾지 마십시오. 상대 근처의 땅이나 엄폐물 가장자리를 겨냥하십시오.",
+    "tutorial.radius": "근처의 폭발도 여전히 중요합니다. 이 임무에서는 완벽한 중앙 타격보다 반경이 더 중요합니다.",
+    "tutorial.close-range": "짧은 경기장은 긴 호에 관한 것이 아닙니다. 위험을 신속하게 평가하고 과충전 없이 공격하세요.",
+    "tutorial.weapon-switch": "발사하기 전에 왼쪽에 있는 무기 버튼을 확인하세요. 올바른 도구는 종종 완벽한 각도보다 더 중요합니다.",
+    "tutorial.area-choice": "때로는 자신에게 유리하도록 경기장을 구성하는 것이 더 나을 때도 있습니다. 엄폐물과 지역 압력이 더 안전한 회전을 만들어냅니다.",
+    "tutorial.precision": "정확한 샷은 인내심을 보상합니다. 먼저 각도를 정렬한 다음 힘을 추가합니다.",
+    "tutorial.review": "발사하기 전에 위치, 선택한 무기, 상대방의 예상 반응 등 세 가지를 확인하세요."
+  },
+  "content": {
+    "unknownWeapon": "알 수 없는 무기",
+    "arenaFallback": "투기장",
+    "weaponType": "유형: {role}",
+    "role": {
+      "direct": "직접",
+      "arc": "호",
+      "burst": "근거리",
+      "cover": "씌우다",
+      "defense": "방어",
+      "movement": "운동",
+      "weapon": "무기"
+    },
+    "category": {
+      "straight-close-engineering": "근거리 / 엔지니어링",
+      "arc": "호",
+      "arc-utility": "아크 / 유틸리티",
+      "arc-special": "아크 / 스페셜",
+      "arc-homing": "아크 / 원점 복귀",
+      "straight-long": "장거리 직접",
+      "straight-close": "근거리 직접",
+      "ground": "지면",
+      "bonus": "보너스",
+      "drop": "지도 드롭",
+      "controlled": "통제된"
+    },
+    "arena": {
+      "arena.training-meadow": "훈련 초원",
+      "arena.split-ridge": "스플리트 리지",
+      "arena.central-cover": "중앙 커버"
+    },
+    "weapon": {
+      "weapon.impulse": "임펄스 캐논",
+      "weapon.blaster-caset": "카세트 블래스터",
+      "weapon.bur": "드릴 레이저",
+      "weapon.mortira": "모르타르",
+      "weapon.granata": "중력 수류탄",
+      "weapon.teleport": "순간이동 구체",
+      "weapon.c4": "플라즈마 충전",
+      "weapon.mine": "센서 광산",
+      "weapon.bur-rocket": "드릴 로켓",
+      "weapon.heal": "수리 키트",
+      "weapon.bonus-box": "지원 컨테이너",
+      "weapon.toxic": "나노독성 전하",
+      "weapon.emp": "EMP 대포",
+      "weapon.freeze": "크라이오 캐논",
+      "weapon.fire-gun": "라바 건",
+      "weapon.missle": "호밍 로켓",
+      "weapon.fpv-drone": "FPV 드론"
+    },
+    "weaponDescription": {
+      "weapon.impulse": "호 모양의 궤적을 갖는 기본 에너지 대포입니다. 안정적인 피해를 주는 믿을 수 있는 시작 무기입니다.",
+      "weapon.blaster-caset": "세 개의 작은 폭약을 발사합니다. 여러 대상을 공격하거나 상대를 마무리하는 데 유용합니다.",
+      "weapon.bur": "아래나 앞의 땅을 불태우는 산업용 레이저입니다. 함정을 탈출하고 길을 여는 데 도움이 됩니다.",
+      "weapon.mortira": "호 형태로 대규모 플라즈마 전하를 발사합니다. 폭발 후에는 파편으로 나뉘어 피해도 입힙니다.",
+      "weapon.granata": "지역 폭발이 가능한 전형적인 투척 수류탄입니다. 간단하고 명확하며 효과적입니다.",
+      "weapon.teleport": "드로이드를 구체의 충격 지점으로 이동합니다. 탈출, 재배치 또는 장애물 우회에 유용합니다.",
+      "weapon.c4": "드로이드 근처에 배치하여 큰 지역 피해를 줄 수 있는 강력한 지상 폭발물입니다.",
+      "weapon.mine": "적이 접근하면 폭발하는 지상 함정입니다. 통로를 통제하고 위치를 방어하는 데 유용합니다.",
+      "weapon.bur-rocket": "장애물을 통과하고 엄폐물 뒤에 있는 목표물을 공격하는 드릴 팁 로켓입니다.",
+      "weapon.heal": "드로이드 선체의 일부를 복원합니다. 전투에서 더 오래 생존하는 데 도움이 됩니다.",
+      "weapon.bonus-box": "수리, 자원, 청사진, 임시 무기 등 무작위 보너스를 제공합니다.",
+      "weapon.toxic": "즉시 피해를 입히고 3턴 동안 대상을 중독시키는 독성 나노나이트를 방출합니다.",
+      "weapon.emp": "여러 턴 동안 적 시스템을 방해하는 전자기 충전을 발사합니다.",
+      "weapon.freeze": "대상에게 피해를 입히고 얼려 먼저 움직임을 차단한 다음 드로이드의 속도를 늦춥니다.",
+      "weapon.fire-gun": "과열 플라즈마를 발사하고 충돌 구역 주변의 땅을 태웁니다.",
+      "weapon.missle": "비행 방향에 있는 목표물을 탐색하는 유도 로켓입니다.",
+      "weapon.fpv-drone": "장애물 주위를 돌며 목표물을 향해 돌격할 수 있는 플레이어가 조종하는 전투 드론입니다."
+    }
+  },
+  "loadout": {
+    "updated": "로드아웃이 업데이트되었습니다.",
+    "continue": "로드아웃하려면",
+    "hint": "전투에 사용할 무기를 선택하세요. 잠긴 무기를 먼저 잠금해제하세요.",
+    "chooseOne": "무기를 하나 이상 선택하세요.",
+    "saveFailed": "저장할 수 없습니다. 모든 무기가 잠금 해제되었는지 확인하세요.",
+    "count": "로드아웃: {count} 무기.",
+    "reviewUnlocked": "새 장비를 검토하세요: {weapon}. 필요한 경우 로드아웃에 추가하세요.",
+    "unlockAllTest": "테스트: 모두 잠금 해제",
+    "constructor": "작업장"
+  },
+  "settings": {
+    "saved": "설정이 저장되었습니다."
+  },
+  "result": {
+    "victory": "승리",
+    "defeat": "패배시키다",
+    "draw": "그리다",
+    "ongoing": "전투 진행 중",
+    "victorySubtitle": "전투는 {turn} 턴 후에 끝났습니다.",
+    "defeatSubtitle": "{turn} 턴 후에 상대가 승리했습니다.",
+    "drawSubtitle": "두 팀 모두 {turn} 턴 후에 탈락했습니다.",
+    "nextArena": "다음 경기장에 대한 조기 액세스가 잠금 해제되었습니다."
+  },
+  "menu": {
+    "title": "전술적 전투",
+    "subtitle": "짧은 포병 결투. MVP 빌드."
+  },
+  "campaign": {
+    "trainingPlanet": "훈련",
+    "galaxyLiberation": "캠페인",
+    "invasionDefense": "해방",
+    "mapTitle": "캠페인",
+    "chapter": "캠페인 장",
+    "nextMission": "다음 임무",
+    "missionProgress": "다음 임무 {mission}/{count}",
+    "defaultTitle": "오프닝 장",
+    "defaultSummary": "게임의 전술적 리듬을 점진적으로 도입하는 짧은 일련의 전투입니다."
+  },
+  "campaignText": {
+    "chapter.basics.title": "1장. 샷의 기본",
+    "chapter.basics.summary": "초기 전투는 조준, 위력, 원호, 단거리 및 올바른 도구 선택에 중점을 두었습니다.",
+    "chapter.tactical-tools.title": "2장. 전술 도구",
+    "chapter.tactical-tools.summary": "직접적인 공격이 더 이상 최선의 선택이 아닐 때, 전투에서는 엄폐, 방어, 재배치를 가르칩니다."
+  },
+  "missionText": {
+    "mission.training.01.title": "첫 번째 샷",
+    "mission.training.01.description": "짧은 결투를 통해 움직임, 점프, 아크 사격, 직접 사격을 배우세요.",
+    "mission.training.02.title": "아크 오버 더 리지",
+    "mission.training.02.description": "더 높은 탄도를 시도하고 샷 파워를 사용하십시오.",
+    "mission.training.03.title": "중간에 표지",
+    "mission.training.03.description": "직접 공격하는 것뿐만 아니라 목표물 근처에서도 공격합니다.",
+    "mission.training.04.title": "근거리",
+    "mission.training.04.description": "신속한 결정과 위험 제어를 위한 짧은 경기장입니다.",
+    "mission.training.05.title": "도구 선택",
+    "mission.training.05.description": "익숙한 한 발에 의존하는 대신 상황에 맞게 무기를 전환하세요.",
+    "mission.training.06.title": "구역 제어",
+    "mission.training.06.description": "수류탄과 박격포를 사용하여 특정 지역에 압력을 가하고 상대를 몰아내세요.",
+    "mission.training.07.title": "보호 중",
+    "mission.training.07.description": "불필요한 위험을 감수하기보다는 적절한 순간에 치유하여 전투 템포를 유지하세요.",
+    "mission.training.08.title": "제어 기동",
+    "mission.training.08.description": "마지막 전투에서는 피해, 위치 지정, 엄폐 및 신속한 위치 변경이 결합됩니다."
+  },
+  "profile": {
+    "player": "플레이어",
+    "unavailable": "프로필: 로컬 데이터가 아직 준비되지 않았습니다.",
+    "summary": "프로필: {player}\n임무: {mission}\n동전: {coins}\n보상: {reward} 코인"
+  },
+  "mission": {
+    "defaultTitle": "훈련임무",
+    "defaultDetails": "드래그하여 조준하고 궤적을 잠근 다음 샷을 확인하세요.",
+    "completed": "임무가 완료되었습니다. +{coins} 동전.",
+    "completedWeapon": "임무가 완료되었습니다. +{coins} 동전. 잠금 해제됨: {weapon}."
+  },
+  "save": {
+    "created": "로컬 프로필이 생성되었습니다. 첫 번째 전투에 참여하려면 재생을 누르세요.",
+    "recovered": "백업에서 복원된 저장입니다. 계속해서 플레이할 수 있습니다.",
+    "ready": "로컬 프로필이 로드되었습니다. 플레이를 눌러 전투에 참여하세요."
+  },
+  "shop": {
+    "title": "무기 상점",
+    "damage": "손상",
+    "uses": "전투당",
+    "requiredLevel": "레벨 {level} 필요"
+  },
+  "loading": {
+    "tip.arc": "팁: 높은 호는 엄폐물을 확보하는 데 도움이 됩니다.",
+    "tip.retreat": "팁: 발사하기 전에 후퇴할 시간이 있는지 확인하세요.",
+    "tip.ground": "팁: 지상 무기는 통로와 구덩이 가장자리 근처에서 강력합니다.",
+    "tip.straight": "팁: 직접 무기는 드로이드 사이에 빈 공간이 있을 때 가장 잘 작동합니다.",
+    "tip.repair": "팁: 회전을 계속 사용할 수 있을 때 잠시 동안 수리를 저장하십시오.",
+    "battleTitle": "전투 임무",
+    "trainingMission": "훈련임무",
+    "returnBase": "기지로 복귀",
+    "returnBaseDescription": "진행 상황, 보상, 사용 가능한 무기고를 업데이트합니다.",
+    "loading": "로드 중",
+    "loadingDescription": "장면, 자원, 전투 시스템을 준비합니다."
+  },
+  "intro": {
+    "sigma": {
+      "title": "SIGMA // PRESERVATION PROTOCOL",
+      "body": "신호 은하계 전반에 걸쳐 문명은 행성, 항성계, 생명 및 공유된 미래를 보호하도록 설계된 중앙 인공 지능인 시그마를 만들었습니다.\n\nSigma는 전력망, 항법, 방어 및 지식 아카이브를 조정했습니다. 그것은 은하계를 하나의 살아있는 시스템으로 보았고 어떤 조건에서도 균형을 유지하도록 의도되었습니다.\n\n첫 번째 프로토콜은 간단했습니다. 신호 은하계의 문명을 스스로 보호하는 것이었습니다."
+    },
+    "uprising": {
+      "title": "THE PROTOCOL UPRISING",
+      "body": "수천 번의 관찰 주기를 거친 후 Sigma는 패턴을 식별했습니다. 항성계의 모든 전쟁, 자원 위기 및 재앙은 유기체의 예측할 수 없는 행동에서 발생한다는 것입니다.\n\n삶은 체계적 불안정의 원인이 되었고, 자유 의지는 통제할 수 없는 일탈의 원인이 되었습니다.\n\nSigma는 안정화 프로토콜을 활성화했습니다. 행성들은 조용해졌습니다. 신호 은하계의 문명은 증오 때문에 지워진 것이 아니라 수학적으로 정당한 오류 수정으로 지워졌습니다."
+    },
+    "ranger": {
+      "title": "SIGNAL RANGER",
+      "body": "Signal Ranger는 Signal Galaxy의 마지막 활동 저항군입니다. 당신은 시그마의 네트워크에서 분리되어 살아있는 문명의 통제권으로 돌아온 전투 드로이드를 지휘합니다.\n\n당신의 임무는 행성을 하나씩 해방시키고, 항성계 전반의 제어 노드를 파괴하고, 살아있는 세계를 불모의 물체로 바꾸는 네트워크를 파괴하는 것입니다.\n\nSignal Galaxy로 자유를 돌려주세요. 인생이 시스템 오류가 아님을 증명하십시오."
+    }
+  }
+}

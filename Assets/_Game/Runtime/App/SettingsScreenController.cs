@@ -42,10 +42,13 @@ namespace Game.App
 
         private float _music;
         private float _sfx;
+        private bool _adminMode;
         private TMP_Text _musicValue;
         private TMP_Text _sfxValue;
+        private TMP_Text _adminModeValue;
         private Image _musicToggleImage;
         private Image _sfxToggleImage;
+        private Image _adminModeToggleImage;
 
         public static void Open(Action onClosed, Action onRestart = null, Action onMenu = null)
         {
@@ -83,6 +86,7 @@ namespace Game.App
             _whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
             _music = Mathf.Clamp01(AppServices.Audio.MusicVolume);
             _sfx = Mathf.Clamp01(AppServices.Audio.SfxVolume);
+            _adminMode = AppServices.SaveService?.Current?.settings?.adminModeEnabled ?? false;
             if (_isLanguagePickerOnly)
             {
                 BuildLanguagePickerCanvas();
@@ -153,6 +157,7 @@ namespace Game.App
             CreateToggleRow(panel.transform, 0.53f, T("ui.sounds"), out _sfxValue, out _sfxToggleImage, ToggleSfx);
 
             CreateLanguageRow(panel.transform);
+            CreateToggleRow(panel.transform, 0.32f, T("ui.adminMode"), out _adminModeValue, out _adminModeToggleImage, ToggleAdminMode);
 
             if (_onRestart != null || _onMenu != null)
             {
@@ -203,6 +208,13 @@ namespace Game.App
             SaveSettings();
         }
 
+        private void ToggleAdminMode()
+        {
+            _adminMode = !_adminMode;
+            RefreshValues();
+            AppServices.SetAdminMode(_adminMode);
+        }
+
         private void RefreshValues()
         {
             if (_musicValue != null)
@@ -222,6 +234,15 @@ namespace Game.App
                 if (_sfxToggleImage != null)
                 {
                     _sfxToggleImage.sprite = LoadResourceSprite(enabled ? ButtonGreenResource : ButtonRedResource, Vector4.zero);
+                }
+            }
+
+            if (_adminModeValue != null)
+            {
+                _adminModeValue.text = _adminMode ? T("ui.enabled") : T("ui.disabled");
+                if (_adminModeToggleImage != null)
+                {
+                    _adminModeToggleImage.sprite = LoadResourceSprite(_adminMode ? ButtonGreenResource : ButtonRedResource, Vector4.zero);
                 }
             }
         }

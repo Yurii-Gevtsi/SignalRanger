@@ -294,7 +294,7 @@ namespace Game.Gameplay.Battle.AI
         private BotShotPlan? PlanShotFromCurrent()
         {
             var unit = ActiveOpponentUnit();
-            if (unit == null || _weapon == null)
+            if (unit == null || _weapon == null || !_simulation.CanActiveUnitFire())
             {
                 return null;
             }

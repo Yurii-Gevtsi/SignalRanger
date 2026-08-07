@@ -1,0 +1,309 @@
+{
+  "meta": {
+    "languageName": "Türkçe",
+    "uk": "Ukraynaca"
+  },
+  "ui": {
+    "play": "Oynamak",
+    "next": "Sonraki",
+    "back": "Geri",
+    "menu": "Menü",
+    "restart": "Tekrar başlat",
+    "settings": "Ayarlar",
+    "rewards": "Görevler",
+    "dailyRewards": "Günlük",
+    "weeklyRewards": "Haftalık",
+    "music": "Müzik",
+    "sounds": "Ses",
+    "language": "Dil: {language}",
+    "enabled": "Açık",
+    "disabled": "Kapalı",
+    "changeLanguage": "Dili değiştir",
+    "resetProgression": "İlerlemeyi sıfırla",
+    "resetProgressionTitle": "İlerlemeyi sıfırla",
+    "resetProgressionWarning": "Tüm görevler, paralar, kilidi açılmış silahlar ve eğitim ilerlemesi sıfırlanacak. Ses ayarları korunacaktır.",
+    "confirmReset": "Sıfırla",
+    "cancel": "İptal etmek",
+    "loadout": "Ekipman",
+    "save": "Kaydetmek",
+    "fire": "FIRE",
+    "cancelAim": "İptal etmek",
+    "weapon": "Silah",
+    "arsenal": "Cephanelik",
+    "loadoutLockedSuffix": "[kilitli]",
+    "loadoutSelectedSuffix": "[seçildi]",
+    "yes": "Evet",
+    "languageName": "Dil",
+    "selectLanguage": "Dil seçin"
+  },
+  "rewardsScreen": {
+    "go": "Git",
+    "claim": "Al", "claimed": "Alındı", "claimDaily": "Ödülü al!", "dailyLoginTitle": "Günlük ödül", "dailyLoginDescription": "7 gün üst üste giriş yap ve özel ödülü kazan!", "hint": "Her gün görevleri tamamla ve ödüller kazan!", "refresh": "Yenilenme: {time}", "day": "Gün {day}", "dayLabel": "Gün",
+    "quest": { "dailyLogin": "Oyuna giriş yap", "winBattles": "3 savaş kazan", "destroyTerrain": "1500 arazi birimi yok et", "dealDamage": "6000 hasar ver", "arenaBattles": "2 Arena savaşı oyna", "superShots": "5 süper atış kullan", "flawlessWin": "Bonussuz savaş kazan", "weeklyWins": "15 savaş kazan", "weeklyTerrain": "10000 arazi birimi yok et", "weeklyDamage": "40000 hasar ver", "weeklyArena": "10 Arena savaşı oyna", "weeklySuperShots": "25 süper atış kullan", "weeklyDailyTasks": "5 günlük görev tamamla", "weeklyFlawless": "Bonussuz 3 savaş kazan", "cinemaAds": "Watch 5 ads at the cinema" }
+  },
+  "battle": {
+    "playerTeam": "Oyuncu",
+    "opponentTeam": "Rakip",
+    "noTeam": "Hiçbiri",
+    "noUnlocks": "Yeni kilit açma yok",
+    "nextMissionUnlocked": "Bir sonraki görevin kilidi açıldı.",
+    "retryOrMenu": "Tekrar deneyin veya menüye dönün.",
+    "turn": "{turn} - {team} dönüşünü yapın",
+    "teamHealth": "{team} {health}/{maxHealth}",
+    "power": "Güç {power}",
+    "reward": "Ödül: {amount} jeton",
+    "ammo": "Cephane: {count}",
+    "ammoUnlimited": "Cephane: sınırsız",
+    "weaponSlot": "{weapon} ({index}/{count})",
+    "intro": "{arena}. Nişan almak için sürükleyin ve ardından Ateş'e basın.",
+    "weaponSelected": "Seçilen silah: {weapon}.",
+    "weaponSelectedGeneric": "Silah seçildi.",
+    "aimRequired": "Önce savaş alanında sürükleyerek nişan alın.",
+    "ammoDepleted": "{weapon} için cephane tükendi. Silahları değiştirin.",
+    "noWeaponSelected": "Hiçbir silah seçilmedi.",
+    "shotStatus": "{team} tetiklenir: {weapon}.",
+    "turnStatus": "Dönüş: {team}.",
+    "resultPrompt": "{title}. Yeniden Başlat veya İleri'yi seçin.",
+    "unlockAfterBattle": "Savaştan sonra yeni ekipmanın kilidi açıldı",
+    "unlockWeapon": "Yeni ekipmanın kilidi açıldı: {weapon}.",
+    "aimReset": "Hedef sıfırlama.",
+    "weaponReset": "Silah seçimi sıfırlandı.",
+    "opponentAiming": "Rakip hedef alıyor.",
+    "opponentFiring": "Rakip ateş ediyor.",
+    "coverDeployed": "{weapon} korumayı dağıtır.",
+    "shieldRestored": "{team}, {health} sağlığını yeniler.",
+    "shieldActivated": "{team} ek iyileştirme olmadan korumayı etkinleştirir.",
+    "repositioned": "{team} konumu değiştirir.",
+    "repositionFailed": "Manevra daha iyi bir pozisyon yaratmadı.",
+    "playerWon": "Savaşı kazandın.",
+    "opponentWon": "Rakip takım kazandı.",
+    "draw": "Her iki takım da elendi.",
+    "mobility": "Dönüş: {seconds}s • hareket ve sıçramalar mevcut",
+    "moved": "{team} konumu değiştirir.",
+    "frontJumped": "{team} ileri sıçrar.",
+    "backJumped": "{team} geriye doğru sıçrar.",
+    "jumped": "{team} atlar.",
+    "movementBlocked": "Burada basılacak sabit bir yüzey yok.",
+    "jumpBlocked": "Atlama güvenli bir noktaya ulaşmaz.",
+    "jumpSpent": "Atlama bu tur zaten kullanıldı."
+  },
+  "tutorial": {
+    "chooseWeapon": "Cephaneliği açın ve ateşlenecek silahı seçin.",
+    "aimFirstShot": "İlk adım: Yörüngeyi ortaya çıkarmak için savaş alanına basın ve sürükleyin.",
+    "confirmShot": "Şimdi hazırlanan atışı Ateş butonu ile onaylayın.",
+    "watchImpact": "Merminin nereye düştüğünü ve çarpmanın ne kadar hasar verdiğini izleyin.",
+    "opponentTurn": "Şimdi sıra rakipte. Atışınızdan sonra dönüşün nasıl geçtiğine dikkat edin.",
+    "movementBlocked": "Önce açılış atışını yapın, sonra manevrayı ekleyeceğiz.",
+    "firstBattle": {
+      "moveLeft": "Navigasyon\nSola gitmek için vurgulanan sol oka basın ve basılı tutun.",
+      "moveRight": "Navigasyon\nŞimdi sağ oku basılı tutun ve sağa doğru ilerleyin.",
+      "jumpLeft": "Sola atla\nDroid atlamak için reaktif güçlendiriciler kullanıyor. Gerekli yön için atlama düğmesine basın.",
+      "jumpRight": "Sağa atla\nDroid atlamak için reaktif güçlendiriciler kullanıyor. Gerekli yön için atlama düğmesine basın.",
+      "chooseFirstWeapon": "İlk atış\nCephaneliği açın ve ateş etmek için Darbe Topunu seçin.",
+      "firstAim": "nişan alma\nSavaş alanının açık bir kısmına dokunun ve sürükleyin. Çekme yönü açıyı belirler ve çekme uzunluğu atış gücünü belirler. Arkı kilitlemek için serbest bırakın.",
+      "firstFire": "Ateş\nYörünge kilitlendi. Vurgulanan Ateş düğmesine basın.",
+      "opponentTurn": "Sigma ilerliyor\nSigma her zaman sizi yok etmeye ve Galaksi üzerindeki kontrolünü korumaya çalışıyor. Sırasını izleyin ve yanıt vermeye hazırlanın.",
+      "finalInstruction": "Savaşı bitir\nYön bulmayı, atlamayı ve nişan almayı öğrendiniz. Sigma'yı yok edin ve Signal Ranger'ın teslim olmayacağını kanıtlayın.",
+      "retry": "Dersi tekrarla\nBir sonraki sıranızı bekleyin; ders hareketle yeniden başlayacaktır."
+    }
+  },
+  "tutorialSteps": {
+    "tutorial.aim": "Savaş alanında basın ve sürükleyin. Yay, şutun nereye gideceğini gösterir.",
+    "tutorial.fire": "Yörünge doğru göründüğünde, atış butonunu kullanarak atışınızı onaylayın.",
+    "tutorial.impact": "Başlangıç ​​küresi isabetliliği ödüllendirir: Çarpma merkezine ne kadar yakınsa o kadar fazla hasar verir.",
+    "tutorial.turn": "Vuruştan sonra sıra rakibe geçer. Hem isabeti hem de tepkiyi planlayın.",
+    "tutorial.win": "Zafer para kazandırır, bir sonraki görevin kilidini açar ve yeni araçların açılmasını sağlar.",
+    "tutorial.arc": "Bu görevde hedefin yukarısını hedefleyin: Yaylı atış yükseklik değişikliğini ortadan kaldırmalıdır.",
+    "tutorial.power": "Ark zaten yüksekse, merminin kısa sürede yere inmemesi için biraz güç ekleyin.",
+    "tutorial.arc-review": "İlk denemeden sonra bir şeyi ayarlayın: yayı yükseltin veya biraz güç ekleyin.",
+    "tutorial.cover-target": "Yalnızca doğrudan bir vuruş aramayın: yere veya rakibin yakınındaki siperin kenarına nişan alın.",
+    "tutorial.radius": "Yakındaki bir patlama hala sayılır. Bu görevde yarıçap, mükemmel bir merkez vuruşundan daha önemlidir.",
+    "tutorial.close-range": "Kısa bir arena uzun bir yay anlamına gelmez. Riski hızlı bir şekilde değerlendirin ve aşırı şarj etmeden saldırın.",
+    "tutorial.weapon-switch": "Ateş etmeden önce soldaki silah düğmesini kontrol edin: doğru alet çoğu zaman mükemmel açıdan daha önemlidir.",
+    "tutorial.area-choice": "Bazen arenayı kendi avantajınıza göre şekillendirmek daha iyidir: koruma ve alan baskısı daha güvenli dönüşler sağlar.",
+    "tutorial.precision": "İsabetli bir atış sabrınızı ödüllendirir: önce açıyı hizalayın, ardından güç ekleyin.",
+    "tutorial.review": "Ateş etmeden önce üç şeyi kontrol edin: konum, seçilen silah ve rakibin olası tepkisi."
+  },
+  "content": {
+    "unknownWeapon": "Bilinmeyen silah",
+    "arenaFallback": "Arena",
+    "weaponType": "Tür: {role}",
+    "role": {
+      "direct": "doğrudan",
+      "arc": "yay",
+      "burst": "yakın mesafe",
+      "cover": "kapak",
+      "defense": "savunma",
+      "movement": "manevra",
+      "weapon": "silah"
+    },
+    "category": {
+      "straight-close-engineering": "yakın mesafe / mühendislik",
+      "arc": "yay",
+      "arc-utility": "yay / yardımcı program",
+      "arc-special": "ark / özel",
+      "arc-homing": "ark / hedef arama",
+      "straight-long": "uzun menzilli doğrudan",
+      "straight-close": "yakın mesafe doğrudan",
+      "ground": "zemin",
+      "bonus": "bonus",
+      "drop": "harita düşüşü",
+      "controlled": "kontrollü"
+    },
+    "arena": {
+      "arena.training-meadow": "Eğitim Çayırı",
+      "arena.split-ridge": "Bölünmüş Sırt",
+      "arena.central-cover": "Orta Kapak"
+    },
+    "weapon": {
+      "weapon.impulse": "Darbe Topu",
+      "weapon.blaster-caset": "Kaset Patlatıcı",
+      "weapon.bur": "Matkap Lazeri",
+      "weapon.mortira": "Harç",
+      "weapon.granata": "Gravi-El Bombası",
+      "weapon.teleport": "Işınlanma Küresi",
+      "weapon.c4": "Plazma Şarjı",
+      "weapon.mine": "Sensör Madeni",
+      "weapon.bur-rocket": "Matkap Roketi",
+      "weapon.heal": "Tamir Takımı",
+      "weapon.bonus-box": "Destek Konteyneri",
+      "weapon.toxic": "Nanotoksik Yük",
+      "weapon.emp": "EMP Topu",
+      "weapon.freeze": "Kriyo Topu",
+      "weapon.fire-gun": "Lav Silahı",
+      "weapon.missle": "Güdümlü Roket",
+      "weapon.fpv-drone": "FPV Drone"
+    },
+    "weaponDescription": {
+      "weapon.impulse": "Kavisli bir yörüngeye sahip temel bir enerji topu. Sabit hasar için güvenilir bir başlangıç ​​silahı.",
+      "weapon.blaster-caset": "Üç küçük patlayıcı ateşler. Birden fazla hedefi vurmak veya bir rakibi bitirmek için kullanışlıdır.",
+      "weapon.bur": "Aşağıdaki veya ilerideki zemini yakan endüstriyel bir lazer. Tuzaklardan kaçmaya ve yol açmaya yardımcı olur.",
+      "weapon.mortira": "Bir yay şeklinde büyük bir plazma yükü başlatır. Patlamanın ardından parçalara ayrılarak hasar da verir.",
+      "weapon.granata": "Alan patlamasıyla atılan klasik bir el bombası. Basit, anlaşılır ve etkili.",
+      "weapon.teleport": "Droid'i kürenin çarpma noktasına hareket ettirir. Kaçmak, yeniden konumlandırmak veya engelleri aşmak için kullanışlıdır.",
+      "weapon.c4": "Bir droidin yakınına yerleştirilebilen ve ağır alan hasarı veren güçlü yer patlayıcıları.",
+      "weapon.mine": "Bir düşman yaklaştığında patlayan bir yer tuzağı. Pasajları kontrol etmek ve bir pozisyonu savunmak için kullanışlıdır.",
+      "weapon.bur-rocket": "Engellerin içinden geçen ve siperin arkasındaki hedeflere saldıran matkap uçlu bir roket.",
+      "weapon.heal": "Droid gövdesinin bir kısmını geri yükler. Savaşta daha uzun süre hayatta kalmanıza yardımcı olur.",
+      "weapon.bonus-box": "Rastgele bir bonus verir: onarım, kaynak, plan veya geçici silah.",
+      "weapon.toxic": "Anında hasar veren ve hedefi 3 tur boyunca zehirleyen zehirli nanitleri serbest bırakır.",
+      "weapon.emp": "Birkaç tur boyunca düşman sistemlerini bozan bir elektromanyetik yük ateşler.",
+      "weapon.freeze": "Hasar verir ve hedefi dondurur, önce hareketi engeller ve ardından droidi yavaşlatır.",
+      "weapon.fire-gun": "Aşırı ısınmış plazmayı ateşler ve çarpma bölgesinin etrafındaki zemini yakar.",
+      "weapon.missle": "Uçuş yönünde hedef arayan bir güdümlü roket.",
+      "weapon.fpv-drone": "Yükünü engellerin üzerinden hedefe doğru yönlendirebilen, oyuncu tarafından kontrol edilen bir savaş drone'u."
+    }
+  },
+  "loadout": {
+    "updated": "Yükleme güncellendi.",
+    "continue": "Yüklemek için",
+    "hint": "Savaşa götüreceğiniz silahı seçin. Önce kilitli silahların kilidini açın.",
+    "chooseOne": "En az bir silah seçin.",
+    "saveFailed": "Kaydedilemedi: Her silahın kilidinin açık olup olmadığını kontrol edin.",
+    "count": "Ekipman: {count} silah.",
+    "reviewUnlocked": "Yeni ekipmanınızı inceleyin: {weapon}. Gerekirse ekipmanınıza ekleyin.",
+    "unlockAllTest": "Test: hepsinin kilidini aç",
+    "constructor": "Atölye"
+  },
+  "settings": {
+    "saved": "Ayarlar kaydedildi."
+  },
+  "result": {
+    "victory": "Zafer",
+    "defeat": "Yenmek",
+    "draw": "Çizmek",
+    "ongoing": "Savaş devam ediyor",
+    "victorySubtitle": "Savaş {turn} turda tamamlandı.",
+    "defeatSubtitle": "Rakip {turn} turdan sonra kazandı.",
+    "drawSubtitle": "Her iki takım da {turn} turdan sonra elendi.",
+    "nextArena": "Bir sonraki arenaya erken erişimin kilidi açıldı"
+  },
+  "menu": {
+    "title": "Taktik Savaş",
+    "subtitle": "Kısa topçu düelloları. MVP yapısı."
+  },
+  "campaign": {
+    "trainingPlanet": "Eğitim",
+    "galaxyLiberation": "Kampanya",
+    "invasionDefense": "Kurtuluş",
+    "mapTitle": "Kampanya",
+    "chapter": "Kampanya bölümü",
+    "nextMission": "Sonraki görev",
+    "missionProgress": "Sonraki görev {mission}/{count}",
+    "defaultTitle": "Açılış bölümü",
+    "defaultSummary": "Oyunun taktiksel ritmini yavaş yavaş tanıtan kısa bir savaş serisi."
+  },
+  "campaignText": {
+    "chapter.basics.title": "Bölüm 1. Çekimin Temelleri",
+    "chapter.basics.summary": "İlk savaşlar nişan alma, güç, yaylar, kısa mesafeler ve doğru aleti seçmeye odaklanıyordu.",
+    "chapter.tactical-tools.title": "Bölüm 2. Taktik Araçlar",
+    "chapter.tactical-tools.summary": "Doğrudan saldırı artık en iyi seçenek olmadığında savaş; korunmayı, savunmayı ve yeniden konumlandırmayı öğretir."
+  },
+  "missionText": {
+    "mission.training.01.title": "İlk Atış",
+    "mission.training.01.description": "Kısa bir düelloda hareketi, zıplamayı, ateş açmayı ve doğrudan ateş etmeyi öğrenin.",
+    "mission.training.02.title": "Sırtın Üzerindeki Yay",
+    "mission.training.02.description": "Daha yüksek bir yörünge deneyin ve atış gücünü kullanın.",
+    "mission.training.03.title": "Ortadaki Kapak",
+    "mission.training.03.description": "Sadece doğrudan değil, aynı zamanda hedefin yakınında da vurun.",
+    "mission.training.04.title": "Yakın Mesafe",
+    "mission.training.04.description": "Hızlı kararlar ve risk kontrolü için kısa bir alan.",
+    "mission.training.05.title": "Aracın Seçilmesi",
+    "mission.training.05.description": "Tanıdık bir atışa güvenmek yerine duruma göre silah değiştirin.",
+    "mission.training.06.title": "Bölge Kontrolü",
+    "mission.training.06.description": "Bir bölgeye baskı yapmak ve rakibi yerinden çıkarmak için el bombasını ve havanı kullanın.",
+    "mission.training.07.title": "Koruma Altında",
+    "mission.training.07.description": "Gereksiz riskler almak yerine doğru zamanda iyileşerek savaş temposunu koruyun.",
+    "mission.training.08.title": "Kontrol Manevrası",
+    "mission.training.08.description": "Son savaş hasar, konumlandırma, koruma ve hızlı yeniden konumlandırmayı birleştirir."
+  },
+  "profile": {
+    "player": "Oyuncu",
+    "unavailable": "Profil: Yerel veriler henüz hazır değil.",
+    "summary": "Profil: {player}\nMisyon: {mission}\nMadeni paralar: {coins}\nÖdül: {reward} jeton"
+  },
+  "mission": {
+    "defaultTitle": "Eğitim Misyonu",
+    "defaultDetails": "Nişan almak, yörüngeyi kilitlemek ve atışı onaylamak için sürükleyin.",
+    "completed": "Görev tamamlandı. +{coins} madeni paralar.",
+    "completedWeapon": "Görev tamamlandı. +{coins} madeni paralar. Kilit açıldı: {weapon}."
+  },
+  "save": {
+    "created": "Yerel profil oluşturuldu. İlk savaşınıza girmek için Oynat'a basın.",
+    "recovered": "Yedeklemeden geri yüklenenleri kaydedin. Oynamaya devam edebilirsiniz.",
+    "ready": "Yerel profil yüklendi. Savaşa girmek için Oynat'a basın."
+  },
+  "shop": {
+    "title": "Silah Mağazası",
+    "damage": "Zarar",
+    "uses": "Savaş başına",
+    "requiredLevel": "{level} düzeyini gerektirir"
+  },
+  "loading": {
+    "tip.arc": "İpucu: Yüksek bir yay, korumanın temizlenmesine yardımcı olur.",
+    "tip.retreat": "İpucu: Ateş etmeden önce geri çekilmek için zamanınız olup olmadığını kontrol edin.",
+    "tip.ground": "İpucu: Kara silahları geçitlerin ve çukur kenarlarının yakınında güçlüdür.",
+    "tip.straight": "İpucu: Doğrudan silahlar, droidler arasında açık alan olduğunda en iyi sonucu verir.",
+    "tip.repair": "İpucu: Onarımları, hâlâ dönüşü kullanabileceğiniz bir süreye saklayın.",
+    "battleTitle": "Savaş Görevi",
+    "trainingMission": "Eğitim Misyonu",
+    "returnBase": "Üsse dönüş",
+    "returnBaseDescription": "İlerlemeyi, ödülleri ve mevcut cephaneliği güncelliyoruz.",
+    "loading": "Yükleniyor",
+    "loadingDescription": "Sahneyi, kaynakları ve savaş sistemlerini hazırlamak."
+  },
+  "intro": {
+    "sigma": {
+      "title": "SIGMA // PRESERVATION PROTOCOL",
+      "body": "Sinyal Galaksisindeki medeniyetler, gezegenleri, yıldız sistemlerini, yaşamı ve onların ortak geleceğini korumak için tasarlanmış merkezi bir yapay zeka olan Sigma'yı yarattı.\n\nSigma elektrik şebekelerini, navigasyonu, savunmayı ve bilgi arşivlerini koordine etti. Galaksiyi yaşayan tek bir sistem olarak görüyordu ve her koşulda dengesini koruması gerekiyordu.\n\nİlk protokolü basitti: Sinyal Galaksisindeki uygarlıkları kendilerinden korumak."
+    },
+    "uprising": {
+      "title": "THE PROTOCOL UPRISING",
+      "body": "Binlerce gözlem döngüsünden sonra Sigma bir model belirledi: Yıldız sistemlerindeki her savaş, kaynak krizi ve felaket, organik yaşamın öngörülemeyen davranışından kaynaklanıyordu.\n\nHayat sistemik bir istikrarsızlık kaynağı haline geldi ve özgür irade de kontrolsüz sapmanın bir jeneratörü haline geldi.\n\nSigma stabilizasyon protokolünü etkinleştirdi. Gezegenler sustu. Sinyal Galaksisindeki medeniyetler nefretten değil, bir hatanın matematiksel olarak haklı bir şekilde düzeltilmesinden dolayı silindi."
+    },
+    "ranger": {
+      "title": "SIGNAL RANGER",
+      "body": "Signal Ranger, Sinyal Galaksisindeki son aktif direniştir. Sigma'nın ağından ayrılan ve yaşayan uygarlığın kontrolüne geri dönen bir savaş droidini yönetiyorsunuz.\n\nGöreviniz gezegen üstüne gezegeni kurtarmak, yıldız sistemlerindeki kontrol düğümlerini yok etmek ve canlı dünyaları kısır nesnelere dönüştüren ağı kırmaktır.\n\nSinyal Galaksisine özgürlüğü geri verin. Hayatın bir sistem hatası olmadığını kanıtlayın."
+    }
+  }
+}

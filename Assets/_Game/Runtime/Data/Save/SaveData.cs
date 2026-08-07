@@ -6,7 +6,7 @@ namespace Game.Data.Save
     [Serializable]
     public sealed class SaveData
     {
-        public const int CurrentSchemaVersion = 6;
+        public const int CurrentSchemaVersion = 7;
 
         public int schemaVersion;
         public long lastWriteUtcTicks;
@@ -17,6 +17,7 @@ namespace Game.Data.Save
         public SaveSettingsData settings;
         public SaveTutorialData tutorial;
         public SaveLedgerData ledger;
+        public SaveActivityProgressData activity;
 
         public static SaveData CreateNew()
         {
@@ -39,6 +40,7 @@ namespace Game.Data.Save
             settings ??= SaveSettingsData.CreateDefault();
             tutorial ??= SaveTutorialData.CreateDefault();
             ledger ??= SaveLedgerData.CreateDefault();
+            activity ??= SaveActivityProgressData.CreateDefault();
 
             profile.EnsureDefaults();
             campaign.EnsureDefaults();
@@ -47,6 +49,7 @@ namespace Game.Data.Save
             settings.EnsureDefaults();
             tutorial.EnsureDefaults();
             ledger.EnsureDefaults();
+            activity.EnsureDefaults();
         }
 
         public void ResetProgression()
@@ -58,8 +61,88 @@ namespace Game.Data.Save
             economy = SaveEconomyData.CreateDefault();
             tutorial = SaveTutorialData.CreateDefault();
             ledger = SaveLedgerData.CreateDefault();
+            activity = SaveActivityProgressData.CreateDefault();
             EnsureDefaults();
         }
+    }
+
+    [Serializable]
+    public sealed class SaveActivityProgressData
+    {
+        public long dailyPeriodStartUtcTicks;
+        public long weeklyPeriodStartUtcTicks;
+        public long lastLoginDailyPeriodStartUtcTicks;
+        public SaveActivityCounterData daily;
+        public SaveActivityCounterData weekly;
+        public List<string> dailyClaimedQuestIds;
+        public List<string> weeklyClaimedQuestIds;
+
+        public static SaveActivityProgressData CreateDefault()
+        {
+            var data = new SaveActivityProgressData();
+            data.EnsureDefaults();
+            return data;
+        }
+
+        public void EnsureDefaults()
+        {
+            daily ??= SaveActivityCounterData.CreateDefault();
+            weekly ??= SaveActivityCounterData.CreateDefault();
+            dailyClaimedQuestIds ??= new List<string>();
+            weeklyClaimedQuestIds ??= new List<string>();
+            daily.EnsureDefaults();
+            weekly.EnsureDefaults();
+            dailyClaimedQuestIds.RemoveAll(string.IsNullOrWhiteSpace);
+            weeklyClaimedQuestIds.RemoveAll(string.IsNullOrWhiteSpace);
+        }
+    }
+
+    [Serializable]
+    public sealed class SaveActivityCounterData
+    {
+        public int logins;
+        public int battlesPlayed;
+        public int battlesWon;
+        public int arenaBattlesPlayed;
+        public int storyBattlesPlayed;
+        public int storyMissionsCompleted;
+        public int damageDealt;
+        public int terrainCellsDestroyed;
+        public int resourcesCollected;
+        public int rewardedAdsWatched;
+        public int shotsFired;
+        public int rocketShotsFired;
+        public int grenadeShotsFired;
+        public int walkDistanceCentiUnits;
+        public int jumpDistanceCentiUnits;
+
+        public static SaveActivityCounterData CreateDefault()
+        {
+            var data = new SaveActivityCounterData();
+            data.EnsureDefaults();
+            return data;
+        }
+
+        public void EnsureDefaults()
+        {
+            logins = Clamp(logins);
+            battlesPlayed = Clamp(battlesPlayed);
+            battlesWon = Clamp(battlesWon);
+            arenaBattlesPlayed = Clamp(arenaBattlesPlayed);
+            storyBattlesPlayed = Clamp(storyBattlesPlayed);
+            storyMissionsCompleted = Clamp(storyMissionsCompleted);
+            damageDealt = Clamp(damageDealt);
+            terrainCellsDestroyed = Clamp(terrainCellsDestroyed);
+            resourcesCollected = Clamp(resourcesCollected);
+            rewardedAdsWatched = Clamp(rewardedAdsWatched);
+            shotsFired = Clamp(shotsFired);
+            rocketShotsFired = Clamp(rocketShotsFired);
+            grenadeShotsFired = Clamp(grenadeShotsFired);
+            walkDistanceCentiUnits = Clamp(walkDistanceCentiUnits);
+            jumpDistanceCentiUnits = Clamp(jumpDistanceCentiUnits);
+        }
+
+        private static int Clamp(int value) => value < 0 ? 0 : value;
     }
 
     [Serializable]
@@ -292,6 +375,12 @@ namespace Game.Data.Save
         public bool hasVolumeSettings;
         public float musicVolume;
         public float sfxVolume;
+        /// <summary>
+        /// QA/debug toggle: max commander level and unlimited currency/blueprints,
+        /// without mutating the player's real saved progress (see
+        /// CommanderProgressionTable.ForceMaxLevel and EconomyService.AdminModeEnabled).
+        /// </summary>
+        public bool adminModeEnabled;
 
         public static SaveSettingsData CreateDefault()
         {

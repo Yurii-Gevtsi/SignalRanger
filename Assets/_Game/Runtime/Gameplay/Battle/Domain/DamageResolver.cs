@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +11,8 @@ namespace Game.Gameplay.Battle.Domain
             Vector2 impactPoint,
             string sourceUnitId,
             string sourceId,
-            RadialDamageSettings settings)
+            RadialDamageSettings settings,
+            Func<BattleUnitState, int, int> damageModifier = null)
         {
             var events = new List<DamageEvent>();
 
@@ -33,6 +35,16 @@ namespace Game.Gameplay.Battle.Domain
                 if (unit.UnitId == sourceUnitId)
                 {
                     damage = Mathf.CeilToInt(damage * settings.SelfDamageMultiplier);
+                }
+
+                if (damage <= 0)
+                {
+                    continue;
+                }
+
+                if (damageModifier != null)
+                {
+                    damage = Mathf.Max(0, damageModifier(unit, damage));
                 }
 
                 if (damage <= 0)

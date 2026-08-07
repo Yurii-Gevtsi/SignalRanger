@@ -58,6 +58,17 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void SetRemainingAmmo_OverridesLimitedWeaponMagazineForCurrentBattle()
+        {
+            var weapon = LimitedWeapon("weapon.test.evolved-magazine", 3);
+            var inventory = new WeaponInventoryRuntime(new[] { weapon });
+
+            inventory.SetRemainingAmmo(weapon, 5);
+
+            Assert.That(inventory.GetSelectedRemainingAmmo(), Is.EqualTo(5));
+        }
+
+        [Test]
         public void EmptyInventory_HasNoSelectionAndCannotFire()
         {
             var inventory = new WeaponInventoryRuntime(null);

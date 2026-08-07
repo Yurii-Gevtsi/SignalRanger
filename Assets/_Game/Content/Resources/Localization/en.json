@@ -7,8 +7,12 @@
     "menu": "Menu",
     "restart": "Restart",
     "settings": "Settings",
+    "rewards": "Tasks",
+    "dailyRewards": "Daily",
+    "weeklyRewards": "Weekly",
     "music": "Music",
     "sounds": "Sound",
+    "adminMode": "Admin Mode",
     "language": "Language: {language}",
     "enabled": "On",
     "disabled": "Off",
@@ -18,7 +22,12 @@
     "resetProgressionWarning": "All missions, coins, unlocked weapons, and tutorial progress will be reset. Sound settings will be kept.",
     "confirmReset": "Reset",
     "cancel": "Cancel",
-    "loadout": "Loadout", "save": "Save", "fire": "FIRE", "cancelAim": "Cancel", "weapon": "Weapon", "loadoutLockedSuffix": "  [locked]", "loadoutSelectedSuffix": "  [selected]", "yes": "Yes", "languageName": "Language", "selectLanguage": "Select language"
+    "loadout": "Loadout", "save": "Save", "fire": "FIRE", "cancelAim": "Cancel", "weapon": "Weapon", "arsenal": "Arsenal", "loadoutLockedSuffix": "  [locked]", "loadoutSelectedSuffix": "  [selected]", "yes": "Yes", "languageName": "Language", "selectLanguage": "Select language"
+  },
+  "rewardsScreen": {
+    "go": "Go",
+    "claim": "Claim", "claimed": "Claimed", "claimDaily": "Claim reward!", "dailyLoginTitle": "Daily reward", "dailyLoginDescription": "Log in 7 days in a row to receive a special reward!", "hint": "Complete tasks every day and earn rewards!", "refresh": "Refresh in: {time}", "day": "Day {day}", "dayLabel": "Day",
+    "quest": { "dailyLogin": "Log in to the game", "winBattles": "Win 3 battles", "destroyTerrain": "Destroy 1500 terrain units", "dealDamage": "Deal 6000 damage", "arenaBattles": "Play 2 Arena battles", "superShots": "Use 5 super shots", "flawlessWin": "Win a battle without bonuses", "weeklyWins": "Win 15 battles", "weeklyTerrain": "Destroy 10000 terrain units", "weeklyDamage": "Deal 40000 damage", "weeklyArena": "Play 10 Arena battles", "weeklySuperShots": "Use 25 super shots", "weeklyDailyTasks": "Complete 5 daily tasks", "weeklyFlawless": "Win 3 battles without bonuses", "cinemaAds": "Watch 5 ads at the cinema" }
   },
   "battle": {
     "playerTeam": "Player", "opponentTeam": "Opponent", "noTeam": "None", "noUnlocks": "No new unlocks",

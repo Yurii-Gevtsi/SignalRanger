@@ -1,7 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core;
 using Game.Core.Battle;
+using Game.Data.Progression;
+using Game.Data.Save;
 using Game.Core.Localization;
 using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.AI;
@@ -86,16 +89,32 @@ namespace Game.Gameplay.Battle.Assembly
         // correction, and their resting pose tilts slightly toward the ground.
         private const float RestingWeaponTiltDegrees = 10f;
         private const float ControlledPointerDeadZonePixels = 2f;
+        private const int MaxActiveSupportPickups = 2;
+        private const float SupportPickupWorldWidth = 0.55f;
+        private const float ResourceDropBeamWorldWidth = 2.4f;
+        private const float ResourceDropBeamGrowSeconds = 0.65f;
+        private const float ResourceDropBeamFadeSeconds = 0.28f;
+        private const string WeaponIconResourceRoot = "UI/Weapons/";
+        private const string RocketTrailIconId = "missle_tail";
+        private const float RocketTrailAttachFraction = 0.32f;
+        private static readonly HashSet<string> RocketWeaponIds = new(System.StringComparer.Ordinal)
+        {
+            "weapon.missle",
+            "weapon.bur-rocket"
+        };
 
         private readonly Color _playerColor = new(0.18f, 0.56f, 0.96f);
         private readonly Color _opponentColor = new(0.95f, 0.28f, 0.22f);
         private readonly List<BattleUnitPresenter> _unitPresenters = new();
         private readonly List<GameObject> _arenaObjects = new();
+        private readonly List<ResourcePickup> _resourcePickups = new();
         private readonly Dictionary<string, UnitMotor> _unitMotors = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, WeaponDefinition> _weaponsById = new(System.StringComparer.Ordinal);
+        private readonly Dictionary<string, WeaponEvolutionProfile> _playerWeaponEvolutions = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, Sprite> _spriteResourceCache = new(System.StringComparer.Ordinal);
         private readonly Dictionary<int, GameObject> _projectileVisuals = new();
         private readonly Dictionary<int, GameObject> _mineVisuals = new();
+        private readonly Dictionary<int, (WeaponDefinition Weapon, BattleTeamId Team)> _mineOwners = new();
         private readonly Dictionary<int, FireBlobVisual> _firePuddleVisuals = new();
         private float _runtimeFallDeathY = FallDeathY;
         private BattleWeaponHudItem[] _arsenalHudItems = System.Array.Empty<BattleWeaponHudItem>();
@@ -158,6 +177,32 @@ namespace Game.Gameplay.Battle.Assembly
         private bool _battleSettingsOpen;
         private bool _arsenalMenuOpen;
         private float _timeScaleBeforeSettings = 1f;
+        private Vector2 _lastTrackedPlayerPosition;
+        private bool _hasTrackedPlayerPosition;
+        private bool _activityBattleRecorded;
+        private int _supportDropTurnInterval;
+        private int _nextSupportDropTurn;
+        private bool _supportDropInProgress;
+
+        private enum ResourcePickupKind
+        {
+            SupplyBox,
+            Medkit
+        }
+
+        private sealed class ResourcePickup
+        {
+            public ResourcePickup(GameObject visual, Vector2 position, ResourcePickupKind kind)
+            {
+                Visual = visual;
+                Position = position;
+                Kind = kind;
+            }
+
+            public GameObject Visual { get; }
+            public Vector2 Position { get; }
+            public ResourcePickupKind Kind { get; }
+        }
 
         private bool HasProjectilesInFlight => _simulation != null && _simulation.HasProjectilesInFlight;
 
@@ -185,10 +230,14 @@ namespace Game.Gameplay.Battle.Assembly
                 }
             }
 
+            PopulatePlayerWeaponEvolutions(allWeapons);
+
             _weaponExecutor = new WeaponExecutor();
             _weaponExecutor.RegisterEffect(WeaponRole.ShortRangeBurst, new BurstProjectileEffect());
+            _weaponExecutor.RegisterEffect("weapon.impulse", new ImpulseSalvoWeaponEffect());
             _aiDifficulty = MapDifficulty(GameSessionContext.SelectedAiDifficulty);
             _inventory = new WeaponInventoryRuntime(CreateMissionWeapons(allWeapons), 1);
+            ApplyPlayerEvolutionAmmo(_inventory);
             _opponentInventory = new WeaponInventoryRuntime(CreateOpponentWeapons(allWeapons), 1);
             RefreshArsenalHudItems();
             _firstBattleGuide = new FirstBattleGuideState(GameSessionContext.SelectedMissionId);
@@ -206,10 +255,56 @@ namespace Game.Gameplay.Battle.Assembly
                 .ToArray();
         }
 
+        private void PopulatePlayerWeaponEvolutions(IEnumerable<WeaponDefinition> weapons)
+        {
+            _playerWeaponEvolutions.Clear();
+            if (weapons == null)
+            {
+                return;
+            }
+
+            foreach (var weapon in weapons)
+            {
+                if (weapon == null || string.IsNullOrWhiteSpace(weapon.WeaponId))
+                {
+                    continue;
+                }
+
+                var progress = WeaponProgressionBridge.Resolve(weapon.WeaponId);
+                if (progress == null)
+                {
+                    continue;
+                }
+
+                _playerWeaponEvolutions[weapon.WeaponId] = WeaponEvolutionRuntimeResolver.Resolve(weapon, progress);
+            }
+        }
+
+        private void ApplyPlayerEvolutionAmmo(WeaponInventoryRuntime inventory)
+        {
+            if (inventory == null)
+            {
+                return;
+            }
+
+            foreach (var weapon in inventory.Weapons)
+            {
+                if (weapon == null
+                    || weapon.WeaponId != "weapon.blaster-caset"
+                    || !_playerWeaponEvolutions.TryGetValue(weapon.WeaponId, out var evolution))
+                {
+                    continue;
+                }
+
+                inventory.SetRemainingAmmo(weapon, evolution.BlasterBurstShotCount);
+            }
+        }
+
         private static bool IsBattleArsenalWeapon(WeaponDefinition weapon)
         {
             return weapon != null
-                && !WeaponPresentationText.IsDropOnly(weapon);
+                && !WeaponPresentationText.IsDropOnly(weapon)
+                && WeaponProgressionBridge.IsWeaponUnlocked(weapon.WeaponId);
         }
 
         private static WeaponDefinition[] CreateOpponentWeapons(IEnumerable<WeaponDefinition> allWeapons)
@@ -453,8 +548,10 @@ namespace Game.Gameplay.Battle.Assembly
                 _simulationSettings,
                 _weaponsById,
                 _playerArchetype,
-                _opponentArchetype);
+                _opponentArchetype,
+                _playerWeaponEvolutions);
             SubscribeToSimulation(_simulation);
+            ConfigureSupportDrops();
             _botTurnController = CreateBotTurnController();
             _impactGuideProbe = _impactGuideEnabled
                 ? new TrajectoryProbe(
@@ -475,6 +572,7 @@ namespace Game.Gameplay.Battle.Assembly
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
             RefreshUnitViews();
+            SeedActivityMovementPosition();
             ReportTutorial(BattleTutorialBridge.MissionStart);
         }
 
@@ -482,6 +580,8 @@ namespace Game.Gameplay.Battle.Assembly
         {
             simulation.ShotFired += OnSimulationShotFired;
             simulation.ImpactResolved += OnSimulationImpactResolved;
+            simulation.DamageApplied += OnSimulationDamageApplied;
+            simulation.TerrainCellsDestroyed += OnSimulationTerrainCellsDestroyed;
             simulation.UnitDefeated += OnSimulationUnitDefeated;
             simulation.TurnAdvanced += OnSimulationTurnAdvanced;
             simulation.BattleFinished += OnSimulationBattleFinished;
@@ -493,6 +593,7 @@ namespace Game.Gameplay.Battle.Assembly
             simulation.MineDeployed += OnSimulationMineDeployed;
             simulation.MineTriggered += OnSimulationMineTriggered;
             simulation.ChargeDeployed += OnSimulationChargeDeployed;
+            simulation.GroundObjectRepositioned += OnSimulationGroundObjectRepositioned;
             simulation.LinearWeaponEffectStarted += OnSimulationLinearWeaponEffectStarted;
             simulation.FireBlobSpawned += OnSimulationFireBlobSpawned;
             simulation.FirePuddleMoved += OnSimulationFirePuddleMoved;
@@ -872,7 +973,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             foreach (var block in solidBlocks)
             {
-                _battleTerrain.StampSolidRect(block.Position, block.Size);
+                _battleTerrain.StampSolidRect(block.Position, block.Size, block.Material);
             }
 
             // Must run before BuildUnits/CreateSimulationSettings: motors, the
@@ -932,6 +1033,37 @@ namespace Game.Gameplay.Battle.Assembly
             }
         }
 
+        private void ConfigureSupportDrops()
+        {
+            _supportDropTurnInterval = ResolveSupportDropTurnInterval();
+            _nextSupportDropTurn = _supportDropTurnInterval == int.MaxValue
+                ? int.MaxValue
+                : _battleState.Turn.TurnNumber + _supportDropTurnInterval;
+            _supportDropInProgress = false;
+        }
+
+        private int ResolveSupportDropTurnInterval()
+        {
+            if (!GameSessionContext.SupportDropsEnabled)
+            {
+                return int.MaxValue;
+            }
+
+            if (GameSessionContext.IsTrainingSkirmish)
+            {
+                return 3;
+            }
+
+            var isStory = !string.IsNullOrWhiteSpace(GameSessionContext.SelectedMissionId);
+            var difficultyOffset = _aiDifficulty switch
+            {
+                AiDifficulty.Hard => 2,
+                AiDifficulty.Normal => 1,
+                _ => 0
+            };
+            return (isStory ? 3 : 4) + difficultyOffset;
+        }
+
         private BattleSimulationSettings CreateSimulationSettings(float fallDeathY)
         {
             return new BattleSimulationSettings(
@@ -985,6 +1117,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void ClearArenaRuntime()
         {
+            StopAllCoroutines();
             _battleTerrain?.Dispose();
             _battleTerrain = null;
             _unitMotors.Clear();
@@ -994,6 +1127,11 @@ namespace Game.Gameplay.Battle.Assembly
             _projectileVisuals.Clear();
             _mineVisuals.Clear();
             _firePuddleVisuals.Clear();
+            _resourcePickups.Clear();
+            _hasTrackedPlayerPosition = false;
+            _activityBattleRecorded = false;
+            _supportDropInProgress = false;
+            _nextSupportDropTurn = int.MaxValue;
             _runtimeFallDeathY = FallDeathY;
 
             foreach (var presenter in _unitPresenters)
@@ -1508,17 +1646,54 @@ namespace Game.Gameplay.Battle.Assembly
             visualObject.transform.SetParent(projectileObject.transform, false);
             ApplyProjectileVisualTransform(visualObject.transform, projectile);
 
+            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
+
             var renderer = visualObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = ResolveProjectileSprite(projectile) ?? _circleSprite;
-            renderer.color = renderer.sprite == _circleSprite ? ResolveProjectileVisualColor(projectile) : Color.white;
+            renderer.sprite = ResolveProjectileSprite(projectile, weapon) ?? _circleSprite;
+            renderer.color = renderer.sprite == _circleSprite ? ResolveProjectileVisualColor(weapon) : Color.white;
             renderer.sortingOrder = 30;
 
-            if (ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId)?.WeaponId == "weapon.fpv-drone")
+            if (weapon?.WeaponId == "weapon.fpv-drone")
             {
                 var animator = visualObject.AddComponent<WeaponProjectileSpriteAnimator>();
                 animator.SetFrames(LoadWeaponIconSprite("fpv_0"), LoadWeaponIconSprite("fpv_1"),
                     LoadWeaponIconSprite("fpv_2"), LoadWeaponIconSprite("fpv_3"), LoadWeaponIconSprite("fpv_4"));
             }
+            else if (weapon != null && RocketWeaponIds.Contains(weapon.WeaponId))
+            {
+                SpawnRocketTrail(visualObject.transform, renderer);
+            }
+        }
+
+        /// <summary>
+        /// Rockets (missile, drill rocket) don't get a fully baked "in flight" sprite
+        /// per rank/branch body variant - instead the shared exhaust trail art is
+        /// overlaid as a second layer behind the body sprite, parented under the same
+        /// transform the body rotates on, so both move and turn together.
+        /// </summary>
+        private void SpawnRocketTrail(Transform visualTransform, SpriteRenderer bodyRenderer)
+        {
+            var trailSprite = LoadWeaponIconSprite(RocketTrailIconId);
+            if (trailSprite == null || bodyRenderer.sprite == null)
+            {
+                return;
+            }
+
+            var trailObject = new GameObject("Rocket Trail");
+            trailObject.transform.SetParent(visualTransform, false);
+
+            // Body sprites face +X (nose right); the engine sits inset from the
+            // sprite's left edge rather than exactly on it. Best-effort placement -
+            // nudge RocketTrailAttachFraction if the flame doesn't line up with the
+            // engine once seen in the editor.
+            var bodyHalfWidth = bodyRenderer.sprite.bounds.extents.x;
+            var trailHalfWidth = trailSprite.bounds.extents.x;
+            var attachX = -bodyHalfWidth * RocketTrailAttachFraction;
+            trailObject.transform.localPosition = new Vector3(attachX - trailHalfWidth * 0.7f, 0f, 0f);
+
+            var trailRenderer = trailObject.AddComponent<SpriteRenderer>();
+            trailRenderer.sprite = trailSprite;
+            trailRenderer.sortingOrder = 29;
         }
 
         private void OnSimulationProjectileExploded(int projectileId, ProjectileImpact impact)
@@ -1533,6 +1708,7 @@ namespace Game.Gameplay.Battle.Assembly
             if (_mineVisuals.TryGetValue(projectileId, out var mineObject))
             {
                 _mineVisuals.Remove(projectileId);
+                _mineOwners.Remove(projectileId);
                 _arenaObjects.Remove(mineObject);
                 Destroy(mineObject);
             }
@@ -1546,10 +1722,12 @@ namespace Game.Gameplay.Battle.Assembly
             if (impactWeapon?.WeaponId != "weapon.teleport"
                 && impact.ProjectileId != "projectile.weapon.mine.deploy")
             {
-                var flashScale = impact.ProjectileId != null
-                    && impact.ProjectileId.StartsWith("projectile.weapon.mortira.fragment", System.StringComparison.Ordinal)
-                        ? 0.6f
-                        : 1.2f;
+                var isSmallMortarCharge = impact.ProjectileId != null
+                    && (impact.ProjectileId.StartsWith("projectile.weapon.mortira.fragment", System.StringComparison.Ordinal)
+                        || impact.ProjectileId.StartsWith("projectile.weapon.mortira.cascade.", System.StringComparison.Ordinal));
+                var isMissileClusterCharge = impact.ProjectileId != null
+                    && impact.ProjectileId.StartsWith("projectile.weapon.missle.cluster.", System.StringComparison.Ordinal);
+                var flashScale = isSmallMortarCharge || isMissileClusterCharge ? 0.6f : 1.2f;
                 SpawnImpactFlash(impact.Point, new Color(1f, 0.74f, 0.18f, 0.85f), flashScale);
             }
             if (!string.IsNullOrWhiteSpace(impact.OwnerUnitId)
@@ -1564,9 +1742,10 @@ namespace Game.Gameplay.Battle.Assembly
             var visual = new GameObject("Mine Armed");
             _arenaObjects.Add(visual);
             _mineVisuals[mine.MineId] = visual;
+            _mineOwners[mine.MineId] = (mine.Weapon, mine.Team);
             visual.transform.position = mine.Point;
             var renderer = visual.AddComponent<SpriteRenderer>();
-            renderer.sprite = LoadWeaponIconSprite("mine_off");
+            renderer.sprite = LoadWeaponIconSprite(ResolveMineSpriteId("mine_off", mine.Weapon, mine.Team));
             renderer.sortingOrder = 27;
             visual.transform.localScale = Vector3.one * 0.11f;
         }
@@ -1577,8 +1756,34 @@ namespace Game.Gameplay.Battle.Assembly
                 && visual != null
                 && visual.TryGetComponent<SpriteRenderer>(out var renderer))
             {
-                renderer.sprite = LoadWeaponIconSprite("mine_on");
+                var (weapon, team) = _mineOwners.TryGetValue(mineId, out var owner) ? owner : (null, BattleTeamId.None);
+                renderer.sprite = LoadWeaponIconSprite(ResolveMineSpriteId("mine_on", weapon, team));
             }
+        }
+
+        /// <summary>
+        /// Rank/branch-aware mine sprite (armed/triggered), same convention as the
+        /// rocket body sprite - only the player's own saved progress is consulted,
+        /// AI opponents' mines always render at the base rank-1 look.
+        /// </summary>
+        private static string ResolveMineSpriteId(string baseIconId, WeaponDefinition weapon, BattleTeamId team)
+        {
+            if (team == BattleTeamId.Player && weapon != null)
+            {
+                var progress = WeaponProgressionBridge.Resolve(weapon.WeaponId);
+                if (progress != null && progress.rank >= 5)
+                {
+                    var branch = (WeaponUpgradeBranch)progress.branch;
+                    var evolvedPath = WeaponEvolutionIconResolver.ResolveEvolutionIconResource(
+                        baseIconId, progress.rank, branch);
+                    if (!string.IsNullOrWhiteSpace(evolvedPath))
+                    {
+                        return evolvedPath.Substring(WeaponIconResourceRoot.Length);
+                    }
+                }
+            }
+
+            return baseIconId;
         }
 
         private void OnSimulationChargeDeployed(ChargeDeployedEvent charge)
@@ -1602,6 +1807,21 @@ namespace Game.Gameplay.Battle.Assembly
                 _playerWeaponSelected = false;
                 RefreshPlayerWeaponVisual();
             }
+        }
+
+        private void OnSimulationGroundObjectRepositioned(GroundObjectRepositionedEvent groundObject)
+        {
+            if (!_mineVisuals.TryGetValue(groundObject.ObjectId, out var visual) || visual == null)
+            {
+                return;
+            }
+
+            if (visual.TryGetComponent<GroundDropVisual>(out var dropVisual))
+            {
+                Destroy(dropVisual);
+            }
+
+            visual.transform.position = groundObject.Point;
         }
 
         private void OnSimulationLinearWeaponEffectStarted(LinearWeaponEffectEvent effect)
@@ -1699,9 +1919,8 @@ namespace Game.Gameplay.Battle.Assembly
             };
         }
 
-        private Color ResolveProjectileVisualColor(SimProjectile projectile)
+        private Color ResolveProjectileVisualColor(WeaponDefinition weapon)
         {
-            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
             if (weapon == null)
             {
                 return Color.black;
@@ -1710,12 +1929,16 @@ namespace Game.Gameplay.Battle.Assembly
             return ProjectileWeaponEffect.GetProjectileColor(weapon.Role);
         }
 
-        private Sprite ResolveProjectileSprite(SimProjectile projectile)
+        private Sprite ResolveProjectileSprite(SimProjectile projectile, WeaponDefinition weapon)
         {
-            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
             if (weapon == null)
             {
                 return null;
+            }
+
+            if (RocketWeaponIds.Contains(weapon.WeaponId))
+            {
+                return LoadWeaponIconSprite(ResolveRocketBodySpriteId(weapon, projectile.OwnerUnitId));
             }
 
             var spriteId = weapon.WeaponId switch
@@ -1729,11 +1952,37 @@ namespace Game.Gameplay.Battle.Assembly
                 "weapon.freeze" => "ice_shot",
                 "weapon.toxic" => "toxic_shot",
                 "weapon.emp" => "emp_shot",
-                "weapon.missle" => "missle_fly",
                 "weapon.fire-gun" => "fire_shot_1",
                 _ => weapon.IconId
             };
             return LoadWeaponIconSprite(spriteId);
+        }
+
+        /// <summary>
+        /// Rank/branch-aware body sprite for rocket-type weapons. Only the player's
+        /// own saved progress is consulted - AI opponents never evolve their loadout
+        /// (see WeaponEvolutionRuntimeResolver), so their rockets always render at
+        /// the base rank-1 body.
+        /// </summary>
+        private string ResolveRocketBodySpriteId(WeaponDefinition weapon, string ownerUnitId)
+        {
+            if (!string.IsNullOrWhiteSpace(ownerUnitId)
+                && ownerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
+            {
+                var progress = WeaponProgressionBridge.Resolve(weapon.WeaponId);
+                if (progress != null && progress.rank >= 5)
+                {
+                    var branch = (WeaponUpgradeBranch)progress.branch;
+                    var evolvedPath = WeaponEvolutionIconResolver.ResolveEvolutionIconResource(
+                        weapon.IconId, progress.rank, branch);
+                    if (!string.IsNullOrWhiteSpace(evolvedPath))
+                    {
+                        return evolvedPath.Substring(WeaponIconResourceRoot.Length);
+                    }
+                }
+            }
+
+            return weapon.IconId;
         }
 
         private void SpawnTeleportMarkerVisual(Vector2 point)
@@ -1756,9 +2005,16 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             if (projectileId != null
-                && projectileId.StartsWith("projectile.weapon.mortira.fragment", System.StringComparison.Ordinal))
+                && (projectileId.StartsWith("projectile.weapon.mortira.fragment", System.StringComparison.Ordinal)
+                    || projectileId.StartsWith("projectile.weapon.mortira.cascade.", System.StringComparison.Ordinal)))
             {
                 return _weaponsById.TryGetValue("weapon.mortira", out var mortar) ? mortar : null;
+            }
+
+            if (projectileId != null
+                && projectileId.StartsWith("projectile.weapon.missle.cluster.", System.StringComparison.Ordinal))
+            {
+                return _weaponsById.TryGetValue("weapon.missle", out var missile) ? missile : null;
             }
 
             if (!string.IsNullOrWhiteSpace(projectileId)
@@ -1779,6 +2035,7 @@ namespace Game.Gameplay.Battle.Assembly
             ClearWalkInput();
             if (team == BattleTeamId.Player)
             {
+                BattleActivityBridge.ReportShotFired(weapon?.WeaponId);
                 RefreshArsenalHudItems();
                 ClearSelectedWeaponIfDepleted(weapon);
             }
@@ -1831,6 +2088,24 @@ namespace Game.Gameplay.Battle.Assembly
             EmitFeedback(BattleFeedbackEventType.ProjectileImpact);
         }
 
+        private void OnSimulationDamageApplied(BattleTeamId sourceTeam, DamageEvent damage)
+        {
+            if (sourceTeam == BattleTeamId.Player
+                && damage.TargetTeam == BattleTeamId.Opponent
+                && damage.Damage > 0)
+            {
+                BattleActivityBridge.ReportPlayerDamageDealt(damage.Damage);
+            }
+        }
+
+        private void OnSimulationTerrainCellsDestroyed(BattleTeamId sourceTeam, int cells)
+        {
+            if (sourceTeam == BattleTeamId.Player)
+            {
+                BattleActivityBridge.ReportTerrainDestroyed(cells);
+            }
+        }
+
         private void OnSimulationUnitDefeated(UnitDefeatedEvent defeat)
         {
             EmitFeedback(BattleFeedbackEventType.UnitDefeated);
@@ -1855,10 +2130,165 @@ namespace Game.Gameplay.Battle.Assembly
 
             var turnText = GameText.TurnStatus(DescribeTeam(newActiveTeam));
             _status = reason == TurnAdvanceReason.InstantActionCompleted ? $"{_status} {turnText}" : turnText;
+            TryScheduleSupportDrop();
+        }
+
+        private void TryScheduleSupportDrop()
+        {
+            if (!GameSessionContext.SupportDropsEnabled
+                || _supportDropTurnInterval == int.MaxValue
+                || _supportDropInProgress
+                || _resourcePickups.Count >= MaxActiveSupportPickups
+                || _battleState == null
+                || _battleState.Turn.TurnNumber < _nextSupportDropTurn
+                || (_simulation != null && _simulation.Result.IsFinished))
+            {
+                return;
+            }
+
+            _nextSupportDropTurn = _battleState.Turn.TurnNumber + _supportDropTurnInterval;
+            if (!TryChooseSupportDropPosition(out var position))
+            {
+                return;
+            }
+
+            var kind = Random.value < ResolveMedkitDropChance()
+                ? ResourcePickupKind.Medkit
+                : ResourcePickupKind.SupplyBox;
+            StartCoroutine(AnimateSupportDrop(position, kind));
+        }
+
+        private float ResolveMedkitDropChance()
+        {
+            return _aiDifficulty switch
+            {
+                AiDifficulty.Easy => 0.55f,
+                AiDifficulty.Hard => 0.3f,
+                _ => 0.42f
+            };
+        }
+
+        private bool TryChooseSupportDropPosition(out Vector2 position)
+        {
+            position = default;
+            var grid = _battleTerrain?.Grid;
+            if (grid == null)
+            {
+                return false;
+            }
+
+            var horizontalPadding = Mathf.Max(0.8f, (grid.WorldMaxX - grid.WorldMinX) * 0.08f);
+            var minX = grid.WorldMinX + horizontalPadding;
+            var maxX = grid.WorldMaxX - horizontalPadding;
+            var scanStartY = grid.WorldMaxY + 1f;
+            var scanDistance = grid.WorldMaxY - grid.WorldMinY + 2f;
+            for (var attempt = 0; attempt < 16; attempt++)
+            {
+                var x = Random.Range(minX, maxX);
+                if (!grid.TryFindSurfaceBelow(x, scanStartY, scanDistance, out var surfaceY))
+                {
+                    continue;
+                }
+
+                var candidate = new Vector2(x, surfaceY + 0.28f);
+                var tooCloseToUnit = _battleState.Teams
+                    .SelectMany(team => team.Units)
+                    .Any(unit => !unit.IsDefeated && Vector2.Distance(unit.Position, candidate) < 1.15f);
+                var tooCloseToPickup = _resourcePickups
+                    .Any(pickup => pickup.Visual != null && Vector2.Distance(pickup.Position, candidate) < 0.9f);
+                if (tooCloseToUnit || tooCloseToPickup)
+                {
+                    continue;
+                }
+
+                position = candidate;
+                return true;
+            }
+
+            return false;
+        }
+
+        private IEnumerator AnimateSupportDrop(Vector2 targetPosition, ResourcePickupKind kind)
+        {
+            _supportDropInProgress = true;
+            var beamSprite = LoadTopPivotTextureSprite("UI/Battle/resource_drop_beam", "Support Drop Beam");
+            GameObject beam = null;
+            SpriteRenderer beamRenderer = null;
+            if (beamSprite != null)
+            {
+                var topY = Mathf.Max(_cameraWorldBounds.yMax + 0.4f, targetPosition.y + 4f);
+                var beamHeight = Mathf.Max(1f, topY - targetPosition.y + 0.12f);
+                beam = new GameObject("Support Drop Beam");
+                beam.transform.position = new Vector3(targetPosition.x, topY, 0f);
+                beamRenderer = beam.AddComponent<SpriteRenderer>();
+                beamRenderer.sprite = beamSprite;
+                beamRenderer.sortingOrder = 28;
+                _arenaObjects.Add(beam);
+
+                var fullScale = new Vector3(
+                    ResourceDropBeamWorldWidth / Mathf.Max(0.001f, beamSprite.bounds.size.x),
+                    beamHeight / Mathf.Max(0.001f, beamSprite.bounds.size.y),
+                    1f);
+                var elapsed = 0f;
+                while (elapsed < ResourceDropBeamGrowSeconds && beam != null)
+                {
+                    elapsed += Time.deltaTime;
+                    var progress = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / ResourceDropBeamGrowSeconds));
+                    beam.transform.localScale = new Vector3(fullScale.x, fullScale.y * progress, 1f);
+                    yield return null;
+                }
+
+                if (beam != null)
+                {
+                    beam.transform.localScale = fullScale;
+                }
+            }
+
+            SpawnSupportPickup(targetPosition, kind);
+
+            var fadeElapsed = 0f;
+            while (beamRenderer != null && fadeElapsed < ResourceDropBeamFadeSeconds)
+            {
+                fadeElapsed += Time.deltaTime;
+                var color = beamRenderer.color;
+                color.a = 1f - Mathf.Clamp01(fadeElapsed / ResourceDropBeamFadeSeconds);
+                beamRenderer.color = color;
+                yield return null;
+            }
+
+            if (beam != null)
+            {
+                _arenaObjects.Remove(beam);
+                Destroy(beam);
+            }
+
+            _supportDropInProgress = false;
+        }
+
+        private void SpawnSupportPickup(Vector2 position, ResourcePickupKind kind)
+        {
+            var iconId = kind == ResourcePickupKind.Medkit ? "heal" : "bonus_box";
+            var sprite = LoadWeaponIconSprite(iconId);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            var pickup = new GameObject(kind == ResourcePickupKind.Medkit ? "Support Medkit" : "Support Supply Box");
+            var scale = SupportPickupWorldWidth / Mathf.Max(0.001f, sprite.bounds.size.x);
+            var groundedPosition = new Vector2(position.x, position.y + sprite.bounds.size.y * scale * 0.5f - 0.18f);
+            pickup.transform.position = groundedPosition;
+            pickup.transform.localScale = Vector3.one * scale;
+            var renderer = pickup.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.sortingOrder = 27;
+            _arenaObjects.Add(pickup);
+            _resourcePickups.Add(new ResourcePickup(pickup, groundedPosition, kind));
         }
 
         private void OnSimulationBattleFinished(BattleResult result, BattleFinishReason reason)
         {
+            RecordFinishedBattleActivity(result);
             _resultScreenState = CreateResultScreenState(result, _battleState.Turn.TurnNumber);
             _status = GameText.ResultPrompt(_resultScreenState.Title);
             if (result.Outcome == BattleOutcome.PlayerWon && reason != BattleFinishReason.InstantActionCompleted)
@@ -1868,6 +2298,23 @@ namespace Game.Gameplay.Battle.Assembly
 
             _firstBattleGuide?.ObserveBattleFinished();
             EmitFeedback(BattleFeedbackEventType.BattleFinished);
+        }
+
+        private void RecordFinishedBattleActivity(BattleResult result)
+        {
+            if (_activityBattleRecorded || result.Outcome == BattleOutcome.InProgress)
+            {
+                return;
+            }
+
+            _activityBattleRecorded = true;
+            var isTraining = GameSessionContext.IsTrainingSkirmish;
+            var isStoryBattle = !isTraining && !string.IsNullOrWhiteSpace(GameSessionContext.SelectedMissionId);
+            var isArenaBattle = !isTraining && !isStoryBattle;
+            BattleActivityBridge.ReportBattleFinished(
+                result.Outcome == BattleOutcome.PlayerWon,
+                isStoryBattle,
+                isArenaBattle);
         }
 
         private void OnSimulationCoverDeployed(CoverDeployedEvent cover)
@@ -1903,8 +2350,87 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void OnSimulationUnitsMoved()
         {
+            TrackPlayerMovementActivity();
+            CollectNearbyActivityResources();
             RefreshUnitViews();
             SyncProjectileVisuals();
+        }
+
+        private void SeedActivityMovementPosition()
+        {
+            var player = GetPresenter(BattleTeamId.Player)?.State;
+            if (player == null)
+            {
+                return;
+            }
+
+            _lastTrackedPlayerPosition = player.Position;
+            _hasTrackedPlayerPosition = true;
+        }
+
+        private void TrackPlayerMovementActivity()
+        {
+            var player = GetPresenter(BattleTeamId.Player)?.State;
+            if (player == null)
+            {
+                return;
+            }
+
+            if (!_hasTrackedPlayerPosition)
+            {
+                _lastTrackedPlayerPosition = player.Position;
+                _hasTrackedPlayerPosition = true;
+                return;
+            }
+
+            var distance = Vector2.Distance(_lastTrackedPlayerPosition, player.Position);
+            _lastTrackedPlayerPosition = player.Position;
+            if (distance <= 0.0001f || !_unitMotors.TryGetValue(player.UnitId, out var motor))
+            {
+                return;
+            }
+
+            if (motor.IsJumping || motor.IsStable)
+            {
+                BattleActivityBridge.ReportPlayerMoved(distance, motor.IsJumping);
+            }
+        }
+
+        private void CollectNearbyActivityResources()
+        {
+            var player = GetPresenter(BattleTeamId.Player)?.State;
+            if (player == null)
+            {
+                return;
+            }
+
+            for (var index = _resourcePickups.Count - 1; index >= 0; index--)
+            {
+                var pickup = _resourcePickups[index];
+                if (pickup.Visual == null)
+                {
+                    _resourcePickups.RemoveAt(index);
+                    continue;
+                }
+
+                if (Vector2.Distance(player.Position, pickup.Position) > 0.7f)
+                {
+                    continue;
+                }
+
+                _resourcePickups.RemoveAt(index);
+                _arenaObjects.Remove(pickup.Visual);
+                Destroy(pickup.Visual);
+                if (pickup.Kind == ResourcePickupKind.Medkit)
+                {
+                    var restored = player.RestoreHealth(Mathf.CeilToInt(player.MaxHealth * 0.25f));
+                    if (restored > 0)
+                    {
+                        SpawnImpactFlash(player.Position, new Color(0.28f, 0.92f, 0.64f, 0.9f), 1.25f);
+                    }
+                }
+                BattleActivityBridge.ReportResourcesCollected(1);
+            }
         }
 
         private void SyncProjectileVisuals()
@@ -2138,7 +2664,9 @@ namespace Game.Gameplay.Battle.Assembly
         {
             foreach (var presenter in _unitPresenters)
             {
-                presenter.Refresh(presenter.State.UnitId == _battleState.Turn.ActiveUnitId);
+                var isJumping = _unitMotors.TryGetValue(presenter.State.UnitId, out var motor) && motor.IsJumping;
+                var jumpTrailScale = isJumping ? motor.JumpTrailScale : 0f;
+                presenter.Refresh(presenter.State.UnitId == _battleState.Turn.ActiveUnitId, isJumping, jumpTrailScale);
             }
         }
 
@@ -2686,6 +3214,37 @@ namespace Game.Gameplay.Battle.Assembly
             return sprite;
         }
 
+        private Sprite LoadTopPivotTextureSprite(string resourcePath, string spriteName)
+        {
+            if (string.IsNullOrWhiteSpace(resourcePath))
+            {
+                return null;
+            }
+
+            var cacheKey = resourcePath + "#top-pivot";
+            if (_spriteResourceCache.TryGetValue(cacheKey, out var cached))
+            {
+                return cached;
+            }
+
+            var texture = Resources.Load<Texture2D>(resourcePath);
+            if (texture == null)
+            {
+                return null;
+            }
+
+            var sprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, texture.width, texture.height),
+                new Vector2(0.5f, 1f),
+                100f,
+                0,
+                SpriteMeshType.FullRect);
+            sprite.name = spriteName;
+            _spriteResourceCache.Add(cacheKey, sprite);
+            return sprite;
+        }
+
         private void RefreshPlayerWeaponVisual()
         {
             var presenter = GetPresenter(BattleTeamId.Player);
@@ -2980,7 +3539,7 @@ namespace Game.Gameplay.Battle.Assembly
                 items[index] = new BattleWeaponHudItem(
                     index,
                     DescribeWeapon(weapon),
-                    weapon.IconId,
+                    ResolveHudIconId(weapon),
                     ammoLabel,
                     weapon.HasLimitedAmmo,
                     remainingAmmo,
@@ -2988,6 +3547,27 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _arsenalHudItems = items;
+        }
+
+        /// <summary>
+        /// Same rank/branch-aware icon as the workshop tree, arsenal shelf and shop
+        /// listing - the HUD selector shows the evolved art once the weapon reaches
+        /// rank 5/10, not just the base icon.
+        /// </summary>
+        private static string ResolveHudIconId(WeaponDefinition weapon)
+        {
+            var progress = WeaponProgressionBridge.Resolve(weapon.WeaponId);
+            if (progress == null)
+            {
+                return weapon.IconId;
+            }
+
+            var resource = WeaponEvolutionIconResolver.ResolveCurrentIconResource(
+                weapon.IconId, progress.rank, (WeaponUpgradeBranch)progress.branch);
+            const string prefix = "UI/Weapons/";
+            return resource.StartsWith(prefix, System.StringComparison.Ordinal)
+                ? resource.Substring(prefix.Length)
+                : weapon.IconId;
         }
 
         private bool IsWeaponSwitchBlockedByGuide()

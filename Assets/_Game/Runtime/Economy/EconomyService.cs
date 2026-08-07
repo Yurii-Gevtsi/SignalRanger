@@ -17,6 +17,7 @@ namespace Game.Economy
         public int SoftCurrency => _saveData.economy.softCurrency;
         public int PremiumCurrency => _saveData.economy.premiumCurrency;
         public int CommanderExperience => _saveData.profile.commanderExperience;
+        public bool AdminModeEnabled => _saveData.settings.adminModeEnabled;
 
         public EconomyTransactionResult Grant(int amount, string reason)
         {
@@ -68,7 +69,7 @@ namespace Game.Economy
 
         public bool CanSpend(int amount)
         {
-            return amount >= 0 && SoftCurrency >= amount;
+            return AdminModeEnabled || (amount >= 0 && SoftCurrency >= amount);
         }
 
         public EconomyTransactionResult GrantPremium(int amount, string sourceType, string sourceId, string transactionId)
@@ -90,7 +91,7 @@ namespace Game.Economy
 
         public bool CanSpendPremium(int amount)
         {
-            return amount >= 0 && PremiumCurrency >= amount;
+            return AdminModeEnabled || (amount >= 0 && PremiumCurrency >= amount);
         }
 
         public EconomyTransactionResult TrySpend(int amount, string reason)
@@ -115,6 +116,11 @@ namespace Game.Economy
                 return new EconomyTransactionResult(false, SoftCurrency, sourceType);
             }
 
+            if (AdminModeEnabled)
+            {
+                return new EconomyTransactionResult(true, SoftCurrency, sourceType, transactionId, false);
+            }
+
             _saveData.economy.softCurrency -= amount;
             var recordedId = RecordTransaction(transactionId, sourceType, sourceId, -amount, 0, 0, string.Empty, 0);
             return new EconomyTransactionResult(true, SoftCurrency, sourceType, recordedId, false);
@@ -135,6 +141,11 @@ namespace Game.Economy
             if (!CanSpendPremium(amount))
             {
                 return new EconomyTransactionResult(false, PremiumCurrency, sourceType);
+            }
+
+            if (AdminModeEnabled)
+            {
+                return new EconomyTransactionResult(true, PremiumCurrency, sourceType, transactionId, false);
             }
 
             _saveData.economy.premiumCurrency -= amount;
@@ -161,9 +172,14 @@ namespace Game.Economy
             }
 
             var progress = _saveData.inventory.GetOrCreateWeaponProgress(weaponId);
-            if (!CanSpend(credits) || progress.blueprints < blueprints)
+            if (!AdminModeEnabled && (!CanSpend(credits) || progress.blueprints < blueprints))
             {
                 return new EconomyTransactionResult(false, SoftCurrency, sourceType);
+            }
+
+            if (AdminModeEnabled)
+            {
+                return new EconomyTransactionResult(true, SoftCurrency, sourceType, transactionId, false);
             }
 
             _saveData.economy.softCurrency -= credits;

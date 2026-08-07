@@ -65,7 +65,8 @@ namespace Game.App
                 difficultyProfile != null ? difficultyProfile.OpponentArchetypeId : string.Empty,
                 mission != null ? mission.Reward.softCurrency : 0,
                 mission != null ? mission.Reward.unlockWeaponId : string.Empty,
-                difficultyProfile != null ? difficultyProfile.AiDifficultyTier : mission != null ? mission.Difficulty : 0);
+                difficultyProfile != null ? difficultyProfile.AiDifficultyTier : mission != null ? mission.Difficulty : 0,
+                mission == null || mission.SupportDropsEnabled);
             GameSessionContext.SelectLoadout(_saveData?.inventory?.selectedLoadoutWeaponIds?.ToArray());
         }
     }

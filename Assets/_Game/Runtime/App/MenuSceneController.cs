@@ -107,6 +107,18 @@ namespace Game.App
 
         private void Start()
         {
+            if (AppServices.IsFirstLoginToday)
+            {
+                RewardsScreenController.Open(() =>
+                {
+                    if (AppServices.TryConsumePendingLoadoutReview())
+                    {
+                        WeaponsScreenController.Open(null);
+                    }
+                });
+                return;
+            }
+
             if (AppServices.TryConsumePendingLoadoutReview())
             {
                 WeaponsScreenController.Open(null);
@@ -219,8 +231,8 @@ namespace Game.App
             var shop = CreateImageButton("Shop Button", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
                 new Vector2(1f, 0f), SideButtonSize, ShopButtonPosition, "shop_btn", OpenShop);
 
-            var rewards = CreateImage("Rewards Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), RewardsSize, RewardsPosition, "rewards_btn", true, Color.white);
+            CreateImageButton("Rewards Button", root, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f), RewardsSize, RewardsPosition, "rewards_btn", OpenRewards);
         }
 
         private void StartBattle()
@@ -238,6 +250,12 @@ namespace Game.App
             }
 
             ShowCampaignCard();
+        }
+
+        public static void OpenBattleModeSelection()
+        {
+            var controller = FindAnyObjectByType<MenuSceneController>();
+            controller?.ShowCampaignCard();
         }
 
         private void ShowCampaignCard()
@@ -264,8 +282,9 @@ namespace Game.App
             var trainingCard = CreateImageButton("Training Battle Card", card, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), TrainingCardSize, TrainingCardPosition, "training_card", StartTrainingSkirmish);
             trainingCard.GetComponent<Image>().preserveAspect = false;
-            var campaignBattleCard = CreateImage("Campaign Battle Card", card, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), CampaignCardOptionSize, CampaignCardOptionPosition, "campaing_card", false, null);
+            var campaignBattleCard = CreateImageButton("Campaign Battle Card", card, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), CampaignCardOptionSize, CampaignCardOptionPosition, "campaing_card", OpenCampaignMap);
+            campaignBattleCard.GetComponent<Image>().preserveAspect = false;
             var sigmaBattleCard = CreateImage("Sigma Battle Card", card, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), CampaignCardOptionSize, SigmaCardPosition, "sigma_card", false, null);
             CreateCampaignModeTitle(trainingCard, "campaign.trainingPlanet");
@@ -324,6 +343,12 @@ namespace Game.App
             AppServices.SceneLoader.Load(GameSceneNames.Battle);
         }
 
+        private void OpenCampaignMap()
+        {
+            HideCampaignCard();
+            CampaignScreenController.Open();
+        }
+
         private static bool IsTrainingMissionCompleted()
         {
             var completedMissions = AppServices.SaveService?.Current?.campaign?.completedMissionIds;
@@ -349,6 +374,11 @@ namespace Game.App
         private void OpenShop()
         {
             ShopScreenController.Open(null);
+        }
+
+        private void OpenRewards()
+        {
+            RewardsScreenController.Open(null);
         }
 
         private RectTransform CreateImage(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,

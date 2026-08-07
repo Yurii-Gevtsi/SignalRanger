@@ -1,3 +1,4 @@
+using System;
 using Game.App;
 using Game.Infrastructure;
 using GoogleMobileAds.Api;
@@ -13,6 +14,8 @@ namespace Game.Ads
 
         private RewardedAd _rewardedAd;
         private bool _initialized;
+
+        public event Action<string> RewardedAdCompleted;
 
         public void Initialize()
         {
@@ -46,6 +49,7 @@ namespace Game.Ads
             _rewardedAd.Show(_ =>
             {
                 Debug.Log("[AdMob] Rewarded ad completed.");
+                RewardedAdCompleted?.Invoke(placementId);
             });
         }
 

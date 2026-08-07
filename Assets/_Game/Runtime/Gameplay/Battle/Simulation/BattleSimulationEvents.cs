@@ -165,6 +165,18 @@ namespace Game.Gameplay.Battle.Simulation
         public BattleTeamId Team { get; }
     }
 
+    public readonly struct GroundObjectRepositionedEvent
+    {
+        public GroundObjectRepositionedEvent(int objectId, Vector2 point)
+        {
+            ObjectId = objectId;
+            Point = point;
+        }
+
+        public int ObjectId { get; }
+        public Vector2 Point { get; }
+    }
+
     public readonly struct LinearWeaponEffectEvent
     {
         public LinearWeaponEffectEvent(

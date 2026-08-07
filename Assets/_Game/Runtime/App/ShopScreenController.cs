@@ -132,12 +132,15 @@ namespace Game.App
                         continue;
                     }
 
+                    var progress = AppServices.SaveService.Current.inventory.GetOrCreateWeaponProgress(weapon.WeaponId);
+                    var art = WeaponEvolutionIconResolver.ResolveCurrentIconResource(
+                        weapon.IconId, progress.rank, (WeaponUpgradeBranch)progress.branch);
                     _items.Add(new ShopWeaponItem(
                         weapon,
-                        weapon.IconId,
+                        art,
                         WeaponDisplayNames.Get(weapon.WeaponId),
                         progression.RequiredCommanderLevel,
-                        $"{WeaponPresentationText.Describe(weapon)}\n{GameText.WeaponType(WeaponPresentationText.DescribeCategory(weapon))}",
+                        WeaponPresentationText.Describe(weapon),
                         progression.CreditPrice,
                         progression.PremiumPrice));
                     break;

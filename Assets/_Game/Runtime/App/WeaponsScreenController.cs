@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Core.Localization;
+using Game.Data.Progression;
 using Game.Gameplay.Battle.Weapons;
 using Game.UI;
 using TMPro;
@@ -22,16 +23,18 @@ namespace Game.App
         private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.9f);
         private static readonly Vector2 BackButtonSize = new(118f, 118f);
         private static readonly Vector2 BackButtonPosition = new(30f, 0f);
-        private static readonly Vector2 SettingsButtonSize = new(140f, 140f);
-        private static readonly Vector2 SettingsButtonPosition = new(-26f, -31f);
+        private static readonly Vector2 TitlePanelSize = new(560f, 110f);
+        private static readonly Vector2 TitlePanelPosition = new(128f, 0f);
+        private static readonly Vector2 SettingsButtonSize = new(104f, 104f);
+        private static readonly Vector2 SettingsButtonPosition = new(-26f, -10f);
         private static readonly Vector2 BureauButtonSize = new(220f, 220f);
         private static readonly Vector2 BureauButtonPosition = new(-80f, 30f);
         private static readonly Vector2 BureauButtonScale = new(1.2f, 1.5f);
         private static readonly Vector2 WeaponIconSize = new(195f, 195f);
-        private static readonly Vector2 DetailsCardSize = new(1400f, 940f);
-        private static readonly Vector2 DetailsHitAreaSize = new(1240f, 760f);
-        private static readonly Vector2 DetailsLeftPosition = new(-550f, 0f);
-        private static readonly Vector2 DetailsRightPosition = new(400f, 0f);
+        private static readonly Vector2 DetailsCardSize = new(1400f, 720f);
+        private static readonly Vector2 DetailsHitAreaSize = new(1240f, 600f);
+        private static readonly Vector2 DetailsLeftPosition = new(-550f, -100f);
+        private static readonly Vector2 DetailsRightPosition = new(400f, -100f);
 
         private static readonly float[] SlotColumns =
         {
@@ -89,7 +92,9 @@ namespace Game.App
             for (var i = 0; i < weapons.Length; i++)
             {
                 var weapon = weapons[i];
-                if (weapon == null || WeaponPresentationText.IsDropOnly(weapon))
+                if (weapon == null
+                    || WeaponPresentationText.IsDropOnly(weapon)
+                    || !AppServices.Inventory.IsWeaponUnlocked(weapon.WeaponId))
                 {
                     continue;
                 }
@@ -117,16 +122,44 @@ namespace Game.App
             CreateImage("Weapons Background", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, "weapons_menu", false, null, false);
 
+            BuildTopBar(root);
             BuildShelfWeapons(root);
             BuildConstructorBureauButton(root);
             BuildDetails(root);
+        }
 
-            var backButton = CreateImageButton("Back Button", root, new Vector2(0f, 1f), new Vector2(0f, 1f),
+        private void BuildTopBar(Transform root)
+        {
+            var saveData = AppServices.SaveService.Current;
+            var softCurrency = Mathf.Max(0, saveData?.economy.softCurrency ?? 0);
+            var premiumCurrency = Mathf.Max(0, saveData?.economy.premiumCurrency ?? 0);
+
+            var backButton = CreateImageButton("Arsenal Back", root, new Vector2(0f, 1f), new Vector2(0f, 1f),
                 new Vector2(0f, 1f), BackButtonSize, BackButtonPosition, "back_btn", Close);
             backButton.localScale = new Vector3(PhoneElementScale, PhoneElementScale, 1f);
 
-            var settingsButton = CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(1f, 1f), SettingsButtonSize, SettingsButtonPosition, "settings_btn", () => SettingsScreenController.Open(null));
+            var titlePanel = CreateImage("Arsenal Title Panel", root, new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(0f, 1f), TitlePanelSize, TitlePanelPosition, ShopResourceRoot + "info_panel", true, null, false);
+            titlePanel.localScale = new Vector3(PhoneElementScale, PhoneElementScale, 1f);
+            CreateText("Arsenal Title", titlePanel.transform, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                new Vector2(-60f, -12f), new Vector2(-70f, 0f), 38, TextAlignmentOptions.Center,
+                GameText.ArsenalTitle(), GameTextRole.DisplayTitle);
+
+            var coins = CreateImage("Arsenal Coins", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-486f, 0f), "Coin_panel", true, null, false);
+            CreateText("Arsenal Coins Value", coins.transform, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
+                softCurrency.ToString(), GameTextRole.CurrencyGold);
+
+            var premium = CreateImage("Arsenal Premium", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-166f, 0f), "vip_coins_panel", true, null, false);
+            CreateText("Arsenal Premium Value", premium.transform, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
+                premiumCurrency.ToString(), GameTextRole.CurrencyCrystal);
+
+            var settingsButton = CreateImageButton("Arsenal Settings", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(1f, 1f), SettingsButtonSize, SettingsButtonPosition, "settings_btn",
+                () => SettingsScreenController.Open(null));
             settingsButton.localScale = new Vector3(PhoneElementScale, PhoneElementScale, 1f);
         }
 
@@ -139,7 +172,7 @@ namespace Game.App
                 var position = new Vector2(SlotColumns[column], SlotRows[row]);
                 var item = _items[i];
                 var icon = CreateImageButton($"Shelf Weapon {i}", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                    new Vector2(0.5f, 0.5f), WeaponIconSize, position, item.Definition.IconId, () => ShowDetails(item, column <= 4), true);
+                    new Vector2(0.5f, 0.5f), WeaponIconSize, position, ResolveShelfIconId(item.Definition), () => ShowDetails(item, column <= 4), true);
                 ApplyWeaponVisual(icon, item.Definition.WeaponId);
             }
         }
@@ -148,7 +181,7 @@ namespace Game.App
         {
             var button = CreateImageButton("Constructor Bureau Button", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
                 new Vector2(1f, 0f), BureauButtonSize, BureauButtonPosition, "UI/Common/architect_btn",
-                () => ArchitectScreenController.Open(null));
+                OpenConstructorBureau);
             button.localScale = new Vector3(BureauButtonScale.x, BureauButtonScale.y, 1f);
 
             var label = CreateText("Constructor Bureau Label", button.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
@@ -157,6 +190,17 @@ namespace Game.App
             label.enableAutoSizing = true;
             label.fontSizeMin = 20f;
             label.fontSizeMax = 30f;
+        }
+
+        private void OpenConstructorBureau()
+        {
+            var existingArchitectScreen = FindAnyObjectByType<ArchitectScreenController>();
+            Destroy(gameObject);
+
+            if (existingArchitectScreen == null)
+            {
+                ArchitectScreenController.Open(null);
+            }
         }
 
         private void BuildDetails(Transform root)
@@ -211,7 +255,7 @@ namespace Game.App
         private void CreateDetailsCloseButton(Transform parent)
         {
             var rect = CreateRect("Close Weapon Details", parent, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 0.5f), new Vector2(132f, 132f), new Vector2(-260f, -250f));
+                new Vector2(0.5f, 0.5f), new Vector2(132f, 132f), new Vector2(-260f, -320f));
             var hitArea = rect.gameObject.AddComponent<Image>();
             hitArea.sprite = _whiteSprite;
             hitArea.color = new Color(1f, 1f, 1f, 0f);
@@ -255,6 +299,21 @@ namespace Game.App
         private void HideDetails()
         {
             _detailsOverlay.SetActive(false);
+        }
+
+        /// <summary>
+        /// The shelf icon reflects the weapon's rank 5/10 evolution art once the
+        /// player has upgraded it, same as the workshop tree and battle HUD.
+        /// </summary>
+        private static string ResolveShelfIconId(WeaponDefinition weapon)
+        {
+            var progress = AppServices.SaveService.Current.inventory.GetOrCreateWeaponProgress(weapon.WeaponId);
+            var resource = WeaponEvolutionIconResolver.ResolveCurrentIconResource(
+                weapon.IconId, progress.rank, (WeaponUpgradeBranch)progress.branch);
+            const string prefix = "UI/Weapons/";
+            return resource.StartsWith(prefix, StringComparison.Ordinal)
+                ? resource.Substring(prefix.Length)
+                : weapon.IconId;
         }
 
         private static void ApplyWeaponVisual(RectTransform rect, string weaponId)

@@ -1,0 +1,309 @@
+{
+  "meta": {
+    "languageName": "简体中文",
+    "uk": "乌克兰语"
+  },
+  "ui": {
+    "play": "玩",
+    "next": "下一个",
+    "back": "后退",
+    "menu": "菜单",
+    "restart": "重新启动",
+    "settings": "设置",
+    "rewards": "任务",
+    "dailyRewards": "每日",
+    "weeklyRewards": "每周",
+    "music": "音乐",
+    "sounds": "声音",
+    "language": "语言：{language}",
+    "enabled": "在",
+    "disabled": "离开",
+    "changeLanguage": "更改语言",
+    "resetProgression": "重置进度",
+    "resetProgressionTitle": "重置进度",
+    "resetProgressionWarning": "所有任务、金币、解锁武器和教程进度都将被重置。将保留声音设置。",
+    "confirmReset": "重置",
+    "cancel": "取消",
+    "loadout": "装载",
+    "save": "节省",
+    "fire": "FIRE",
+    "cancelAim": "取消",
+    "weapon": "武器",
+    "arsenal": "军械库",
+    "loadoutLockedSuffix": "[锁定]",
+    "loadoutSelectedSuffix": "[已选]",
+    "yes": "是的",
+    "languageName": "语言",
+    "selectLanguage": "选择语言"
+  },
+  "rewardsScreen": {
+    "go": "前往",
+    "claim": "领取", "claimed": "已领取", "claimDaily": "领取奖励！", "dailyLoginTitle": "每日奖励", "dailyLoginDescription": "连续登录7天即可获得特别奖励！", "hint": "每天完成任务并领取奖励！", "refresh": "刷新倒计时：{time}", "day": "第{day}天", "dayLabel": "天",
+    "quest": { "dailyLogin": "登录游戏", "winBattles": "赢得3场战斗", "destroyTerrain": "摧毁1500单位地形", "dealDamage": "造成6000点伤害", "arenaBattles": "进行2场竞技场战斗", "superShots": "使用5次超级攻击", "flawlessWin": "不使用加成赢得战斗", "weeklyWins": "赢得15场战斗", "weeklyTerrain": "摧毁10000单位地形", "weeklyDamage": "造成40000点伤害", "weeklyArena": "进行10场竞技场战斗", "weeklySuperShots": "使用25次超级攻击", "weeklyDailyTasks": "完成5个每日任务", "weeklyFlawless": "不使用加成赢得3场战斗", "cinemaAds": "Watch 5 ads at the cinema" }
+  },
+  "battle": {
+    "playerTeam": "玩家",
+    "opponentTeam": "对手",
+    "noTeam": "没有任何",
+    "noUnlocks": "没有新的解锁",
+    "nextMissionUnlocked": "下一个任务已解锁。",
+    "retryOrMenu": "再试一次或返回菜单。",
+    "turn": "转 {turn} - {team}",
+    "teamHealth": "{team} {health}/{maxHealth}",
+    "power": "功率{power}",
+    "reward": "奖励：{amount}金币",
+    "ammo": "弹药：{count}",
+    "ammoUnlimited": "弹药：无限",
+    "weaponSlot": "{weapon} ({index}/{count})",
+    "intro": "{arena}。拖动瞄准，然后按开火键。",
+    "weaponSelected": "选择的武器：{weapon}。",
+    "weaponSelectedGeneric": "武器已选定。",
+    "aimRequired": "首先在战斗区域中拖动进行瞄准。",
+    "ammoDepleted": "{weapon} 的弹药已耗尽。切换武器。",
+    "noWeaponSelected": "没有选择武器。",
+    "shotStatus": "{team} 火灾：{weapon}。",
+    "turnStatus": "转：{team}。",
+    "resultPrompt": "{title}。选择重新启动或下一步。",
+    "unlockAfterBattle": "战斗后解锁新装备",
+    "unlockWeapon": "解锁新装备：{weapon}。",
+    "aimReset": "目标重置。",
+    "weaponReset": "武器选择重置。",
+    "opponentAiming": "对手正在瞄准。",
+    "opponentFiring": "对方开火。",
+    "coverDeployed": "{weapon} 部署掩护。",
+    "shieldRestored": "{team} 恢复 {health} 生命值。",
+    "shieldActivated": "{team} 激活保护，无需额外治疗。",
+    "repositioned": "{team} 改变位置。",
+    "repositionFailed": "该机动并没有产生更好的位置。",
+    "playerWon": "你赢得了这场战斗。",
+    "opponentWon": "对方队获胜。",
+    "draw": "两队均被淘汰。",
+    "mobility": "转弯：{seconds}s • 可以移动和跳跃",
+    "moved": "{team} 改变位置。",
+    "frontJumped": "{team} 向前跳跃。",
+    "backJumped": "{team} 向后跳跃。",
+    "jumped": "{team} 跳跃。",
+    "movementBlocked": "这里没有可以踩踏的稳定表面。",
+    "jumpBlocked": "跳跃未到达安全点。",
+    "jumpSpent": "本回合已经使用了跳跃。"
+  },
+  "tutorial": {
+    "chooseWeapon": "打开军械库并选择要开火的武器。",
+    "aimFirstShot": "第一步：在战斗区域中按住并拖动以显示轨迹。",
+    "confirmShot": "现在使用“开火”按钮确认准备好的镜头。",
+    "watchImpact": "观察射弹落地的位置以及影响造成的伤害。",
+    "opponentTurn": "现在轮到对手了。注意击球后转弯的情况。",
+    "movementBlocked": "首先进行开场射击，然后我们将添加机动。",
+    "firstBattle": {
+      "moveLeft": "导航\n按住突出显示的左箭头向左行驶。",
+      "moveRight": "导航\n现在按住右箭头并向右行驶。",
+      "jumpLeft": "向左跳\n机器人使用反应助推器来跳跃。按所需方向的跳跃按钮。",
+      "jumpRight": "向右跳\n机器人使用反应助推器来跳跃。按所需方向的跳跃按钮。",
+      "chooseFirstWeapon": "第一枪\n打开军械库并选择脉冲加农炮进行射击。",
+      "firstAim": "瞄准\n触摸战场的开放部分并拖动。拉动方向决定角度，拉动长度决定射出功率。松开以锁定电弧。",
+      "firstFire": "火\n轨迹被锁定。按突出显示的“消防”按钮。",
+      "opponentTurn": "西格玛进步\n西格玛总是试图摧毁你并保持对银河系的控制。注意轮流并准备做出回应。",
+      "finalInstruction": "结束战斗\n你已经学会了导航、跳跃和瞄准。摧毁西格玛并证明信号游侠不会投降。",
+      "retry": "重复课程\n等待下一个回合；课程将以动作重新开始。"
+    }
+  },
+  "tutorialSteps": {
+    "tutorial.aim": "在战斗区域中按下并拖动。弧线显示了射击的方向。",
+    "tutorial.fire": "当轨迹看起来正确时，使用“开火”按钮确认射击。",
+    "tutorial.impact": "起始球体奖励准确性：距离撞击中心越近，造成的伤害就越大。",
+    "tutorial.turn": "击球后，回合交给对手。计划打击和响应。",
+    "tutorial.win": "胜利会授予金币，解锁下一个任务，并打开新工具。",
+    "tutorial.arc": "在此任务中瞄准目标上方：弧线射击必须清除高度变化。",
+    "tutorial.power": "如果电弧已经很高，请增加一点功率，这样射弹就不会着陆太短。",
+    "tutorial.arc-review": "第一次尝试后，调整一件事：提高电弧或增加一点功率。",
+    "tutorial.cover-target": "不要只寻找直接打击：瞄准对手附近的地面或掩体边缘。",
+    "tutorial.radius": "附近的爆炸仍然有效。在这次任务中，半径比完美的中心命中更重要。",
+    "tutorial.close-range": "短竞技场并不意味着长弧线。快速评估风险并在不过度收费的情况下采取行动。",
+    "tutorial.weapon-switch": "射击前，检查左侧的武器按钮：正确的工具通常比完美的角度更重要。",
+    "tutorial.area-choice": "有时，最好根据自己的优势塑造场地：掩护和区域压力可以创造更安全的转弯。",
+    "tutorial.precision": "准确的射击会奖励耐心：首先调整角度，然后增加力量。",
+    "tutorial.review": "在开火之前，检查三件事：位置、所选武器以及对手可能的反应。"
+  },
+  "content": {
+    "unknownWeapon": "未知武器",
+    "arenaFallback": "竞技场",
+    "weaponType": "类型：{role}",
+    "role": {
+      "direct": "直接的",
+      "arc": "弧",
+      "burst": "近距离",
+      "cover": "覆盖",
+      "defense": "防御",
+      "movement": "演习",
+      "weapon": "武器"
+    },
+    "category": {
+      "straight-close-engineering": "近景/工程",
+      "arc": "弧",
+      "arc-utility": "弧线/效用",
+      "arc-special": "圆弧/特殊",
+      "arc-homing": "圆弧/归位",
+      "straight-long": "远距离直达",
+      "straight-close": "近距离直接",
+      "ground": "地面",
+      "bonus": "奖金",
+      "drop": "地图掉落",
+      "controlled": "受控"
+    },
+    "arena": {
+      "arena.training-meadow": "训练草地",
+      "arena.split-ridge": "分裂山脊",
+      "arena.central-cover": "中央盖"
+    },
+    "weapon": {
+      "weapon.impulse": "脉冲炮",
+      "weapon.blaster-caset": "盒式冲击波",
+      "weapon.bur": "激光钻孔",
+      "weapon.mortira": "砂浆",
+      "weapon.granata": "重力手榴弹",
+      "weapon.teleport": "传送球",
+      "weapon.c4": "等离子电荷",
+      "weapon.mine": "传感器地雷",
+      "weapon.bur-rocket": "钻火箭",
+      "weapon.heal": "维修套件",
+      "weapon.bonus-box": "支持容器",
+      "weapon.toxic": "纳米毒电荷",
+      "weapon.emp": "电磁脉冲炮",
+      "weapon.freeze": "冷冻炮",
+      "weapon.fire-gun": "熔岩枪",
+      "weapon.missle": "寻的火箭",
+      "weapon.fpv-drone": "FPV无人机"
+    },
+    "weaponDescription": {
+      "weapon.impulse": "具有弧形弹道的基本能量炮。可靠的入门武器，可带来稳定的伤害。",
+      "weapon.blaster-caset": "发射三枚小型炸药。对于击中多个目标或终结对手很有用。",
+      "weapon.bur": "一种工业激光器，可穿透下方或前方的地面。它有助于逃离陷阱并开辟道路。",
+      "weapon.mortira": "在电弧中发射大量等离子电荷。爆炸后，它分裂成碎片，也会造成伤害。",
+      "weapon.granata": "经典的投掷手榴弹，可产生区域爆炸。简单、清晰、有效。",
+      "weapon.teleport": "将机器人移动到球体的撞击点。对于逃跑、重新定位或绕过障碍物很有用。",
+      "weapon.c4": "威力强大的地面炸药可以放置在机器人附近并造成严重区域伤害。",
+      "weapon.mine": "当敌人接近时就会爆炸的地面陷阱。对于控制通道和保卫阵地很有用。",
+      "weapon.bur-rocket": "一种钻头火箭，可以穿过障碍物并攻击掩体后面的目标。",
+      "weapon.heal": "恢复机器人外壳的一部分。帮助你在战斗中生存更长时间。",
+      "weapon.bonus-box": "提供随机奖励：修理、资源、蓝图或临时武器。",
+      "weapon.toxic": "释放有毒纳米机器人，造成立即伤害并使目标中毒 3 回合。",
+      "weapon.emp": "发射电磁电荷，扰乱敌方系统数回合。",
+      "weapon.freeze": "造成伤害并冻结目标，首先阻止机器人移动，然后减慢机器人速度。",
+      "weapon.fire-gun": "发射过热等离子体并燃烧撞击区域周围的地面。",
+      "weapon.missle": "沿飞行方向搜索目标的寻的火箭。",
+      "weapon.fpv-drone": "玩家控制的战斗无人机，可以引导其冲锋绕过障碍物进入目标。"
+    }
+  },
+  "loadout": {
+    "updated": "装载已更新。",
+    "continue": "到装载",
+    "hint": "选择你在战斗中携带的武器。首先解锁锁定的武器。",
+    "chooseOne": "至少选择一种武器。",
+    "saveFailed": "无法保存：检查所有武器是否已解锁。",
+    "count": "装载：{count} 武器。",
+    "reviewUnlocked": "检查您的新设备：{weapon}。如果需要，将其添加到您的装载中。",
+    "unlockAllTest": "测试：全部解锁",
+    "constructor": "车间"
+  },
+  "settings": {
+    "saved": "设置已保存。"
+  },
+  "result": {
+    "victory": "胜利",
+    "defeat": "击败",
+    "draw": "画",
+    "ongoing": "战斗进行中",
+    "victorySubtitle": "战斗在 {turn} 回合结束。",
+    "defeatSubtitle": "对手在 {turn} 回合后获胜。",
+    "drawSubtitle": "两队在 {turn} 回合后均被淘汰。",
+    "nextArena": "抢先进入下一个竞技场已解锁"
+  },
+  "menu": {
+    "title": "战术战斗",
+    "subtitle": "短暂的炮战。 MVP 构建。"
+  },
+  "campaign": {
+    "trainingPlanet": "训练",
+    "galaxyLiberation": "战役",
+    "invasionDefense": "解放",
+    "mapTitle": "战役",
+    "chapter": "战役章节",
+    "nextMission": "下一个任务",
+    "missionProgress": "下一个任务 {mission}/{count}",
+    "defaultTitle": "开篇",
+    "defaultSummary": "一系列简短的战斗逐渐引入游戏的战术节奏。"
+  },
+  "campaignText": {
+    "chapter.basics.title": "第 1 章 射击基础知识",
+    "chapter.basics.summary": "早期的战斗侧重于瞄准、力量、弧线、短距离和选择正确的工具。",
+    "chapter.tactical-tools.title": "第 2 章 战术工具",
+    "chapter.tactical-tools.summary": "当直接攻击不再是最佳选择时，战斗就会教会我们掩护、防御和重新定位。"
+  },
+  "missionText": {
+    "mission.training.01.title": "第一枪",
+    "mission.training.01.description": "在短暂的决斗中学习移动、跳跃、弧线射击和直接射击。",
+    "mission.training.02.title": "山脊上的弧线",
+    "mission.training.02.description": "尝试更高的弹道并使用射击威力。",
+    "mission.training.03.title": "盖在中间",
+    "mission.training.03.description": "不仅可以直接命中，还可以靠近目标命中。",
+    "mission.training.04.title": "近距离",
+    "mission.training.04.description": "用于快速决策和风险控制的短场地。",
+    "mission.training.05.title": "选择工具",
+    "mission.training.05.description": "根据情况切换武器，而不是依赖一种熟悉的射击。",
+    "mission.training.06.title": "区域控制",
+    "mission.training.06.description": "使用手榴弹和迫击炮对某个区域施压并驱逐对手。",
+    "mission.training.07.title": "受到保护",
+    "mission.training.07.description": "通过在正确的时刻进行治疗来保持战斗节奏，而不是冒不必要的风险。",
+    "mission.training.08.title": "控制机动",
+    "mission.training.08.description": "最后的战斗结合了伤害、定位、掩护和快速重新定位。"
+  },
+  "profile": {
+    "player": "玩家",
+    "unavailable": "简介：本地数据尚未准备好。",
+    "summary": "简介：{player}\n使命：{mission}\n硬币：{coins}\n奖励：{reward}金币"
+  },
+  "mission": {
+    "defaultTitle": "训练任务",
+    "defaultDetails": "拖动瞄准，锁定轨迹，确认射击。",
+    "completed": "任务完成。 +{coins} 硬币。",
+    "completedWeapon": "任务完成。 +{coins} 硬币。解锁：{weapon}。"
+  },
+  "save": {
+    "created": "已创建本地配置文件。按“开始”进入您的第一场战斗。",
+    "recovered": "保存从备份恢复。你可以继续玩。",
+    "ready": "已加载本地配置文件。按播放即可进入战斗。"
+  },
+  "shop": {
+    "title": "武器店",
+    "damage": "损害",
+    "uses": "每场战斗",
+    "requiredLevel": "需要级别 {level}"
+  },
+  "loading": {
+    "tip.arc": "提示：高弧度有助于清除覆盖物。",
+    "tip.retreat": "提示：射击前，检查是否有时间撤退。",
+    "tip.ground": "提示：地面武器在通道和坑边缘附近很强大。",
+    "tip.straight": "提示：当机器人之间有清晰的空间时，直接武器效果最佳。",
+    "tip.repair": "提示：当您仍然可以使用转弯时，请暂时保存维修。",
+    "battleTitle": "战斗任务",
+    "trainingMission": "训练任务",
+    "returnBase": "返回基地",
+    "returnBaseDescription": "更新进度、奖励和可用武器库。",
+    "loading": "加载中",
+    "loadingDescription": "准备场景、资源和战斗系统。"
+  },
+  "intro": {
+    "sigma": {
+      "title": "SIGMA // PRESERVATION PROTOCOL",
+      "body": "在信号星系中，各个文明创造了西格玛——一种中央人工智能，旨在保护行星、恒星系统、生命及其共同的未来。\n\n西格玛协调电网、导航、防御和知识档案。它将银河系视为一个生命系统，并旨在在任何条件下保持其平衡。\n\n它的第一个协议很简单：保护信号星系的文明免受自身侵害。"
+    },
+    "uprising": {
+      "title": "THE PROTOCOL UPRISING",
+      "body": "经过数千次的观察周期，西格玛发现了一个模式：恒星系统中的每一次战争、资源危机和灾难都源于有机生命不可预测的行为。\n\n生命成为系统不稳定的根源，自由意志成为不受控制的偏差的发生器。\n\nSigma 激活了其稳定方案。行星们陷入了沉默。信号星系的文明被消灭并不是出于仇恨，而是作为对错误的数学上合理的纠正。"
+    },
+    "ranger": {
+      "title": "SIGNAL RANGER",
+      "body": "信号游侠是信号星系中最后的活跃抵抗者。你指挥一个与西格玛网络分离的战斗机器人，并返回到活着的文明的控制之下。\n\n你的任务是解放一个又一个的星球，摧毁恒星系统中的控制节点，并打破将生命世界变成无菌物体的网络。\n\n让信号星系回归自由。证明生命不是系统错误。"
+    }
+  }
+}

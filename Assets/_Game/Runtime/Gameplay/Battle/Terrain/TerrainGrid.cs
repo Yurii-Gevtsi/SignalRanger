@@ -10,6 +10,7 @@ namespace Game.Gameplay.Battle.Terrain
     public sealed class TerrainGrid
     {
         private readonly bool[] _solid;
+        private readonly TerrainMaterial[] _materials;
 
         public TerrainGrid(Vector2 origin, Vector2 cellSize, int width, int height)
         {
@@ -18,6 +19,7 @@ namespace Game.Gameplay.Battle.Terrain
             Width = Mathf.Max(1, width);
             Height = Mathf.Max(1, height);
             _solid = new bool[Width * Height];
+            _materials = new TerrainMaterial[Width * Height];
         }
 
         /// <summary>World position of the bottom-left corner of cell (0, 0).</summary>
@@ -48,7 +50,38 @@ namespace Game.Gameplay.Battle.Terrain
                 return;
             }
 
-            _solid[y * Width + x] = solid;
+            var index = y * Width + x;
+            _solid[index] = solid;
+            if (!solid)
+            {
+                _materials[index] = TerrainMaterial.Soil;
+            }
+        }
+
+        public TerrainMaterial GetMaterialCell(int x, int y)
+        {
+            if (x < 0 || x >= Width || y < 0 || y >= Height)
+            {
+                return TerrainMaterial.Soil;
+            }
+
+            return _materials[y * Width + x];
+        }
+
+        public TerrainMaterial GetMaterialWorld(Vector2 world)
+        {
+            var cell = WorldToCell(world);
+            return GetMaterialCell(cell.x, cell.y);
+        }
+
+        public void SetMaterialCell(int x, int y, TerrainMaterial material)
+        {
+            if (x < 0 || x >= Width || y < 0 || y >= Height)
+            {
+                return;
+            }
+
+            _materials[y * Width + x] = material;
         }
 
         public bool IsSolidWorld(Vector2 world)
@@ -79,7 +112,27 @@ namespace Game.Gameplay.Battle.Terrain
         /// </summary>
         public bool CarveCircle(Vector2 worldCenter, float worldRadius, out RectInt dirtyCells)
         {
+            return CarveCircle(worldCenter, worldRadius, TerrainMaterial.Titanium, out dirtyCells, out _);
+        }
+
+        /// <summary>
+        /// Clears all solid cells inside the world-space circle and reports the
+        /// exact number of removed grid cells for progression and telemetry.
+        /// </summary>
+        public bool CarveCircle(Vector2 worldCenter, float worldRadius, out RectInt dirtyCells, out int removedCellCount)
+        {
+            return CarveCircle(worldCenter, worldRadius, TerrainMaterial.Titanium, out dirtyCells, out removedCellCount);
+        }
+
+        public bool CarveCircle(
+            Vector2 worldCenter,
+            float worldRadius,
+            TerrainMaterial maximumMaterial,
+            out RectInt dirtyCells,
+            out int removedCellCount)
+        {
             dirtyCells = default;
+            removedCellCount = 0;
             if (worldRadius <= 0f)
             {
                 return false;
@@ -108,13 +161,15 @@ namespace Game.Gameplay.Battle.Terrain
                     }
 
                     var index = y * Width + x;
-                    if (!_solid[index])
+                    if (!_solid[index] || _materials[index] > maximumMaterial)
                     {
                         continue;
                     }
 
                     _solid[index] = false;
+                    _materials[index] = TerrainMaterial.Soil;
                     changed = true;
+                    removedCellCount++;
                 }
             }
 
@@ -128,6 +183,16 @@ namespace Game.Gameplay.Battle.Terrain
 
         /// <summary>Marks every cell inside the world-space rectangle as solid (or clears it).</summary>
         public bool StampRect(Vector2 worldCenter, Vector2 worldSize, bool solid, out RectInt dirtyCells)
+        {
+            return StampRect(worldCenter, worldSize, solid, TerrainMaterial.Soil, out dirtyCells);
+        }
+
+        public bool StampRect(
+            Vector2 worldCenter,
+            Vector2 worldSize,
+            bool solid,
+            TerrainMaterial material,
+            out RectInt dirtyCells)
         {
             dirtyCells = default;
             var halfSize = worldSize * 0.5f;
@@ -152,12 +217,13 @@ namespace Game.Gameplay.Battle.Terrain
                 for (var x = minX; x <= maxX; x++)
                 {
                     var index = y * Width + x;
-                    if (_solid[index] == solid)
+                    if (_solid[index] == solid && (!solid || _materials[index] == material))
                     {
                         continue;
                     }
 
                     _solid[index] = solid;
+                    _materials[index] = solid ? material : TerrainMaterial.Soil;
                     changed = true;
                 }
             }

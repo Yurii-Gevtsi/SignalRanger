@@ -13,7 +13,9 @@ namespace Game.Gameplay.Battle.Runtime
         private const int IdleSortingOrder = 20;
         private const int ActiveTurnSortingOrder = 27;
         private const float WeaponVisualScale = 0.085f;
+        private const float JetTrailVisualScale = 0.13f;
         private const string HeadingFontResourcePath = "Fonts/Orbitron";
+        private const string JetTrailResourcePath = "UI/Common/jet_trail_light";
         private static readonly Vector3 WeaponMountPosition = new(-0.68f, 0.42f, 0f);
         private static readonly Vector3 HealthLabelPosition = new(0f, 1.3f, 0f);
         private static readonly Vector3 HealthLabelScale = new(0.15f, 0.15f, 1f);
@@ -40,6 +42,7 @@ namespace Game.Gameplay.Battle.Runtime
         private Animator _locomotionAnimator;
         private Transform _weaponMount;
         private SpriteRenderer _weaponRenderer;
+        private SpriteRenderer _jetTrailRenderer;
         private int _facingDirectionX = 1;
         private bool _hasMovingParameter;
         private bool _movementSignalledThisFrame;
@@ -143,6 +146,19 @@ namespace Game.Gameplay.Battle.Runtime
                 _movementAnimationSecondsRemaining,
                 MinimumMovementAnimationSeconds);
             ApplyMoving(true);
+        }
+
+        public void SetJetTrailActive(bool isActive, float scaleMultiplier = 1f)
+        {
+            EnsureJetTrail();
+            if (_jetTrailRenderer == null)
+            {
+                return;
+            }
+
+            var scale = Mathf.Clamp01(scaleMultiplier) * JetTrailVisualScale;
+            _jetTrailRenderer.transform.localScale = new Vector3(scale, scale, 1f);
+            _jetTrailRenderer.enabled = isActive && scale > 0.001f && _jetTrailRenderer.sprite != null;
         }
 
         private void LateUpdate()
@@ -352,6 +368,31 @@ namespace Game.Gameplay.Battle.Runtime
             _weaponRenderer.color = Color.white;
             _weaponRenderer.enabled = false;
             UpdateWeaponMountPosition();
+        }
+
+        private void EnsureJetTrail()
+        {
+            if (_jetTrailRenderer != null)
+            {
+                return;
+            }
+
+            var sprite = Resources.Load<Sprite>(JetTrailResourcePath);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            var trailObject = new GameObject("Jump Jet Trail");
+            var trailTransform = trailObject.transform;
+            trailTransform.SetParent(transform, false);
+            trailTransform.localPosition = new Vector3(0f, -0.76f, 0f);
+            trailTransform.localScale = new Vector3(JetTrailVisualScale, JetTrailVisualScale, 1f);
+            _jetTrailRenderer = trailObject.AddComponent<SpriteRenderer>();
+            _jetTrailRenderer.sprite = sprite;
+            _jetTrailRenderer.sortingOrder = IdleSortingOrder - 2;
+            _jetTrailRenderer.color = Color.white;
+            _jetTrailRenderer.enabled = false;
         }
 
         private void UpdateWeaponMountPosition()

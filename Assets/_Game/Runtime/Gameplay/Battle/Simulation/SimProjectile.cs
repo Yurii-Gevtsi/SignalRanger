@@ -1,4 +1,5 @@
 using Game.Gameplay.Battle.Projectiles;
+using Game.Gameplay.Battle.Terrain;
 using UnityEngine;
 
 namespace Game.Gameplay.Battle.Simulation
@@ -32,12 +33,22 @@ namespace Game.Gameplay.Battle.Simulation
         public float TerrainDrillTimeRemaining { get; private set; }
         public float TerrainDrillSpeed { get; private set; }
         public Vector2 TerrainDrillDirection { get; private set; } = Vector2.right;
+        public TerrainMaterial TerrainDrillPenetration { get; private set; } = TerrainMaterial.Soil;
+        public int MissileSplitChargeCount { get; private set; }
+        public int MissileObstacleBypassesRemaining { get; private set; }
+        public bool IsBallisticMissileDescending { get; private set; }
+        public bool HasMissileWaypoint { get; private set; }
+        public Vector2 MissileWaypoint { get; private set; }
         public bool IsTraversingTerrain { get; private set; }
         public bool IsRestingFuse { get; private set; }
         public float RestingFuseRemaining { get; private set; }
+        public bool IsAttachedToUnit => !string.IsNullOrEmpty(AttachedUnitId);
+        public string AttachedUnitId { get; private set; }
+        public Vector2 ExternalVelocity { get; private set; }
 
         private Vector2 _lastTunnelCarvePoint;
         private bool _hasCarvedTunnel;
+        private Vector2 _attachedUnitOffset;
 
         /// <summary>
         /// The projectile has left its owner's hitbox at least once; from then
@@ -59,6 +70,19 @@ namespace Game.Gameplay.Battle.Simulation
         internal void SetVelocity(Vector2 velocity)
         {
             Velocity = velocity;
+        }
+
+        internal void AddExternalVelocity(Vector2 velocity)
+        {
+            ExternalVelocity += velocity;
+        }
+
+        internal void DampenExternalVelocity(float deltaTime, float deceleration)
+        {
+            ExternalVelocity = Vector2.MoveTowards(
+                ExternalVelocity,
+                Vector2.zero,
+                Mathf.Max(0f, deceleration) * Mathf.Max(0f, deltaTime));
         }
 
         internal void ReduceLifetime(float deltaTime)
@@ -84,9 +108,65 @@ namespace Game.Gameplay.Battle.Simulation
             RestingFuseRemaining = Mathf.Max(0f, RestingFuseRemaining - deltaTime);
         }
 
-        internal void ConfigureTerrainDrill(float durationSeconds)
+        internal void AttachToUnit(string unitId, Vector2 unitPosition)
+        {
+            if (string.IsNullOrEmpty(unitId))
+            {
+                return;
+            }
+
+            AttachedUnitId = unitId;
+            _attachedUnitOffset = Position - unitPosition;
+        }
+
+        internal void FollowAttachedUnit(Vector2 unitPosition)
+        {
+            if (IsAttachedToUnit)
+            {
+                Position = unitPosition + _attachedUnitOffset;
+            }
+        }
+
+        internal void DetachFromUnit()
+        {
+            AttachedUnitId = null;
+            _attachedUnitOffset = Vector2.zero;
+        }
+
+        internal void ConfigureTerrainDrill(float durationSeconds, TerrainMaterial penetration)
         {
             TerrainDrillTimeRemaining = Mathf.Max(0f, durationSeconds);
+            TerrainDrillPenetration = penetration;
+        }
+
+        internal void ConfigureMissileEvolution(int splitChargeCount, int obstacleBypassCount)
+        {
+            MissileSplitChargeCount = Mathf.Max(0, splitChargeCount);
+            MissileObstacleBypassesRemaining = Mathf.Max(0, obstacleBypassCount);
+        }
+
+        internal void BeginBallisticMissileDescent()
+        {
+            IsBallisticMissileDescending = true;
+            HasMissileWaypoint = false;
+        }
+
+        internal bool TrySetMissileWaypoint(Vector2 waypoint)
+        {
+            if (MissileObstacleBypassesRemaining <= 0)
+            {
+                return false;
+            }
+
+            MissileWaypoint = waypoint;
+            HasMissileWaypoint = true;
+            MissileObstacleBypassesRemaining--;
+            return true;
+        }
+
+        internal void ClearMissileWaypoint()
+        {
+            HasMissileWaypoint = false;
         }
 
         internal void EnterTerrain(float speedRetain)
