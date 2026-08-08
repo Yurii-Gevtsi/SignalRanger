@@ -19,11 +19,15 @@ namespace Game.Gameplay.Battle.Weapons
             var knockbackMultiplier = context.Evolution.KnockbackMultiplier > 0f
                 ? context.Evolution.KnockbackMultiplier
                 : 1f;
+            var modifiers = context.Modifiers;
             var delayedSpawner = context.Spawner as IDelayedProjectileSpawner;
             for (var shotIndex = 0; shotIndex < salvoCount; shotIndex++)
             {
                 var request = new ProjectileSpawnRequest(
-                    weapon.CreateProjectileDefinition(weapon.Damage, knockbackMultiplier),
+                    weapon.CreateProjectileDefinition(
+                        Mathf.RoundToInt(weapon.Damage * modifiers.DamageMultiplier),
+                        knockbackMultiplier,
+                        impactRadiusOverride: weapon.ImpactRadius * modifiers.ImpactRadiusMultiplier),
                     context.OwnerUnitId,
                     context.Origin + context.Direction * MuzzleOffset,
                     context.Direction * context.Power,

@@ -78,7 +78,10 @@ namespace Game.Core.Battle
             string resultUnlock,
             bool canContinue,
             string retryLabel,
-            string continueLabel)
+            string continueLabel,
+            bool resultPlayerWon = false,
+            string resultMissionTitle = null,
+            bool resultMissionCleared = false)
         {
             Status = status;
             TurnNumber = turnNumber;
@@ -119,7 +122,20 @@ namespace Game.Core.Battle
             CanContinue = canContinue;
             RetryLabel = retryLabel ?? GameText.Restart;
             ContinueLabel = continueLabel ?? GameText.Continue;
+            ResultPlayerWon = resultPlayerWon;
+            ResultMissionTitle = resultMissionTitle ?? string.Empty;
+            ResultMissionCleared = resultMissionCleared;
         }
+
+        /// <summary>Whether the finished battle was a win, which drives the result artwork.</summary>
+        public bool ResultPlayerWon { get; }
+        public string ResultMissionTitle { get; }
+
+        /// <summary>
+        /// Whether this battle actually banked the mission. Only a won battle counts - a
+        /// loss leaves the mission outstanding even if its objective was met.
+        /// </summary>
+        public bool ResultMissionCleared { get; }
 
         public string Status { get; }
         public int TurnNumber { get; }

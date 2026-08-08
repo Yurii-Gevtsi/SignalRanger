@@ -88,7 +88,7 @@ namespace Game.Tests.EditMode.Progression
         public void ReportTrigger_UsesMissionSpecificTutorialSteps()
         {
             var (feed, tutorial, save) = CreateFeed();
-            GameSessionContext.SelectMission(1, 1, "mission.training.02", "arena.split-ridge", null,
+            GameSessionContext.SelectMission(1, 0, "mission.training.02", "arena.training-meadow", null,
                 new[] { "tutorial.arc", "tutorial.power" },
                 string.Empty, null, string.Empty, string.Empty, 0, string.Empty, 0);
 

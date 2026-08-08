@@ -192,7 +192,8 @@
       "weapon.fire-gun": "发射过热等离子体并燃烧撞击区域周围的地面。",
       "weapon.missle": "沿飞行方向搜索目标的寻的火箭。",
       "weapon.fpv-drone": "玩家控制的战斗无人机，可以引导其冲锋绕过障碍物进入目标。"
-    }
+    },
+    "weaponEvolutionName": { "double-impulse": "双重脉冲", "impact-impulse": "冲击共鸣", "triple-impulse": "三重放电", "assault-impulse": "风暴放电", "quad-blaster": "四重齐射", "ricochet-blaster": "弹跳", "five-shot-blaster": "连续弹幕", "double-ricochet-blaster": "双重弹跳", "long-range-drill": "深层射线", "universal-drill": "万能切割器", "deep-range-drill": "热能钻头", "pioneer-drill": "开拓者", "sticky-grenade": "粘性装药", "gravity-grenade": "重力陷阱", "magnetic-sticky-grenade": "磁力抓取", "collapse-grenade": "坍缩星", "four-mines": "雷区", "recognition-mine": "哨兵", "five-mines": "封锁", "friendly-mine": "盟友协议", "enhanced-explosive-charge": "强化引爆器", "impulse-explosive-charge": "冲击波", "breaching-explosive-charge": "破障者", "shockwave-charge": "震动装药", "protective-repair": "护盾模块", "regenerative-repair": "纳米再生", "enhanced-protective-repair": "装甲维修", "long-regenerative-repair": "自主再生", "exchange-teleport": "交换跳跃", "impulse-teleport": "脉冲传送门", "tactical-exchange": "战术交换", "spatial-shift": "空间裂隙", "long-range-drill-rocket": "穿透者", "universal-drill-rocket": "全穿透弹头", "deep-range-drill-rocket": "深层突破", "all-terrain-drill-rocket": "震动爆发", "fragment-mortar": "破片爆发", "cascade-mortar": "陨坑突破", "assault-mortar": "破片风暴", "multi-cascade-mortar": "深层裂变", "overload": "过载", "disruption": "系统干扰", "shield-break": "护盾破裂", "system-noise": "系统崩溃", "cryo": "冷冻脉冲", "slick": "冰霜陷阱", "hard-freeze": "绝对零度", "ice-patch": "冰裂缝", "stream": "火焰风暴", "pool": "熔岩池", "long-stream": "炼狱", "burning-ground": "焦土", "corrosion": "腐蚀闪光", "cloud": "毒雾弥漫", "armor-corrosion": "酸性腐化", "lingering-cloud": "毒素之幕", "ballistic-missile": "弹道打击", "maneuvering-missile": "机动拦截者", "cluster-ballistic-missile": "集束之雨", "tactical-homing-missile": "战术猎手", "endurance": "延长链接", "agility": "冲击模块", "long-link": "远程链接", "snap-turn": "急转机动" }
   },
   "loadout": {
     "updated": "装载已更新。",

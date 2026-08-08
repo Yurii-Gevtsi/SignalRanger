@@ -33,7 +33,9 @@ namespace Game.Gameplay.Battle.Weapons
             var baseAngleDeg = Mathf.Atan2(context.Direction.y, context.Direction.x) * Mathf.Rad2Deg;
             var halfSpread = _spreadDegrees * 0.5f;
             var step = _shotCount > 1 ? _spreadDegrees / (_shotCount - 1) : 0f;
-            var pelletDamage = Mathf.CeilToInt((float)weapon.Damage / _shotCount);
+            var modifiers = context.Modifiers;
+            var pelletDamage = Mathf.CeilToInt(weapon.Damage * modifiers.DamageMultiplier / _shotCount);
+            var impactRadius = weapon.ImpactRadius * modifiers.ImpactRadiusMultiplier;
 
             for (var i = 0; i < _shotCount; i++)
             {
@@ -42,7 +44,7 @@ namespace Game.Gameplay.Battle.Weapons
                 var direction = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
 
                 var request = new ProjectileSpawnRequest(
-                    weapon.CreateProjectileDefinition(pelletDamage),
+                    weapon.CreateProjectileDefinition(pelletDamage, impactRadiusOverride: impactRadius),
                     context.OwnerUnitId,
                     context.Origin + direction * MuzzleOffset,
                     direction * context.Power,

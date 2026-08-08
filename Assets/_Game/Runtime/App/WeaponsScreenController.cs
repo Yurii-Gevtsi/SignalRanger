@@ -236,9 +236,18 @@ namespace Game.App
             _detailsDescriptionText.fontSizeMax = 34f;
             _detailsDescriptionText.overflowMode = TextOverflowModes.Overflow;
             _detailsDescriptionText.textWrappingMode = TextWrappingModes.Normal;
+            _detailsDescriptionText.rectTransform.offsetMin = new Vector2(_detailsDescriptionText.rectTransform.offsetMin.x, 0f);
+            _detailsDescriptionText.rectTransform.offsetMax = new Vector2(_detailsDescriptionText.rectTransform.offsetMax.x, -60f);
 
             _detailsDamageText = CreateStatLine(_detailsCard.transform, "Weapon Details Damage", new Vector2(0.16f, 0.27f), new Vector2(0.45f, 0.36f), GameText.Damage());
+            var damageLineRect = (RectTransform)_detailsDamageText.transform.parent;
+            damageLineRect.offsetMin = new Vector2(50f, damageLineRect.offsetMin.y);
+            damageLineRect.offsetMax = new Vector2(damageLineRect.offsetMax.x, 50f);
+
             _detailsUsesText = CreateStatLine(_detailsCard.transform, "Weapon Details Uses", new Vector2(0.49f, 0.27f), new Vector2(0.78f, 0.36f), GameText.UsesPerBattle());
+            var usesLineRect = (RectTransform)_detailsUsesText.transform.parent;
+            usesLineRect.offsetMax = new Vector2(usesLineRect.offsetMax.x, 50f);
+
             _detailsOverlay.SetActive(false);
         }
 
@@ -255,7 +264,7 @@ namespace Game.App
         private void CreateDetailsCloseButton(Transform parent)
         {
             var rect = CreateRect("Close Weapon Details", parent, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 0.5f), new Vector2(132f, 132f), new Vector2(-260f, -320f));
+                new Vector2(0.5f, 0.5f), new Vector2(132f, 132f), new Vector2(-260f, -250f));
             var hitArea = rect.gameObject.AddComponent<Image>();
             hitArea.sprite = _whiteSprite;
             hitArea.color = new Color(1f, 1f, 1f, 0f);

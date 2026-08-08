@@ -151,6 +151,71 @@ namespace Game.Progression
             };
         }
 
+        /// <summary>
+        /// Whether the player has actually clicked the daily login claim button for the
+        /// current period. Distinct from <see cref="RecordLogin"/>'s login-streak marker,
+        /// which fires automatically on app start and must not be treated as a claim.
+        /// </summary>
+        public bool IsDailyLoginRewardClaimed()
+        {
+            EnsureCurrentPeriods();
+            var activity = _saveData.activity;
+            return activity.dailyLoginRewardClaimedPeriodStartUtcTicks == activity.dailyPeriodStartUtcTicks;
+        }
+
+        public bool TryClaimDailyLoginReward()
+        {
+            EnsureCurrentPeriods();
+            if (IsDailyLoginRewardClaimed())
+            {
+                return false;
+            }
+
+            _saveData.activity.dailyLoginRewardClaimedPeriodStartUtcTicks = _saveData.activity.dailyPeriodStartUtcTicks;
+            return true;
+        }
+
+        /// <summary>
+        /// Which of the 7 login-streak days is up for claim right now (1-7).
+        /// </summary>
+        public int GetDailyLoginStreakDay()
+        {
+            EnsureCurrentPeriods();
+            return _saveData.activity.dailyLoginStreakDay;
+        }
+
+        /// <summary>
+        /// Advances the 7-day login streak by one when the player claimed
+        /// yesterday's reward (kept the streak alive), or resets it back to day 1
+        /// when a day was skipped. Called right before <paramref name="activity"/>'s
+        /// period timestamp rolls over to <paramref name="newDailyStartTicks"/>, so
+        /// the previous value still reflects "yesterday" at this point.
+        /// </summary>
+        private static void AdvanceDailyLoginStreak(SaveActivityProgressData activity, long newDailyStartTicks)
+        {
+            var previousDailyStartTicks = activity.dailyPeriodStartUtcTicks;
+            if (previousDailyStartTicks == 0)
+            {
+                // First session ever - EnsureDefaults already leaves the streak at day 1.
+                return;
+            }
+
+            var oneDayTicks = TimeSpan.FromDays(1).Ticks;
+            var wasConsecutiveDay = newDailyStartTicks - previousDailyStartTicks == oneDayTicks
+                && activity.dailyLoginRewardClaimedPeriodStartUtcTicks == previousDailyStartTicks;
+
+            if (wasConsecutiveDay)
+            {
+                activity.dailyLoginStreakDay = activity.dailyLoginStreakDay >= SaveActivityProgressData.DailyLoginStreakLength
+                    ? 1
+                    : activity.dailyLoginStreakDay + 1;
+            }
+            else
+            {
+                activity.dailyLoginStreakDay = 1;
+            }
+        }
+
         public long GetPeriodStartUtcTicks(ActivityPeriod period)
         {
             EnsureCurrentPeriods();
@@ -193,6 +258,7 @@ namespace Game.Progression
 
             if (activity.dailyPeriodStartUtcTicks != dailyStartTicks)
             {
+                AdvanceDailyLoginStreak(activity, dailyStartTicks);
                 activity.dailyPeriodStartUtcTicks = dailyStartTicks;
                 activity.daily = SaveActivityCounterData.CreateDefault();
                 activity.dailyClaimedQuestIds.Clear();

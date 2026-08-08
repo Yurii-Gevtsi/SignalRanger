@@ -172,6 +172,26 @@ namespace Game.Data.Progression
             return false;
         }
 
+        /// <summary>
+        /// Sum of credits/blueprints spent reaching <paramref name="currentRank"/> from
+        /// rank 1, used to compute a reset refund.
+        /// </summary>
+        public static (int Credits, int Blueprints) GetCumulativeCost(int currentRank)
+        {
+            var credits = 0;
+            var blueprints = 0;
+            for (var index = 0; index < Costs.Length; index++)
+            {
+                if (Costs[index].Rank <= currentRank)
+                {
+                    credits += Costs[index].Credits;
+                    blueprints += Costs[index].Blueprints;
+                }
+            }
+
+            return (credits, blueprints);
+        }
+
         public static int GetRequiredCommanderLevel(WeaponProgressionDefinition definition, int targetRank)
         {
             if (definition == null)
@@ -196,73 +216,83 @@ namespace Game.Data.Progression
             Track("weapon.impulse", 1, 0, 0, true, "double-impulse", "impact-impulse",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.ImpactRadius, WeaponUpgradeStat.Range,
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Knockback, "triple-impulse", "assault-impulse",
-                "Гармата подвійного імпульсу", "Ударна імпульсна гармата",
-                "Гармата потрійного імпульсу", "Штурмова імпульсна гармата"),
+                "Здвоєний Імпульс", "Ударний Резонанс",
+                "Потрійний Розряд", "Штормовий Розряд"),
             Track("weapon.blaster-caset", 1, 0, 0, true, "quad-blaster", "ricochet-blaster",
                 WeaponUpgradeStat.Accuracy, WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range,
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.ProjectileCount, "five-shot-blaster", "double-ricochet-blaster",
-                "Касетний бластер чотирьох зарядів", "Рикошетний касетний бластер",
-                "Касетний бластер п’яти зарядів", "Касетний бластер подвійного рикошету"),
+                "Квадро-Залп", "Рикошет",
+                "Шквальний Вогонь", "Подвійний Рикошет"),
             Track("weapon.bur", 2, 800, 16, false, "long-range-drill", "universal-drill",
                 WeaponUpgradeStat.Duration, WeaponUpgradeStat.TerrainDamage, WeaponUpgradeStat.Damage,
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range, "deep-range-drill", "pioneer-drill",
-                "Далекобійний буровий лазер", "Універсальний буровий лазер",
-                "Глибокобійний буровий лазер", "Прохідницький буровий лазер"),
+                "Глибинний Промінь", "Універсальний Різак",
+                "Термо-Свердло", "Прохідник"),
             Track("weapon.granata", 3, 1000, 20, false, "sticky-grenade", "gravity-grenade",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Fuse, WeaponUpgradeStat.ImpactRadius,
                 WeaponUpgradeStat.Homing, WeaponUpgradeStat.Range, "magnetic-sticky-grenade", "collapse-grenade",
-                "Липуча граната", "Гравітаційна граната",
-                "Магнітна липуча граната", "Колапс-граната"),
+                "Липучка", "Гравітаційна Пастка",
+                "Магнітна Хватка", "Колапсар"),
             Track("weapon.mine", 4, 1500, 24, false, "four-mines", "recognition-mine",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Control, WeaponUpgradeStat.ImpactRadius,
                 WeaponUpgradeStat.ProjectileCount, WeaponUpgradeStat.Control, "five-mines", "friendly-mine",
-                "4 міни за хід", "Розпізнавальна міна",
-                "5 мін за хід", "Дружня міна"),
+                "Мінне Поле", "Вартовий",
+                "Загороджувач", "Союзний Протокол"),
             Track("weapon.c4", 5, 1800, 28, false, "enhanced-explosive-charge", "impulse-explosive-charge",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Fuse, WeaponUpgradeStat.ImpactRadius,
                 WeaponUpgradeStat.TerrainDamage, WeaponUpgradeStat.Knockback, "breaching-explosive-charge", "shockwave-charge",
-                "Посилений вибуховий заряд", "Імпульсний вибуховий заряд",
-                "Проломний вибуховий заряд", "Ударно-хвильовий заряд"),
+                "Посилений Детонатор", "Ударна Хвиля",
+                "Проломник", "Сейсмозаряд"),
             Track("weapon.heal", 6, 2000, 32, false, "protective-repair", "regenerative-repair",
                 WeaponUpgradeStat.Healing, WeaponUpgradeStat.Range, WeaponUpgradeStat.Charge,
                 WeaponUpgradeStat.Duration, WeaponUpgradeStat.Duration, "enhanced-protective-repair", "long-regenerative-repair",
-                "Захисний ремонт", "Відновлювальний ремонт",
-                "Посилений захисний ремонт", "Тривалий відновлювальний ремонт"),
+                "Захисний Модуль", "Нанорегенерація",
+                "Броньований Ремонт", "Автономна Регенерація"),
             Track("weapon.teleport", 7, 3000, 36, false, "exchange-teleport", "impulse-teleport",
                 WeaponUpgradeStat.Control, WeaponUpgradeStat.ImpactRadius, WeaponUpgradeStat.Charge,
                 WeaponUpgradeStat.Control, WeaponUpgradeStat.ImpactRadius, "tactical-exchange", "spatial-shift",
-                "Телепорт обміну", "Імпульсний телепорт",
-                "Тактичний обмін", "Просторовий зсув"),
+                "Обмінний Стрибок", "Імпульсний Портал",
+                "Тактичний Обмін", "Просторовий Розлом"),
             Track("weapon.bur-rocket", 8, 3500, 40, false, "long-range-drill-rocket", "universal-drill-rocket",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Penetration, WeaponUpgradeStat.Range,
                 WeaponUpgradeStat.Penetration, WeaponUpgradeStat.TerrainDamage, "deep-range-drill-rocket", "all-terrain-drill-rocket",
-                "Далекобійна бурова ракета", "Універсальна бурова ракета",
-                "Глибокобійна бурова ракета", "Всепрохідна бурова ракета"),
+                "Пенетратор", "Всепробивний Наконечник",
+                "Глибинний Пробій", "Сейсмічний Вихід"),
             Track("weapon.mortira", 9, 4000, 44, false, "fragment-mortar", "cascade-mortar",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range, WeaponUpgradeStat.ImpactRadius,
                 WeaponUpgradeStat.ProjectileCount, WeaponUpgradeStat.Penetration, "assault-mortar", "multi-cascade-mortar",
-                "Осколкова мортира", "Каскадна мортира",
-                "Штурмова мортира", "Багатокаскадна мортира"),
+                "Шрапнельний Розлом", "Кратерний Пробій",
+                "Уламковий Шторм", "Глибинний Розрив"),
             Track("weapon.emp", 10, 4000, 48, false, "overload", "disruption",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range, WeaponUpgradeStat.Control,
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Duration, "shield-break", "system-noise"),
+                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Duration, "shield-break", "system-noise",
+                "Перевантаження", "Збій Систем",
+                "Злам Щита", "Системний Колапс"),
             Track("weapon.freeze", 11, 4000, 52, false, "cryo", "slick",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.ImpactRadius, WeaponUpgradeStat.Duration,
-                WeaponUpgradeStat.Control, WeaponUpgradeStat.ImpactRadius, "hard-freeze", "ice-patch"),
+                WeaponUpgradeStat.Control, WeaponUpgradeStat.ImpactRadius, "hard-freeze", "ice-patch",
+                "Кріоімпульс", "Крижана Пастка",
+                "Абсолютний Нуль", "Крижаний Розлом"),
             Track("weapon.fire-gun", 12, 4500, 56, false, "stream", "pool",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Duration, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Duration, WeaponUpgradeStat.TerrainDamage, "long-stream", "burning-ground"),
+                WeaponUpgradeStat.Duration, WeaponUpgradeStat.TerrainDamage, "long-stream", "burning-ground",
+                "Вогняний Шторм", "Лавова Купіль",
+                "Інферно", "Випалена Земля"),
             Track("weapon.toxic", 13, 4500, 60, false, "corrosion", "cloud",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Duration, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.ImpactRadius, "armor-corrosion", "lingering-cloud"),
+                WeaponUpgradeStat.Damage, WeaponUpgradeStat.ImpactRadius, "armor-corrosion", "lingering-cloud",
+                "Корозійний Спалах", "Токсична Імла",
+                "Кислотний Розпад", "Отруйний Серпанок"),
             Track("weapon.missle", 14, 5000, 64, false, "ballistic-missile", "maneuvering-missile",
                 WeaponUpgradeStat.Homing, WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range,
                 WeaponUpgradeStat.Homing, WeaponUpgradeStat.Knockback, "cluster-ballistic-missile", "tactical-homing-missile",
-                "Балістична ракета", "Маневрова самонавідна ракета",
-                "Касетна балістична ракета", "Тактична самонавідна ракета"),
+                "Балістичний Удар", "Маневрений Перехоплювач",
+                "Касетний Дощ", "Тактичний Мисливець"),
             Track("weapon.fpv-drone", 15, 7000, 68, false, "endurance", "agility",
                 WeaponUpgradeStat.Control, WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Duration, WeaponUpgradeStat.Mobility, "long-link", "snap-turn")
+                WeaponUpgradeStat.Duration, WeaponUpgradeStat.Mobility, "long-link", "snap-turn",
+                "Розширений Канал", "Ударний Модуль",
+                "Далекий Зв’язок", "Різкий Маневр")
         };
 
         private static readonly Dictionary<string, WeaponProgressionDefinition> ById = BuildIndex();

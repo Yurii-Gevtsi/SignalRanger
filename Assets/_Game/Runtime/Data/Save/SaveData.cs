@@ -69,9 +69,13 @@ namespace Game.Data.Save
     [Serializable]
     public sealed class SaveActivityProgressData
     {
+        public const int DailyLoginStreakLength = 7;
+
         public long dailyPeriodStartUtcTicks;
         public long weeklyPeriodStartUtcTicks;
         public long lastLoginDailyPeriodStartUtcTicks;
+        public long dailyLoginRewardClaimedPeriodStartUtcTicks;
+        public int dailyLoginStreakDay;
         public SaveActivityCounterData daily;
         public SaveActivityCounterData weekly;
         public List<string> dailyClaimedQuestIds;
@@ -94,6 +98,10 @@ namespace Game.Data.Save
             weekly.EnsureDefaults();
             dailyClaimedQuestIds.RemoveAll(string.IsNullOrWhiteSpace);
             weeklyClaimedQuestIds.RemoveAll(string.IsNullOrWhiteSpace);
+            if (dailyLoginStreakDay < 1 || dailyLoginStreakDay > DailyLoginStreakLength)
+            {
+                dailyLoginStreakDay = 1;
+            }
         }
     }
 

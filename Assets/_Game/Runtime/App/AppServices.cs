@@ -2,6 +2,7 @@ using Game.Audio;
 using Game.App.Content;
 using Game.Core;
 using Game.Core.Localization;
+using Game.Data.Progression;
 using Game.Data.Save;
 using Game.Economy;
 using Game.Inventory;
@@ -95,6 +96,11 @@ namespace Game.App
             Game.Data.Save.WeaponProgressionBridge.Resolver =
                 weaponId => SaveService.Current.inventory.GetOrCreateWeaponProgress(weaponId);
             Game.Data.Save.WeaponProgressionBridge.UnlockedResolver = Inventory.IsWeaponUnlocked;
+            Game.Core.BattleRewardBridge.WeaponBlueprintsGranted =
+                (amount, sourceType, sourceId) => GrantWeaponBlueprintReward(amount, sourceType, sourceId);
+            Game.Core.BattleRewardBridge.CoinsGranted =
+                (amount, sourceType, sourceId) => Economy?.Grant(amount, sourceType, sourceId, null);
+            Game.Core.BattleRewardBridge.CommanderExperienceResolver = () => Economy?.CommanderExperience ?? 0;
             Session = new GameSessionService(SaveService.Current, Campaign, Content);
             LastMissionCompletionResult = default;
             SaveService.Save(SaveService.Current);
@@ -237,6 +243,22 @@ namespace Game.App
 
         private static CloudSaveSyncCoordinator _cloudSyncCoordinator;
 
+        /// <summary>
+        /// True only once per app session, the first time the menu checks after
+        /// launch. Consuming it prevents the daily rewards screen from popping up
+        /// again every time the menu scene reloads (e.g. after returning from battle).
+        /// </summary>
+        public static bool TryConsumeFirstLoginToday()
+        {
+            if (!IsFirstLoginToday)
+            {
+                return false;
+            }
+
+            IsFirstLoginToday = false;
+            return true;
+        }
+
         public static bool TryConsumePendingLoadoutReview()
         {
             if (_pendingLoadoutReviewConsumed)
@@ -256,6 +278,46 @@ namespace Game.App
         public static void MarkPendingLoadoutReview(bool pending)
         {
             _pendingLoadoutReviewConsumed = !pending;
+        }
+
+        /// <summary>
+        /// Grants a weapon blueprint "chip" reward, picking the target weapon at
+        /// random among unlocked, not-yet-maxed weapons, and shows the reusable
+        /// chip popup. Callers (daily login, quests, loot chests) never need to
+        /// know or care which weapon ends up receiving it.
+        /// </summary>
+        public static void GrantWeaponBlueprintReward(int amount, string sourceType, string sourceId, string transactionId = null)
+        {
+            if (!IsInitialized || amount <= 0)
+            {
+                return;
+            }
+
+            if (!WeaponBlueprintRewardSelector.TrySelectEligibleWeaponId(SaveService.Current, null, out var weaponId))
+            {
+                return;
+            }
+
+            var balanceBefore = SaveService.Current.inventory.GetOrCreateWeaponProgress(weaponId).blueprints;
+            var reward = new ProgressionReward(0, 0, amount, weaponId);
+            Economy.Grant(reward, sourceType, sourceId, transactionId);
+            SaveService.Save(SaveService.Current);
+
+            var progressAfter = SaveService.Current.inventory.GetOrCreateWeaponProgress(weaponId);
+            var balanceAfter = progressAfter.blueprints;
+            var nextRank = progressAfter.rank + 1;
+            if (nextRank > 10)
+            {
+                nextRank = 10;
+            }
+
+            var requiredForNextRank = 0;
+            if (WeaponUpgradeEconomy.TryGetCost(nextRank, out var cost))
+            {
+                requiredForNextRank = cost.Blueprints;
+            }
+
+            ChipRewardPopupController.Show(weaponId, amount, balanceBefore, balanceAfter, requiredForNextRank);
         }
 
         public static void ResetProgression()

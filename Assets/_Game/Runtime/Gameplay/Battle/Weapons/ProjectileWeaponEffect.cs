@@ -19,8 +19,11 @@ namespace Game.Gameplay.Battle.Weapons
                 return;
             }
 
+            var modifiers = context.Modifiers;
             var request = new ProjectileSpawnRequest(
-                weapon.CreateProjectileDefinition(),
+                weapon.CreateProjectileDefinition(
+                    Mathf.RoundToInt(weapon.Damage * modifiers.DamageMultiplier),
+                    impactRadiusOverride: weapon.ImpactRadius * modifiers.ImpactRadiusMultiplier),
                 context.OwnerUnitId,
                 context.Origin + context.Direction * MuzzleOffset,
                 context.Direction * context.Power,

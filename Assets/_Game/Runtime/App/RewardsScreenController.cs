@@ -95,6 +95,10 @@ namespace Game.App
         private readonly TMP_Text[] _dailyLoginDayLabels = new TMP_Text[DailyLoginRewardDayCount + 1];
         private readonly TMP_Text[] _dailyLoginDayNumbers = new TMP_Text[DailyLoginRewardDayCount + 1];
         private bool _dailyLoginClaimed;
+        private int _currentStreakDay = 1;
+        private TMP_Text _coinsValueText;
+        private TMP_Text _crystalsValueText;
+        private (RewardKind Kind, int Amount) _dailyLoginCurrentReward;
 
         public static void Open(Action onClosed)
         {
@@ -164,14 +168,14 @@ namespace Game.App
             var coins = CreateImage("Rewards Coins", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-486f, 0f),
                 ShopResourceRoot + "Coin_panel", true);
-            CreateText("Rewards Coins Value", coins, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
+            _coinsValueText = CreateText("Rewards Coins Value", coins, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 credits.ToString(), GameTextRole.CurrencyGold);
 
             var premium = CreateImage("Rewards Crystals", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-166f, 0f),
                 ShopResourceRoot + "vip_coins_panel", true);
-            CreateText("Rewards Crystals Value", premium, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
+            _crystalsValueText = CreateText("Rewards Crystals Value", premium, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 crystals.ToString(), GameTextRole.CurrencyCrystal);
 
@@ -327,6 +331,8 @@ namespace Game.App
                 (RewardKind.SuperChest, 1)
             };
 
+            _currentStreakDay = AppServices.ActivityProgress?.GetDailyLoginStreakDay() ?? 1;
+
             BuildLoginDay(card, 7, dayRewards[6], new Vector2(430f, 250f), new Vector2(15f, 190f), true);
             BuildLoginDay(card, 6, dayRewards[5], new Vector2(202f, 202f), new Vector2(-90f, 60f), false);
             BuildLoginDay(card, 5, dayRewards[4], new Vector2(202f, 202f), new Vector2(100f, 60f), false);
@@ -335,16 +341,17 @@ namespace Game.App
             BuildLoginDay(card, 2, dayRewards[1], new Vector2(202f, 202f), new Vector2(-90f, -176f), false);
             BuildLoginDay(card, 1, dayRewards[0], new Vector2(202f, 202f), new Vector2(100f, -176f), false);
 
+            _dailyLoginCurrentReward = dayRewards[_currentStreakDay - 1];
+
             var claimRoot = CreateImageButton("Login Reward Claim", card, new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(410f, 88f),
-                new Vector2(0f, -275f), RewardIconRoot + "claim_button_yellow", null);
+                new Vector2(0f, -275f), RewardIconRoot + "claim_button_yellow", ClaimDailyLoginReward);
             _dailyLoginClaimButton = claimRoot.GetComponent<Button>();
-            _dailyLoginClaimButton.interactable = false;
             _dailyLoginClaimLabel = CreateText("Login Reward Claim Label", claimRoot, Vector2.zero, Vector2.one,
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 30,
                 TextAlignmentOptions.Center, GameText.ClaimReward(), GameTextRole.Button);
 
-            _dailyLoginClaimed = IsDailyLoginRewardClaimed();
+            _dailyLoginClaimed = AppServices.ActivityProgress?.IsDailyLoginRewardClaimed() ?? false;
             RefreshDailyLoginState();
         }
 
@@ -356,7 +363,8 @@ namespace Game.App
             Vector2 position,
             bool isFinalReward)
         {
-            var isCurrent = day == 1;
+            var isCurrent = day == _currentStreakDay;
+            var isPast = day < _currentStreakDay;
             var row = CreateRect($"Login Day {day}", card, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), size, position);
             CreateImage("Login Reward Card", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
@@ -367,7 +375,7 @@ namespace Game.App
                 new Vector2(0.5f, 1f), new Vector2(size.x - 24f, 34f), dayLabelPosition, dayLabelFontSize,
                 TextAlignmentOptions.Center, $"{GameText.RewardDayLabel()} {day}", GameTextRole.Body);
             _dailyLoginDayLabels[day] = dayLabel;
-            dayLabel.color = SciFiTextStyle.MainText;
+            dayLabel.color = isPast ? SciFiTextStyle.SuccessText : SciFiTextStyle.MainText;
 
             var iconSize = isFinalReward
                 ? new Vector2(200f, 200f)
@@ -378,12 +386,28 @@ namespace Game.App
             var rewardIcon = CreateImage("Day Reward Icon", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), iconSize, iconPosition,
                 isFinalReward ? RewardIconRoot + "super_chest_clean" : RewardSpritePath(reward.Kind), true).GetComponent<Image>();
+            if (isPast)
+            {
+                rewardIcon.color = new Color(1f, 1f, 1f, 0.45f);
+                CreateImage("Past Day Reward Claimed", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f), new Vector2(46f, 46f), new Vector2(0f, -10f), RewardIconRoot + "check", true);
+            }
+
             if (isFinalReward)
             {
+                if (isCurrent)
+                {
+                    _dailyLoginDayRewardIcon = rewardIcon;
+                    _dailyLoginDayRewardAmount = null;
+                    _dailyLoginDayRewardCheck = CreateImage("Current Day Reward Claimed", row,
+                        new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                        new Vector2(80f, 80f), new Vector2(-20f, 0f), RewardIconRoot + "check", true).GetComponent<Image>();
+                }
+
                 return;
             }
 
-            var amountPosition = isFinalReward ? new Vector2(96f, -14f) : new Vector2(35f, -12f);
+            var amountPosition = new Vector2(35f, -12f);
             var rewardAmount = CreateText("Day Reward Amount", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), new Vector2(64f, 46f), amountPosition, 28,
                 TextAlignmentOptions.Center, reward.Amount.ToString(), GameTextRole.Numeric);
@@ -649,28 +673,68 @@ namespace Game.App
 
             for (var day = 1; day < _dailyLoginDayLabels.Length; day++)
             {
+                var isPastOrClaimedCurrent = day < _currentStreakDay
+                    || (day == _currentStreakDay && _dailyLoginClaimed);
                 if (_dailyLoginDayLabels[day] != null)
                 {
-                    _dailyLoginDayLabels[day].color = _dailyLoginClaimed && day == 1
+                    _dailyLoginDayLabels[day].color = isPastOrClaimedCurrent
                         ? SciFiTextStyle.SuccessText
                         : SciFiTextStyle.MainText;
                 }
 
                 if (_dailyLoginDayNumbers[day] != null)
                 {
-                    _dailyLoginDayNumbers[day].color = _dailyLoginClaimed && day == 1
+                    _dailyLoginDayNumbers[day].color = isPastOrClaimedCurrent
                         ? SciFiTextStyle.SuccessText
                         : SciFiTextStyle.MainText;
                 }
             }
         }
 
-        private static bool IsDailyLoginRewardClaimed()
+        private void ClaimDailyLoginReward()
+        {
+            var progress = AppServices.ActivityProgress;
+            if (progress == null || !progress.TryClaimDailyLoginReward())
+            {
+                return;
+            }
+
+            GrantDailyLoginReward(_dailyLoginCurrentReward);
+            AppServices.SaveService?.Save(AppServices.SaveService.Current);
+
+            _dailyLoginClaimed = true;
+            RefreshDailyLoginState();
+            RefreshTopCurrency();
+        }
+
+        private static void GrantDailyLoginReward((RewardKind Kind, int Amount) reward)
+        {
+            switch (reward.Kind)
+            {
+                case RewardKind.Credits:
+                    AppServices.Economy?.Grant(reward.Amount, "rewards.dailyLogin", "day.1", null);
+                    break;
+                case RewardKind.Crystals:
+                    AppServices.Economy?.GrantPremium(reward.Amount, "rewards.dailyLogin", "day.1", null);
+                    break;
+                case RewardKind.Chip:
+                    AppServices.GrantWeaponBlueprintReward(reward.Amount, "rewards.dailyLogin", "day.1");
+                    break;
+            }
+        }
+
+        private void RefreshTopCurrency()
         {
             var saveData = AppServices.SaveService?.Current;
-            var activity = saveData?.activity;
-            return activity != null
-                && activity.lastLoginDailyPeriodStartUtcTicks == activity.dailyPeriodStartUtcTicks;
+            if (_coinsValueText != null)
+            {
+                _coinsValueText.text = Mathf.Max(0, saveData?.economy.softCurrency ?? 0).ToString();
+            }
+
+            if (_crystalsValueText != null)
+            {
+                _crystalsValueText.text = Mathf.Max(0, saveData?.economy.premiumCurrency ?? 0).ToString();
+            }
         }
 
         private static string RewardSpritePath(RewardKind kind)

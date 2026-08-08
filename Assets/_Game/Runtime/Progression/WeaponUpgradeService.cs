@@ -93,5 +93,40 @@ namespace Game.Progression
 
             return new WeaponUpgradeResult(true, progress.rank, selectedBranch, cost, requiredCommanderLevel);
         }
+
+        /// <summary>
+        /// Reverts a weapon's modernization back to rank 1 and refunds 50% of the
+        /// credits/blueprints spent reaching its current rank. Branch choice is cleared
+        /// so the player can pick again on the next rank-5 upgrade.
+        /// </summary>
+        public bool TryReset(string weaponId)
+        {
+            if (string.IsNullOrWhiteSpace(weaponId)
+                || !_saveData.inventory.unlockedWeaponIds.Contains(weaponId))
+            {
+                return false;
+            }
+
+            var progress = _saveData.inventory.GetOrCreateWeaponProgress(weaponId);
+            if (progress.rank <= 1)
+            {
+                return false;
+            }
+
+            var (spentCredits, spentBlueprints) = WeaponUpgradeEconomy.GetCumulativeCost(progress.rank);
+            var refundCredits = spentCredits / 2;
+            var refundBlueprints = spentBlueprints / 2;
+
+            progress.rank = 1;
+            progress.branch = 0;
+            progress.blueprints += refundBlueprints;
+
+            if (refundCredits > 0)
+            {
+                _economy.Grant(refundCredits, "weapon.upgrade.reset", weaponId, null);
+            }
+
+            return true;
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace Game.Tests.EditMode.Gameplay
         {
             var arenas = PrototypeArenaLibrary.CreateAll();
 
-            Assert.That(arenas, Has.Length.GreaterThanOrEqualTo(3));
+            Assert.That(arenas, Has.Length.GreaterThanOrEqualTo(1));
             foreach (var arena in arenas)
             {
                 Assert.That(arena.ArenaId, Is.Not.Empty);

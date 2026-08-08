@@ -26,6 +26,18 @@ namespace Game.UI.Battle
         private const float MovementButtonGap = 24f;
         private const string BattleResourceRoot = "UI/Battle/";
         private const string WeaponResourceRoot = "UI/Weapons/";
+        private const string ResultCardResource = "UI/Common/rect_long_card";
+        private const string WinContentResource = "UI/Menu/BattleResult/win_content";
+        private const string LoseContentResource = "UI/Menu/BattleResult/lose_content";
+        private const string CheckmarkResource = "UI/Menu/Rewards/Icons/check";
+        private static readonly Vector2 ResultCardSize = new(760f, 1010f);
+        private static readonly Vector2 ResultContentSize = new(560f, 560f);
+        private static readonly Vector2 ResultMissionMarkSize = new(56f, 56f);
+        // preserveAspect fits the 2:3 card art to the rect's height, so its visible width
+        // is ~673 - the buttons are sized and spaced to sit inside that, not inside 760.
+        // The card art's decorative frame eats into the visible ~673 width, so the
+        // buttons are pulled well inside that rather than merely inside the rect.
+        private static readonly Vector2 ResultButtonSize = new(240f, 108f);
 
         private static readonly Color InkSolid = new(0.055f, 0.085f, 0.13f, 0.96f);
         private static readonly Color Fire = new(0.14f, 0.78f, 0.36f, 1f);
@@ -94,13 +106,11 @@ namespace Game.UI.Battle
         private GameObject _resultRoot;
         private Image _resultPanel;
         private TMP_Text _resultTitleText;
-        private TMP_Text _resultSubtitleText;
-        private TMP_Text _resultOutcomeText;
-        private TMP_Text _resultRewardText;
-        private TMP_Text _resultUnlockText;
-        private TMP_Text _resultContinueNoteText;
+        private Image _resultContentImage;
+        private TMP_Text _resultMissionText;
+        private Image _resultMissionMark;
+        private TMP_Text _resultMissionCross;
         private Button _resultContinueButton;
-        private TMP_Text _resultRetryLabel;
         private TMP_Text _resultContinueLabel;
 
         public event Action FireRequested;
@@ -522,32 +532,47 @@ namespace Game.UI.Battle
             blocker.raycastTarget = true;
             _resultRoot = blocker.gameObject;
 
-            _resultPanel = CreateGlassPanel("Result Panel", blocker.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(780f, 486f), Vector2.zero, InkSolid, Gold);
-            AddTopSheen(_resultPanel.transform, 0.28f);
-            AddRibbon(_resultPanel.transform, new Color(0.78f, 0.18f, 0.18f, 0.96f));
+            _resultPanel = CreatePanel("Result Panel", blocker.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), ResultCardSize, Vector2.zero, Color.white,
+                LoadResourceSprite(ResultCardResource, Vector4.zero));
+            _resultPanel.preserveAspect = true;
+            _resultPanel.raycastTarget = true;
 
-            _resultTitleText = CreateText("Result Title", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-86f, 78f), new Vector2(0f, -26f), 47, TextAlignmentOptions.Center);
-            SciFiTextStyle.Apply(_resultTitleText, GameTextRole.DisplayTitle, 47, TextAlignmentOptions.Center);
-            _resultSubtitleText = CreateText("Result Subtitle", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-96f, 46f), new Vector2(0f, -112f), 27, TextAlignmentOptions.Center);
-            _resultOutcomeText = CreateText("Result Outcome", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-110f, 42f), new Vector2(0f, -172f), 24, TextAlignmentOptions.Center);
-            _resultRewardText = CreateText("Result Reward", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-110f, 42f), new Vector2(0f, -220f), 24, TextAlignmentOptions.Center);
-            _resultUnlockText = CreateText("Result Unlock", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-110f, 42f), new Vector2(0f, -268f), 23, TextAlignmentOptions.Center);
-            _resultUnlockText.color = SciFiTextStyle.CyanText;
-            _resultContinueNoteText = CreateText("Result Continue Note", _resultPanel.transform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(-120f, 34f), new Vector2(0f, -314f), 19, TextAlignmentOptions.Center);
-            _resultContinueNoteText.color = SciFiTextStyle.SecondaryText;
+            _resultTitleText = CreateText("Result Title", _resultPanel.transform, new Vector2(0.08f, 1f), new Vector2(0.92f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0f, 96f), new Vector2(0f, -110f), 58, TextAlignmentOptions.Center);
+            SciFiTextStyle.Apply(_resultTitleText, GameTextRole.DisplayTitle, 58, TextAlignmentOptions.Center);
 
-            var retry = CreateGameButton("Result Retry", _resultPanel.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(286f, 78f),
-                new Vector2(44f, 36f), Gold, "R", 30, GameText.Restart, 28, () => RestartRequested?.Invoke());
-            _resultRetryLabel = retry.GetComponentInChildren<TMP_Text>();
-            _resultContinueButton = CreateGameButton("Result Continue", _resultPanel.transform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(286f, 78f),
-                new Vector2(-44f, 36f), Fire, ">", 26, GameText.Continue, 28, () => ContinueRequested?.Invoke());
+            _resultContentImage = CreatePanel("Result Content", _resultPanel.transform, new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), ResultContentSize, new Vector2(0f, -140f),
+                Color.white, null);
+            _resultContentImage.preserveAspect = true;
+            _resultContentImage.raycastTarget = false;
+
+            // Mission strip: the mark sits at the left edge, the briefing text runs to its
+            // right so both stay inside the card's narrower visible artwork.
+            _resultMissionText = CreateText("Result Mission", _resultPanel.transform, new Vector2(0.26f, 0f), new Vector2(0.84f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(0f, 104f), new Vector2(0f, 240f), 26, TextAlignmentOptions.MidlineLeft);
+            _resultMissionText.textWrappingMode = TextWrappingModes.Normal;
+            _resultMissionText.enableAutoSizing = true;
+            _resultMissionText.fontSizeMin = 20f;
+            _resultMissionText.fontSizeMax = 28f;
+            _resultMissionMark = CreatePanel("Result Mission Mark", _resultPanel.transform, new Vector2(0.26f, 0f),
+                new Vector2(0.26f, 0f), new Vector2(1f, 0.5f), ResultMissionMarkSize, new Vector2(-16f, 292f),
+                Color.white, LoadResourceSprite(CheckmarkResource, Vector4.zero));
+            _resultMissionMark.preserveAspect = true;
+            // No cross artwork exists in the project, so a failed mission is marked with
+            // a glyph tinted to match the mission line rather than a mismatched icon.
+            _resultMissionCross = CreateText("Result Mission Cross", _resultPanel.transform, new Vector2(0.26f, 0f),
+                new Vector2(0.26f, 0f), new Vector2(1f, 0.5f), ResultMissionMarkSize, new Vector2(-16f, 292f),
+                46, TextAlignmentOptions.Center);
+            _resultMissionCross.text = "✕";
+            _resultMissionCross.color = SciFiTextStyle.WarningText;
+            _resultMissionCross.fontStyle = FontStyles.Bold;
+
+            CreateResultButton("Result Menu", _resultPanel.transform, "UI/Shop/btn_blue",
+                new Vector2(-128f, 118f), GameText.Menu, () => MenuRequested?.Invoke());
+            _resultContinueButton = CreateResultButton("Result Continue", _resultPanel.transform, "UI/Shop/btn_green",
+                new Vector2(128f, 118f), GameText.Continue, () => ContinueRequested?.Invoke());
             _resultContinueLabel = _resultContinueButton.GetComponentInChildren<TMP_Text>();
 
             _resultRoot.SetActive(false);
@@ -567,12 +592,23 @@ namespace Game.UI.Battle
             }
 
             _resultTitleText.text = state.ResultTitle;
-            _resultSubtitleText.text = state.ResultSubtitle;
-            _resultOutcomeText.text = state.ResultOutcome;
-            _resultRewardText.text = state.ResultReward;
-            _resultUnlockText.text = state.ResultUnlock;
-            _resultContinueNoteText.text = state.CanContinue ? GameText.NextMissionUnlocked : GameText.RetryOrMenu;
-            _resultRetryLabel.text = state.RetryLabel;
+            _resultTitleText.color = state.ResultPlayerWon ? SciFiTextStyle.SuccessText : SciFiTextStyle.WarningText;
+
+            _resultContentImage.sprite = LoadResourceSprite(
+                state.ResultPlayerWon ? WinContentResource : LoseContentResource, Vector4.zero);
+            _resultContentImage.enabled = _resultContentImage.sprite != null;
+
+            // The mission only counts when the battle itself was won, so a cleared
+            // objective in a lost battle still shows as outstanding.
+            _resultMissionText.text = state.ResultMissionTitle;
+            _resultMissionText.gameObject.SetActive(!string.IsNullOrWhiteSpace(state.ResultMissionTitle));
+            _resultMissionText.color = state.ResultMissionCleared
+                ? SciFiTextStyle.SuccessText
+                : SciFiTextStyle.WarningText;
+            var hasMission = !string.IsNullOrWhiteSpace(state.ResultMissionTitle);
+            _resultMissionMark.gameObject.SetActive(hasMission && state.ResultMissionCleared);
+            _resultMissionCross.gameObject.SetActive(hasMission && !state.ResultMissionCleared);
+
             _resultContinueLabel.text = state.ContinueLabel;
             _resultContinueButton.interactable = true;
             _resultContinueLabel.color = SciFiTextStyle.MainText;
@@ -600,7 +636,9 @@ namespace Game.UI.Battle
                 pulse);
             ApplyHighlight(_tutorialFirstWeaponPanel, tutorialTargetId == "battle.arsenal-impulse", Color.white, pulse);
             ApplyHighlight(_firePanel, tutorialTargetId == "battle.fire-button", FireControlVisual, pulse);
-            ApplyHighlight(_resultPanel, tutorialTargetId == "battle.result", InkSolid, pulse);
+            // The result card is real artwork now, so it must keep its own colours - the
+            // old ink tint turned it into a dark silhouette of itself every frame.
+            ApplyHighlight(_resultPanel, tutorialTargetId == "battle.result", Color.white, pulse);
 
             SetTutorialLayer(_statusTutorialCanvas, spotlightActive && showTutorialCard, 122);
             SetTutorialLayer(_turnTutorialCanvas, spotlightActive && tutorialTargetId == "battle.turn-label", 123);
@@ -836,6 +874,30 @@ namespace Game.UI.Battle
             AddOuterStroke(panel.gameObject, accent, new Vector2(1.3f, -1.3f));
             AddTopSheen(panel.transform, 0.22f);
             return panel;
+        }
+
+        /// <summary>
+        /// Result-card button: plain artwork plus a centred label, deliberately not the
+        /// icon-and-caption <see cref="CreateGameButton"/> style used by in-battle controls.
+        /// </summary>
+        private Button CreateResultButton(string name, Component parent, string resourceName,
+            Vector2 anchoredPosition, string label, Action onClick)
+        {
+            var image = CreatePanel(name, parent, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                ResultButtonSize, anchoredPosition, Color.white, LoadResourceSprite(resourceName, Vector4.zero));
+            image.raycastTarget = true;
+
+            var button = image.gameObject.AddComponent<Button>();
+            button.targetGraphic = image;
+            button.transition = Selectable.Transition.ColorTint;
+            button.colors = CreateButtonColors(Color.white);
+            button.onClick.AddListener(() => onClick?.Invoke());
+
+            var labelText = CreateText($"{name} Label", image.transform, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 32, TextAlignmentOptions.Center);
+            labelText.text = label;
+            labelText.fontStyle = FontStyles.Bold;
+            return button;
         }
 
         private Image CreatePanel(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,

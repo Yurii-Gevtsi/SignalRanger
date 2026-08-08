@@ -1,4 +1,7 @@
+using Game.Core.Localization;
 using Game.Data.Progression;
+using Game.Gameplay.Battle.Weapons;
+using UnityEngine;
 
 namespace Game.App
 {
@@ -24,7 +27,7 @@ namespace Game.App
             {
                 if (!string.IsNullOrWhiteSpace(node.EvolutionName))
                 {
-                    return node.EvolutionName;
+                    return GameText.WeaponEvolutionName(node.MechanicId, node.EvolutionName);
                 }
 
                 return rank == 5 ? "Вибір еволюції" : "Фінальна еволюція";
@@ -48,6 +51,56 @@ namespace Game.App
             return GetMechanicDescription(definition.WeaponId, node.MechanicId);
         }
 
+        /// <summary>
+        /// Flavor text for the rank/branch the player has actually reached: the
+        /// mechanic unlocked at rank 5 or 10, or nothing below rank 5. Meant to be
+        /// appended to the base weapon description on the "current rank" card.
+        /// </summary>
+        public static string GetActiveEvolutionText(WeaponProgressionDefinition definition, int rank, WeaponUpgradeBranch branch)
+        {
+            if (definition == null || rank < 5 || branch == WeaponUpgradeBranch.None)
+            {
+                return string.Empty;
+            }
+
+            var evolvedRank = rank >= 10 ? 10 : 5;
+            return GetDescription(definition, evolvedRank, branch);
+        }
+
+        /// <summary>
+        /// Current damage after applying every purchased Damage-stat node up to
+        /// <paramref name="rank"/> on the matching branch (or branch-less nodes).
+        /// Only Damage is resolved here - the battle simulation doesn't yet consume
+        /// the other stat modifiers, so there is nothing else to reflect in the UI.
+        /// </summary>
+        public static int ResolveCurrentDamage(WeaponDefinition weapon, WeaponProgressionDefinition definition, int rank, WeaponUpgradeBranch branch)
+        {
+            if (weapon == null)
+            {
+                return 0;
+            }
+
+            if (definition == null)
+            {
+                return weapon.Damage;
+            }
+
+            var bonusPercent = 0;
+            var nodes = definition.Nodes;
+            for (var i = 0; i < nodes.Count; i++)
+            {
+                var node = nodes[i];
+                if (node.Rank <= rank
+                    && node.Stat == WeaponUpgradeStat.Damage
+                    && (node.Branch == WeaponUpgradeBranch.None || node.Branch == branch))
+                {
+                    bonusPercent += node.Amount;
+                }
+            }
+
+            return Mathf.RoundToInt(weapon.Damage * (1f + bonusPercent / 100f));
+        }
+
         public static string GetWeaponName(WeaponProgressionDefinition definition, int rank,
             WeaponUpgradeBranch branch, string fallbackName)
         {
@@ -59,7 +112,7 @@ namespace Game.App
             var evolutionRank = rank >= 10 ? 10 : 5;
             return definition.TryGetNode(evolutionRank, branch, out var node)
                 && !string.IsNullOrWhiteSpace(node.EvolutionName)
-                    ? node.EvolutionName
+                    ? GameText.WeaponEvolutionName(node.MechanicId, node.EvolutionName)
                     : fallbackName;
         }
 

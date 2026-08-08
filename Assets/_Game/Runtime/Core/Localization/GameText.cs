@@ -39,7 +39,6 @@ namespace Game.Core.Localization
         public static string AmmoUnlimited() => T("battle.ammoUnlimited", "Боєприпаси: безліміт");
         public static string WeaponSlot(string weaponName, int slotIndex, int slotCount) => T("battle.weaponSlot", $"{weaponName} ({slotIndex}/{slotCount})",
             Arg("weapon", weaponName), Arg("index", slotIndex), Arg("count", slotCount));
-        public static string WeaponType(string roleName) => T("content.weaponType", $"Тип: {roleName}", Arg("role", roleName));
         public static string BattleIntro(string arenaName) => T("battle.intro", $"{arenaName}. Наведи постріл перетягуванням, потім натисни Вогонь.", Arg("arena", arenaName));
         public static string WeaponSelected(string weaponName) => T("battle.weaponSelected", $"Обрано зброю: {weaponName}.", Arg("weapon", weaponName));
         public static string WeaponSelectedGeneric() => T("battle.weaponSelectedGeneric", "Зброю обрано.");
@@ -81,6 +80,9 @@ namespace Game.Core.Localization
             ? T("campaign.missionProgress", $"Наступна місія {missionNumber}/{missionCount}", Arg("mission", missionNumber), Arg("count", missionCount))
             : NextMissionLabel();
         public static string ContinueToLoadout() => T("loadout.continue", "До спорядження");
+        public static string EnterBattle() => T("campaign.enterBattle", "Почати");
+        public static string CampaignPlanetLocked() => T("campaign.planetLocked", "Місії цієї планети будуть доступні згодом.");
+        public static string CampaignPreviousPlanetLocked() => T("campaign.previousPlanetLocked", "Звільніть попередню планету");
         public static string ChapterFallbackTitle() => T("campaign.defaultTitle", "Початковий розділ");
         public static string ChapterFallbackSummary() => T("campaign.defaultSummary", "Коротка серія боїв, що поступово вводить у тактичний ритм гри.");
         public static string ProfileUnavailable() => T("profile.unavailable", "Профіль: локальні дані ще не готові.");
@@ -138,13 +140,19 @@ namespace Game.Core.Localization
         public static string WeaponName(string weaponId, string fallback) => T("content.weapon." + weaponId, fallback);
         public static string WeaponDescription(string weaponId, string fallback) => T("content.weaponDescription." + weaponId, fallback);
         public static string WeaponCategory(string category, string fallback) => T("content.category." + category, fallback);
+        public static string WeaponEvolutionName(string mechanicId, string fallback) => T("content.weaponEvolutionName." + mechanicId, fallback);
         public static string ArenaName(string arenaId, string fallback) => T("content.arena." + arenaId, fallback);
         public static string ShopTitle() => T("shop.title", "Магазин зброї");
         public static string ArsenalTitle() => T("ui.arsenal", "Арсенал");
-        public static string Damage() => T("shop.damage", "Урон");
+        public static string Damage() => T("shop.damage", "Шкода");
         public static string UsesPerBattle() => T("shop.uses", "За бій");
         public static string RequiredLevel(int level) => T("shop.requiredLevel", $"Потрібен рівень {level}", Arg("level", level));
         public static string ConstructorBureau() => T("loadout.constructor", "Майстерня");
+        public static string ResetUpgrade() => T("architect.resetUpgrade", "Скинути");
+        public static string ChipRewardTitle() => T("chipReward.title", "Отримано креслення!");
+        public static string ChipRewardReadyHint() => T("chipReward.ready", "Достатньо для модернізації!");
+        public static string SupplyBoxCoins(int amount) => T("battle.supplyBoxCoins", $"Знайдено {amount} кредитів!", Arg("amount", amount));
+        public static string SupplyBoxWeapon(string weaponName) => T("battle.supplyBoxWeapon", $"Тимчасова зброя: {weaponName}!", Arg("weapon", weaponName));
         public static string Tip(string key, string fallback) => T("loading." + key, fallback);
         public static string Localized(string key, string fallback, params LocalizationArgument[] arguments) => T(key, fallback, arguments);
         public static string MobilityLabel(float remainingSeconds) => T("battle.mobility", $"Хід: {remainingSeconds:0}с • рух і стрибки вільні", Arg("seconds", remainingSeconds.ToString("0", CultureInfo.InvariantCulture)));

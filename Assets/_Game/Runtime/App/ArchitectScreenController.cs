@@ -41,20 +41,53 @@ namespace Game.App
         private static readonly Vector2 WeaponStripPosition = new(220f, -160f);
         private static readonly Vector2 WeaponSlotSize = new(220f, 220f);
         private static readonly Vector2 WeaponArtSize = new(145f, 145f);
-        private static readonly Vector2 SelectedWeaponNodePosition = new(-850f, 20f);
-        private static readonly Vector2 SelectedWeaponNodeSize = new(130f, 130f);
-        private static readonly Vector2 BlueprintChevronSize = new(92f, 92f);
-        private static readonly Vector2 EvolutionNodeHitAreaSize = new(136f, 160f);
+        private static readonly Vector2 SelectedWeaponNodePosition = new(-820f, 20f);
+        // Sized to fill the enlarged rank-1/5/10 cells painted on the background.
+        private static readonly Vector2 SelectedWeaponNodeSize = new(182f, 182f);
+        private static readonly Vector2 EvolutionIconSize = new(185f, 157f);
+        private static readonly Vector2 BlueprintChevronSize = new(83f, 83f);
+        // Tall enough to stack the evolution art and its own (smaller) checkmark without
+        // the two touching; plain ranks show only the full-size chevron/checkmark.
+        private static readonly Vector2 EvolutionNodeHitAreaSize = new(136f, 200f);
+        private static readonly Vector2 EvolutionCheckmarkSize = new(44f, 44f);
+        // Per-rank because the rank-5 and rank-10 cells differ in width.
+        private static readonly Vector2 EvolutionCheckmarkPositionRank5 = new(-70f, 50f);
+        private static readonly Vector2 EvolutionCheckmarkPositionRank10 = new(-55f, 60f);
         private static readonly Vector2 DetailsCardSize = new(1200f, 800f);
-        private static readonly Vector2 DetailsCardSizeEvolution = new(1200f, 1000f);
-        private static readonly Vector2 DetailsArtMaxSize = new(430f, 340f);
-        private static readonly Vector2 DetailsArtCenterOffset = new(0f, 100f);
+        private static readonly Vector2 DetailsCardSizeEvolution = new(1200f, 1080f);
+        private static readonly Vector2 DetailsArtMaxSize = new(430f, 280f);
+        private static readonly Vector2 DetailsArtCenterOffset = new(0f, 130f);
         private static readonly Vector2 DetailsCardVisualInset = new(160f, 110f);
         private static readonly Vector2 DetailsLeftPosition = new(-240f, 0f);
         private static readonly Vector2 DetailsRightPosition = new(240f, 0f);
         private static readonly Vector2 DetailsCloseFixedPosition = new(340f, 300f);
         private static readonly Vector2 PurchaseButtonSize = new(324f, 149f);
         private static readonly Vector2 PurchaseIconSize = new(60f, 60f);
+        private static readonly Vector2 ResetButtonSize = new(300f, 130f);
+        private static readonly Vector2 ResetButtonPosition = new(750f, 300f);
+        private static readonly Vector2 ResetButtonIconSize = new(50f, 50f);
+        private static readonly Vector2 BlueprintBalanceSize = new(210f, 90f);
+        private static readonly Vector2 BlueprintBalanceIconSize = new(96f, 96f);
+        private const float BlueprintBalanceGap = 24f;
+        private static readonly Color BlueprintBalanceColor = new Color32(0x00, 0xFF, 0x00, 0xFF);
+        // Artwork that carries enough empty margin to read far smaller than the rest once
+        // aspect-fitted, so it gets a per-weapon boost on the detail card.
+        private static readonly Dictionary<string, DetailsArtBoost> DetailsArtBoosts = new(StringComparer.Ordinal)
+        {
+            { "weapon.impulse", new DetailsArtBoost(1.5f, true, WeaponUpgradeBranch.None) },
+            { "weapon.blaster-caset", new DetailsArtBoost(1.5f, true, WeaponUpgradeBranch.None) },
+            { "weapon.mortira", new DetailsArtBoost(1.5f, true, WeaponUpgradeBranch.None) },
+            { "weapon.mine", new DetailsArtBoost(1.5f, true, WeaponUpgradeBranch.None) },
+            { "weapon.heal", new DetailsArtBoost(1.5f, true, WeaponUpgradeBranch.None) },
+            { "weapon.toxic", new DetailsArtBoost(1.5f, true, WeaponUpgradeBranch.None) },
+            { "weapon.missle", new DetailsArtBoost(1.5f, true, WeaponUpgradeBranch.None) },
+            { "weapon.bur", new DetailsArtBoost(1.3f, true, WeaponUpgradeBranch.None) },
+            { "weapon.fire-gun", new DetailsArtBoost(1.3f, true, WeaponUpgradeBranch.None) },
+            // Only the upper branch's art needs the boost at ranks 5/10.
+            { "weapon.freeze", new DetailsArtBoost(1.3f, true, WeaponUpgradeBranch.A) },
+            // Base configuration only - the evolution art is already large enough.
+            { "weapon.c4", new DetailsArtBoost(1.3f, false, WeaponUpgradeBranch.None) }
+        };
         private const float PhoneElementScale = 1.2f;
         private const int WeaponsPerPage = 7;
 
@@ -78,6 +111,7 @@ namespace Game.App
         private Image _detailsArtImage;
         private Image _detailsOwnedCheckmark;
         private TMP_Text _detailsPrimaryStatLabel;
+        private Image _detailsPrimaryStatIcon;
         private TMP_Text _detailsDamageText;
         private TMP_Text _detailsSecondaryStatLabel;
         private TMP_Text _detailsUsesText;
@@ -85,6 +119,8 @@ namespace Game.App
         private TMP_Text _detailsCrystalPriceText;
         private Button _detailsCoinBuyButton;
         private Button _detailsCrystalBuyButton;
+        private Button _detailsResetButton;
+        private TMP_Text _blueprintBalanceText;
         private int _selectedWeaponIndex;
         private int _pageStart;
         private Vector2 _carouselDragStart;
@@ -101,11 +137,43 @@ namespace Game.App
             public Image Lock;
         }
 
+        /// <summary>
+        /// How much a weapon's detail-card art is enlarged, and where that applies:
+        /// rank 1 always, the rank 5/10 evolutions only when <see cref="IncludesEvolutions"/>
+        /// is set, and then only on <see cref="EvolutionBranch"/> unless that is
+        /// <see cref="WeaponUpgradeBranch.None"/>, which means both branches.
+        /// </summary>
+        private readonly struct DetailsArtBoost
+        {
+            public DetailsArtBoost(float scale, bool includesEvolutions, WeaponUpgradeBranch evolutionBranch)
+            {
+                Scale = scale;
+                IncludesEvolutions = includesEvolutions;
+                EvolutionBranch = evolutionBranch;
+            }
+
+            public float Scale { get; }
+            public bool IncludesEvolutions { get; }
+            public WeaponUpgradeBranch EvolutionBranch { get; }
+
+            public bool Covers(int rank, WeaponUpgradeBranch branch)
+            {
+                if (rank == 1)
+                {
+                    return true;
+                }
+
+                return IncludesEvolutions
+                    && (EvolutionBranch == WeaponUpgradeBranch.None || EvolutionBranch == branch);
+            }
+        }
+
         private struct EvolutionIconView
         {
             public int Rank;
             public WeaponUpgradeBranch Branch;
             public Image Icon;
+            public Image Checkmark;
         }
 
         private struct ChevronIconView
@@ -185,10 +253,79 @@ namespace Game.App
                 Vector2.zero, Vector2.zero, MenuResourceRoot + "arch_menu", false, Color.white);
 
             BuildTopBar(root);
+            BuildResetButton(root);
             BuildSelectedWeaponNode(root);
             BuildWeaponCarousel(root);
             // Keep progression nodes above the carousel hit area so evolution slots remain clickable.
             BuildBlueprintNodeLabels(root);
+        }
+
+        /// <summary>
+        /// Sits on the blueprint background above the rank-1 weapon node, between the
+        /// tree and the title panel.
+        /// </summary>
+        private void BuildResetButton(Transform root)
+        {
+            var button = CreateImageButton("Architect Reset Upgrade", root,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                ResetButtonSize, ResetButtonPosition, ShopResourceRoot + "btn_red", ResetSelectedWeaponUpgrade);
+            button.GetComponent<Image>().preserveAspect = false;
+            _detailsResetButton = button.GetComponent<Button>();
+            CreateImage("Architect Reset Upgrade Icon", button, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
+                new Vector2(0f, 0.5f), ResetButtonIconSize, new Vector2(48f, 0f), "UI/Common/reset_btn2", true, Color.white);
+            var resetLabel = CreateText("Architect Reset Upgrade Label", button, new Vector2(0.34f, 0f),
+                new Vector2(0.95f, 1f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 30,
+                TextAlignmentOptions.Center, GameText.ResetUpgrade(), GameTextRole.Button);
+            resetLabel.rectTransform.offsetMin = new Vector2(resetLabel.rectTransform.offsetMin.x, 10f);
+            resetLabel.rectTransform.offsetMax = new Vector2(-30f, resetLabel.rectTransform.offsetMax.y);
+            _detailsResetButton.gameObject.SetActive(false);
+
+            BuildBlueprintBalance(root);
+        }
+
+        /// <summary>
+        /// Chip balance of the selected weapon, sitting immediately left of the reset
+        /// button. Unlike the button it stays visible at rank 1, since the balance is
+        /// what the player checks before deciding whether an upgrade is affordable.
+        /// </summary>
+        private void BuildBlueprintBalance(Transform root)
+        {
+            var group = CreateRect("Architect Blueprint Balance", root,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(1f, 0.5f),
+                BlueprintBalanceSize,
+                new Vector2(ResetButtonPosition.x - ResetButtonSize.x * 0.5f - BlueprintBalanceGap,
+                    ResetButtonPosition.y));
+
+            CreateImage("Architect Blueprint Balance Icon", group, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
+                new Vector2(0f, 0.5f), BlueprintBalanceIconSize, Vector2.zero, "UI/Common/chip_2", true, Color.white);
+
+            _blueprintBalanceText = CreateText("Architect Blueprint Balance Value", group,
+                new Vector2(0.36f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, 44, TextAlignmentOptions.MidlineLeft,
+                string.Empty, GameTextRole.Numeric);
+            // Clears the (now larger) chip icon so the number never sits on top of it.
+            _blueprintBalanceText.rectTransform.offsetMin =
+                new Vector2(20f, _blueprintBalanceText.rectTransform.offsetMin.y);
+            _blueprintBalanceText.color = BlueprintBalanceColor;
+        }
+
+        private void RefreshResetButtonVisibility()
+        {
+            if (_selectedWeaponIndex < 0 || _selectedWeaponIndex >= _items.Count)
+            {
+                return;
+            }
+
+            var progress = AppServices.SaveService.Current.inventory.GetOrCreateWeaponProgress(_items[_selectedWeaponIndex].WeaponId);
+            if (_detailsResetButton != null)
+            {
+                _detailsResetButton.gameObject.SetActive(progress.rank > 1);
+            }
+
+            if (_blueprintBalanceText != null)
+            {
+                _blueprintBalanceText.text = progress.blueprints.ToString();
+            }
         }
 
         private void BuildTopBar(Transform root)
@@ -232,21 +369,23 @@ namespace Game.App
         {
             var nodes = new[]
             {
-                new BlueprintNodeLayout(2, new Vector2(-670f, 5f), new Vector2(-670f, 61f)),
-                new BlueprintNodeLayout(3, new Vector2(-490f, 5f), new Vector2(-490f, 61f)),
-                new BlueprintNodeLayout(4, new Vector2(-315f, 5f), new Vector2(-315f, 61f)),
-                new BlueprintNodeLayout(5, new Vector2(-65f, 130f), new Vector2(-65f, 185f)),
-                new BlueprintNodeLayout(6, new Vector2(120f, 130f), new Vector2(120f, 185f)),
-                new BlueprintNodeLayout(7, new Vector2(310f, 130f), new Vector2(310f, 185f)),
-                new BlueprintNodeLayout(8, new Vector2(495f, 130f), new Vector2(495f, 185f)),
-                new BlueprintNodeLayout(9, new Vector2(670f, 130f), new Vector2(670f, 185f)),
-                new BlueprintNodeLayout(10, new Vector2(850f, 155f), new Vector2(850f, 185f)),
-                new BlueprintNodeLayout(5, new Vector2(-65f, -115f), new Vector2(-65f, -69f)),
-                new BlueprintNodeLayout(6, new Vector2(120f, -115f), new Vector2(120f, -69f)),
-                new BlueprintNodeLayout(7, new Vector2(310f, -115f), new Vector2(310f, -69f)),
+                // X values line each chevron up with the cell painted on the workshop
+                // background; the spacing is deliberately uneven because the artwork's is.
+                new BlueprintNodeLayout(2, new Vector2(-615f, 5f), new Vector2(-615f, 61f)),
+                new BlueprintNodeLayout(3, new Vector2(-455f, 5f), new Vector2(-455f, 61f)),
+                new BlueprintNodeLayout(4, new Vector2(-307f, 5f), new Vector2(-307f, 61f)),
+                new BlueprintNodeLayout(5, new Vector2(-45f, 145f), new Vector2(-45f, 172f)),
+                new BlueprintNodeLayout(6, new Vector2(158f, 130f), new Vector2(158f, 180f)),
+                new BlueprintNodeLayout(7, new Vector2(325f, 130f), new Vector2(325f, 180f)),
+                new BlueprintNodeLayout(8, new Vector2(495f, 130f), new Vector2(495f, 180f)),
+                new BlueprintNodeLayout(9, new Vector2(663f, 130f), new Vector2(663f, 180f)),
+                new BlueprintNodeLayout(10, new Vector2(835f, 145f), new Vector2(835f, 172f)),
+                new BlueprintNodeLayout(5, new Vector2(-45f, -100f), new Vector2(-45f, -69f)),
+                new BlueprintNodeLayout(6, new Vector2(158f, -115f), new Vector2(158f, -69f)),
+                new BlueprintNodeLayout(7, new Vector2(325f, -115f), new Vector2(325f, -69f)),
                 new BlueprintNodeLayout(8, new Vector2(495f, -115f), new Vector2(495f, -69f)),
-                new BlueprintNodeLayout(9, new Vector2(670f, -115f), new Vector2(670f, -69f)),
-                new BlueprintNodeLayout(10, new Vector2(850f, -105f), new Vector2(850f, -69f))
+                new BlueprintNodeLayout(9, new Vector2(663f, -115f), new Vector2(663f, -69f)),
+                new BlueprintNodeLayout(10, new Vector2(835f, -115f), new Vector2(835f, -69f))
             };
             for (var i = 0; i < nodes.Length; i++)
             {
@@ -270,11 +409,32 @@ namespace Game.App
                     var hitArea = CreateTransparentButton($"Architect Evolution Hit Area {node.Number} {node.ChevronPosition.y}", root,
                         new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                         EvolutionNodeHitAreaSize, node.ChevronPosition, clickAction);
+                    // The rank-10 lower-branch cell sits slightly lower than its sibling,
+                    // so its art needs nudging back up to stay centred in the frame.
+                    var iconOffset = node.Number == 10 && node.ChevronPosition.y < 0f
+                        ? new Vector2(0f, 10f)
+                        : Vector2.zero;
                     var icon = CreateImage($"Architect Evolution Icon {node.Number} {node.ChevronPosition.y}", hitArea,
                         new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                        new Vector2(132f, 112f), Vector2.zero, string.Empty, true, Color.white)
+                        EvolutionIconSize, iconOffset, string.Empty, true, Color.white)
                         .GetComponent<Image>();
-                    _evolutionIcons.Add(new EvolutionIconView { Rank = node.Number, Branch = branch, Icon = icon });
+                    // Evolution nodes show the weapon art instead of a chevron, so an
+                    // owned rank needs its own checkmark stacked under that art - kept
+                    // smaller than the plain-rank one so both fit the node.
+                    var checkmark = CreateImage($"Architect Evolution Checkmark {node.Number} {node.ChevronPosition.y}", hitArea,
+                        new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                        EvolutionCheckmarkSize,
+                        node.Number == 5 ? EvolutionCheckmarkPositionRank5 : EvolutionCheckmarkPositionRank10,
+                        CheckmarkResource, true, Color.white)
+                        .GetComponent<Image>();
+                    checkmark.enabled = false;
+                    _evolutionIcons.Add(new EvolutionIconView
+                    {
+                        Rank = node.Number,
+                        Branch = branch,
+                        Icon = icon,
+                        Checkmark = checkmark
+                    });
                 }
                 else
                 {
@@ -404,15 +564,17 @@ namespace Game.App
             }
 
             var weapon = _items[index];
-            var progress = AppServices.SaveService.Current.inventory.GetOrCreateWeaponProgress(weapon.WeaponId);
+            // The tree's first node stands for the weapon's rank-1 state, so it keeps the
+            // original art even after an evolution replaces the icon everywhere else.
             _selectedWeaponNodeImage.sprite = LoadSprite(WeaponEvolutionIconResolver.ResolveCurrentIconResource(
-                weapon.IconId, progress.rank, (WeaponUpgradeBranch)progress.branch));
+                weapon.IconId, 1, WeaponUpgradeBranch.None));
             _selectedWeaponNodeImage.enabled = _selectedWeaponNodeImage.sprite != null;
             _selectedWeaponIndex = index;
 
             RefreshCarouselSlots();
             RefreshEvolutionIcons();
             RefreshChevronIcons();
+            RefreshResetButtonVisibility();
         }
 
         private void RefreshEvolutionIcons()
@@ -420,12 +582,24 @@ namespace Game.App
             var iconId = _selectedWeaponIndex >= 0 && _selectedWeaponIndex < _items.Count
                 ? _items[_selectedWeaponIndex].IconId
                 : string.Empty;
+            SaveWeaponProgressData progress = null;
+            if (_selectedWeaponIndex >= 0 && _selectedWeaponIndex < _items.Count)
+            {
+                progress = AppServices.SaveService.Current.inventory.GetOrCreateWeaponProgress(_items[_selectedWeaponIndex].WeaponId);
+            }
+
             for (var i = 0; i < _evolutionIcons.Count; i++)
             {
                 var view = _evolutionIcons[i];
                 var resourceName = WeaponEvolutionIconResolver.ResolveEvolutionIconResource(iconId, view.Rank, view.Branch);
                 view.Icon.sprite = string.IsNullOrWhiteSpace(resourceName) ? null : LoadSprite(resourceName);
                 view.Icon.enabled = !string.IsNullOrWhiteSpace(resourceName);
+                if (view.Checkmark != null)
+                {
+                    view.Checkmark.enabled = progress != null
+                        && progress.rank >= view.Rank
+                        && (WeaponUpgradeBranch)progress.branch == view.Branch;
+                }
             }
         }
 
@@ -488,7 +662,7 @@ namespace Game.App
                 new Vector2(0.16f, 0.72f), new Vector2(0.84f, 0.82f), new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, 50, TextAlignmentOptions.Center, string.Empty, GameTextRole.DisplayTitle);
             _detailsNameText.enableAutoSizing = true;
-            _detailsNameText.fontSizeMin = 32f;
+            _detailsNameText.fontSizeMin = 28f;
             _detailsNameText.fontSizeMax = 50f;
             _detailsNameText.textWrappingMode = TextWrappingModes.Normal;
             _detailsNameText.overflowMode = TextOverflowModes.Truncate;
@@ -496,10 +670,13 @@ namespace Game.App
             _detailsDescriptionViewport = CreateRect("Architect Weapon Details Description Viewport", _detailsCard,
                 new Vector2(0.18f, 0.48f), new Vector2(0.82f, 0.61f), new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero);
+            _detailsDescriptionViewport.offsetMin = new Vector2(20f, _detailsDescriptionViewport.offsetMin.y);
+            // Nudge the top edge down so the description never rides up under the artwork.
+            _detailsDescriptionViewport.offsetMax = new Vector2(_detailsDescriptionViewport.offsetMax.x, -20f);
             _detailsDescriptionViewport.gameObject.AddComponent<RectMask2D>();
             _detailsDescriptionText = CreateText("Architect Weapon Details Description", _detailsDescriptionViewport,
                 Vector2.zero, Vector2.one, new Vector2(0.5f, 1f),
-                Vector2.zero, Vector2.zero, 30, TextAlignmentOptions.TopLeft, string.Empty, GameTextRole.Body);
+                Vector2.zero, Vector2.zero, 30, TextAlignmentOptions.Top, string.Empty, GameTextRole.Body);
             _detailsDescriptionText.enableAutoSizing = true;
             _detailsDescriptionText.fontSizeMin = 22f;
             _detailsDescriptionText.fontSizeMax = 30f;
@@ -513,6 +690,10 @@ namespace Game.App
 
             _detailsDamageText = CreateDetailsStatLine(_detailsCard, "Architect Details Damage", GameText.Damage(),
                 new Vector2(0.26f, 0.39f), new Vector2(0.50f, 0.46f), out _detailsPrimaryStatLabel);
+            _detailsPrimaryStatIcon = CreateImage("Architect Details Chip Icon", _detailsPrimaryStatLabel.transform.parent,
+                new Vector2(0.25f, 0.5f), new Vector2(0.25f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(96f, 96f), Vector2.zero,
+                "UI/Common/chip", true, Color.white).GetComponent<Image>();
+            _detailsPrimaryStatIcon.gameObject.SetActive(false);
             _detailsUsesText = CreateDetailsStatLine(_detailsCard, "Architect Details Uses", GameText.UsesPerBattle(),
                 new Vector2(0.53f, 0.39f), new Vector2(0.80f, 0.46f), out _detailsSecondaryStatLabel);
 
@@ -542,7 +723,7 @@ namespace Game.App
 
             _detailsOwnedCheckmark = CreateImage("Architect Details Owned Checkmark", _detailsCard,
                 new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(90f, 90f), new Vector2(0f, 160f), CheckmarkResource, true, Color.white)
+                new Vector2(90f, 90f), new Vector2(0f, 200f), CheckmarkResource, true, Color.white)
                 .GetComponent<Image>();
             _detailsOwnedCheckmark.gameObject.SetActive(false);
 
@@ -614,59 +795,97 @@ namespace Game.App
             {
                 branch = WeaponUpgradeBranch.None;
             }
-            else if (progress.branch != 0)
-            {
-                branch = (WeaponUpgradeBranch)progress.branch;
-            }
 
             var isEvolution = displayRank == 5 || displayRank == 10;
+            var isBaseConfiguration = displayRank == 1;
             _pendingBranch = branch;
             _selectedWeaponIndex = index;
             _detailsOverlay.transform.SetAsLastSibling();
-            ApplyDetailsLayout(isEvolution);
+            ApplyDetailsLayout(isEvolution || isBaseConfiguration);
             _detailsCard.anchoredPosition = cardPosition;
+            // Rank 1 documents the weapon as it shipped, so it shows the base art the
+            // same way ranks 5/10 show their evolution art.
             var artResource = isEvolution
                 ? WeaponEvolutionIconResolver.ResolveEvolutionIconResource(weapon.IconId, displayRank, branch)
-                : string.Empty;
+                : isBaseConfiguration
+                    ? WeaponEvolutionIconResolver.ResolveCurrentIconResource(weapon.IconId, 1, WeaponUpgradeBranch.None)
+                    : string.Empty;
             _detailsArtImage.gameObject.SetActive(!string.IsNullOrWhiteSpace(artResource));
             if (!string.IsNullOrWhiteSpace(artResource))
             {
                 _detailsArtImage.sprite = LoadSprite(artResource);
-                ApplyDetailsArtFit(_detailsArtImage);
+                ApplyDetailsArtFit(_detailsArtImage,
+                    ResolveDetailsArtScale(weapon.WeaponId, displayRank, branch));
             }
             _detailsNameText.text = WeaponUpgradePresentation.GetWeaponName(
                 definition,
                 displayRank,
                 branch,
                 WeaponDisplayNames.Get(weapon.WeaponId));
+            ApplyDetailsNameFit();
 
-            var isBaseConfiguration = displayRank == 1;
-            var showUpgradeDescription = isBaseConfiguration || displayRank == 5 || displayRank == 10;
-            _detailsDescriptionText.gameObject.SetActive(showUpgradeDescription);
+            var isOwned = isBaseConfiguration
+                || (displayRank <= progress.rank
+                    && (displayRank < 5 || (WeaponUpgradeBranch)progress.branch == branch));
+            var isCurrentRank = isBaseConfiguration || (isOwned && displayRank == progress.rank);
+            var isPastRank = isOwned && !isCurrentRank;
+            // Every rank (not just the 5/10 evolutions) gets a description of what
+            // improves, so incremental nodes read as more than a bare percentage.
+            _detailsDescriptionText.gameObject.SetActive(true);
             WeaponUpgradeCost cost = default;
             var hasCost = !isBaseConfiguration && WeaponUpgradeEconomy.TryGetCost(displayRank, out cost);
             var requiredCommanderLevel = isBaseConfiguration
                 ? definition.RequiredCommanderLevel
                 : WeaponUpgradeEconomy.GetRequiredCommanderLevel(definition, displayRank);
-            if (isBaseConfiguration)
+            var primaryRowRoot = _detailsDamageText.transform.parent.gameObject;
+            var secondaryRowRoot = _detailsUsesText.transform.parent.gameObject;
+            if (isCurrentRank)
             {
-                _detailsDescriptionText.text = $"{WeaponPresentationText.Describe(weapon)}\n{GameText.WeaponType(WeaponPresentationText.DescribeCategory(weapon))}";
+                // Rank 1 is a historical record of the weapon's original state, so its
+                // stats stay at the base values no matter how far the player has upgraded;
+                // every other "current rank" card reflects what is actually fielded now.
+                var statRank = isBaseConfiguration ? 1 : progress.rank;
+                var currentBranch = isBaseConfiguration
+                    ? WeaponUpgradeBranch.None
+                    : (WeaponUpgradeBranch)progress.branch;
+                var evolutionText = WeaponUpgradePresentation.GetActiveEvolutionText(definition, statRank, currentBranch);
+                _detailsDescriptionText.text = string.IsNullOrWhiteSpace(evolutionText)
+                    ? WeaponPresentationText.Describe(weapon)
+                    : $"{WeaponPresentationText.Describe(weapon)} {evolutionText}";
+                _detailsPrimaryStatIcon.gameObject.SetActive(false);
+                _detailsPrimaryStatLabel.gameObject.SetActive(true);
+                primaryRowRoot.SetActive(true);
                 _detailsPrimaryStatLabel.text = GameText.Damage();
-                _detailsDamageText.text = weapon.Damage.ToString();
+                _detailsDamageText.text = WeaponUpgradePresentation
+                    .ResolveCurrentDamage(weapon, definition, statRank, currentBranch)
+                    .ToString();
                 _detailsDamageText.color = SciFiTextStyle.GoldText;
+                secondaryRowRoot.SetActive(true);
                 _detailsSecondaryStatLabel.text = GameText.UsesPerBattle();
                 _detailsUsesText.text = weapon.HasLimitedAmmo ? weapon.AmmoCount.ToString() : "\u221E";
                 _detailsUsesText.color = SciFiTextStyle.GoldText;
             }
+            else if (isPastRank)
+            {
+                // Already surpassed rank: only the historical modifier text and the
+                // checkmark matter here, so hide both stat rows entirely.
+                _detailsDescriptionText.text = WeaponUpgradePresentation.GetDescription(definition, displayRank, branch);
+                primaryRowRoot.SetActive(false);
+                secondaryRowRoot.SetActive(false);
+            }
             else
             {
                 _detailsDescriptionText.text = WeaponUpgradePresentation.GetDescription(definition, displayRank, branch);
-                definition.TryGetNode(displayRank, branch, out var node);
-                _detailsPrimaryStatLabel.text = isEvolution ? "Ефект" : "Покращення";
-                _detailsDamageText.text = isEvolution
-                    ? "Нова властивість"
-                    : $"{WeaponUpgradePresentation.GetStatName(node.Stat)} +{node.Amount}%";
-                _detailsDamageText.color = SciFiTextStyle.GoldText;
+                _detailsPrimaryStatLabel.gameObject.SetActive(false);
+                _detailsPrimaryStatIcon.gameObject.SetActive(true);
+                primaryRowRoot.SetActive(true);
+                var ownedBlueprints = progress.blueprints;
+                var requiredBlueprints = hasCost ? cost.Blueprints : 0;
+                _detailsDamageText.text = $"{ownedBlueprints}/{requiredBlueprints}";
+                _detailsDamageText.color = ownedBlueprints >= requiredBlueprints
+                    ? SciFiTextStyle.GoldText
+                    : SciFiTextStyle.WarningText;
+                secondaryRowRoot.SetActive(true);
                 _detailsSecondaryStatLabel.text = "Командир";
                 _detailsUsesText.text = $"LVL {requiredCommanderLevel}";
                 _detailsUsesText.color = SciFiTextStyle.GoldText;
@@ -677,16 +896,17 @@ namespace Game.App
             var isNextUpgrade = targetRank == displayRank;
             _detailsCoinPriceText.text = hasCost ? cost.Credits.ToString() : "-";
             _detailsCrystalPriceText.text = hasCost ? cost.Blueprints.ToString() : "-";
+            var branchLocked = displayRank >= 5
+                && progress.branch != 0
+                && (WeaponUpgradeBranch)progress.branch != branch;
             var canUpgrade = hasCost
                 && isNextUpgrade
                 && hasBranch
+                && !branchLocked
                 && CommanderProgressionTable.GetLevel(AppServices.Economy.CommanderExperience) >= requiredCommanderLevel
                 && AppServices.Economy.CanSpend(cost.Credits)
                 && (AppServices.Economy.AdminModeEnabled || progress.blueprints >= cost.Blueprints);
 
-            var isOwned = !isBaseConfiguration
-                && displayRank <= progress.rank
-                && (displayRank < 5 || (WeaponUpgradeBranch)progress.branch == branch);
             _detailsCoinBuyButton.gameObject.SetActive(!isOwned);
             _detailsCrystalBuyButton.gameObject.SetActive(!isOwned);
             _detailsOwnedCheckmark.gameObject.SetActive(isOwned);
@@ -695,30 +915,54 @@ namespace Game.App
             _detailsOverlay.SetActive(true);
         }
 
-        /// <summary>
-        /// Evolution ranks (5/10) get a taller card with a big weapon art image
-        /// slotted between the name and the description; base/plain-upgrade ranks
-        /// keep the original compact layout untouched.
-        /// </summary>
-        private void ApplyDetailsLayout(bool isEvolution)
+        private void ResetSelectedWeaponUpgrade()
         {
-            _detailsCard.sizeDelta = isEvolution ? DetailsCardSizeEvolution : DetailsCardSize;
+            if (_selectedWeaponIndex < 0 || _selectedWeaponIndex >= _items.Count)
+            {
+                return;
+            }
+
+            var weapon = _items[_selectedWeaponIndex];
+            if (!AppServices.WeaponUpgrades.TryReset(weapon.WeaponId))
+            {
+                return;
+            }
+
+            AppServices.SaveService.Save(AppServices.SaveService.Current);
+            SelectWeapon(_selectedWeaponIndex);
+            HideWeaponDetails();
+        }
+
+        /// <summary>
+        /// Ranks that carry artwork - the 5/10 evolutions and the rank-1 base
+        /// configuration - get a taller card with a big weapon image slotted between the
+        /// name and the description; plain upgrade ranks keep the compact layout.
+        /// </summary>
+        private void ApplyDetailsLayout(bool showsArt)
+        {
+            _detailsCard.sizeDelta = showsArt ? DetailsCardSizeEvolution : DetailsCardSize;
 
             var nameRect = _detailsNameText.rectTransform;
             var descriptionRect = _detailsDescriptionViewport;
             var damageRowRect = (RectTransform)_detailsDamageText.transform.parent;
             var usesRowRect = (RectTransform)_detailsUsesText.transform.parent;
 
-            if (isEvolution)
+            // Widest symmetric column that still clears the fixed-position close button
+            // (its left edge sits at card-local x 250), so names get as much single-line
+            // room as possible before <see cref="ApplyDetailsNameFit"/> allows a wrap.
+            nameRect.anchorMin = new Vector2(0.30f, nameRect.anchorMin.y);
+            nameRect.anchorMax = new Vector2(0.70f, nameRect.anchorMax.y);
+
+            if (showsArt)
             {
-                nameRect.anchorMin = new Vector2(nameRect.anchorMin.x, 0.79f);
-                nameRect.anchorMax = new Vector2(nameRect.anchorMax.x, 0.90f);
-                descriptionRect.anchorMin = new Vector2(descriptionRect.anchorMin.x, 0.330f);
-                descriptionRect.anchorMax = new Vector2(descriptionRect.anchorMax.x, 0.435f);
-                damageRowRect.anchorMin = new Vector2(damageRowRect.anchorMin.x, 0.270f);
-                damageRowRect.anchorMax = new Vector2(damageRowRect.anchorMax.x, 0.325f);
-                usesRowRect.anchorMin = new Vector2(usesRowRect.anchorMin.x, 0.270f);
-                usesRowRect.anchorMax = new Vector2(usesRowRect.anchorMax.x, 0.325f);
+                nameRect.anchorMin = new Vector2(nameRect.anchorMin.x, 0.72f);
+                nameRect.anchorMax = new Vector2(nameRect.anchorMax.x, 0.83f);
+                descriptionRect.anchorMin = new Vector2(descriptionRect.anchorMin.x, 0.37f);
+                descriptionRect.anchorMax = new Vector2(descriptionRect.anchorMax.x, 0.475f);
+                damageRowRect.anchorMin = new Vector2(damageRowRect.anchorMin.x, 0.30f);
+                damageRowRect.anchorMax = new Vector2(damageRowRect.anchorMax.x, 0.355f);
+                usesRowRect.anchorMin = new Vector2(usesRowRect.anchorMin.x, 0.30f);
+                usesRowRect.anchorMax = new Vector2(usesRowRect.anchorMax.x, 0.355f);
             }
             else
             {
@@ -731,6 +975,37 @@ namespace Game.App
                 usesRowRect.anchorMin = new Vector2(usesRowRect.anchorMin.x, 0.39f);
                 usesRowRect.anchorMax = new Vector2(usesRowRect.anchorMax.x, 0.46f);
             }
+
+            if (_detailsCloseRect != null)
+            {
+                _detailsCloseRect.anchoredPosition = new Vector2(
+                    DetailsCloseFixedPosition.x, showsArt ? 340f : 250f);
+            }
+        }
+
+        /// <summary>
+        /// Keeps a weapon name on a single line whenever it can fit the name column at
+        /// the smallest allowed font size, and only permits a wrap when it genuinely
+        /// cannot - two-word names used to break onto a second line while there was
+        /// still horizontal room. Auto-sizing then picks the largest size that fits.
+        /// </summary>
+        private void ApplyDetailsNameFit()
+        {
+            var text = _detailsNameText;
+            var available = text.rectTransform.rect.width;
+            if (available <= 0f)
+            {
+                text.textWrappingMode = TextWrappingModes.Normal;
+                return;
+            }
+
+            text.enableAutoSizing = false;
+            text.fontSize = text.fontSizeMin;
+            var narrowestWidth = text.GetPreferredValues(text.text, 0f, 0f).x;
+            text.textWrappingMode = narrowestWidth <= available
+                ? TextWrappingModes.NoWrap
+                : TextWrappingModes.Normal;
+            text.enableAutoSizing = true;
         }
 
         /// <summary>
@@ -739,7 +1014,14 @@ namespace Game.App
         /// (rather than relied upon via a stretch anchor + Image.preserveAspect) so wide
         /// or tall source art can never push the image past the card's edges.
         /// </summary>
-        private static void ApplyDetailsArtFit(Image artImage)
+        private static float ResolveDetailsArtScale(string weaponId, int rank, WeaponUpgradeBranch branch)
+        {
+            return DetailsArtBoosts.TryGetValue(weaponId, out var boost) && boost.Covers(rank, branch)
+                ? boost.Scale
+                : 1f;
+        }
+
+        private static void ApplyDetailsArtFit(Image artImage, float scale)
         {
             var sprite = artImage.sprite;
             if (sprite == null || sprite.rect.height <= 0f)
@@ -752,7 +1034,7 @@ namespace Game.App
             var fittedSize = aspect >= boxAspect
                 ? new Vector2(DetailsArtMaxSize.x, DetailsArtMaxSize.x / aspect)
                 : new Vector2(DetailsArtMaxSize.y * aspect, DetailsArtMaxSize.y);
-            artImage.rectTransform.sizeDelta = fittedSize;
+            artImage.rectTransform.sizeDelta = fittedSize * scale;
         }
 
         private void EnsureDetailsOverlay()

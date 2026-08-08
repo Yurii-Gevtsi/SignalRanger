@@ -55,6 +55,23 @@ namespace Game.Gameplay.Battle.Weapons
             _selectedIndex = (index % _weapons.Count + _weapons.Count) % _weapons.Count;
         }
 
+        /// <summary>
+        /// Adds a battle-only weapon with a fixed number of uses, granted mid-battle
+        /// (e.g. a loot crate). It lives only in this runtime instance - never written
+        /// to the player's saved loadout - so it is gone the moment the battle ends.
+        /// </summary>
+        public bool TryAddTemporaryWeapon(WeaponDefinition weapon, int ammoCount)
+        {
+            if (weapon == null || _remainingAmmo.ContainsKey(weapon.WeaponId))
+            {
+                return false;
+            }
+
+            _weapons.Add(weapon);
+            _remainingAmmo[weapon.WeaponId] = Mathf.Max(1, ammoCount);
+            return true;
+        }
+
         public void SelectNext() => Select(_selectedIndex + 1);
 
         public void SelectPrevious() => Select(_selectedIndex - 1);

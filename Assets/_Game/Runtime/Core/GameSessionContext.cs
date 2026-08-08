@@ -5,6 +5,9 @@ namespace Game.Core
         public static int SelectedMissionIndex { get; private set; }
         public static int SelectedArenaIndex { get; private set; }
         public static string SelectedMissionId { get; private set; } = string.Empty;
+
+        /// <summary>Briefing line for the mission, shown on the battle result card.</summary>
+        public static string SelectedMissionText { get; private set; } = string.Empty;
         public static string SelectedArenaId { get; private set; } = string.Empty;
         public static string[] SelectedAllowedWeaponIds { get; private set; } = System.Array.Empty<string>();
         public static string[] SelectedTutorialStepIds { get; private set; } = System.Array.Empty<string>();
@@ -35,8 +38,10 @@ namespace Game.Core
             int rewardSoftCurrency,
             string rewardUnlockWeaponId,
             int aiDifficulty,
-            bool supportDropsEnabled = true)
+            bool supportDropsEnabled = true,
+            string missionText = "")
         {
+            SelectedMissionText = missionText ?? string.Empty;
             SelectedMissionIndex = missionIndex < 0 ? 0 : missionIndex;
             SelectedArenaIndex = arenaIndex < 0 ? 0 : arenaIndex;
             SelectedMissionId = missionId ?? string.Empty;
@@ -66,6 +71,27 @@ namespace Game.Core
         public static void SelectLoadout(string[] loadoutWeaponIds)
         {
             SelectedLoadoutWeaponIds = loadoutWeaponIds ?? System.Array.Empty<string>();
+        }
+
+        /// <summary>
+        /// Mission whose planet the campaign map should open on the next visit. Set when
+        /// the player leaves a finished battle through "continue", so they land on the
+        /// planet card and can see what they just cleared and what comes next. Carries
+        /// the mission id rather than a planet index: mapping missions onto planets is
+        /// the app layer's business, not the battle layer's.
+        /// </summary>
+        public static string PendingCampaignMissionId { get; private set; } = string.Empty;
+
+        public static void RequestCampaignMissionView(string missionId)
+        {
+            PendingCampaignMissionId = missionId ?? string.Empty;
+        }
+
+        public static string ConsumePendingCampaignMissionView()
+        {
+            var missionId = PendingCampaignMissionId;
+            PendingCampaignMissionId = string.Empty;
+            return missionId;
         }
 
         public static void ReportMissionCompleted()

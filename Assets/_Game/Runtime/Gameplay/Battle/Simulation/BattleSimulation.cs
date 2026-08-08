@@ -128,6 +128,7 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly BattleSimulationSettings _settings;
         private readonly IReadOnlyDictionary<string, WeaponDefinition> _weaponsById;
         private readonly IReadOnlyDictionary<string, WeaponEvolutionProfile> _playerWeaponEvolutions;
+        private readonly IReadOnlyDictionary<string, WeaponUpgradeModifiers> _playerWeaponUpgradeModifiers;
         private readonly CharacterArchetype _playerArchetype;
         private readonly CharacterArchetype _opponentArchetype;
         private readonly TurnMovementState _playerMovement;
@@ -171,7 +172,8 @@ namespace Game.Gameplay.Battle.Simulation
             IReadOnlyDictionary<string, WeaponDefinition> weaponsById,
             CharacterArchetype playerArchetype,
             CharacterArchetype opponentArchetype,
-            IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null)
+            IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null,
+            IReadOnlyDictionary<string, WeaponUpgradeModifiers> playerWeaponUpgradeModifiers = null)
         {
             var turnService = new TurnService();
             turnService.StartFirstTurn(state, BattleTeamId.Player);
@@ -188,7 +190,8 @@ namespace Game.Gameplay.Battle.Simulation
                 weaponsById,
                 playerArchetype,
                 opponentArchetype,
-                playerWeaponEvolutions);
+                playerWeaponEvolutions,
+                playerWeaponUpgradeModifiers);
         }
 
         public BattleSimulation(
@@ -204,7 +207,8 @@ namespace Game.Gameplay.Battle.Simulation
             IReadOnlyDictionary<string, WeaponDefinition> weaponsById,
             CharacterArchetype playerArchetype,
             CharacterArchetype opponentArchetype,
-            IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null)
+            IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null,
+            IReadOnlyDictionary<string, WeaponUpgradeModifiers> playerWeaponUpgradeModifiers = null)
         {
             _state = state;
             _turnService = turnService;
@@ -218,6 +222,8 @@ namespace Game.Gameplay.Battle.Simulation
             _weaponsById = weaponsById;
             _playerWeaponEvolutions = playerWeaponEvolutions
                 ?? new Dictionary<string, WeaponEvolutionProfile>();
+            _playerWeaponUpgradeModifiers = playerWeaponUpgradeModifiers
+                ?? new Dictionary<string, WeaponUpgradeModifiers>();
             _playerArchetype = playerArchetype;
             _opponentArchetype = opponentArchetype;
             _playerMovement = new TurnMovementState(settings.PlayerTurnDurationSeconds);
@@ -470,7 +476,8 @@ namespace Game.Gameplay.Battle.Simulation
                 effectiveAim.Direction,
                 effectiveAim.Power,
                 this,
-                ResolveEvolutionFor(unit.TeamId, weapon));
+                ResolveEvolutionFor(unit.TeamId, weapon),
+                ResolveModifiersFor(unit.TeamId, weapon));
             var fireResult = _weaponExecutor.TryFireSelected(activeInventory, context);
             if (fireResult != WeaponFireResult.Fired)
             {
@@ -502,6 +509,23 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             return WeaponEvolutionProfile.Base;
+        }
+
+        /// <summary>
+        /// Flat % Damage/ImpactRadius bonuses the player has purchased for this
+        /// weapon (ranks 2-4, 6-9). AI opponents never modernize, matching
+        /// <see cref="ResolveEvolutionFor"/>.
+        /// </summary>
+        private WeaponUpgradeModifiers ResolveModifiersFor(BattleTeamId teamId, WeaponDefinition weapon)
+        {
+            if (teamId == BattleTeamId.Player
+                && weapon != null
+                && _playerWeaponUpgradeModifiers.TryGetValue(weapon.WeaponId, out var modifiers))
+            {
+                return modifiers;
+            }
+
+            return default;
         }
 
         private static AimState CreateImmediateActionAim(BattleUnitState unit)
@@ -863,10 +887,11 @@ namespace Game.Gameplay.Battle.Simulation
 
         private static WeaponDefinition CreateC4EvolutionWeapon(
             WeaponDefinition weapon,
-            WeaponEvolutionProfile evolution)
+            WeaponEvolutionProfile evolution,
+            WeaponUpgradeModifiers modifiers = default)
         {
-            var damageMultiplier = evolution.C4DamageMultiplier > 0f ? evolution.C4DamageMultiplier : 1f;
-            var radiusMultiplier = evolution.C4ImpactRadiusMultiplier > 0f ? evolution.C4ImpactRadiusMultiplier : 1f;
+            var damageMultiplier = (evolution.C4DamageMultiplier > 0f ? evolution.C4DamageMultiplier : 1f) * modifiers.DamageMultiplier;
+            var radiusMultiplier = (evolution.C4ImpactRadiusMultiplier > 0f ? evolution.C4ImpactRadiusMultiplier : 1f) * modifiers.ImpactRadiusMultiplier;
             if (Mathf.Approximately(damageMultiplier, 1f) && Mathf.Approximately(radiusMultiplier, 1f))
             {
                 return weapon;
@@ -891,10 +916,11 @@ namespace Game.Gameplay.Battle.Simulation
 
         private static WeaponDefinition CreateFpvEvolutionWeapon(
             WeaponDefinition weapon,
-            WeaponEvolutionProfile evolution)
+            WeaponEvolutionProfile evolution,
+            WeaponUpgradeModifiers modifiers = default)
         {
-            var damageMultiplier = evolution.FpvDamageMultiplier > 0f ? evolution.FpvDamageMultiplier : 1f;
-            var radiusMultiplier = evolution.FpvImpactRadiusMultiplier > 0f ? evolution.FpvImpactRadiusMultiplier : 1f;
+            var damageMultiplier = (evolution.FpvDamageMultiplier > 0f ? evolution.FpvDamageMultiplier : 1f) * modifiers.DamageMultiplier;
+            var radiusMultiplier = (evolution.FpvImpactRadiusMultiplier > 0f ? evolution.FpvImpactRadiusMultiplier : 1f) * modifiers.ImpactRadiusMultiplier;
             if (Mathf.Approximately(damageMultiplier, 1f) && Mathf.Approximately(radiusMultiplier, 1f))
             {
                 return weapon;
@@ -1173,7 +1199,7 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var evolution = ResolveEvolutionFor(unit.TeamId, weapon);
-            var evolvedWeapon = CreateFpvEvolutionWeapon(weapon, evolution);
+            var evolvedWeapon = CreateFpvEvolutionWeapon(weapon, evolution, ResolveModifiersFor(unit.TeamId, weapon));
             var controlDuration = weapon.TimeoutSeconds + evolution.FpvControlBonusSeconds;
             var spawnPoint = unit.Position + Vector2.up * 1.05f;
             var definition = evolvedWeapon.CreateProjectileDefinition(evolvedWeapon.Damage, 1f, 0, controlDuration);
@@ -1213,7 +1239,7 @@ namespace Game.Gameplay.Battle.Simulation
                 deployPoint = new Vector2(unit.Position.x + facing * 0.3f, feetY + 0.06f);
             }
             var evolution = ResolveEvolutionFor(unit.TeamId, weapon);
-            var evolvedWeapon = CreateC4EvolutionWeapon(weapon, evolution);
+            var evolvedWeapon = CreateC4EvolutionWeapon(weapon, evolution, ResolveModifiersFor(unit.TeamId, weapon));
             var charge = new ActiveCharge(
                 ++_nextProjectileId,
                 unit.UnitId,

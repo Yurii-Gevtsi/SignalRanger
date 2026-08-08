@@ -111,6 +111,7 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Dictionary<string, UnitMotor> _unitMotors = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, WeaponDefinition> _weaponsById = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, WeaponEvolutionProfile> _playerWeaponEvolutions = new(System.StringComparer.Ordinal);
+        private readonly Dictionary<string, WeaponUpgradeModifiers> _playerWeaponUpgradeModifiers = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, Sprite> _spriteResourceCache = new(System.StringComparer.Ordinal);
         private readonly Dictionary<int, GameObject> _projectileVisuals = new();
         private readonly Dictionary<int, GameObject> _mineVisuals = new();
@@ -258,6 +259,7 @@ namespace Game.Gameplay.Battle.Assembly
         private void PopulatePlayerWeaponEvolutions(IEnumerable<WeaponDefinition> weapons)
         {
             _playerWeaponEvolutions.Clear();
+            _playerWeaponUpgradeModifiers.Clear();
             if (weapons == null)
             {
                 return;
@@ -277,6 +279,7 @@ namespace Game.Gameplay.Battle.Assembly
                 }
 
                 _playerWeaponEvolutions[weapon.WeaponId] = WeaponEvolutionRuntimeResolver.Resolve(weapon, progress);
+                _playerWeaponUpgradeModifiers[weapon.WeaponId] = WeaponUpgradeModifierResolver.Resolve(weapon, progress);
             }
         }
 
@@ -453,12 +456,6 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (!HasProjectilesInFlight && !HasActiveWeaponEffect && Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
-            {
-                LoadArena(_arenaIndex + 1);
-                return;
-            }
-
             if (!_simulation.Result.IsFinished && !HasProjectilesInFlight && !HasActiveWeaponEffect && Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 Fire();
@@ -549,7 +546,8 @@ namespace Game.Gameplay.Battle.Assembly
                 _weaponsById,
                 _playerArchetype,
                 _opponentArchetype,
-                _playerWeaponEvolutions);
+                _playerWeaponEvolutions,
+                _playerWeaponUpgradeModifiers);
             SubscribeToSimulation(_simulation);
             ConfigureSupportDrops();
             _botTurnController = CreateBotTurnController();
@@ -1938,7 +1936,15 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (RocketWeaponIds.Contains(weapon.WeaponId))
             {
-                return LoadWeaponIconSprite(ResolveRocketBodySpriteId(weapon, projectile.OwnerUnitId));
+                return LoadWeaponIconSprite(ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId));
+            }
+
+            var evolvedIconId = ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId);
+            if (evolvedIconId != weapon.IconId)
+            {
+                // An evolved icon exists for this rank/branch - show it in flight instead
+                // of the generic base "_shot" sprite so the upgrade reads visually.
+                return LoadWeaponIconSprite(evolvedIconId);
             }
 
             var spriteId = weapon.WeaponId switch
@@ -1959,12 +1965,12 @@ namespace Game.Gameplay.Battle.Assembly
         }
 
         /// <summary>
-        /// Rank/branch-aware body sprite for rocket-type weapons. Only the player's
+        /// Rank/branch-aware icon for a weapon's in-flight/held visual. Only the player's
         /// own saved progress is consulted - AI opponents never evolve their loadout
-        /// (see WeaponEvolutionRuntimeResolver), so their rockets always render at
-        /// the base rank-1 body.
+        /// (see WeaponEvolutionRuntimeResolver), so their projectiles always render at
+        /// the base rank-1 art.
         /// </summary>
-        private string ResolveRocketBodySpriteId(WeaponDefinition weapon, string ownerUnitId)
+        private string ResolveOwnerAwareEvolvedIconId(WeaponDefinition weapon, string ownerUnitId)
         {
             if (!string.IsNullOrWhiteSpace(ownerUnitId)
                 && ownerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
@@ -2429,8 +2435,71 @@ namespace Game.Gameplay.Battle.Assembly
                         SpawnImpactFlash(player.Position, new Color(0.28f, 0.92f, 0.64f, 0.9f), 1.25f);
                     }
                 }
+                else
+                {
+                    GrantSupplyBoxReward();
+                    SpawnImpactFlash(player.Position, new Color(1f, 0.82f, 0.32f, 0.9f), 1.25f);
+                }
+
                 BattleActivityBridge.ReportResourcesCollected(1);
             }
+        }
+
+        /// <summary>
+        /// Supply box loot: one of three random bonuses. Chips reuse the same shared
+        /// popup/selection flow as every other chip source in the game; the temporary
+        /// weapon only ever exists in this battle's <see cref="_inventory"/> runtime,
+        /// never touching the saved loadout, so it can't leak into future battles.
+        /// </summary>
+        private void GrantSupplyBoxReward()
+        {
+            var roll = Random.value;
+            if (roll < 1f / 3f && TryPickTemporaryWeaponReward(out var weapon))
+            {
+                _inventory.TryAddTemporaryWeapon(weapon, 1);
+                RefreshArsenalHudItems();
+                _status = GameText.SupplyBoxWeapon(WeaponDisplayNames.Get(weapon.WeaponId));
+                return;
+            }
+
+            if (roll < 2f / 3f)
+            {
+                var chipAmount = Random.Range(5, 13);
+                BattleRewardBridge.GrantWeaponBlueprints(chipAmount, "battle.supplyBox", GameSessionContext.SelectedMissionId ?? "battle");
+                return;
+            }
+
+            var coinAmount = Random.Range(60, 121);
+            BattleRewardBridge.GrantCoins(coinAmount, "battle.supplyBox", "coins");
+            _status = GameText.SupplyBoxCoins(coinAmount);
+        }
+
+        private bool TryPickTemporaryWeaponReward(out WeaponDefinition weapon)
+        {
+            weapon = null;
+            var commanderLevel = CommanderProgressionTable.GetLevel(BattleRewardBridge.CommanderExperience);
+            var candidates = new List<WeaponDefinition>();
+            foreach (var candidate in _weaponsById.Values)
+            {
+                if (candidate == null
+                    || WeaponPresentationText.IsDropOnly(candidate)
+                    || WeaponProgressionBridge.IsWeaponUnlocked(candidate.WeaponId)
+                    || !WeaponProgressionCatalog.TryGet(candidate.WeaponId, out var definition)
+                    || definition.RequiredCommanderLevel > commanderLevel + 1)
+                {
+                    continue;
+                }
+
+                candidates.Add(candidate);
+            }
+
+            if (candidates.Count == 0)
+            {
+                return false;
+            }
+
+            weapon = candidates[Random.Range(0, candidates.Count)];
+            return true;
         }
 
         private void SyncProjectileVisuals()
@@ -3265,8 +3334,9 @@ namespace Game.Gameplay.Battle.Assembly
                 presentation.Scale,
                 presentation.Position,
                 presentation.AimAngleOffset);
+            var heldIconId = ResolveHudIconId(weapon);
             presenter.SetEquippedWeapon(
-                LoadWeaponIconSprite(weapon.IconId),
+                LoadWeaponIconSprite(heldIconId),
                 WeaponIconFacesRight(weapon.IconId));
             var direction = _aimState.HasInput
                 ? _aimState.Direction
@@ -3396,6 +3466,9 @@ namespace Game.Gameplay.Battle.Assembly
                 GameSessionContext.ReportMissionCompleted();
             }
 
+            // "Continue" drops the player back onto the campaign map with this mission's
+            // planet already open, rather than straight into the next battle.
+            GameSessionContext.RequestCampaignMissionView(GameSessionContext.SelectedMissionId);
             LoadMenuScene();
         }
 
@@ -3459,8 +3532,11 @@ namespace Game.Gameplay.Battle.Assembly
                 && fireInputReady;
             var guideActive = _firstBattleGuide != null && _firstBattleGuide.IsActive;
             var isFirstTrainingBattle = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId);
+            // Instruction cards belong to the first training battle only. The old
+            // condition inverted that and showed them in every later mission instead.
             var showTutorialCard = !GameSessionContext.IsTrainingSkirmish
-                && (!isFirstTrainingBattle || guideActive || _coachTimer > 0f);
+                && isFirstTrainingBattle
+                && (guideActive || _coachTimer > 0f);
             var status = guideActive
                 ? _firstBattleGuide.Message
                 : _coachTimer > 0f && !string.IsNullOrEmpty(_coachMessage) ? _coachMessage : _status;
@@ -3493,7 +3569,7 @@ namespace Game.Gameplay.Battle.Assembly
                 GetTeamHealth(BattleTeamId.Opponent),
                 GetTeamMaxHealth(BattleTeamId.Opponent),
                 GameText.WeaponSlot(DescribeWeapon(weapon), _inventory.SelectedIndex + 1, _inventory.Count),
-                weapon != null ? weapon.IconId : string.Empty,
+                weapon != null ? ResolveHudIconId(weapon) : string.Empty,
                 WeaponPresentationText.DescribeRole(weapon),
                 DescribeAmmo(_inventory),
                 WeaponPresentationText.DescribeBattleHint(weapon),
@@ -3521,7 +3597,12 @@ namespace Game.Gameplay.Battle.Assembly
                 _simulation.Result.IsFinished && _resultScreenState.RewardPreview.HasUnlock ? _resultScreenState.RewardPreview.UnlockText : GameText.NoUnlocks,
                 _simulation.Result.IsFinished && _resultScreenState.CanContinue,
                 _simulation.Result.IsFinished ? _resultScreenState.RetryLabel : GameText.Restart,
-                _resultScreenState.CanContinue ? _resultScreenState.ContinueLabel : GameText.Menu);
+                _resultScreenState.CanContinue ? _resultScreenState.ContinueLabel : GameText.Menu,
+                _simulation.Result.Outcome == BattleOutcome.PlayerWon,
+                GameSessionContext.SelectedMissionText,
+                // Only a won battle banks the mission - a loss leaves it outstanding even
+                // when its objective was met, matching what the campaign map will show.
+                _simulation.Result.Outcome == BattleOutcome.PlayerWon);
 
             _hud.Render(state);
         }

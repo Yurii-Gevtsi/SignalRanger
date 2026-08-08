@@ -107,7 +107,18 @@ namespace Game.App
 
         private void Start()
         {
-            if (AppServices.IsFirstLoginToday)
+            // Arriving from a finished battle via "continue": go straight back to the
+            // campaign map with that mission's planet open. Runs here rather than in
+            // Awake so the bootstrapper has already banked the mission completion and
+            // the card shows the freshly cleared mission as done.
+            var focusMissionId = GameSessionContext.ConsumePendingCampaignMissionView();
+            if (!string.IsNullOrWhiteSpace(focusMissionId))
+            {
+                CampaignScreenController.Open(focusMissionId);
+                return;
+            }
+
+            if (AppServices.TryConsumeFirstLoginToday())
             {
                 RewardsScreenController.Open(() =>
                 {

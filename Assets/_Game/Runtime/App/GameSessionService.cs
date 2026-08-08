@@ -66,7 +66,10 @@ namespace Game.App
                 mission != null ? mission.Reward.softCurrency : 0,
                 mission != null ? mission.Reward.unlockWeaponId : string.Empty,
                 difficultyProfile != null ? difficultyProfile.AiDifficultyTier : mission != null ? mission.Difficulty : 0,
-                mission == null || mission.SupportDropsEnabled);
+                mission == null || mission.SupportDropsEnabled,
+                mission != null
+                    ? (string.IsNullOrWhiteSpace(mission.Description) ? mission.Title : mission.Description)
+                    : string.Empty);
             GameSessionContext.SelectLoadout(_saveData?.inventory?.selectedLoadoutWeaponIds?.ToArray());
         }
     }

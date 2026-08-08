@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Core;
 using Game.Core.Localization;
+using Game.Progression.Missions;
 using Game.UI;
 using TMPro;
 using UnityEngine;
@@ -10,13 +11,18 @@ using UnityEngine.UI;
 namespace Game.App
 {
     /// <summary>
-    /// Visual campaign galaxy map. The first cluster is the currently available
-    /// entry point; later clusters will be unlocked by campaign progression.
+    /// Visual campaign galaxy map. Clusters unlock one after another; the open cluster
+    /// holds a small constellation of individually playable planets, each owning one
+    /// chapter of the linear mission list. Planet and cluster state are both derived
+    /// from campaign progression, so there is no separate map progress to keep in sync.
     /// </summary>
     public sealed class CampaignScreenController : MonoBehaviour
     {
         private const string MenuResourceRoot = "UI/Menu/";
+        private const string CampaignResourceRoot = "UI/Menu/Campaign/";
         private const string ShopResourceRoot = "UI/Shop/";
+        private const string CommonResourceRoot = "UI/Common/";
+        private const string CheckmarkResource = "UI/Menu/Rewards/Icons/check";
 
         private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.9f);
         private static readonly Vector2 BackButtonSize = new(118f, 118f);
@@ -26,11 +32,34 @@ namespace Game.App
         private static readonly Vector2 SettingsButtonSize = new(104f, 104f);
         private static readonly Vector2 SettingsButtonPosition = new(-26f, -10f);
         private static readonly Vector2 LockSize = new(118f, 118f);
-        private static readonly Vector2 StarsSize = new(320f, 214f);
         private static readonly Vector2 FirstClusterPosition = new(-750f, -250f);
+        private static readonly Vector2 FirstClusterLabelPosition = new(100f, 0f);
+        private static readonly Vector2 ClusterLabelPosition = new(0f, 28f);
+        // Sits high in the node so the padlock reads as belonging to the number above it.
+        private static readonly Vector2 LockPosition = new(0f, 44f);
+
+        private static readonly Vector2 StarSize = new(150f, 150f);
+        private static readonly Vector2 StarCheckmarkSize = new(80f, 80f);
+        // The sprite's bar occupies only ~64 of its 1254px height, so the rect has to be
+        // far taller than the line the player actually sees.
+        private const float ConnectorThickness = 200f;
+
+        private static readonly Vector2 CardSize = new(880f, 880f);
+        private static readonly Vector2 BattleButtonSize = new(340f, 128f);
+        private static readonly Vector2 MissionCheckSize = new(52f, 52f);
+        private const int MaxMissionRows = 8;
+        private const float MissionRowHeight = 78f;
+        // Step is larger than the row itself, so the rows read as separate entries
+        // instead of one solid block of text.
+        private const float MissionRowSpacing = 104f;
+        private const float MissionRowTop = 180f;
+        private const float MissionRowOffsetX = 50f;
+        private const float MissionCheckOffsetX = -100f;
+        private static readonly Vector2 CardTitlePosition = new(0f, -90f);
 
         private readonly Dictionary<string, Sprite> _sprites = new(StringComparer.Ordinal);
         private Sprite _whiteSprite;
+
         private readonly struct ClusterLayout
         {
             public ClusterLayout(int number, Vector2 position)
@@ -43,7 +72,71 @@ namespace Game.App
             public Vector2 Position { get; }
         }
 
-        public static void Open()
+        /// <summary>
+        /// A planet inside the open cluster. <see cref="ChapterId"/> is resolved against
+        /// the mission list at build time, so a planet follows its chapter if that gains
+        /// or loses missions; an empty chapter id marks a planet held for future content.
+        /// Colour identifies the planet rather than its state.
+        /// </summary>
+        private readonly struct PlanetLayout
+        {
+            public PlanetLayout(string planetName, string starResource, Vector2 position, string chapterId)
+            {
+                PlanetName = planetName;
+                StarResource = starResource;
+                Position = position;
+                ChapterId = chapterId;
+            }
+
+            public string PlanetName { get; }
+            public string StarResource { get; }
+            public Vector2 Position { get; }
+            public string ChapterId { get; }
+        }
+
+        private struct PlanetView
+        {
+            public Button Button;
+            public Image Star;
+            public Image Checkmark;
+            public List<int> MissionIndices;
+        }
+
+        private struct MissionRowView
+        {
+            public RectTransform Root;
+            public TMP_Text Title;
+            public Image Check;
+        }
+
+        // Laid out as a zig-zag inside the first cluster, replacing the single painted
+        // constellation that used to sit there. Kept tight so the group stays within the
+        // cluster's painted cell.
+        private static readonly PlanetLayout[] Planets =
+        {
+            new("Керіон", "star_blue", new Vector2(15f, 120f), "chapter.basics"),
+            new("Вальтара", "star_red", new Vector2(130f, 165f), "chapter.tactical-tools"),
+            new("Орн-9", "star_yellow", new Vector2(220f, 100f), string.Empty),
+            new("Тайрен", "star_blue", new Vector2(330f, 140f), string.Empty)
+        };
+
+        private readonly List<PlanetView> _planets = new();
+        private readonly List<MissionRowView> _missionRows = new();
+        private readonly Dictionary<int, Image> _clusterLocks = new();
+        private GameObject _cardOverlay;
+        private TMP_Text _cardTitle;
+        private TMP_Text _cardEmptyLabel;
+        private Button _battleButton;
+        private TMP_Text _battleLockedLabel;
+        private int _openPlanetIndex = -1;
+        private string _focusMissionId = string.Empty;
+
+        /// <summary>
+        /// Opens the map. When <paramref name="focusMissionId"/> is given, the planet
+        /// owning that mission has its card opened straight away - used when returning
+        /// from a battle so the player sees what they cleared and what is next.
+        /// </summary>
+        public static void Open(string focusMissionId = null)
         {
             if (FindAnyObjectByType<CampaignScreenController>() != null)
             {
@@ -51,7 +144,7 @@ namespace Game.App
             }
 
             var root = new GameObject("Campaign Screen");
-            root.AddComponent<CampaignScreenController>();
+            root.AddComponent<CampaignScreenController>()._focusMissionId = focusMissionId ?? string.Empty;
         }
 
         private void Awake()
@@ -80,9 +173,6 @@ namespace Game.App
             CreateImage("Campaign Background", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, MenuResourceRoot + "campaign_menu", false, Color.white);
 
-            CreateImage("Campaign Open Cluster Stars", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), StarsSize, FirstClusterPosition, MenuResourceRoot + "stars1", true, Color.white);
-
             BuildClusters(root);
             var backButton = CreateImageButton("Campaign Back", root, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
                 BackButtonSize, BackButtonPosition, ShopResourceRoot + "back_btn", Close);
@@ -97,6 +187,32 @@ namespace Game.App
             var settingsButton = CreateImageButton("Campaign Settings", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 SettingsButtonSize, SettingsButtonPosition, ShopResourceRoot + "settings_btn", () => SettingsScreenController.Open(null));
             EnlargeForPhone(settingsButton);
+
+            BuildMissionCard(root);
+            RefreshMap();
+            OpenFocusedPlanet();
+        }
+
+        private void OpenFocusedPlanet()
+        {
+            if (string.IsNullOrWhiteSpace(_focusMissionId) || AppServices.Campaign == null)
+            {
+                return;
+            }
+
+            for (var planet = 0; planet < _planets.Count; planet++)
+            {
+                var missions = _planets[planet].MissionIndices;
+                for (var i = 0; i < missions.Count; i++)
+                {
+                    var mission = AppServices.Campaign.GetMission(missions[i]);
+                    if (mission != null && string.Equals(mission.MissionId, _focusMissionId, StringComparison.Ordinal))
+                    {
+                        OpenMissionCard(planet);
+                        return;
+                    }
+                }
+            }
         }
 
         private void BuildClusters(Transform root)
@@ -119,16 +235,24 @@ namespace Game.App
             {
                 var cluster = clusters[i];
                 var node = CreateClusterButton(root, cluster);
-                if (cluster.Number > 1)
+                if (cluster.Number == 1)
                 {
-                    CreateImage($"Campaign Lock {cluster.Number}", node, new Vector2(0.5f, 0.5f),
+                    // The open cluster carries the playable constellation; every other
+                    // cluster is still just a locked marker.
+                    BuildConstellation(node);
+                }
+                else
+                {
+                    var lockIcon = CreateImage($"Campaign Lock {cluster.Number}", node, new Vector2(0.5f, 0.5f),
                         new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), LockSize,
-                        Vector2.zero, ShopResourceRoot + "lock", true, Color.white);
+                        LockPosition, ShopResourceRoot + "lock", true, Color.white).GetComponent<Image>();
+                    _clusterLocks[cluster.Number] = lockIcon;
                 }
 
                 var label = CreateText($"Campaign Cluster Number {cluster.Number}", node,
                     new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 0.5f),
-                    new Vector2(90f, 60f), new Vector2(0f, 28f), 44,
+                    new Vector2(90f, 60f),
+                    cluster.Number == 1 ? FirstClusterLabelPosition : ClusterLabelPosition, 44,
                     TextAlignmentOptions.Center, cluster.Number.ToString());
                 label.color = cluster.Number == 1 ? SciFiTextStyle.GoldText : SciFiTextStyle.CyanText;
             }
@@ -148,6 +272,329 @@ namespace Game.App
             button.interactable = false;
 
             return rect;
+        }
+
+        /// <summary>
+        /// The four planets of the open cluster plus the straight links between them.
+        /// The connector sprite is a horizontal bar, so each link is stretched to the
+        /// gap length and rotated onto the line joining its two stars.
+        /// </summary>
+        private void BuildConstellation(Transform clusterNode)
+        {
+            for (var i = 0; i < Planets.Length - 1; i++)
+            {
+                var from = Planets[i].Position;
+                var delta = Planets[i + 1].Position - from;
+                var link = CreateImage($"Campaign Route {i + 1}", clusterNode, new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                    new Vector2(delta.magnitude, ConnectorThickness), from + delta * 0.5f,
+                    CampaignResourceRoot + "connector", false, Color.white);
+                link.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+            }
+
+            for (var i = 0; i < Planets.Length; i++)
+            {
+                var layout = Planets[i];
+                var planetIndex = i;
+                var star = CreateImageButton($"Campaign Planet {i + 1}", clusterNode, new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), StarSize, layout.Position,
+                    CampaignResourceRoot + layout.StarResource, () => OpenMissionCard(planetIndex));
+
+                var checkmark = CreateImage($"Campaign Planet {i + 1} Checkmark", star, new Vector2(0.5f, 0.5f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), StarCheckmarkSize, Vector2.zero,
+                    CheckmarkResource, true, Color.white).GetComponent<Image>();
+                checkmark.enabled = false;
+
+                _planets.Add(new PlanetView
+                {
+                    Button = star.GetComponent<Button>(),
+                    Star = star.GetComponent<Image>(),
+                    Checkmark = checkmark,
+                    MissionIndices = ResolveMissionIndices(layout.ChapterId)
+                });
+            }
+        }
+
+        /// <summary>
+        /// Indices of every mission in a chapter, in campaign order. Empty for planets
+        /// with no chapter yet, and when the campaign service is unavailable (e.g. the
+        /// screen opened outside a booted app).
+        /// </summary>
+        private static List<int> ResolveMissionIndices(string chapterId)
+        {
+            var indices = new List<int>();
+            var campaign = AppServices.Campaign;
+            if (campaign == null || string.IsNullOrWhiteSpace(chapterId))
+            {
+                return indices;
+            }
+
+            for (var i = 0; i < campaign.MissionCount; i++)
+            {
+                var mission = campaign.GetMission(i);
+                if (mission != null && string.Equals(mission.ChapterId, chapterId, StringComparison.Ordinal))
+                {
+                    indices.Add(i);
+                }
+            }
+
+            return indices;
+        }
+
+        private void RefreshMap()
+        {
+            for (var i = 0; i < _planets.Count; i++)
+            {
+                var view = _planets[i];
+                var cleared = IsPlanetCleared(view.MissionIndices);
+
+                // Every planet is drawn at full brightness and stays openable so the
+                // player can read ahead; the card is what explains that a later planet
+                // cannot be played yet. A cleared planet is the one exception - it stops
+                // responding and wears a checkmark.
+                view.Button.interactable = !cleared;
+                view.Checkmark.enabled = cleared;
+            }
+
+            // The next cluster opens once every planet of the open one is cleared.
+            var openClusterCleared = IsOpenClusterCleared();
+            foreach (var pair in _clusterLocks)
+            {
+                pair.Value.enabled = !(pair.Key == 2 && openClusterCleared);
+            }
+        }
+
+        private bool IsOpenClusterCleared()
+        {
+            var hasContent = false;
+            for (var i = 0; i < _planets.Count; i++)
+            {
+                var missions = _planets[i].MissionIndices;
+                if (missions.Count == 0)
+                {
+                    // Planets held for future content must not block the cluster.
+                    continue;
+                }
+
+                hasContent = true;
+                if (!IsPlanetCleared(missions))
+                {
+                    return false;
+                }
+            }
+
+            return hasContent;
+        }
+
+        private static bool IsPlanetCleared(List<int> missionIndices)
+        {
+            if (missionIndices == null || missionIndices.Count == 0)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < missionIndices.Count; i++)
+            {
+                if (!IsMissionCompleted(missionIndices[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool IsMissionCompleted(int missionIndex)
+        {
+            var mission = AppServices.Campaign?.GetMission(missionIndex);
+            var completed = AppServices.SaveService?.Current?.campaign?.completedMissionIds;
+            return mission != null && completed != null && completed.Contains(mission.MissionId);
+        }
+
+        /// <summary>The planet's first unfinished mission, or -1 when it is fully cleared.</summary>
+        private static int FindNextMission(List<int> missionIndices)
+        {
+            for (var i = 0; i < missionIndices.Count; i++)
+            {
+                if (!IsMissionCompleted(missionIndices[i]))
+                {
+                    return missionIndices[i];
+                }
+            }
+
+            return -1;
+        }
+
+        private void BuildMissionCard(Transform root)
+        {
+            _cardOverlay = new GameObject("Campaign Mission Overlay", typeof(RectTransform));
+            var overlayRect = (RectTransform)_cardOverlay.transform;
+            overlayRect.SetParent(root, false);
+            overlayRect.anchorMin = Vector2.zero;
+            overlayRect.anchorMax = Vector2.one;
+            overlayRect.sizeDelta = Vector2.zero;
+            overlayRect.anchoredPosition = Vector2.zero;
+
+            // Full-screen blocker: dims the map and swallows clicks meant for the stars.
+            var blocker = _cardOverlay.AddComponent<Image>();
+            blocker.sprite = _whiteSprite;
+            blocker.color = new Color(0f, 0.02f, 0.06f, 0.72f);
+            blocker.raycastTarget = true;
+            var blockerButton = _cardOverlay.AddComponent<Button>();
+            blockerButton.targetGraphic = blocker;
+            blockerButton.transition = Selectable.Transition.None;
+            blockerButton.onClick.AddListener(CloseMissionCard);
+
+            var card = CreateImage("Campaign Mission Card", overlayRect, new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), CardSize, Vector2.zero,
+                CommonResourceRoot + "rect_card", true, Color.white);
+            card.GetComponent<Image>().raycastTarget = true;
+
+            _cardTitle = CreateText("Campaign Mission Card Title", card, new Vector2(0.1f, 1f),
+                new Vector2(0.9f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 90f), CardTitlePosition,
+                48, TextAlignmentOptions.Center, string.Empty);
+            _cardTitle.color = SciFiTextStyle.GoldText;
+
+            for (var i = 0; i < MaxMissionRows; i++)
+            {
+                var row = CreateRect($"Campaign Mission Row {i + 1}", card, new Vector2(0.5f, 1f),
+                    new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(CardSize.x - 220f, MissionRowHeight),
+                    new Vector2(MissionRowOffsetX, -(MissionRowTop + i * MissionRowSpacing)));
+
+                var title = CreateText($"Campaign Mission Row {i + 1} Title", row, new Vector2(0f, 0f),
+                    new Vector2(0.82f, 1f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero,
+                    30, TextAlignmentOptions.MidlineLeft, string.Empty);
+                title.textWrappingMode = TextWrappingModes.Normal;
+                title.enableAutoSizing = true;
+                title.fontSizeMin = 22f;
+                title.fontSizeMax = 30f;
+
+                var check = CreateImage($"Campaign Mission Row {i + 1} Check", row, new Vector2(1f, 0.5f),
+                    new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), MissionCheckSize,
+                    new Vector2(MissionCheckOffsetX, 0f),
+                    CheckmarkResource, true, Color.white).GetComponent<Image>();
+                check.enabled = false;
+
+                row.gameObject.SetActive(false);
+                _missionRows.Add(new MissionRowView { Root = row, Title = title, Check = check });
+            }
+
+            _cardEmptyLabel = CreateText("Campaign Mission Card Empty", card, new Vector2(0.12f, 0.42f),
+                new Vector2(0.88f, 0.58f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero,
+                30, TextAlignmentOptions.Center, GameText.CampaignPlanetLocked());
+            _cardEmptyLabel.textWrappingMode = TextWrappingModes.Normal;
+            _cardEmptyLabel.color = SciFiTextStyle.SecondaryText;
+            _cardEmptyLabel.gameObject.SetActive(false);
+
+            var battleButton = CreateImageButton("Campaign Battle Button", card, new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), BattleButtonSize, new Vector2(0f, 90f),
+                ShopResourceRoot + "btn_green", StartSelectedPlanetBattle);
+            battleButton.GetComponent<Image>().preserveAspect = false;
+            _battleButton = battleButton.GetComponent<Button>();
+            CreateText("Campaign Battle Button Label", battleButton, Vector2.zero,
+                Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 36,
+                TextAlignmentOptions.Center, GameText.EnterBattle());
+
+            _battleLockedLabel = CreateText("Campaign Battle Locked Label", card, new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0.5f), new Vector2(CardSize.x - 160f, BattleButtonSize.y),
+                new Vector2(0f, 90f), 32, TextAlignmentOptions.Center, GameText.CampaignPreviousPlanetLocked());
+            _battleLockedLabel.textWrappingMode = TextWrappingModes.Normal;
+            _battleLockedLabel.color = SciFiTextStyle.WarningText;
+            _battleLockedLabel.gameObject.SetActive(false);
+
+            _cardOverlay.SetActive(false);
+        }
+
+        private void OpenMissionCard(int planetIndex)
+        {
+            if (planetIndex < 0 || planetIndex >= _planets.Count)
+            {
+                return;
+            }
+
+            _openPlanetIndex = planetIndex;
+            var missions = _planets[planetIndex].MissionIndices;
+            _cardTitle.text = Planets[planetIndex].PlanetName;
+            _cardEmptyLabel.gameObject.SetActive(missions.Count == 0);
+            var currentMission = FindNextMission(missions);
+
+            for (var i = 0; i < _missionRows.Count; i++)
+            {
+                var row = _missionRows[i];
+                var hasMission = i < missions.Count;
+                row.Root.gameObject.SetActive(hasMission);
+                if (!hasMission)
+                {
+                    continue;
+                }
+
+                var missionIndex = missions[i];
+                var completed = IsMissionCompleted(missionIndex);
+                row.Title.text = $"{i + 1}. {ResolveMissionText(AppServices.Campaign?.GetMission(missionIndex))}";
+                // Cleared missions read green, the one the player is on reads gold, and
+                // anything beyond it stays neutral.
+                row.Title.color = completed
+                    ? SciFiTextStyle.SuccessText
+                    : missionIndex == currentMission
+                        ? SciFiTextStyle.GoldText
+                        : SciFiTextStyle.MainText;
+                row.Check.enabled = completed;
+            }
+
+            var nextMission = FindNextMission(missions);
+            var canFight = nextMission >= 0
+                && AppServices.Campaign != null
+                && AppServices.Campaign.IsUnlocked(nextMission);
+            // A planet the player has not reached yet swaps the button for the reason
+            // it cannot be started, rather than showing a dead control.
+            _battleButton.gameObject.SetActive(canFight);
+            _battleLockedLabel.gameObject.SetActive(!canFight && missions.Count > 0);
+
+            _cardOverlay.SetActive(true);
+            _cardOverlay.transform.SetAsLastSibling();
+        }
+
+        /// <summary>
+        /// What the mission actually asks of the player. The short title reads as a bare
+        /// codename in a list, so the briefing text is shown instead, with the title kept
+        /// only as a fallback for missions that carry no description.
+        /// </summary>
+        private static string ResolveMissionText(MissionDefinition mission)
+        {
+            if (mission == null)
+            {
+                return GameText.DefaultMissionDetails();
+            }
+
+            if (!string.IsNullOrWhiteSpace(mission.Description))
+            {
+                return mission.Description;
+            }
+
+            return string.IsNullOrWhiteSpace(mission.Title) ? GameText.DefaultMissionDetails() : mission.Title;
+        }
+
+        private void CloseMissionCard()
+        {
+            _openPlanetIndex = -1;
+            _cardOverlay.SetActive(false);
+        }
+
+        private void StartSelectedPlanetBattle()
+        {
+            if (_openPlanetIndex < 0 || _openPlanetIndex >= _planets.Count)
+            {
+                return;
+            }
+
+            var nextMission = FindNextMission(_planets[_openPlanetIndex].MissionIndices);
+            if (nextMission < 0 || AppServices.Campaign == null || !AppServices.Campaign.IsUnlocked(nextMission))
+            {
+                return;
+            }
+
+            AppServices.Session.SelectMission(nextMission);
+            AppServices.SceneLoader.Load(GameSceneNames.Battle);
         }
 
         private void Close()
