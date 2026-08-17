@@ -6,7 +6,7 @@ namespace Game.Data.Save
     [Serializable]
     public sealed class SaveData
     {
-        public const int CurrentSchemaVersion = 7;
+        public const int CurrentSchemaVersion = 8;
 
         public int schemaVersion;
         public long lastWriteUtcTicks;
@@ -161,6 +161,8 @@ namespace Game.Data.Save
         public long createdUtcTicks;
         public bool introCompleted;
         public int commanderExperience;
+        /// <summary>Highest account-strength score ever observed for PvP matching.</summary>
+        public long historicalPower;
 
         public static SaveProfileData CreateDefault()
         {
@@ -189,6 +191,11 @@ namespace Game.Data.Save
             if (commanderExperience < 0)
             {
                 commanderExperience = 0;
+            }
+
+            if (historicalPower < 0)
+            {
+                historicalPower = 0;
             }
         }
     }
@@ -223,6 +230,8 @@ namespace Game.Data.Save
         public List<string> unlockedWeaponIds;
         public List<string> selectedLoadoutWeaponIds;
         public List<SaveWeaponProgressData> weaponProgress;
+        /// <summary>Non-cosmetic drone upgrades that contribute to account strength.</summary>
+        public int droneUpgradePower;
 
         public static SaveInventoryData CreateDefault()
         {
@@ -236,6 +245,10 @@ namespace Game.Data.Save
             unlockedWeaponIds ??= new List<string>();
             selectedLoadoutWeaponIds ??= new List<string>();
             weaponProgress ??= new List<SaveWeaponProgressData>();
+            if (droneUpgradePower < 0)
+            {
+                droneUpgradePower = 0;
+            }
 
             ReplaceLegacyWeaponIds(unlockedWeaponIds);
             ReplaceLegacyWeaponIds(selectedLoadoutWeaponIds);
@@ -330,6 +343,8 @@ namespace Game.Data.Save
         public int rank;
         public int branch;
         public int blueprints;
+        /// <summary>Increments on reset so a repurchased rank gets a new ledger id.</summary>
+        public int resetCycle;
 
         public void EnsureDefaults()
         {
@@ -344,6 +359,11 @@ namespace Game.Data.Save
             if (blueprints < 0)
             {
                 blueprints = 0;
+            }
+
+            if (resetCycle < 0)
+            {
+                resetCycle = 0;
             }
         }
     }

@@ -36,5 +36,22 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(toolsChapter.FeaturedWeaponIds, Contains.Item("weapon.granata"));
             Assert.That(toolsChapter.FeaturedWeaponIds, Contains.Item("weapon.heal"));
         }
+
+        [Test]
+        public void KerionCampaignMissions_UseDesertSciFiArena()
+        {
+            var content = DefaultGameContentCatalog.Create();
+
+            foreach (var missionId in new[]
+                     {
+                         "mission.training.01", "mission.training.02", "mission.training.03",
+                         "mission.training.04", "mission.training.05"
+                     })
+            {
+                Assert.That(content.TryGetMission(missionId, out var mission), Is.True);
+                Assert.That(mission.ArenaId, Is.EqualTo("arena.desert-sci-fi"));
+                Assert.That(content.ResolveArenaIndex(mission), Is.EqualTo(1));
+            }
+        }
     }
 }

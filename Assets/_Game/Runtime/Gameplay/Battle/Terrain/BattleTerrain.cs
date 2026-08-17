@@ -51,11 +51,29 @@ namespace Game.Gameplay.Battle.Terrain
                 return null;
             }
 
-            var grid = CreateGrid(worldBounds, Vector2.one / SpriteCollisionCellsPerUnit);
-            var visuals = new List<DestructibleVisual>(renderers.Count);
+            var surfaces = new BattleTerrainSpriteSurface[renderers.Count];
             for (var i = 0; i < renderers.Count; i++)
             {
-                var visual = CreateVisual(renderers[i]);
+                surfaces[i] = new BattleTerrainSpriteSurface(renderers[i], null);
+            }
+
+            return CreateFromSpriteSurfaces(surfaces, worldBounds);
+        }
+
+        public static BattleTerrain CreateFromSpriteSurfaces(
+            IReadOnlyList<BattleTerrainSpriteSurface> surfaces,
+            Rect worldBounds)
+        {
+            if (surfaces == null || surfaces.Count == 0)
+            {
+                return null;
+            }
+
+            var grid = CreateGrid(worldBounds, Vector2.one / SpriteCollisionCellsPerUnit);
+            var visuals = new List<DestructibleVisual>(surfaces.Count);
+            for (var i = 0; i < surfaces.Count; i++)
+            {
+                var visual = CreateVisual(surfaces[i]);
                 if (visual == null)
                 {
                     continue;
@@ -83,7 +101,7 @@ namespace Game.Gameplay.Battle.Terrain
             float worldRadius,
             TerrainMaterial maximumMaterial = TerrainMaterial.Titanium)
         {
-            if (!Grid.CarveCircle(worldCenter, worldRadius, maximumMaterial, out _, out var destroyedCellCount))
+            if (!Grid.CarveCircle(worldCenter, worldRadius, maximumMaterial, out var dirtyCells, out var destroyedCellCount))
             {
                 return 0;
             }
@@ -91,6 +109,22 @@ namespace Game.Gameplay.Battle.Terrain
             for (var i = 0; i < _visuals.Count; i++)
             {
                 _visuals[i].ApplyCrater(worldCenter, worldRadius);
+            }
+
+            // A crater may cross overlapping cluster sprites. Re-rasterizing
+            // the surviving pixels preserves union semantics: a cell remains
+            // solid while at least one surface still owns solid mask data.
+            // Only cells inside the crater's own dirty rect could have
+            // changed, so re-scanning is scoped to that rect instead of each
+            // visual's full sprite (which is what made drill/lava freeze the
+            // game: one small crater used to re-rasterize every destructible
+            // surface in the arena, pixel by pixel).
+            for (var i = 0; i < _visuals.Count; i++)
+            {
+                if (_visuals[i].HasExactMask)
+                {
+                    RasterizeIntoGrid(_visuals[i], Grid, dirtyCells);
+                }
             }
 
             return destroyedCellCount;
@@ -123,8 +157,9 @@ namespace Game.Gameplay.Battle.Terrain
             return new TerrainGrid(worldBounds.min, cellSize, width, height);
         }
 
-        private static DestructibleVisual CreateVisual(SpriteRenderer renderer)
+        private static DestructibleVisual CreateVisual(BattleTerrainSpriteSurface surface)
         {
+            var renderer = surface.Renderer;
             var sourceSprite = renderer != null ? renderer.sprite : null;
             if (sourceSprite == null || sourceSprite.texture == null)
             {
@@ -142,6 +177,31 @@ namespace Game.Gameplay.Battle.Terrain
             }
 
             var sourceTexture = sourceSprite.texture;
+            byte[] maskPixels = null;
+            if (surface.HasCollisionMask)
+            {
+                if (surface.CollisionMask.width != sourceTexture.width
+                    || surface.CollisionMask.height != sourceTexture.height)
+                {
+                    return null;
+                }
+
+                try
+                {
+                    var sourceMaskPixels = surface.CollisionMask.GetPixels32();
+                    maskPixels = new byte[sourceMaskPixels.Length];
+                    for (var i = 0; i < sourceMaskPixels.Length; i++)
+                    {
+                        maskPixels[i] = sourceMaskPixels[i].r;
+                    }
+                }
+                catch (UnityException)
+                {
+                    return null;
+                }
+
+            }
+
             var runtimeTexture = new Texture2D(sourceTexture.width, sourceTexture.height, TextureFormat.RGBA32, false)
             {
                 filterMode = sourceTexture.filterMode,
@@ -172,6 +232,7 @@ namespace Game.Gameplay.Battle.Terrain
                 runtimeTexture,
                 runtimeSprite,
                 runtimeTexture.GetPixels32(),
+                maskPixels,
                 Mathf.RoundToInt(sourceSprite.rect.x),
                 Mathf.RoundToInt(sourceSprite.rect.y),
                 pixelWidth,
@@ -181,6 +242,11 @@ namespace Game.Gameplay.Battle.Terrain
         }
 
         private static void RasterizeIntoGrid(DestructibleVisual visual, TerrainGrid grid)
+        {
+            RasterizeIntoGrid(visual, grid, new RectInt(0, 0, grid.Width, grid.Height));
+        }
+
+        private static void RasterizeIntoGrid(DestructibleVisual visual, TerrainGrid grid, RectInt cellRegion)
         {
             if (visual.WorldSize.x <= 0f || visual.WorldSize.y <= 0f)
             {
@@ -195,6 +261,17 @@ namespace Game.Gameplay.Battle.Terrain
             var minY = Mathf.Clamp(minCell.y, 0, grid.Height - 1);
             var maxY = Mathf.Clamp(maxCell.y, 0, grid.Height - 1);
 
+            // Only cells the crater could actually have touched need
+            // re-scanning; intersect with the visual's own cell bounds.
+            minX = Mathf.Max(minX, cellRegion.xMin);
+            maxX = Mathf.Min(maxX, cellRegion.xMax - 1);
+            minY = Mathf.Max(minY, cellRegion.yMin);
+            maxY = Mathf.Min(maxY, cellRegion.yMax - 1);
+            if (minX > maxX || minY > maxY)
+            {
+                return;
+            }
+
             for (var cellY = minY; cellY <= maxY; cellY++)
             {
                 var cellWorldMinY = grid.Origin.y + cellY * grid.CellSize.y;
@@ -207,12 +284,37 @@ namespace Game.Gameplay.Battle.Terrain
                     var cellWorldMaxX = cellWorldMinX + grid.CellSize.x;
                     var minPixelX = Mathf.Clamp(Mathf.FloorToInt((cellWorldMinX - visual.WorldMin.x) / visual.WorldSize.x * visual.PixelWidth), 0, visual.PixelWidth - 1);
                     var maxPixelX = Mathf.Clamp(Mathf.CeilToInt((cellWorldMaxX - visual.WorldMin.x) / visual.WorldSize.x * visual.PixelWidth) - 1, minPixelX, visual.PixelWidth - 1);
-                    if (HasSolidSurfaceAbove(visual, minPixelX, maxPixelX, minPixelY))
+                    var isSolid = visual.HasExactMask
+                        ? HasSolidMaskPixel(visual, minPixelX, maxPixelX, minPixelY, maxPixelY)
+                        : HasSolidSurfaceAbove(visual, minPixelX, maxPixelX, minPixelY);
+                    if (isSolid)
                     {
                         grid.SetSolidCell(cellX, cellY, true);
                     }
                 }
             }
+        }
+
+        private static bool HasSolidMaskPixel(
+            DestructibleVisual visual,
+            int minX,
+            int maxX,
+            int minY,
+            int maxY)
+        {
+            for (var y = minY; y <= maxY; y++)
+            {
+                var row = (visual.TextureRectY + y) * visual.Texture.width + visual.TextureRectX;
+                for (var x = minX; x <= maxX; x++)
+                {
+                    if (visual.MaskPixels[row + x] >= SolidAlphaThreshold)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private static bool HasSolidSurfaceAbove(DestructibleVisual visual, int minX, int maxX, int minY)
@@ -238,6 +340,7 @@ namespace Game.Gameplay.Battle.Terrain
                 Texture2D texture,
                 Sprite sprite,
                 Color32[] pixels,
+                byte[] maskPixels,
                 int textureRectX,
                 int textureRectY,
                 int pixelWidth,
@@ -248,6 +351,7 @@ namespace Game.Gameplay.Battle.Terrain
                 Texture = texture;
                 Sprite = sprite;
                 Pixels = pixels;
+                MaskPixels = maskPixels;
                 TextureRectX = textureRectX;
                 TextureRectY = textureRectY;
                 PixelWidth = pixelWidth;
@@ -259,6 +363,8 @@ namespace Game.Gameplay.Battle.Terrain
             public Texture2D Texture { get; }
             public Sprite Sprite { get; }
             public Color32[] Pixels { get; }
+            public byte[] MaskPixels { get; }
+            public bool HasExactMask => MaskPixels != null;
             public int TextureRectX { get; }
             public int TextureRectY { get; }
             public int PixelWidth { get; }
@@ -301,6 +407,10 @@ namespace Game.Gameplay.Battle.Terrain
                         {
                             pixel = new Color32(0, 0, 0, 0);
                             Pixels[pixelRow + x] = pixel;
+                            if (HasExactMask)
+                            {
+                                MaskPixels[pixelRow + x] = 0;
+                            }
                         }
 
                         region[y * width + x] = pixel;
@@ -315,12 +425,24 @@ namespace Game.Gameplay.Battle.Terrain
             {
                 if (Sprite != null)
                 {
-                    Object.Destroy(Sprite);
+                    DestroyRuntimeObject(Sprite);
                 }
 
                 if (Texture != null)
                 {
-                    Object.Destroy(Texture);
+                    DestroyRuntimeObject(Texture);
+                }
+            }
+
+            private static void DestroyRuntimeObject(Object value)
+            {
+                if (Application.isPlaying)
+                {
+                    Object.Destroy(value);
+                }
+                else
+                {
+                    Object.DestroyImmediate(value);
                 }
             }
         }

@@ -6,12 +6,14 @@ namespace Game.Gameplay.Battle.Visuals
     public static class BattleVisualThemeLibrary
     {
         private const string FirstArenaId = "arena.training-meadow";
+        private const string DesertArenaId = "arena.desert-sci-fi";
         private const string AnimatedSkyBackgroundPrefab = "Visuals/Arenas/Backgrounds/Sky1/AnimatedSkyBackground";
         private const string TrainingGround = "Visuals/Arenas/Training/ground";
         private const string TrainingShip = "Visuals/Arenas/Training/ship";
         private const string TrainingBoxes = "Visuals/Arenas/Training/boxes";
         private const string TrainingRock = "Visuals/Arenas/Training/rock";
-        private const string TrainingLaserKillZone = "Visuals/Arenas/KillZones/LaserLine/laser_line";
+        private const string LaserKillZone = "Visuals/Arenas/KillZones/LaserLine/laser_line";
+        private const float DesertKillZoneY = -10.2f;
         private const string PlayerCharacter = "";
         private const string OpponentCharacter = "";
         private const string PlayerRig = "Visuals/Characters/DroidRig";
@@ -19,7 +21,35 @@ namespace Game.Gameplay.Battle.Visuals
 
         public static BattleVisualTheme ForArena(ArenaDefinition arena)
         {
-            if (arena == null || arena.ArenaId != FirstArenaId)
+            if (arena == null)
+            {
+                return null;
+            }
+
+            if (arena.ArenaId == DesertArenaId)
+            {
+                return new BattleVisualTheme(
+                    default,
+                    default,
+                    PlayerCharacter,
+                    OpponentCharacter,
+                    new Vector2(0.18f, 0.18f),
+                    new Vector2(0f, -0.08f),
+                    true,
+                    false,
+                    playerSkinFacingDirectionX: 1,
+                    opponentSkinFacingDirectionX: 1,
+                    playerRigResourcePath: PlayerRig,
+                    opponentRigResourcePath: OpponentRig,
+                    backgroundPrefabResourcePath: AnimatedSkyBackgroundPrefab,
+                    overlayLayers: new[]
+                    {
+                        KillZoneLayer(DesertKillZoneY)
+                    },
+                    killZoneY: DesertKillZoneY);
+            }
+
+            if (arena.ArenaId != FirstArenaId)
             {
                 return null;
             }
@@ -46,11 +76,17 @@ namespace Game.Gameplay.Battle.Visuals
                 },
                 overlayLayers: new[]
                 {
-                    new BattleVisualLayer(TrainingLaserKillZone, new Vector2(0f, -5.75f), new Vector2(5.7f, 4.55f), -6)
+                    KillZoneLayer(-5.05f)
                 },
                 // The bright core of the laser_line art (sprite top ~-4.87,
                 // beam ~0.2 of the band below it). Feet below this line = death.
                 killZoneY: -5.05f);
+        }
+
+        private static BattleVisualLayer KillZoneLayer(float lethalY)
+        {
+            // The laser core is 0.7 world units above this wide overlay's centre.
+            return new BattleVisualLayer(LaserKillZone, new Vector2(0f, lethalY - 0.7f), new Vector2(5.7f, 4.55f), -6);
         }
     }
 }

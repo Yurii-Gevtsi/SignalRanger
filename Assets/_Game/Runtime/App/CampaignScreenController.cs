@@ -72,27 +72,6 @@ namespace Game.App
             public Vector2 Position { get; }
         }
 
-        /// <summary>
-        /// A planet inside the open cluster. <see cref="ChapterId"/> is resolved against
-        /// the mission list at build time, so a planet follows its chapter if that gains
-        /// or loses missions; an empty chapter id marks a planet held for future content.
-        /// Colour identifies the planet rather than its state.
-        /// </summary>
-        private readonly struct PlanetLayout
-        {
-            public PlanetLayout(string planetName, string starResource, Vector2 position, string chapterId)
-            {
-                PlanetName = planetName;
-                StarResource = starResource;
-                Position = position;
-                ChapterId = chapterId;
-            }
-
-            public string PlanetName { get; }
-            public string StarResource { get; }
-            public Vector2 Position { get; }
-            public string ChapterId { get; }
-        }
 
         private struct PlanetView
         {
@@ -109,16 +88,6 @@ namespace Game.App
             public Image Check;
         }
 
-        // Laid out as a zig-zag inside the first cluster, replacing the single painted
-        // constellation that used to sit there. Kept tight so the group stays within the
-        // cluster's painted cell.
-        private static readonly PlanetLayout[] Planets =
-        {
-            new("Керіон", "star_blue", new Vector2(15f, 120f), "chapter.basics"),
-            new("Вальтара", "star_red", new Vector2(130f, 165f), "chapter.tactical-tools"),
-            new("Орн-9", "star_yellow", new Vector2(220f, 100f), string.Empty),
-            new("Тайрен", "star_blue", new Vector2(330f, 140f), string.Empty)
-        };
 
         private readonly List<PlanetView> _planets = new();
         private readonly List<MissionRowView> _missionRows = new();
@@ -281,10 +250,10 @@ namespace Game.App
         /// </summary>
         private void BuildConstellation(Transform clusterNode)
         {
-            for (var i = 0; i < Planets.Length - 1; i++)
+            for (var i = 0; i < CampaignPlanetCatalog.Planets.Length - 1; i++)
             {
-                var from = Planets[i].Position;
-                var delta = Planets[i + 1].Position - from;
+                var from = CampaignPlanetCatalog.Planets[i].Position;
+                var delta = CampaignPlanetCatalog.Planets[i + 1].Position - from;
                 var link = CreateImage($"Campaign Route {i + 1}", clusterNode, new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                     new Vector2(delta.magnitude, ConnectorThickness), from + delta * 0.5f,
@@ -292,9 +261,9 @@ namespace Game.App
                 link.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
             }
 
-            for (var i = 0; i < Planets.Length; i++)
+            for (var i = 0; i < CampaignPlanetCatalog.Planets.Length; i++)
             {
-                var layout = Planets[i];
+                var layout = CampaignPlanetCatalog.Planets[i];
                 var planetIndex = i;
                 var star = CreateImageButton($"Campaign Planet {i + 1}", clusterNode, new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), StarSize, layout.Position,
@@ -497,7 +466,7 @@ namespace Game.App
 
             _battleLockedLabel = CreateText("Campaign Battle Locked Label", card, new Vector2(0.5f, 0f),
                 new Vector2(0.5f, 0f), new Vector2(0.5f, 0.5f), new Vector2(CardSize.x - 160f, BattleButtonSize.y),
-                new Vector2(0f, 90f), 32, TextAlignmentOptions.Center, GameText.CampaignPreviousPlanetLocked());
+                new Vector2(0f, 136f), 32, TextAlignmentOptions.Center, GameText.CampaignPreviousPlanetLocked());
             _battleLockedLabel.textWrappingMode = TextWrappingModes.Normal;
             _battleLockedLabel.color = SciFiTextStyle.WarningText;
             _battleLockedLabel.gameObject.SetActive(false);
@@ -514,7 +483,7 @@ namespace Game.App
 
             _openPlanetIndex = planetIndex;
             var missions = _planets[planetIndex].MissionIndices;
-            _cardTitle.text = Planets[planetIndex].PlanetName;
+            _cardTitle.text = CampaignPlanetCatalog.Planets[planetIndex].Name;
             _cardEmptyLabel.gameObject.SetActive(missions.Count == 0);
             var currentMission = FindNextMission(missions);
 

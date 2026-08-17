@@ -68,6 +68,16 @@ namespace Game.Core
             SupportDropsEnabled = true;
         }
 
+        /// <summary>
+        /// Training reuses a mission loadout but owns its arena explicitly, so
+        /// campaign arena assignments cannot redirect the training mode.
+        /// </summary>
+        public static void SelectArena(int arenaIndex, string arenaId)
+        {
+            SelectedArenaIndex = arenaIndex < 0 ? 0 : arenaIndex;
+            SelectedArenaId = arenaId ?? string.Empty;
+        }
+
         public static void SelectLoadout(string[] loadoutWeaponIds)
         {
             SelectedLoadoutWeaponIds = loadoutWeaponIds ?? System.Array.Empty<string>();
@@ -92,6 +102,22 @@ namespace Game.Core
             var missionId = PendingCampaignMissionId;
             PendingCampaignMissionId = string.Empty;
             return missionId;
+        }
+
+        /// <summary>
+        /// How the last battle actually ended, for judging the mission's objective once
+        /// the menu scene banks it. Kept as plain values rather than a progression type
+        /// so the battle layer stays free of the progression assembly.
+        /// </summary>
+        public static bool LastBattlePlayerWon { get; private set; }
+        public static int LastBattleHealthPercent { get; private set; }
+        public static bool LastBattleOpponentRingOut { get; private set; }
+
+        public static void ReportBattleFacts(bool playerWon, int healthPercent, bool opponentRingOut)
+        {
+            LastBattlePlayerWon = playerWon;
+            LastBattleHealthPercent = healthPercent < 0 ? 0 : healthPercent > 100 ? 100 : healthPercent;
+            LastBattleOpponentRingOut = opponentRingOut;
         }
 
         public static void ReportMissionCompleted()

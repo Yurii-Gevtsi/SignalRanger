@@ -141,6 +141,16 @@ namespace Game.Core.Localization
         public static string WeaponDescription(string weaponId, string fallback) => T("content.weaponDescription." + weaponId, fallback);
         public static string WeaponCategory(string category, string fallback) => T("content.category." + category, fallback);
         public static string WeaponEvolutionName(string mechanicId, string fallback) => T("content.weaponEvolutionName." + mechanicId, fallback);
+        public static string WeaponEvolutionDescription(string mechanicId, string fallback) => T("content.weaponEvolutionDescription." + mechanicId, fallback);
+        public static string UpgradeStatName(string statKey, string fallback) => T("content.upgradeStat." + statKey, fallback);
+        public static string UpgradeBaseConfigTitle() => T("content.upgradeTitle.baseConfig", "Базова конфігурація");
+        public static string UpgradeGenericTitle() => T("content.upgradeTitle.generic", "Покращення");
+        public static string UpgradeEvolutionChoiceTitle() => T("content.upgradeTitle.evolutionChoice", "Вибір еволюції");
+        public static string UpgradeFinalEvolutionTitle() => T("content.upgradeTitle.finalEvolution", "Фінальна еволюція");
+        public static string UpgradeStatBonusTitle(string statName, int amount) => T("content.upgradeTitle.statBonus", $"{statName} +{amount}%",
+            Arg("stat", statName), Arg("amount", amount));
+        public static string UpgradeStatImprovement(string statName, int amount) => T("content.upgradeDescription.statImprovement", $"Покращення параметра «{statName}» на {amount}%.",
+            Arg("stat", statName), Arg("amount", amount));
         public static string ArenaName(string arenaId, string fallback) => T("content.arena." + arenaId, fallback);
         public static string ShopTitle() => T("shop.title", "Магазин зброї");
         public static string ArsenalTitle() => T("ui.arsenal", "Арсенал");
@@ -149,7 +159,7 @@ namespace Game.Core.Localization
         public static string RequiredLevel(int level) => T("shop.requiredLevel", $"Потрібен рівень {level}", Arg("level", level));
         public static string ConstructorBureau() => T("loadout.constructor", "Майстерня");
         public static string ResetUpgrade() => T("architect.resetUpgrade", "Скинути");
-        public static string ChipRewardTitle() => T("chipReward.title", "Отримано креслення!");
+        public static string ChipRewardTitle() => T("chipReward.title", "Нагорода");
         public static string ChipRewardReadyHint() => T("chipReward.ready", "Достатньо для модернізації!");
         public static string SupplyBoxCoins(int amount) => T("battle.supplyBoxCoins", $"Знайдено {amount} кредитів!", Arg("amount", amount));
         public static string SupplyBoxWeapon(string weaponName) => T("battle.supplyBoxWeapon", $"Тимчасова зброя: {weaponName}!", Arg("weapon", weaponName));
@@ -172,6 +182,9 @@ namespace Game.Core.Localization
         public static string DefeatSubtitle(int turnNumber) => T("result.defeatSubtitle", $"Суперник переміг після {turnNumber} ходів.", Arg("turn", turnNumber));
         public static string DrawSubtitle(int turnNumber) => T("result.drawSubtitle", $"Обидві команди вибули після {turnNumber} ходів.", Arg("turn", turnNumber));
         public static string NextArenaPreview() => T("result.nextArena", "Відкрито попередній доступ до наступної арени");
+
+        public static string PlayerLevel(int level) => T("ui.playerLevel", "LVL {level}", Arg("level", level));
+        public static string LevelLabel() => T("ui.levelLabel", "\u0420\u0456\u0432\u0435\u043d\u044c:");
 
         private static string T(string key, string fallback, params LocalizationArgument[] arguments) => LocalizationRuntime.Get(key, fallback, arguments);
         private static LocalizationArgument Arg(string name, object value) => new(name, value);

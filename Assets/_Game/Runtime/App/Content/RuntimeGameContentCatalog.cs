@@ -73,6 +73,13 @@ namespace Game.App.Content
                 : mission.ArenaIndex;
         }
 
+        public int ResolveArenaIndexById(string arenaId)
+        {
+            return !string.IsNullOrWhiteSpace(arenaId) && _arenaIndicesById.TryGetValue(arenaId, out var arenaIndex)
+                ? arenaIndex
+                : 0;
+        }
+
         public bool HasArena(string arenaId)
         {
             return !string.IsNullOrWhiteSpace(arenaId) && _arenaIndicesById.ContainsKey(arenaId);
@@ -81,6 +88,11 @@ namespace Game.App.Content
         public bool HasMission(string missionId)
         {
             return !string.IsNullOrWhiteSpace(missionId) && _missionsById.ContainsKey(missionId);
+        }
+
+        public bool TryGetMission(string missionId, out MissionDefinition mission)
+        {
+            return _missionsById.TryGetValue(missionId ?? string.Empty, out mission);
         }
 
         public bool HasChapter(string chapterId)

@@ -77,8 +77,11 @@ namespace Game.Gameplay.Battle.Assembly
         private const string DroidRigResourcePath = "Visuals/Characters/DroidRig";
         private const float DroidBodyLocalY = 1.8f;
         private const float CameraZoomInMultiplier = 0.58f;
-        private const float CameraZoomOutMultiplier = 1.25f;
+        // Battle-start framing already shows the whole map, so it is the
+        // zoom-out floor: players can only zoom in from there, never further out.
+        private const float CameraZoomOutMultiplier = 1f;
         private const float CameraZoomStep = 0.62f;
+        private const float SpriteArenaBottomScreenOffset = 0.5f;
         private const float PinchZoomSensitivity = 0.008f;
         private const float DirectAimCenterDeadZone = 0.32f;
         private const float FirstBattleNavigationDistance = 1.2f;
@@ -90,12 +93,30 @@ namespace Game.Gameplay.Battle.Assembly
         private const float RestingWeaponTiltDegrees = 10f;
         private const float ControlledPointerDeadZonePixels = 2f;
         private const int MaxActiveSupportPickups = 2;
-        private const float SupportPickupWorldWidth = 0.55f;
+        private const float SupportPickupWorldWidth = 0.93f;
+        private const float SupportPickupGroundOffset = 0.4f;
         private const float ResourceDropBeamWorldWidth = 2.4f;
+        private const float ResourceDropBeamGroundOverlap = 0.65f;
         private const float ResourceDropBeamGrowSeconds = 0.65f;
         private const float ResourceDropBeamFadeSeconds = 0.28f;
+        private const float FloatingRewardDurationSeconds = 1.15f;
+        private const float FloatingRewardRiseDistance = 0.82f;
+        private const float FloatingRewardIconWorldWidth = 0.84f;
+        private const string FloatingRewardFontResourcePath = "Fonts/Orbitron";
         private const string WeaponIconResourceRoot = "UI/Weapons/";
-        private const string RocketTrailIconId = "missle_tail";
+        private const string FreezeOverlayResourcePath = "UI/Generated/freeze_overlay_ice_01";
+        private const string PoisonOverlayResourcePath = "UI/Generated/toxic_overlay_01";
+        private const string LavaOverlayResourcePath = "UI/Generated/lava_overlay_01";
+        private static readonly string[] ElectroOverlayResourcePaths =
+        {
+            "UI/Generated/electro_overlay_01",
+            "UI/Generated/electro_overlay_02",
+            "UI/Generated/electro_overlay_03",
+            "UI/Generated/electro_overlay_04"
+        };
+        // Generated from the art-source tail with its chroma canvas removed. This
+        // asset has real alpha and is shared by every missile body variant.
+        private const string RocketTrailResourcePath = "UI/Generated/missle_tail_clean";
         private const float RocketTrailAttachFraction = 0.32f;
         private static readonly HashSet<string> RocketWeaponIds = new(System.StringComparer.Ordinal)
         {
@@ -105,6 +126,10 @@ namespace Game.Gameplay.Battle.Assembly
 
         private readonly Color _playerColor = new(0.18f, 0.56f, 0.96f);
         private readonly Color _opponentColor = new(0.95f, 0.28f, 0.22f);
+        private static readonly Color CoinRewardColor = new(1f, 0.8f, 0.22f, 1f);
+        private static readonly Color WeaponRewardColor = new(0.48f, 0.9f, 1f, 1f);
+        private static readonly Color BlueprintRewardColor = new(0.75f, 0.56f, 1f, 1f);
+        private static readonly Color HealthRewardColor = new(0.32f, 0.96f, 0.64f, 1f);
         private readonly List<BattleUnitPresenter> _unitPresenters = new();
         private readonly List<GameObject> _arenaObjects = new();
         private readonly List<ResourcePickup> _resourcePickups = new();
@@ -118,6 +143,9 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Dictionary<int, (WeaponDefinition Weapon, BattleTeamId Team)> _mineOwners = new();
         private readonly Dictionary<int, FireBlobVisual> _firePuddleVisuals = new();
         private float _runtimeFallDeathY = FallDeathY;
+        private Font _floatingRewardFont;
+        private Sprite _topPivotSolidSprite;
+        private Sprite[] _electroOverlayFrames;
         private BattleWeaponHudItem[] _arsenalHudItems = System.Array.Empty<BattleWeaponHudItem>();
 
         private ArenaDefinition[] _arenas;
@@ -145,6 +173,7 @@ namespace Game.Gameplay.Battle.Assembly
         private TrajectoryProbe _impactGuideProbe;
         private readonly List<TrajectoryUnitBody> _impactGuideBodies = new();
         private BattleResultScreenState _resultScreenState;
+        private bool _opponentRingOut;
         private string _status;
         private IBattleHud _hud;
         private BotTurnController _botTurnController;
@@ -201,8 +230,9 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             public GameObject Visual { get; }
-            public Vector2 Position { get; }
+            public Vector2 Position { get; set; }
             public ResourcePickupKind Kind { get; }
+            public bool IsFalling { get; set; }
         }
 
         private bool HasProjectilesInFlight => _simulation != null && _simulation.HasProjectilesInFlight;
@@ -523,6 +553,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             ClearArenaRuntime();
+            _opponentRingOut = false;
             _playerWeaponSelected = false;
             _cameraPanActive = false;
 
@@ -695,11 +726,11 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (TryGetPinchDistance(out var pinchDistance))
+            if (TryGetPinchDistance(out var pinchDistance, out var pinchMidpoint))
             {
                 if (_hasPreviousPinchDistance)
                 {
-                    AdjustCameraZoom(-(pinchDistance - _previousPinchDistance) * PinchZoomSensitivity);
+                    AdjustCameraZoom(-(pinchDistance - _previousPinchDistance) * PinchZoomSensitivity, pinchMidpoint);
                 }
 
                 _previousPinchDistance = pinchDistance;
@@ -725,16 +756,19 @@ namespace Game.Gameplay.Battle.Assembly
                 }
             }
 
+            if (zoomDelta != 0f)
+            {
+                AdjustCameraZoom(zoomDelta, null);
+            }
+
             if (Mouse.current != null && !IsPointerOverUi())
             {
                 var scroll = Mouse.current.scroll.ReadValue().y;
                 if (Mathf.Abs(scroll) > 0.01f)
                 {
-                    zoomDelta -= Mathf.Sign(scroll) * CameraZoomStep;
+                    AdjustCameraZoom(-Mathf.Sign(scroll) * CameraZoomStep, Mouse.current.position.ReadValue());
                 }
             }
-
-            AdjustCameraZoom(zoomDelta);
         }
 
         private void UpdateCameraPan()
@@ -782,7 +816,13 @@ namespace Game.Gameplay.Battle.Assembly
 
         private bool TryGetPinchDistance(out float distance)
         {
+            return TryGetPinchDistance(out distance, out _);
+        }
+
+        private bool TryGetPinchDistance(out float distance, out Vector2 midpoint)
+        {
             distance = 0f;
+            midpoint = default;
             if (Touchscreen.current == null || Touchscreen.current.touches.Count < 2)
             {
                 return false;
@@ -795,18 +835,44 @@ namespace Game.Gameplay.Battle.Assembly
                 return false;
             }
 
-            distance = Vector2.Distance(firstTouch.position.ReadValue(), secondTouch.position.ReadValue());
+            var firstPosition = firstTouch.position.ReadValue();
+            var secondPosition = secondTouch.position.ReadValue();
+            distance = Vector2.Distance(firstPosition, secondPosition);
+            midpoint = (firstPosition + secondPosition) * 0.5f;
             return true;
         }
 
-        private void AdjustCameraZoom(float sizeDelta)
+        // Keeps the world point under focusScreenPosition fixed on screen
+        // while the orthographic size changes, so zoom converges on the
+        // cursor/pinch midpoint instead of always snapping the view down to
+        // the bottom of the map. A null focus (keyboard zoom) zooms on the
+        // current camera center.
+        private void AdjustCameraZoom(float sizeDelta, Vector2? focusScreenPosition)
         {
             if (_camera == null || Mathf.Approximately(sizeDelta, 0f) || _minimumCameraSize <= 0f || _maximumCameraSize <= 0f)
             {
                 return;
             }
 
-            _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize + sizeDelta, _minimumCameraSize, _maximumCameraSize);
+            var newSize = Mathf.Clamp(_camera.orthographicSize + sizeDelta, _minimumCameraSize, _maximumCameraSize);
+            if (Mathf.Approximately(newSize, _camera.orthographicSize))
+            {
+                return;
+            }
+
+            Vector2? worldFocusBefore = focusScreenPosition.HasValue
+                ? ScreenToWorld(focusScreenPosition.Value)
+                : null;
+
+            _camera.orthographicSize = newSize;
+
+            if (worldFocusBefore.HasValue)
+            {
+                var worldFocusAfter = ScreenToWorld(focusScreenPosition.Value);
+                var shift = worldFocusBefore.Value - worldFocusAfter;
+                _camera.transform.position += new Vector3(shift.x, shift.y, 0f);
+            }
+
             ClampCameraToArena();
         }
 
@@ -866,6 +932,20 @@ namespace Game.Gameplay.Battle.Assembly
             return bounds;
         }
 
+        private static Rect ExpandCameraBounds(Rect bounds, Bounds visualBounds)
+        {
+            if (visualBounds.size.x <= 0f || visualBounds.size.y <= 0f)
+            {
+                return bounds;
+            }
+
+            bounds.xMin = Mathf.Min(bounds.xMin, visualBounds.min.x);
+            bounds.xMax = Mathf.Max(bounds.xMax, visualBounds.max.x);
+            bounds.yMin = Mathf.Min(bounds.yMin, visualBounds.min.y);
+            bounds.yMax = Mathf.Max(bounds.yMax, visualBounds.max.y);
+            return bounds;
+        }
+
         private void ClampCameraToArena()
         {
             if (_camera == null || _cameraWorldBounds.width <= 0f || _cameraWorldBounds.height <= 0f)
@@ -882,6 +962,19 @@ namespace Game.Gameplay.Battle.Assembly
                 _camera.orthographicSize,
                 _camera.aspect,
                 fallbackCenter);
+        }
+
+        private void AnchorSpriteArenaToCameraBottom()
+        {
+            if (_camera == null || _currentArena == null || _currentArena.SpriteSurfaces.Count == 0
+                || _cameraWorldBounds.height <= 0f)
+            {
+                return;
+            }
+
+            var position = _camera.transform.position;
+            position.y = _cameraWorldBounds.yMin + _camera.orthographicSize + SpriteArenaBottomScreenOffset;
+            _camera.transform.position = position;
         }
 
         private static Vector3 ClampCameraPositionToBounds(
@@ -915,6 +1008,7 @@ namespace Game.Gameplay.Battle.Assembly
             AddBackgroundPrefab();
             var solidLayer = AddVisualLayer("Arena Background", _visualTheme?.Background, null);
             var solidLayers = new List<SpriteRenderer>();
+            var spriteSurfaces = new List<BattleTerrainSpriteSurface>();
             var solidBlocks = new List<ArenaTerrainBlock>();
 
             foreach (var block in arena.TerrainBlocks)
@@ -957,8 +1051,32 @@ namespace Game.Gameplay.Battle.Assembly
                 }
             }
 
+            foreach (var surface in arena.SpriteSurfaces)
+            {
+                var runtimeSurface = AddArenaSpriteSurface(surface);
+                if (runtimeSurface.Renderer == null)
+                {
+                    continue;
+                }
+
+                spriteSurfaces.Add(runtimeSurface);
+                _cameraWorldBounds = ExpandCameraBounds(_cameraWorldBounds, runtimeSurface.Renderer.bounds);
+            }
+
+            ClampCameraToArena();
+            AnchorSpriteArenaToCameraBottom();
+
             var bounds = ComputeArenaBounds(arena);
-            if (solidLayers.Count > 0)
+            if (spriteSurfaces.Count > 0)
+            {
+                for (var i = 0; i < solidLayers.Count; i++)
+                {
+                    spriteSurfaces.Add(new BattleTerrainSpriteSurface(solidLayers[i], null));
+                }
+
+                _battleTerrain = BattleTerrain.CreateFromSpriteSurfaces(spriteSurfaces, bounds);
+            }
+            else if (solidLayers.Count > 0)
             {
                 _battleTerrain = BattleTerrain.CreateFromSprites(solidLayers, bounds);
                 if (_battleTerrain == null)
@@ -992,7 +1110,16 @@ namespace Game.Gameplay.Battle.Assembly
             var maxX = arena.CameraPosition.x + cameraWidth * 0.5f + margin;
             var maxY = arena.CameraPosition.y + cameraHeight * 0.5f + margin;
             var minY = Mathf.Min(arena.CameraPosition.y - cameraHeight * 0.5f, GetFallDeathY()) - margin;
-            return new Rect(minX, minY, maxX - minX, maxY - minY);
+            var bounds = new Rect(minX, minY, maxX - minX, maxY - minY);
+            if (arena.SpriteSurfaces.Count > 0 && _cameraWorldBounds.width > 0f && _cameraWorldBounds.height > 0f)
+            {
+                bounds.xMin = Mathf.Min(bounds.xMin, _cameraWorldBounds.xMin - margin);
+                bounds.xMax = Mathf.Max(bounds.xMax, _cameraWorldBounds.xMax + margin);
+                bounds.yMin = Mathf.Min(bounds.yMin, _cameraWorldBounds.yMin - margin);
+                bounds.yMax = Mathf.Max(bounds.yMax, _cameraWorldBounds.yMax + margin);
+            }
+
+            return bounds;
         }
 
         private void BuildBattleState(ArenaDefinition arena)
@@ -1659,7 +1786,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
             else if (weapon != null && RocketWeaponIds.Contains(weapon.WeaponId))
             {
-                SpawnRocketTrail(visualObject.transform, renderer);
+                SpawnRocketTrail(visualObject.transform, renderer, weapon.WeaponId == "weapon.bur-rocket");
             }
         }
 
@@ -1669,9 +1796,9 @@ namespace Game.Gameplay.Battle.Assembly
         /// overlaid as a second layer behind the body sprite, parented under the same
         /// transform the body rotates on, so both move and turn together.
         /// </summary>
-        private void SpawnRocketTrail(Transform visualTransform, SpriteRenderer bodyRenderer)
+        private void SpawnRocketTrail(Transform visualTransform, SpriteRenderer bodyRenderer, bool isDrillRocket)
         {
-            var trailSprite = LoadWeaponIconSprite(RocketTrailIconId);
+            var trailSprite = LoadCenteredTextureSprite(RocketTrailResourcePath, "Rocket Exhaust Trail");
             if (trailSprite == null || bodyRenderer.sprite == null)
             {
                 return;
@@ -1691,6 +1818,10 @@ namespace Game.Gameplay.Battle.Assembly
 
             var trailRenderer = trailObject.AddComponent<SpriteRenderer>();
             trailRenderer.sprite = trailSprite;
+            // The drill rocket has a larger body and a heavier exhaust plume;
+            // extend only its shared tail so the ordinary missile keeps its
+            // established silhouette.
+            trailObject.transform.localScale = isDrillRocket ? Vector3.one * 1.35f : Vector3.one;
             trailRenderer.sortingOrder = 29;
         }
 
@@ -1830,6 +1961,7 @@ namespace Game.Gameplay.Battle.Assembly
             renderer.sprite = LoadWeaponIconSprite(effect.Weapon.WeaponId == "weapon.bur" ? "bur_lazer" : effect.Weapon.IconId);
             renderer.sortingOrder = 32;
             var animator = visual.AddComponent<LinearWeaponEffectVisual>();
+            animator.SetThickness(effect.Weapon.WeaponId == "weapon.bur" ? 1.5f : 1f);
             animator.Play(effect.Origin, effect.Direction, effect.Range, effect.GrowthDurationSeconds);
             Destroy(visual, effect.LifetimeSeconds + 0.08f);
         }
@@ -1901,7 +2033,7 @@ namespace Game.Gameplay.Battle.Assembly
             diameter *= 0.5f;
             return weapon.WeaponId switch
             {
-                "weapon.blaster-caset" => Vector3.one * (diameter * 0.936f),
+                "weapon.blaster-caset" => Vector3.one * (diameter * 0.42f),
                 "weapon.impulse" => Vector3.one * (diameter * 0.40572f),
                 "weapon.freeze" => Vector3.one * (diameter * 0.315f),
                 "weapon.mortira" => Vector3.one * (diameter * 0.36f),
@@ -1934,32 +2066,31 @@ namespace Game.Gameplay.Battle.Assembly
                 return null;
             }
 
-            if (RocketWeaponIds.Contains(weapon.WeaponId))
-            {
-                return LoadWeaponIconSprite(ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId));
-            }
-
-            var evolvedIconId = ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId);
-            if (evolvedIconId != weapon.IconId)
-            {
-                // An evolved icon exists for this rank/branch - show it in flight instead
-                // of the generic base "_shot" sprite so the upgrade reads visually.
-                return LoadWeaponIconSprite(evolvedIconId);
-            }
-
             var spriteId = weapon.WeaponId switch
             {
+                // These are explicit projectile sprites. Never substitute the held
+                // weapon/evolution icon here: it makes the gun itself look as though
+                // it was fired from the character.
                 "weapon.blaster-caset" => "blaster_shot",
-                "weapon.bur" => "bur_lazer",
                 "weapon.impulse" => "impulse_shot",
                 "weapon.mortira" => "mortira_shot",
-                "weapon.granata" => "granata",
-                "weapon.teleport" => "teleport",
+                "weapon.emp" => "emp_shot",
                 "weapon.freeze" => "ice_shot",
                 "weapon.toxic" => "toxic_shot",
-                "weapon.emp" => "emp_shot",
+                "weapon.missle" => "missle_fly",
+                "weapon.bur-rocket" => "bur_rocket",
+                "weapon.bur" => "bur_lazer",
                 "weapon.fire-gun" => "fire_shot_1",
-                _ => weapon.IconId
+                // The following launch their actual placed/thrown object. Their
+                // rank-aware art is therefore the correct in-flight representation.
+                "weapon.granata" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
+                "weapon.mine" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
+                "weapon.c4" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
+                "weapon.heal" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
+                "weapon.teleport" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
+                "weapon.bonus-box" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
+                "weapon.fpv-drone" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
+                _ => null
             };
             return LoadWeaponIconSprite(spriteId);
         }
@@ -2050,7 +2181,8 @@ namespace Game.Gameplay.Battle.Assembly
                 _status = GameText.ShotStatus(DescribeTeam(team), DescribeWeapon(weapon));
             }
 
-            if (team == BattleTeamId.Player && HidesHeldWeaponAfterUse(weapon))
+            if (team == BattleTeamId.Player && HidesHeldWeaponAfterUse(weapon)
+                && _inventory.GetSelectedRemainingAmmo() <= 0)
             {
                 _playerWeaponSelected = false;
                 RefreshPlayerWeaponVisual();
@@ -2106,14 +2238,85 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void OnSimulationTerrainCellsDestroyed(BattleTeamId sourceTeam, int cells)
         {
+            DropUnsupportedSupportPickups();
+
             if (sourceTeam == BattleTeamId.Player)
             {
                 BattleActivityBridge.ReportTerrainDestroyed(cells);
             }
         }
 
+        private void DropUnsupportedSupportPickups()
+        {
+            if (_battleTerrain?.Grid == null)
+            {
+                return;
+            }
+
+            var searchDistance = _battleTerrain.Grid.WorldMaxY - _battleTerrain.Grid.WorldMinY + 2f;
+            foreach (var pickup in _resourcePickups)
+            {
+                if (pickup.Visual == null || pickup.IsFalling)
+                {
+                    continue;
+                }
+
+                var current = pickup.Position;
+                if (_battleTerrain.Grid.IsSolidWorld(current + Vector2.down * 0.1f)
+                    || !_battleTerrain.Grid.TryFindSurfaceBelow(current.x, current.y - 0.08f, searchDistance, out var surfaceY))
+                {
+                    continue;
+                }
+
+                var renderer = pickup.Visual.GetComponent<SpriteRenderer>();
+                var spriteHeight = renderer?.sprite == null
+                    ? 0f
+                    : renderer.sprite.bounds.size.y * pickup.Visual.transform.localScale.y;
+                var destination = new Vector2(
+                    current.x,
+                    surfaceY + spriteHeight * 0.5f - SupportPickupGroundOffset);
+                if (destination.y >= current.y - 0.06f)
+                {
+                    continue;
+                }
+
+                StartCoroutine(AnimateSupportPickupFall(pickup, current, destination));
+            }
+        }
+
+        private IEnumerator AnimateSupportPickupFall(ResourcePickup pickup, Vector2 origin, Vector2 destination)
+        {
+            pickup.IsFalling = true;
+            const float duration = 0.24f;
+            var elapsed = 0f;
+            while (pickup.Visual != null && elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                pickup.Position = Vector2.Lerp(origin, destination, Mathf.SmoothStep(0f, 1f, elapsed / duration));
+                pickup.Visual.transform.position = pickup.Position;
+                yield return null;
+            }
+
+            if (pickup.Visual != null)
+            {
+                pickup.Position = destination;
+                pickup.Visual.transform.position = destination;
+            }
+
+            pickup.IsFalling = false;
+        }
+
         private void OnSimulationUnitDefeated(UnitDefeatedEvent defeat)
         {
+            // Falling out of bounds is the only non-weapon death the simulation reports,
+            // and it covers both the map edge and the kill zone barrier.
+            if (defeat.Reason == "fall.out-of-bounds"
+                && !string.IsNullOrEmpty(defeat.UnitId)
+                && defeat.UnitId.StartsWith("opponent.", System.StringComparison.Ordinal))
+            {
+                _opponentRingOut = true;
+            }
+
             EmitFeedback(BattleFeedbackEventType.UnitDefeated);
         }
 
@@ -2217,17 +2420,25 @@ namespace Game.Gameplay.Battle.Assembly
         private IEnumerator AnimateSupportDrop(Vector2 targetPosition, ResourcePickupKind kind)
         {
             _supportDropInProgress = true;
-            var beamSprite = LoadTopPivotTextureSprite("UI/Battle/resource_drop_beam", "Support Drop Beam");
+            // This copy lives under the managed generated-UI root, which locks it
+            // to RGBA Default import instead of Unity's Single Channel mode.
+            var beamSprite = LoadTopPivotTextureSprite("UI/Generated/resource_drop_beam_rgba", "Support Drop Beam");
             GameObject beam = null;
             SpriteRenderer beamRenderer = null;
             if (beamSprite != null)
             {
                 var topY = Mathf.Max(_cameraWorldBounds.yMax + 0.4f, targetPosition.y + 4f);
-                var beamHeight = Mathf.Max(1f, topY - targetPosition.y + 0.12f);
+                // The source sprite has transparent padding at its lower edge.
+                // Extend past the pickup target so the visible beam reaches the
+                // terrain instead of stopping slightly above it.
+                var beamHeight = Mathf.Max(1f, topY - targetPosition.y + ResourceDropBeamGroundOverlap);
                 beam = new GameObject("Support Drop Beam");
                 beam.transform.position = new Vector3(targetPosition.x, topY, 0f);
                 beamRenderer = beam.AddComponent<SpriteRenderer>();
                 beamRenderer.sprite = beamSprite;
+                // Keep the authored cyan/white beam pixels unchanged. Tinting this
+                // source darkened its semi-transparent core and made it read black.
+                beamRenderer.color = Color.white;
                 beamRenderer.sortingOrder = 28;
                 _arenaObjects.Add(beam);
 
@@ -2282,7 +2493,9 @@ namespace Game.Gameplay.Battle.Assembly
 
             var pickup = new GameObject(kind == ResourcePickupKind.Medkit ? "Support Medkit" : "Support Supply Box");
             var scale = SupportPickupWorldWidth / Mathf.Max(0.001f, sprite.bounds.size.x);
-            var groundedPosition = new Vector2(position.x, position.y + sprite.bounds.size.y * scale * 0.5f - 0.18f);
+            var groundedPosition = new Vector2(
+                position.x,
+                position.y + sprite.bounds.size.y * scale * 0.5f - SupportPickupGroundOffset);
             pickup.transform.position = groundedPosition;
             pickup.transform.localScale = Vector3.one * scale;
             var renderer = pickup.AddComponent<SpriteRenderer>();
@@ -2295,6 +2508,7 @@ namespace Game.Gameplay.Battle.Assembly
         private void OnSimulationBattleFinished(BattleResult result, BattleFinishReason reason)
         {
             RecordFinishedBattleActivity(result);
+            ReportObjectiveFacts(result);
             _resultScreenState = CreateResultScreenState(result, _battleState.Turn.TurnNumber);
             _status = GameText.ResultPrompt(_resultScreenState.Title);
             if (result.Outcome == BattleOutcome.PlayerWon && reason != BattleFinishReason.InstantActionCompleted)
@@ -2304,6 +2518,22 @@ namespace Game.Gameplay.Battle.Assembly
 
             _firstBattleGuide?.ObserveBattleFinished();
             EmitFeedback(BattleFeedbackEventType.BattleFinished);
+        }
+
+        /// <summary>
+        /// Hands the app layer what the battle looked like, so the mission's objective can
+        /// be judged when the menu banks the completion.
+        /// </summary>
+        private void ReportObjectiveFacts(BattleResult result)
+        {
+            var maxHealth = GetTeamMaxHealth(BattleTeamId.Player);
+            var healthPercent = maxHealth > 0
+                ? Mathf.RoundToInt(100f * GetTeamHealth(BattleTeamId.Player) / maxHealth)
+                : 0;
+            GameSessionContext.ReportBattleFacts(
+                result.Outcome == BattleOutcome.PlayerWon,
+                healthPercent,
+                _opponentRingOut);
         }
 
         private void RecordFinishedBattleActivity(BattleResult result)
@@ -2433,6 +2663,7 @@ namespace Game.Gameplay.Battle.Assembly
                     if (restored > 0)
                     {
                         SpawnImpactFlash(player.Position, new Color(0.28f, 0.92f, 0.64f, 0.9f), 1.25f);
+                        SpawnFloatingReward(player.Position, $"+{restored}", "heal", HealthRewardColor);
                     }
                 }
                 else
@@ -2459,6 +2690,8 @@ namespace Game.Gameplay.Battle.Assembly
                 _inventory.TryAddTemporaryWeapon(weapon, 1);
                 RefreshArsenalHudItems();
                 _status = GameText.SupplyBoxWeapon(WeaponDisplayNames.Get(weapon.WeaponId));
+                SpawnFloatingReward(GetPresenter(BattleTeamId.Player)?.State.Position ?? Vector2.zero,
+                    "+1", weapon.IconId, WeaponRewardColor);
                 return;
             }
 
@@ -2466,12 +2699,16 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 var chipAmount = Random.Range(5, 13);
                 BattleRewardBridge.GrantWeaponBlueprints(chipAmount, "battle.supplyBox", GameSessionContext.SelectedMissionId ?? "battle");
+                SpawnFloatingReward(GetPresenter(BattleTeamId.Player)?.State.Position ?? Vector2.zero,
+                    $"+{chipAmount}", "UI/Common/chip_2", BlueprintRewardColor);
                 return;
             }
 
             var coinAmount = Random.Range(60, 121);
             BattleRewardBridge.GrantCoins(coinAmount, "battle.supplyBox", "coins");
             _status = GameText.SupplyBoxCoins(coinAmount);
+            SpawnFloatingReward(GetPresenter(BattleTeamId.Player)?.State.Position ?? Vector2.zero,
+                $"+{coinAmount}", "UI/Shop/coin", CoinRewardColor);
         }
 
         private bool TryPickTemporaryWeaponReward(out WeaponDefinition weapon)
@@ -2502,6 +2739,104 @@ namespace Game.Gameplay.Battle.Assembly
             return true;
         }
 
+        private void SpawnFloatingReward(Vector2 worldPosition, string amountText, string iconReference, Color color)
+        {
+            if (string.IsNullOrWhiteSpace(amountText))
+            {
+                return;
+            }
+
+            var reward = new GameObject("Collected Reward");
+            reward.transform.position = new Vector3(worldPosition.x, worldPosition.y + 0.62f, 0f);
+            _arenaObjects.Add(reward);
+
+            var icon = LoadFloatingRewardIcon(iconReference);
+            if (icon != null)
+            {
+                var iconObject = new GameObject("Reward Icon");
+                iconObject.transform.SetParent(reward.transform, false);
+                iconObject.transform.localPosition = new Vector3(-0.52f, 0f, 0f);
+                iconObject.transform.localScale = Vector3.one *
+                    (FloatingRewardIconWorldWidth / Mathf.Max(0.001f, icon.bounds.size.x));
+                var iconRenderer = iconObject.AddComponent<SpriteRenderer>();
+                iconRenderer.sprite = icon;
+                iconRenderer.color = color;
+                iconRenderer.sortingOrder = 36;
+            }
+
+            var labelObject = new GameObject("Reward Amount");
+            labelObject.transform.SetParent(reward.transform, false);
+            labelObject.transform.localPosition = new Vector3(icon == null ? 0f : 0.24f, 0f, 0f);
+            labelObject.transform.localScale = Vector3.one * 0.035f;
+            var label = labelObject.AddComponent<TextMesh>();
+            label.text = amountText;
+            label.alignment = TextAlignment.Left;
+            label.anchor = TextAnchor.MiddleLeft;
+            label.fontSize = 116;
+            label.fontStyle = FontStyle.Bold;
+            label.color = color;
+            _floatingRewardFont ??= Resources.Load<Font>(FloatingRewardFontResourcePath);
+            if (_floatingRewardFont != null)
+            {
+                label.font = _floatingRewardFont;
+                var textRenderer = labelObject.GetComponent<MeshRenderer>();
+                if (textRenderer != null)
+                {
+                    textRenderer.sharedMaterial = _floatingRewardFont.material;
+                    textRenderer.sortingOrder = 37;
+                }
+            }
+
+            StartCoroutine(AnimateFloatingReward(reward, label, color));
+        }
+
+        private Sprite LoadFloatingRewardIcon(string iconReference)
+        {
+            return iconReference != null && iconReference.StartsWith("UI/", System.StringComparison.Ordinal)
+                ? LoadCenteredTextureSprite(iconReference, "Reward Icon")
+                : LoadWeaponIconSprite(iconReference);
+        }
+
+        private IEnumerator AnimateFloatingReward(GameObject reward, TextMesh label, Color color)
+        {
+            var spriteRenderers = reward.GetComponentsInChildren<SpriteRenderer>();
+            var startPosition = reward.transform.position;
+            var elapsed = 0f;
+            while (reward != null && elapsed < FloatingRewardDurationSeconds)
+            {
+                elapsed += Time.deltaTime;
+                var progress = Mathf.Clamp01(elapsed / FloatingRewardDurationSeconds);
+                var alpha = 1f - Mathf.SmoothStep(0f, 1f, progress);
+                reward.transform.position = startPosition + Vector3.up * (FloatingRewardRiseDistance * progress);
+                foreach (var renderer in spriteRenderers)
+                {
+                    if (renderer == null)
+                    {
+                        continue;
+                    }
+
+                    var rendererColor = renderer.color;
+                    rendererColor.a = color.a * alpha;
+                    renderer.color = rendererColor;
+                }
+
+                if (label != null)
+                {
+                    var labelColor = color;
+                    labelColor.a *= alpha;
+                    label.color = labelColor;
+                }
+
+                yield return null;
+            }
+
+            if (reward != null)
+            {
+                _arenaObjects.Remove(reward);
+                Destroy(reward);
+            }
+        }
+
         private void SyncProjectileVisuals()
         {
             if (_simulation == null)
@@ -2522,6 +2857,15 @@ namespace Game.Gameplay.Battle.Assembly
                             Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg);
                     }
                 }
+            }
+
+            var activeIds = new HashSet<int>(_simulation.Projectiles.Select(projectile => projectile.Id));
+            foreach (var projectileId in _projectileVisuals.Keys.Where(id => !activeIds.Contains(id)).ToArray())
+            {
+                var visual = _projectileVisuals[projectileId];
+                _projectileVisuals.Remove(projectileId);
+                _arenaObjects.Remove(visual);
+                Destroy(visual);
             }
         }
 
@@ -2731,12 +3075,38 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void RefreshUnitViews()
         {
+            var freezeOverlay = LoadCenteredTextureSprite(FreezeOverlayResourcePath, "Freeze Overlay Ice 01");
+            var poisonOverlay = LoadCenteredTextureSprite(PoisonOverlayResourcePath, "Poison Overlay Toxic 01");
+            var lavaOverlay = LoadCenteredTextureSprite(LavaOverlayResourcePath, "Lava Overlay 01");
+            var electroOverlayFrames = LoadElectroOverlayFrames();
             foreach (var presenter in _unitPresenters)
             {
                 var isJumping = _unitMotors.TryGetValue(presenter.State.UnitId, out var motor) && motor.IsJumping;
                 var jumpTrailScale = isJumping ? motor.JumpTrailScale : 0f;
                 presenter.Refresh(presenter.State.UnitId == _battleState.Turn.ActiveUnitId, isJumping, jumpTrailScale);
+                presenter.View.SetFreezeOverlay(freezeOverlay, _simulation.IsUnitFrozen(presenter.State.UnitId));
+                presenter.View.SetPoisonOverlay(poisonOverlay, _simulation.IsUnitPoisoned(presenter.State.UnitId));
+                presenter.View.SetLavaOverlay(lavaOverlay, _simulation.IsUnitLavaBurning(presenter.State.UnitId));
+                presenter.View.SetElectroOverlay(electroOverlayFrames, _simulation.IsUnitElectrified(presenter.State.UnitId));
             }
+        }
+
+        private Sprite[] LoadElectroOverlayFrames()
+        {
+            if (_electroOverlayFrames != null)
+            {
+                return _electroOverlayFrames;
+            }
+
+            _electroOverlayFrames = new Sprite[ElectroOverlayResourcePaths.Length];
+            for (var index = 0; index < ElectroOverlayResourcePaths.Length; index++)
+            {
+                _electroOverlayFrames[index] = LoadCenteredTextureSprite(
+                    ElectroOverlayResourcePaths[index],
+                    $"Electro Overlay {index + 1}");
+            }
+
+            return _electroOverlayFrames;
         }
 
         private void UpdateOpponentBot()
@@ -3162,6 +3532,28 @@ namespace Game.Gameplay.Battle.Assembly
             return layer.Value.Solid ? renderer : currentSolidLayer;
         }
 
+        private BattleTerrainSpriteSurface AddArenaSpriteSurface(ArenaSpriteSurface surface)
+        {
+            var sprite = LoadSpriteResource(surface.VisualResourcePath);
+            var mask = Resources.Load<Texture2D>(surface.MaskResourcePath);
+            if (sprite == null || mask == null)
+            {
+                Debug.LogWarning(
+                    $"Arena surface '{surface.InstanceId}' is missing visual or mask resource " +
+                    $"('{surface.VisualResourcePath}', '{surface.MaskResourcePath}').");
+                return default;
+            }
+
+            var visual = new GameObject(surface.InstanceId);
+            visual.transform.position = new Vector3(surface.Position.x, surface.Position.y, 0f);
+            visual.transform.localScale = Vector3.one * surface.Scale;
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.sortingOrder = surface.SortingOrder;
+            _arenaObjects.Add(visual);
+            return new BattleTerrainSpriteSurface(renderer, mask);
+        }
+
         private void AddBackgroundPrefab()
         {
             if (_visualTheme == null || !_visualTheme.HasBackgroundPrefab)
@@ -3178,6 +3570,23 @@ namespace Game.Gameplay.Battle.Assembly
 
             var background = Instantiate(prefab);
             background.name = "Arena Animated Background";
+            var skyBackground = background.GetComponent<AnimatedSkyBackground>();
+            if (skyBackground != null)
+            {
+                skyBackground.ConfigureCoverage(_camera, _maximumCameraSize, _cameraWorldBounds);
+
+                // The sky art (station/clouds) is now placed in fixed world
+                // space instead of following the camera every frame, so the
+                // pan clamp must actually allow reaching up to it - otherwise
+                // it would sit above the frustum at high zoom with no way to
+                // pan into view, no matter how far up the player drags.
+                var topWorldY = skyBackground.GetHighestDecorativeWorldY();
+                if (topWorldY > _cameraWorldBounds.yMax)
+                {
+                    _cameraWorldBounds.yMax = topWorldY + 1f;
+                }
+            }
+
             _arenaObjects.Add(background);
         }
 
@@ -3283,6 +3692,37 @@ namespace Game.Gameplay.Battle.Assembly
             return sprite;
         }
 
+        private Sprite LoadCenteredTextureSprite(string resourcePath, string spriteName)
+        {
+            if (string.IsNullOrWhiteSpace(resourcePath))
+            {
+                return null;
+            }
+
+            var cacheKey = resourcePath + "#center-pivot";
+            if (_spriteResourceCache.TryGetValue(cacheKey, out var cached))
+            {
+                return cached;
+            }
+
+            var texture = Resources.Load<Texture2D>(resourcePath);
+            if (texture == null)
+            {
+                return null;
+            }
+
+            var sprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f),
+                100f,
+                0,
+                SpriteMeshType.FullRect);
+            sprite.name = spriteName;
+            _spriteResourceCache.Add(cacheKey, sprite);
+            return sprite;
+        }
+
         private Sprite LoadTopPivotTextureSprite(string resourcePath, string spriteName)
         {
             if (string.IsNullOrWhiteSpace(resourcePath))
@@ -3308,10 +3748,31 @@ namespace Game.Gameplay.Battle.Assembly
                 new Vector2(0.5f, 1f),
                 100f,
                 0,
-                SpriteMeshType.FullRect);
+                // The imported texture already has alpha. A tight mesh prevents
+                // transparent canvas pixels from being submitted by the renderer,
+                // which was the source of the black rectangular beam in-game.
+                SpriteMeshType.Tight);
             sprite.name = spriteName;
             _spriteResourceCache.Add(cacheKey, sprite);
             return sprite;
+        }
+
+        private Sprite GetTopPivotSolidSprite()
+        {
+            if (_topPivotSolidSprite != null)
+            {
+                return _topPivotSolidSprite;
+            }
+
+            _topPivotSolidSprite = Sprite.Create(
+                Texture2D.whiteTexture,
+                new Rect(0f, 0f, 1f, 1f),
+                new Vector2(0.5f, 1f),
+                1f,
+                0,
+                SpriteMeshType.FullRect);
+            _topPivotSolidSprite.name = "Support Drop Beam Core";
+            return _topPivotSolidSprite;
         }
 
         private void RefreshPlayerWeaponVisual()
@@ -3450,7 +3911,12 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void RestartScene()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            // Go through the loading bridge like every other transition, so a retry shows
+            // the loading screen instead of freezing on the result card.
+            if (!SceneLoadingBridge.TryLoad(GameSceneNames.Battle))
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
         }
 
         private void ContinueFromResult()

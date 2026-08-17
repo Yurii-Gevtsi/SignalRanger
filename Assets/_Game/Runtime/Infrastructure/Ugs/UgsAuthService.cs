@@ -15,6 +15,7 @@ namespace Game.Infrastructure.Ugs
     /// </summary>
     public sealed class UgsAuthService : IAuthService
     {
+        private const string GooglePlayProfileSelectionPromptedKey = "game.gpgs.profile-selection-prompted.v1";
         private AuthProvider _provider;
 
         public bool IsSignedIn =>
@@ -53,9 +54,14 @@ namespace Game.Infrastructure.Ugs
                     Debug.Log($"[GPGS] Authentication status: {status}");
                     if (status != SignInStatus.Success)
                     {
-                        if (status == SignInStatus.Canceled)
+                        if (status == SignInStatus.Canceled
+                            && PlayerPrefs.GetInt(GooglePlayProfileSelectionPromptedKey, 0) == 0)
                         {
-                            Debug.Log("[GPGS] Automatic sign-in was canceled; requesting interactive sign-in.");
+                            // The account picker is a one-time choice, independent of
+                            // progression data and therefore unaffected by a reset.
+                            PlayerPrefs.SetInt(GooglePlayProfileSelectionPromptedKey, 1);
+                            PlayerPrefs.Save();
+                            Debug.Log("[GPGS] Automatic sign-in was canceled; requesting the one-time profile selection.");
                             PlayGamesPlatform.Instance.ManuallyAuthenticate(interactiveStatus =>
                             {
                                 Debug.Log($"[GPGS] Interactive authentication status: {interactiveStatus}");

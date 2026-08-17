@@ -1,7 +1,11 @@
+using System;
+
 namespace Game.Economy
 {
     public interface IEconomyService
     {
+        event Action ProgressionChanged;
+        event Action BalanceChanged;
         int SoftCurrency { get; }
         int PremiumCurrency { get; }
         int CommanderExperience { get; }

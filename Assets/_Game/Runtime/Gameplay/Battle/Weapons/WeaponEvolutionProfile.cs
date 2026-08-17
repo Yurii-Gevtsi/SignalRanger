@@ -47,6 +47,9 @@ namespace Game.Gameplay.Battle.Weapons
             int toxicDurationBonusTurns = 0,
             float fireGunStreamDurationMultiplier = 1f,
             float fireGunBurnDurationMultiplier = 1f,
+            int fireGunIgniteTurns = 0,
+            int fireGunIgniteDamagePerTurn = 0,
+            int fireGunChainDamagePercent = 0,
             int empStunTurns = 0,
             bool empStunBlocksMovement = false,
             int empWeakenDamagePercent = 0,
@@ -92,6 +95,9 @@ namespace Game.Gameplay.Battle.Weapons
             ToxicDurationBonusTurns = Mathf.Max(0, toxicDurationBonusTurns);
             FireGunStreamDurationMultiplier = Mathf.Max(0.1f, fireGunStreamDurationMultiplier);
             FireGunBurnDurationMultiplier = Mathf.Max(0.1f, fireGunBurnDurationMultiplier);
+            FireGunIgniteTurns = Mathf.Max(0, fireGunIgniteTurns);
+            FireGunIgniteDamagePerTurn = Mathf.Max(0, fireGunIgniteDamagePerTurn);
+            FireGunChainDamagePercent = Mathf.Max(0, fireGunChainDamagePercent);
             EmpStunTurns = Mathf.Max(0, empStunTurns);
             EmpStunBlocksMovement = empStunBlocksMovement;
             EmpWeakenDamagePercent = Mathf.Clamp(empWeakenDamagePercent, 0, 100);
@@ -138,6 +144,9 @@ namespace Game.Gameplay.Battle.Weapons
         public int ToxicDurationBonusTurns { get; }
         public float FireGunStreamDurationMultiplier { get; }
         public float FireGunBurnDurationMultiplier { get; }
+        public int FireGunIgniteTurns { get; }
+        public int FireGunIgniteDamagePerTurn { get; }
+        public int FireGunChainDamagePercent { get; }
         public int EmpStunTurns { get; }
         public bool EmpStunBlocksMovement { get; }
         public int EmpWeakenDamagePercent { get; }
@@ -436,13 +445,16 @@ namespace Game.Gameplay.Battle.Weapons
                 if (branch == WeaponUpgradeBranch.A)
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
-                        fireGunStreamDurationMultiplier: progress.rank >= 10 ? 1.8f : 1.4f);
+                        fireGunStreamDurationMultiplier: 1.4f,
+                        fireGunBurnDurationMultiplier: progress.rank >= 10 ? 1.5f : 1f);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
-                        fireGunBurnDurationMultiplier: progress.rank >= 10 ? 2f : 1.5f);
+                        fireGunIgniteTurns: progress.rank >= 10 ? 3 : 2,
+                        fireGunIgniteDamagePerTurn: progress.rank >= 10 ? 9 : 6,
+                        fireGunChainDamagePercent: progress.rank >= 10 ? 60 : 35);
                 }
             }
 

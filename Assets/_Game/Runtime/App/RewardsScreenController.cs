@@ -84,6 +84,8 @@ namespace Game.App
         private Action _onClosed;
         private Image _dailyTabImage;
         private Image _weeklyTabImage;
+        private Image _dailyTabRewardAvailableBadge;
+        private Image _weeklyTabRewardAvailableBadge;
         private TMP_Text _dailyTabLabel;
         private TMP_Text _weeklyTabLabel;
         private RewardPeriod _selectedRewardPeriod;
@@ -166,18 +168,20 @@ namespace Game.App
             var crystals = Mathf.Max(0, saveData?.economy.premiumCurrency ?? 0);
 
             var coins = CreateImage("Rewards Coins", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-486f, 0f),
+                new Vector2(1f, 1f), new Vector2(372f, 155f), new Vector2(-486f, 0f),
                 ShopResourceRoot + "Coin_panel", true);
-            _coinsValueText = CreateText("Rewards Coins Value", coins, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
+            _coinsValueText = CreateText("Rewards Coins Value", coins, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 credits.ToString(), GameTextRole.CurrencyGold);
+            CurrencyBalanceText.Bind(_coinsValueText, false);
 
             var premium = CreateImage("Rewards Crystals", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-166f, 0f),
+                new Vector2(1f, 1f), new Vector2(372f, 155f), new Vector2(-166f, 0f),
                 ShopResourceRoot + "vip_coins_panel", true);
-            _crystalsValueText = CreateText("Rewards Crystals Value", premium, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
+            _crystalsValueText = CreateText("Rewards Crystals Value", premium, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 crystals.ToString(), GameTextRole.CurrencyCrystal);
+            CurrencyBalanceText.Bind(_crystalsValueText, true);
 
             var settings = CreateImageButton("Rewards Settings", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(1f, 1f), SettingsButtonSize, SettingsButtonPosition, ShopResourceRoot + "settings_btn",
@@ -434,6 +438,8 @@ namespace Game.App
             _dailyTabLabel = CreateText("Daily Rewards Tab Label", daily, Vector2.zero, Vector2.one,
                 new Vector2(0.5f, 0.5f), new Vector2(-58f, -12f), new Vector2(24f, 0f), 28,
                 TextAlignmentOptions.Center, GameText.DailyRewards(), GameTextRole.ScreenTitle);
+            _dailyTabRewardAvailableBadge = CreateSolidImage("Daily Rewards Available Badge", daily,
+                new Vector2(24f, 24f), new Vector2(130f, 32f), SciFiTextStyle.SuccessText, _circleSprite);
 
             var weekly = CreateImageButton("Weekly Rewards Tab", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), RewardTabSize, WeeklyTabPosition, "UI/Common/reward_tab_inactive",
@@ -444,6 +450,8 @@ namespace Game.App
             _weeklyTabLabel = CreateText("Weekly Rewards Tab Label", weekly, Vector2.zero, Vector2.one,
                 new Vector2(0.5f, 0.5f), new Vector2(-58f, -12f), new Vector2(24f, 0f), 28,
                 TextAlignmentOptions.Center, GameText.WeeklyRewards(), GameTextRole.ScreenTitle);
+            _weeklyTabRewardAvailableBadge = CreateSolidImage("Weekly Rewards Available Badge", weekly,
+                new Vector2(24f, 24f), new Vector2(130f, 32f), SciFiTextStyle.SuccessText, _circleSprite);
 
             SelectRewardPeriod(RewardPeriod.Daily);
         }
@@ -481,8 +489,13 @@ namespace Game.App
             var progress = AppServices.ActivityProgress;
             if (progress == null)
             {
+                SetRewardTabBadges(false, false);
                 return;
             }
+
+            SetRewardTabBadges(
+                HasClaimableQuest(ActivityPeriod.Daily, progress),
+                HasClaimableQuest(ActivityPeriod.Weekly, progress));
 
             var quests = ActivityQuestCatalog.GetVisibleQuests(period, progress.GetPeriodStartUtcTicks(period));
             var orderedQuests = OrderQuestsForDisplay(quests, period, progress);
@@ -559,6 +572,35 @@ namespace Game.App
             }
 
             return ordered;
+        }
+
+        private static bool HasClaimableQuest(ActivityPeriod period, ActivityProgressService progress)
+        {
+            var quests = ActivityQuestCatalog.GetVisibleQuests(period, progress.GetPeriodStartUtcTicks(period));
+            for (var i = 0; i < quests.Length; i++)
+            {
+                var quest = quests[i];
+                if (!progress.IsClaimed(period, quest.Id)
+                    && progress.GetProgress(quest.Metric, period) >= quest.Target)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void SetRewardTabBadges(bool hasDailyReward, bool hasWeeklyReward)
+        {
+            if (_dailyTabRewardAvailableBadge != null)
+            {
+                _dailyTabRewardAvailableBadge.gameObject.SetActive(hasDailyReward);
+            }
+
+            if (_weeklyTabRewardAvailableBadge != null)
+            {
+                _weeklyTabRewardAvailableBadge.gameObject.SetActive(hasWeeklyReward);
+            }
         }
 
         private void HandleQuestAction(QuestRowView view)
@@ -643,12 +685,12 @@ namespace Game.App
         {
             if (_dailyLoginDayRewardIcon != null)
             {
-                _dailyLoginDayRewardIcon.gameObject.SetActive(!_dailyLoginClaimed);
+                _dailyLoginDayRewardIcon.gameObject.SetActive(true);
             }
 
             if (_dailyLoginDayRewardAmount != null)
             {
-                _dailyLoginDayRewardAmount.gameObject.SetActive(!_dailyLoginClaimed);
+                _dailyLoginDayRewardAmount.gameObject.SetActive(true);
             }
 
             if (_dailyLoginClaimButton != null)
@@ -742,7 +784,7 @@ namespace Game.App
             return kind switch
             {
                 RewardKind.Crystals => RewardIconRoot + "reward_crystal",
-                RewardKind.Chip => RewardIconRoot + "reward_chip",
+                RewardKind.Chip => "UI/Common/chip_2",
                 RewardKind.Chest => "UI/Weapons/bonus_box",
                 RewardKind.SuperChest => RewardIconRoot + "super_chest",
                 _ => ShopResourceRoot + "coin"
@@ -754,7 +796,7 @@ namespace Game.App
             return kind switch
             {
                 ActivityRewardKind.Crystals => RewardIconRoot + "reward_crystal",
-                ActivityRewardKind.Chip => RewardIconRoot + "reward_chip",
+                ActivityRewardKind.Chip => "UI/Common/chip_2",
                 ActivityRewardKind.Chest => "UI/Weapons/bonus_box",
                 _ => ShopResourceRoot + "coin"
             };

@@ -11,6 +11,12 @@ namespace Game.Gameplay.Battle.Runtime
         private float _range;
         private float _duration = 1f;
         private float _elapsed;
+        private float _thicknessMultiplier = 1f;
+
+        public void SetThickness(float multiplier)
+        {
+            _thicknessMultiplier = Mathf.Max(0.01f, multiplier);
+        }
 
         public void Play(Vector2 origin, Vector2 direction, float range, float durationSeconds)
         {
@@ -38,7 +44,7 @@ namespace Game.Gameplay.Battle.Runtime
                 ? _renderer.sprite.bounds.size
                 : Vector3.one;
             var widthScale = length / Mathf.Max(0.01f, spriteSize.x);
-            var heightScale = 1.2f / Mathf.Max(0.01f, spriteSize.y);
+            var heightScale = 1.2f * _thicknessMultiplier / Mathf.Max(0.01f, spriteSize.y);
             transform.localScale = new Vector3(widthScale, heightScale, 1f);
         }
     }

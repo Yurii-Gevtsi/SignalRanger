@@ -13,6 +13,7 @@ namespace Game.Gameplay.Battle.Arenas
         [SerializeField] private Vector2 _playerSpawn;
         [SerializeField] private Vector2 _opponentSpawn;
         [SerializeField] private ArenaTerrainBlock[] _terrainBlocks;
+        [SerializeField] private ArenaSpriteSurface[] _spriteSurfaces;
 
         public string ArenaId => _arenaId;
         public string DisplayName => _displayName;
@@ -20,7 +21,8 @@ namespace Game.Gameplay.Battle.Arenas
         public float CameraSize => _cameraSize;
         public Vector2 PlayerSpawn => _playerSpawn;
         public Vector2 OpponentSpawn => _opponentSpawn;
-        public IReadOnlyList<ArenaTerrainBlock> TerrainBlocks => _terrainBlocks;
+        public IReadOnlyList<ArenaTerrainBlock> TerrainBlocks => _terrainBlocks ?? System.Array.Empty<ArenaTerrainBlock>();
+        public IReadOnlyList<ArenaSpriteSurface> SpriteSurfaces => _spriteSurfaces ?? System.Array.Empty<ArenaSpriteSurface>();
 
         public static ArenaDefinition CreateRuntime(
             string arenaId,
@@ -29,7 +31,8 @@ namespace Game.Gameplay.Battle.Arenas
             float cameraSize,
             Vector2 playerSpawn,
             Vector2 opponentSpawn,
-            ArenaTerrainBlock[] terrainBlocks)
+            ArenaTerrainBlock[] terrainBlocks,
+            ArenaSpriteSurface[] spriteSurfaces = null)
         {
             var definition = CreateInstance<ArenaDefinition>();
             definition._arenaId = arenaId;
@@ -38,7 +41,8 @@ namespace Game.Gameplay.Battle.Arenas
             definition._cameraSize = cameraSize;
             definition._playerSpawn = playerSpawn;
             definition._opponentSpawn = opponentSpawn;
-            definition._terrainBlocks = terrainBlocks;
+            definition._terrainBlocks = terrainBlocks ?? System.Array.Empty<ArenaTerrainBlock>();
+            definition._spriteSurfaces = spriteSurfaces ?? System.Array.Empty<ArenaSpriteSurface>();
             return definition;
         }
     }

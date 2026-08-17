@@ -8,8 +8,62 @@ namespace Game.Gameplay.Battle.Arenas
         {
             return new[]
             {
-                CreateTrainingMeadow()
+                CreateTrainingMeadow(),
+                CreateDesertSciFi()
             };
+        }
+
+        private const string DesertResourceRoot = "Visuals/Arenas/DesertSciFi/";
+        private const float DesertPixelsPerUnit = 256f;
+        private const float DesertWorldScale = 2.5f;
+        private const float DesertCanvasWidth = 4096f;
+        private const float DesertCanvasHeight = 2304f;
+
+        private static ArenaDefinition CreateDesertSciFi()
+        {
+            return ArenaDefinition.CreateRuntime(
+                "arena.desert-sci-fi",
+                "Desert Sci-Fi Arena",
+                new Vector3(0f, -1.75f, -10f),
+                9.25f,
+                new Vector2(-14.25f, -6.625f),
+                new Vector2(14.25f, -6.625f),
+                System.Array.Empty<ArenaTerrainBlock>(),
+                new[]
+                {
+                    Surface("cluster_01", "arena_desert_sci_fi_upper_left_01", 91, 220, 1252, 1364, 0),
+                    Surface("cluster_02", "arena_desert_sci_fi_inner_left_01", 778, 688, 726, 1266, 1),
+                    Surface("cluster_03", "arena_desert_sci_fi_lower_left_01", 0, 1408, 1554, 844, 2),
+                    Surface("cluster_04", "arena_desert_sci_fi_center_01", 1098, 864, 1726, 1396, 3),
+                    Surface("cluster_05", "arena_desert_sci_fi_floating_large_01", 1188, 310, 888, 518, 5),
+                    Surface("cluster_06_a", "arena_desert_sci_fi_floating_small_01", 2142, 740, 612, 384, 5),
+                    Surface("cluster_06_b", "arena_desert_sci_fi_floating_small_01", 2868, 452, 612, 384, 5),
+                    Surface("cluster_07", "arena_desert_sci_fi_upper_right_01", 3328, 288, 768, 1326, 0),
+                    Surface("cluster_08", "arena_desert_sci_fi_lower_right_01", 2668, 1018, 1428, 1232, 2)
+                });
+        }
+
+        private static ArenaSpriteSurface Surface(
+            string instanceId,
+            string assetId,
+            float x,
+            float y,
+            float width,
+            float height,
+            int sortingOrder)
+        {
+            var centerX = x + width * 0.5f;
+            var centerY = y + height * 0.5f;
+            var position = new Vector2(
+                (centerX - DesertCanvasWidth * 0.5f) / DesertPixelsPerUnit * DesertWorldScale,
+                (DesertCanvasHeight * 0.5f - centerY) / DesertPixelsPerUnit * DesertWorldScale);
+            return new ArenaSpriteSurface(
+                instanceId,
+                DesertResourceRoot + assetId + "_visual",
+                DesertResourceRoot + assetId + "_mask",
+                position,
+                DesertWorldScale,
+                sortingOrder);
         }
 
         private static ArenaDefinition CreateTrainingMeadow()

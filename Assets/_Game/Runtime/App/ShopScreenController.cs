@@ -216,14 +216,16 @@ namespace Game.App
                 new Vector2(-60f, -12f), new Vector2(-70f, 0f), 38, TextAlignmentOptions.Center, GameText.ShopTitle(), GameTextRole.DisplayTitle);
 
             var coins = CreateImage("Coins Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(310f, 155f), new Vector2(-486f, 0f), "Coin_panel", true, null, false);
-            CreateText("Coins Value", coins.transform, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
+                new Vector2(372f, 155f), new Vector2(-486f, 0f), "Coin_panel", true, null, false);
+            var coinsValue = CreateText("Coins Value", coins.transform, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, softCurrency.ToString(), GameTextRole.CurrencyGold);
+            CurrencyBalanceText.Bind(coinsValue, false);
 
             var premium = CreateImage("Premium Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(310f, 155f), new Vector2(-166f, 0f), "vip_coins_panel", true, null, false);
-            CreateText("Premium Value", premium.transform, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
+                new Vector2(372f, 155f), new Vector2(-166f, 0f), "vip_coins_panel", true, null, false);
+            var premiumValue = CreateText("Premium Value", premium.transform, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center, premiumCurrency.ToString(), GameTextRole.CurrencyCrystal);
+            CurrencyBalanceText.Bind(premiumValue, true);
 
             var settingsButton = CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 SettingsSize, SettingsPosition, "settings_btn", () => SettingsScreenController.Open(null));
@@ -623,6 +625,7 @@ namespace Game.App
 
             AppServices.Inventory.UnlockWeapon(item.Definition.WeaponId);
             save.inventory.GetOrCreateWeaponProgress(item.Definition.WeaponId);
+            AppServices.RefreshHistoricalPower();
             AppServices.SaveService.Save(save);
             SelectWeapon(_selectedIndex);
         }
@@ -646,6 +649,7 @@ namespace Game.App
 
             AppServices.Inventory.UnlockWeapon(item.Definition.WeaponId);
             save.inventory.GetOrCreateWeaponProgress(item.Definition.WeaponId);
+            AppServices.RefreshHistoricalPower();
             AppServices.SaveService.Save(save);
             SelectWeapon(_selectedIndex);
         }

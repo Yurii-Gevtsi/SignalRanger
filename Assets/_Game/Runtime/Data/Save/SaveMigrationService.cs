@@ -17,7 +17,8 @@ namespace Game.Data.Save
                 new SaveMigrationV3ToV4(),
                 new SaveMigrationV4ToV5(),
                 new SaveMigrationV5ToV6(),
-                new SaveMigrationV6ToV7()
+                new SaveMigrationV6ToV7(),
+                new SaveMigrationV7ToV8()
             })
         {
         }

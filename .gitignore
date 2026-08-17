@@ -125,3 +125,28 @@ InitTestScene*.unity*
 *.service-account.json
 ugs-credentials*
 .ugs/
+
+# AIOS — регенеровані/машинно-локальні артефакти. Сам механізм і корисні
+# конфіги (model-registry.json, MCP config, rex-* role cards, workflow doc)
+# лишаються в репо; тут — тільки кеші й одноразовий локальний стан.
+.aios/install-state.json
+.aios/codemap.json
+.aios/.locks/
+.code-review-graph/
+.claude/.backups/
+.claude/settings.local.json
+.claude/skills/
+.codex/skills/
+.gemini/
+GEMINI.md
+.claude/.aios-native-sync.json
+.codex/.aios-native-sync.json
+
+# Local AIOS session data and Python bytecode caches.
+/.aios/context-db/
+/.aios/evidence/
+/.aios/interception/
+/.aios/memo/
+/.contextdb-enable
+/tools/arena-assets/__pycache__/
+/.local-trash/

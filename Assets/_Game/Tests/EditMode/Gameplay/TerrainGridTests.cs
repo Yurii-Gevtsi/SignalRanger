@@ -281,6 +281,86 @@ namespace Game.Tests.EditMode.Gameplay
             }
         }
 
+        [Test]
+        public void MaskBackedTerrain_UsesExactMaskWithoutFillingEmptySpaceBelowPlatform()
+        {
+            const int size = 32;
+            var visualTexture = CreateSolidTexture(size);
+            var maskTexture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            var maskPixels = new Color32[size * size];
+            for (var x = 8; x < 24; x++)
+            {
+                maskPixels[24 * size + x] = new Color32(255, 255, 255, 255);
+            }
+
+            maskTexture.SetPixels32(maskPixels);
+            maskTexture.Apply(false, false);
+            var source = Sprite.Create(visualTexture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+            var surfaceObject = new GameObject("Exact Mask Surface");
+            try
+            {
+                var renderer = surfaceObject.AddComponent<SpriteRenderer>();
+                renderer.sprite = source;
+                var terrain = BattleTerrain.CreateFromSpriteSurfaces(
+                    new[] { new BattleTerrainSpriteSurface(renderer, maskTexture) },
+                    new Rect(-1f, -1f, 2f, 2f));
+
+                Assert.IsNotNull(terrain);
+                Assert.IsTrue(terrain.Grid.IsSolidWorld(new Vector2(0f, 0.27f)));
+                Assert.IsFalse(terrain.Grid.IsSolidWorld(Vector2.zero), "an exact mask must preserve empty space below a platform");
+                terrain.Dispose();
+            }
+            finally
+            {
+                Object.DestroyImmediate(surfaceObject);
+                Object.DestroyImmediate(source);
+                Object.DestroyImmediate(visualTexture);
+                Object.DestroyImmediate(maskTexture);
+            }
+        }
+
+        [Test]
+        public void ReusedMaskedAsset_CreatesIndependentRuntimeVisuals()
+        {
+            const int size = 32;
+            var visualTexture = CreateSolidTexture(size);
+            var maskTexture = CreateSolidTexture(size);
+            var source = Sprite.Create(visualTexture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+            var leftObject = new GameObject("Reused Left");
+            var rightObject = new GameObject("Reused Right");
+            try
+            {
+                var left = leftObject.AddComponent<SpriteRenderer>();
+                var right = rightObject.AddComponent<SpriteRenderer>();
+                left.sprite = source;
+                right.sprite = source;
+                leftObject.transform.position = Vector3.left;
+                rightObject.transform.position = Vector3.right;
+                var terrain = BattleTerrain.CreateFromSpriteSurfaces(
+                    new[]
+                    {
+                        new BattleTerrainSpriteSurface(left, maskTexture),
+                        new BattleTerrainSpriteSurface(right, maskTexture)
+                    },
+                    new Rect(-3f, -2f, 6f, 4f));
+
+                Assert.IsNotNull(terrain);
+                Assert.AreNotSame(left.sprite.texture, right.sprite.texture);
+                Assert.IsTrue(terrain.ApplyCrater(Vector2.left, 0.25f));
+                Assert.AreEqual(0, left.sprite.texture.GetPixel(size / 2, size / 2).a);
+                Assert.AreEqual(1, right.sprite.texture.GetPixel(size / 2, size / 2).a);
+                terrain.Dispose();
+            }
+            finally
+            {
+                Object.DestroyImmediate(leftObject);
+                Object.DestroyImmediate(rightObject);
+                Object.DestroyImmediate(source);
+                Object.DestroyImmediate(visualTexture);
+                Object.DestroyImmediate(maskTexture);
+            }
+        }
+
         private static Texture2D CreateSolidTexture(int size)
         {
             var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);

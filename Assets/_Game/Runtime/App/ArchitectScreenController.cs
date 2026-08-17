@@ -346,18 +346,20 @@ namespace Game.App
                 GameText.ConstructorBureau(), GameTextRole.DisplayTitle);
 
             var coins = CreateImage("Architect Coins", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-486f, 0f),
+                new Vector2(1f, 1f), new Vector2(372f, 155f), new Vector2(-486f, 0f),
                 ShopResourceRoot + "Coin_panel", true, Color.white);
-            CreateText("Architect Coins Value", coins, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
+            var coinsValue = CreateText("Architect Coins Value", coins, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 softCurrency.ToString(), GameTextRole.CurrencyGold);
+            CurrencyBalanceText.Bind(coinsValue, false);
 
             var premium = CreateImage("Architect Premium", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-166f, 0f),
+                new Vector2(1f, 1f), new Vector2(372f, 155f), new Vector2(-166f, 0f),
                 ShopResourceRoot + "vip_coins_panel", true, Color.white);
-            CreateText("Architect Premium Value", premium, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
+            var premiumValue = CreateText("Architect Premium Value", premium, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 premiumCurrency.ToString(), GameTextRole.CurrencyCrystal);
+            CurrencyBalanceText.Bind(premiumValue, true);
 
             var settingsButton = CreateImageButton("Architect Settings", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(1f, 1f), SettingsButtonSize, SettingsButtonPosition, ShopResourceRoot + "settings_btn",
@@ -692,7 +694,7 @@ namespace Game.App
                 new Vector2(0.26f, 0.39f), new Vector2(0.50f, 0.46f), out _detailsPrimaryStatLabel);
             _detailsPrimaryStatIcon = CreateImage("Architect Details Chip Icon", _detailsPrimaryStatLabel.transform.parent,
                 new Vector2(0.25f, 0.5f), new Vector2(0.25f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(96f, 96f), Vector2.zero,
-                "UI/Common/chip", true, Color.white).GetComponent<Image>();
+                "UI/Common/chip_2", true, Color.white).GetComponent<Image>();
             _detailsPrimaryStatIcon.gameObject.SetActive(false);
             _detailsUsesText = CreateDetailsStatLine(_detailsCard, "Architect Details Uses", GameText.UsesPerBattle(),
                 new Vector2(0.53f, 0.39f), new Vector2(0.80f, 0.46f), out _detailsSecondaryStatLabel);
@@ -886,9 +888,11 @@ namespace Game.App
                     ? SciFiTextStyle.GoldText
                     : SciFiTextStyle.WarningText;
                 secondaryRowRoot.SetActive(true);
-                _detailsSecondaryStatLabel.text = "Командир";
-                _detailsUsesText.text = $"LVL {requiredCommanderLevel}";
-                _detailsUsesText.color = SciFiTextStyle.GoldText;
+                _detailsSecondaryStatLabel.text = GameText.LevelLabel();
+                _detailsUsesText.text = requiredCommanderLevel.ToString();
+                _detailsUsesText.color = CommanderProgressionTable.GetLevel(AppServices.Economy.CommanderExperience) >= requiredCommanderLevel
+                    ? SciFiTextStyle.GoldText
+                    : SciFiTextStyle.WarningText;
             }
 
             var targetRank = progress.rank + 1;
@@ -899,13 +903,18 @@ namespace Game.App
             var branchLocked = displayRank >= 5
                 && progress.branch != 0
                 && (WeaponUpgradeBranch)progress.branch != branch;
+            var hasRequiredLevel = CommanderProgressionTable.GetLevel(AppServices.Economy.CommanderExperience) >= requiredCommanderLevel;
+            var hasRequiredCredits = AppServices.Economy.CanSpend(cost.Credits);
+            var hasRequiredBlueprints = AppServices.Economy.AdminModeEnabled || progress.blueprints >= cost.Blueprints;
+            _detailsCoinPriceText.color = hasRequiredCredits ? SciFiTextStyle.GoldText : SciFiTextStyle.WarningText;
+            _detailsCrystalPriceText.color = hasRequiredBlueprints ? SciFiTextStyle.GoldText : SciFiTextStyle.WarningText;
             var canUpgrade = hasCost
                 && isNextUpgrade
                 && hasBranch
                 && !branchLocked
-                && CommanderProgressionTable.GetLevel(AppServices.Economy.CommanderExperience) >= requiredCommanderLevel
-                && AppServices.Economy.CanSpend(cost.Credits)
-                && (AppServices.Economy.AdminModeEnabled || progress.blueprints >= cost.Blueprints);
+                && hasRequiredLevel
+                && hasRequiredCredits
+                && hasRequiredBlueprints;
 
             _detailsCoinBuyButton.gameObject.SetActive(!isOwned);
             _detailsCrystalBuyButton.gameObject.SetActive(!isOwned);
@@ -1067,6 +1076,7 @@ namespace Game.App
                 return;
             }
 
+            AppServices.RefreshHistoricalPower();
             AppServices.SaveService.Save(AppServices.SaveService.Current);
             SelectWeapon(_selectedWeaponIndex);
             HideWeaponDetails();

@@ -23,6 +23,8 @@ namespace Game.Progression.Missions
         [SerializeField] private MissionRewardDefinition _reward;
         [SerializeField] private int _difficulty;
         [SerializeField] private bool _supportDropsEnabled = true;
+        [SerializeField] private MissionObjectiveKind _objectiveKind;
+        [SerializeField] private int _objectiveThreshold;
 
         public string MissionId => _missionId;
         public string ChapterId => _chapterId;
@@ -44,6 +46,9 @@ namespace Game.Progression.Missions
         public int Difficulty => Mathf.Clamp(_difficulty, 0, 2);
         public bool SupportDropsEnabled => _supportDropsEnabled;
 
+        /// <summary>Extra condition beyond winning; <see cref="MissionObjectiveKind.None"/> means a plain win.</summary>
+        public MissionObjective Objective => new(_objectiveKind, _objectiveThreshold);
+
         public static MissionDefinition CreateRuntime(
             string missionId,
             string title,
@@ -61,7 +66,9 @@ namespace Game.Progression.Missions
             string difficultyProfileId = "",
             string playerTeamPresetId = "",
             string winConditionId = "win.eliminate-all",
-            bool supportDropsEnabled = true)
+            bool supportDropsEnabled = true,
+            MissionObjectiveKind objectiveKind = MissionObjectiveKind.None,
+            int objectiveThreshold = 0)
         {
             var definition = CreateInstance<MissionDefinition>();
             definition._missionId = missionId ?? string.Empty;
@@ -85,6 +92,8 @@ namespace Game.Progression.Missions
             definition._reward = reward ?? new MissionRewardDefinition(0);
             definition._difficulty = Mathf.Clamp(difficulty, 0, 2);
             definition._supportDropsEnabled = supportDropsEnabled;
+            definition._objectiveKind = objectiveKind;
+            definition._objectiveThreshold = objectiveThreshold;
             return definition;
         }
 

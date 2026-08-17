@@ -8,6 +8,10 @@ namespace Game.Economy
     {
         private readonly SaveData _saveData;
 
+        /// <summary>Raised after a grant changes commander experience or progression materials.</summary>
+        public event Action ProgressionChanged;
+        public event Action BalanceChanged;
+
         public EconomyService(SaveData saveData)
         {
             _saveData = saveData ?? throw new ArgumentNullException(nameof(saveData));
@@ -64,6 +68,8 @@ namespace Game.Economy
                 reward.CommanderExperience,
                 reward.BlueprintWeaponId,
                 appliedBlueprints);
+            ProgressionChanged?.Invoke();
+            BalanceChanged?.Invoke();
             return new EconomyTransactionResult(true, SoftCurrency, sourceType, recordedId, false);
         }
 
@@ -86,6 +92,7 @@ namespace Game.Economy
 
             _saveData.economy.premiumCurrency += amount;
             var recordedId = RecordTransaction(transactionId, sourceType, sourceId, 0, amount, 0, string.Empty, 0);
+            BalanceChanged?.Invoke();
             return new EconomyTransactionResult(true, PremiumCurrency, sourceType, recordedId, false);
         }
 
@@ -123,6 +130,7 @@ namespace Game.Economy
 
             _saveData.economy.softCurrency -= amount;
             var recordedId = RecordTransaction(transactionId, sourceType, sourceId, -amount, 0, 0, string.Empty, 0);
+            BalanceChanged?.Invoke();
             return new EconomyTransactionResult(true, SoftCurrency, sourceType, recordedId, false);
         }
 
@@ -150,6 +158,7 @@ namespace Game.Economy
 
             _saveData.economy.premiumCurrency -= amount;
             var recordedId = RecordTransaction(transactionId, sourceType, sourceId, 0, -amount, 0, string.Empty, 0);
+            BalanceChanged?.Invoke();
             return new EconomyTransactionResult(true, PremiumCurrency, sourceType, recordedId, false);
         }
 
@@ -193,6 +202,7 @@ namespace Game.Economy
                 0,
                 weaponId,
                 -blueprints);
+            BalanceChanged?.Invoke();
             return new EconomyTransactionResult(true, SoftCurrency, sourceType, recordedId, false);
         }
 

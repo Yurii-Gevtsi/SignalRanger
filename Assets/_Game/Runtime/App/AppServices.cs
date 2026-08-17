@@ -1,3 +1,4 @@
+using System;
 using Game.Audio;
 using Game.App.Content;
 using Game.Core;
@@ -30,6 +31,7 @@ namespace Game.App
         public static CampaignProgressionService Campaign { get; private set; }
         public static TutorialService Tutorial { get; private set; }
         public static IEconomyService Economy { get; private set; }
+        public static HistoricalPowerService HistoricalPower { get; private set; }
         public static WeaponUpgradeService WeaponUpgrades { get; private set; }
         public static BattleRewardService BattleRewards { get; private set; }
         public static ActivityProgressService ActivityProgress { get; private set; }
@@ -37,6 +39,7 @@ namespace Game.App
         public static IAudioService Audio { get; private set; }
         public static IAnalyticsService Analytics { get; private set; }
         public static IAdsService Ads { get; private set; }
+        public static RewardedAdPolicy RewardedAdsPolicy { get; private set; }
         public static IPurchaseService Purchases { get; private set; }
         public static IRemoteConfigService RemoteConfig { get; private set; }
         public static INotificationService Notifications { get; private set; }
@@ -60,6 +63,7 @@ namespace Game.App
             Localization = new JsonLocalizationService(SaveService.Current.settings.languageCode);
             LocalizationRuntime.Service = Localization;
             Economy = new EconomyService(SaveService.Current);
+            Economy.ProgressionChanged += () => RefreshHistoricalPower();
             Game.Data.Progression.CommanderProgressionTable.ForceMaxLevel = SaveService.Current.settings.adminModeEnabled;
             WeaponUpgrades = new WeaponUpgradeService(SaveService.Current, Economy);
             BattleRewards = new BattleRewardService(Economy);
@@ -73,9 +77,12 @@ namespace Game.App
                 $"daily.login.{loginPeriod}");
             ConfigureActivityProgressBridge();
             Inventory = new InventoryService(SaveService.Current);
+            HistoricalPower = new HistoricalPowerService(SaveService.Current);
+            HistoricalPower.Refresh();
             Audio = new NoOpAudioService(SaveService.Current);
             Analytics = new NoOpAnalyticsService();
             Ads = new NoOpAdsService();
+            RewardedAdsPolicy = new RewardedAdPolicy(DateTime.UtcNow);
             SubscribeActivityProgressToAds();
             Purchases = new NoOpPurchaseService();
             RemoteConfig = new NoOpRemoteConfigService();
@@ -105,6 +112,19 @@ namespace Game.App
             LastMissionCompletionResult = default;
             SaveService.Save(SaveService.Current);
             IsInitialized = true;
+        }
+
+        /// <summary>Refreshes and persists the monotonic account-strength high-water mark.</summary>
+        public static long RefreshHistoricalPower()
+        {
+            if (!IsInitialized || HistoricalPower == null || SaveService == null)
+            {
+                return 0;
+            }
+
+            var value = HistoricalPower.Refresh();
+            SaveService.Save(SaveService.Current);
+            return value;
         }
 
         /// <summary>
@@ -236,6 +256,18 @@ namespace Game.App
 
         private static void OnRewardedAdCompleted(string placementId)
         {
+            var decision = RewardedAdsPolicy?.TryClaim(
+                RewardedAdBenefit.Generic,
+                placementId,
+                false,
+                false,
+                DateTime.UtcNow);
+            if (decision.HasValue && !decision.Value.Allowed)
+            {
+                Analytics?.TrackEvent($"rewarded_ad_denied.{decision.Value.Denial}");
+                return;
+            }
+
             ActivityProgress?.RecordRewardedAdCompleted();
             SaveService?.Save(SaveService.Current);
             Analytics?.TrackEvent($"rewarded_ad_completed.{placementId}");

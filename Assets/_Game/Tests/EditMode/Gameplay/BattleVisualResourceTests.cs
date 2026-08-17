@@ -142,6 +142,40 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void CombatProjectileResources_ExistIndependentlyFromHeldWeaponArt()
+        {
+            var projectileSpriteIds = new[]
+            {
+                "blaster_shot",
+                "impulse_shot",
+                "bur_lazer",
+                "bur_rocket",
+                "mortira_shot",
+                "emp_shot",
+                "ice_shot",
+                "toxic_shot",
+                "fire_shot_1",
+                "missle_fly",
+                "missle_tail"
+            };
+
+            foreach (var spriteId in projectileSpriteIds)
+            {
+                Assert.IsNotNull(Resources.Load<Texture2D>($"UI/Weapons/{spriteId}"), spriteId);
+            }
+        }
+
+        [Test]
+        public void ElectroStatusOverlay_HasFourAnimationFrames()
+        {
+            for (var frame = 1; frame <= 4; frame++)
+            {
+                var texture = Resources.Load<Texture2D>($"UI/Generated/electro_overlay_0{frame}");
+                Assert.IsNotNull(texture, frame.ToString());
+            }
+        }
+
+        [Test]
         public void LoadingScreenResources_ContainAllBackgroundsAndSpinner()
         {
             for (var i = 1; i <= 5; i++)
@@ -149,9 +183,12 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.IsNotNull(Resources.Load<Texture2D>($"UI/Loaders/{i}"), $"Loader background {i} is missing.");
             }
 
-            Assert.IsNotNull(Resources.Load<Texture2D>("UI/Loaders/loader"));
-            AssertMagentaBackgroundIsTransparent(Resources.Load<Texture2D>("UI/Loaders/loader"));
+            Assert.IsNotNull(Resources.Load<Texture2D>("UI/Loaders/loader3"));
+            AssertMagentaBackgroundIsTransparent(Resources.Load<Texture2D>("UI/Loaders/loader3"));
+            Assert.IsNotNull(Resources.Load<Texture2D>("UI/Common/card2"));
             AssertMagentaBackgroundIsTransparent(Resources.Load<Texture2D>("UI/Common/architect_btn"));
+
+            Assert.IsNotNull(Resources.Load<Texture2D>("UI/Startup/startup_02"));
         }
 
         [Test]
@@ -166,23 +203,18 @@ namespace Game.Tests.EditMode.Gameplay
                 var canvas = root.transform.Find("Loading Canvas");
                 Assert.IsNotNull(canvas);
                 Assert.IsNotNull(RequireRect(canvas, "Loading Background").GetComponent<Image>().sprite);
-                var missionTitle = RequireRect(canvas, "Mission Title");
-                Assert.IsNotNull(missionTitle.GetComponent<TMPro.TMP_Text>());
-                Assert.AreEqual(new Vector2(-270f, 270f), missionTitle.anchoredPosition);
+                Assert.IsNotNull(RequireRect(canvas, "Mission Description Card").GetComponent<Image>().sprite);
                 var missionDescription = RequireRect(canvas, "Mission Description");
                 Assert.IsNotNull(missionDescription.GetComponent<TMPro.TMP_Text>());
-                Assert.AreEqual(new Vector2(-260f, 176f), missionDescription.anchoredPosition);
+                Assert.AreEqual(new Vector2(-420f, 245f), missionDescription.anchoredPosition);
+                Assert.AreEqual(new Vector2(430f, 150f), missionDescription.sizeDelta);
+                Assert.IsFalse(missionDescription.GetComponent<TMPro.TMP_Text>().enableAutoSizing);
                 Assert.AreEqual("Навчальна місія", missionDescription.GetComponent<TMPro.TMP_Text>().text);
-                var tip = RequireRect(canvas, "Loading Tip");
-                Assert.IsNotNull(tip.GetComponent<TMPro.TMP_Text>());
-                Assert.AreEqual(new Vector2(1040f, 82f), tip.sizeDelta);
-                Assert.AreEqual(new Vector2(230f, -438f), tip.anchoredPosition);
-                Assert.AreEqual(TMPro.TextAlignmentOptions.MidlineLeft, tip.GetComponent<TMPro.TMP_Text>().alignment);
-
                 var ring = RequireRect(canvas, "Loading Ring");
                 Assert.AreEqual(new Vector2(224f, 224f), ring.sizeDelta);
-                Assert.AreEqual(new Vector2(0f, -230f), ring.anchoredPosition);
-                Assert.AreEqual("loader", ring.GetComponent<Image>().sprite.texture.name);
+                Assert.AreEqual(new Vector2(0f, -400f), ring.anchoredPosition);
+                Assert.AreEqual(new Vector3(-1f, 1f, 1f), ring.localScale);
+                Assert.AreEqual("loader3", ring.GetComponent<Image>().sprite.texture.name);
 
                 var percent = RequireRect(canvas, "Loading Percent");
                 Assert.AreEqual("0%", percent.GetComponent<TMPro.TMP_Text>().text);
@@ -273,6 +305,46 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsFalse(theme.HasPlayerSkin);
             Assert.AreEqual(1, theme.PlayerSkinFacingDirectionX);
             Assert.AreEqual(new Vector2(0f, -0.08f), theme.UnitSpriteOffset);
+        }
+
+        [Test]
+        public void DesertArenaTheme_ReusesAnimatedSkyAndCharacterRigs()
+        {
+            var arena = System.Array.Find(
+                PrototypeArenaLibrary.CreateAll(),
+                item => item.ArenaId == "arena.desert-sci-fi");
+            var theme = BattleVisualThemeLibrary.ForArena(arena);
+
+            Assert.IsNotNull(theme);
+            Assert.AreEqual("Visuals/Arenas/Backgrounds/Sky1/AnimatedSkyBackground", theme.BackgroundPrefabResourcePath);
+            Assert.AreEqual("Visuals/Characters/DroidRig", theme.PlayerRigResourcePath);
+            Assert.AreEqual("Visuals/Characters/SigmaRig", theme.OpponentRigResourcePath);
+            Assert.AreEqual(new Vector2(0.18f, 0.18f), theme.UnitSpriteScale);
+            Assert.IsTrue(theme.HideProceduralTerrain);
+            Assert.IsFalse(theme.UseProceduralTerrainColliders);
+        }
+
+        [Test]
+        public void DesertArena_AllModularVisualAndMaskResourcesAreReadableAndPixelMatched()
+        {
+            var arena = System.Array.Find(
+                PrototypeArenaLibrary.CreateAll(),
+                item => item.ArenaId == "arena.desert-sci-fi");
+
+            Assert.IsNotNull(arena);
+            foreach (var surface in arena.SpriteSurfaces)
+            {
+                var visual = Resources.Load<Sprite>(surface.VisualResourcePath);
+                var mask = Resources.Load<Texture2D>(surface.MaskResourcePath);
+                Assert.IsNotNull(visual, surface.VisualResourcePath);
+                Assert.IsNotNull(mask, surface.MaskResourcePath);
+                Assert.IsTrue(visual.texture.isReadable, surface.VisualResourcePath);
+                Assert.IsTrue(mask.isReadable, surface.MaskResourcePath);
+                Assert.AreEqual(visual.texture.width, mask.width, surface.InstanceId);
+                Assert.AreEqual(visual.texture.height, mask.height, surface.InstanceId);
+                Assert.AreEqual(256f, visual.pixelsPerUnit, surface.InstanceId);
+                Assert.Greater(surface.Scale, 0f, surface.InstanceId);
+            }
         }
 
         [Test]
@@ -501,6 +573,19 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.AreEqual(1, theme.OverlayLayers.Count);
             Assert.AreEqual("Visuals/Arenas/KillZones/LaserLine/laser_line", theme.OverlayLayers[0].ResourcePath);
             Assert.IsFalse(theme.OverlayLayers[0].Solid);
+        }
+
+        [Test]
+        public void DesertArenaTheme_UsesTheSharedLaserKillZone()
+        {
+            var arena = PrototypeArenaLibrary.CreateAll()[1];
+            var theme = BattleVisualThemeLibrary.ForArena(arena);
+
+            Assert.IsNotNull(theme);
+            Assert.AreEqual(1, theme.OverlayLayers.Count);
+            Assert.AreEqual("Visuals/Arenas/KillZones/LaserLine/laser_line", theme.OverlayLayers[0].ResourcePath);
+            Assert.IsTrue(theme.KillZoneY.HasValue);
+            Assert.That(theme.KillZoneY.Value, Is.EqualTo(-10.2f).Within(0.001f));
         }
 
         [Test]

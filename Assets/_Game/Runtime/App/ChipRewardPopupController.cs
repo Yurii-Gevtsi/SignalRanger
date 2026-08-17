@@ -44,8 +44,8 @@ namespace Game.App
         private static ChipRewardPopupController _activeInstance;
 
         private static readonly Vector2 CardSize = new(640f, 760f);
-        private static readonly Vector2 WeaponIconSize = new(360f, 360f);
-        private static readonly Vector2 RowIconSize = new(70f, 70f);
+        private static readonly Vector2 WeaponIconSize = new(252f, 252f);
+        private static readonly Vector2 RowIconSize = new(100f, 100f);
 
         private readonly Dictionary<string, Sprite> _sprites = new();
         private Sprite _whiteSprite;
@@ -126,26 +126,26 @@ namespace Game.App
                 ? ResolveCurrentWeaponIconId(weapon.WeaponId, weapon.IconId)
                 : string.Empty;
             CreateImage("Chip Reward Weapon Icon", card, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), WeaponIconSize, new Vector2(0f, 60f),
+                new Vector2(0.5f, 0.5f), WeaponIconSize, new Vector2(0f, 15f),
                 string.IsNullOrWhiteSpace(weaponIconId) ? string.Empty : "UI/Weapons/" + weaponIconId, true, Color.white);
 
             var weaponName = weapon != null ? WeaponDisplayNames.Get(weapon.WeaponId) : string.Empty;
             CreateText("Chip Reward Weapon Name", card, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(560f, 60f), new Vector2(0f, -150f), 32,
+                new Vector2(0.5f, 0.5f), new Vector2(560f, 60f), new Vector2(0f, 215f), 32,
                 TextAlignmentOptions.Center, weaponName, GameTextRole.Body);
 
             var row = CreateRect("Chip Reward Row", card, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0.5f, 0f), new Vector2(560f, 100f), new Vector2(0f, 80f));
+                new Vector2(0.5f, 0f), new Vector2(300f, 100f), new Vector2(0f, 190f));
 
-            CreateImage("Chip Reward Gain Icon", row, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-                new Vector2(0f, 0.5f), RowIconSize, new Vector2(20f, 0f), "UI/Common/chip", true, Color.white);
-            CreateText("Chip Reward Gain Value", row, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-                new Vector2(0f, 0.5f), new Vector2(140f, 70f), new Vector2(100f, 0f), 40,
-                TextAlignmentOptions.MidlineLeft, $"+{request.Amount}", GameTextRole.CurrencyGold);
+            CreateText("Chip Reward Gain Value", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(1f, 0.5f), new Vector2(150f, 70f), new Vector2(-8f, 0f), 40,
+                TextAlignmentOptions.MidlineRight, $"+{request.Amount}", GameTextRole.CurrencyGold);
+            CreateImage("Chip Reward Gain Icon", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0f, 0.5f), RowIconSize, new Vector2(8f, 0f), "UI/Common/chip_2", true, Color.white);
 
-            _balanceText = CreateText("Chip Reward Balance Value", row, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-                new Vector2(1f, 0.5f), new Vector2(260f, 70f), new Vector2(-20f, 0f), 40,
-                TextAlignmentOptions.MidlineRight, $"{request.BalanceBefore}/{request.RequiredForNextRank}", GameTextRole.Numeric);
+            _balanceText = CreateText("Chip Reward Balance Value", card, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0.5f), new Vector2(260f, 70f), new Vector2(0f, 120f), 40,
+                TextAlignmentOptions.Center, $"{request.BalanceBefore}/{request.RequiredForNextRank}", GameTextRole.Numeric);
             _balanceText.color = SciFiTextStyle.GoldText;
 
             var closeRect = CreateRect("Chip Reward Close", card, new Vector2(1f, 1f), new Vector2(1f, 1f),

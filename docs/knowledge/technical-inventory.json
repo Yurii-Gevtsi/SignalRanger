@@ -1,0 +1,16 @@
+{
+  "scanDate": "2026-08-14",
+  "scope": ["Assets/_Game", "ProjectSettings", "Packages", "docs/architecture", "docs/design", "tests"],
+  "countsUnderAssetsGame": {"csharp": 250, "png": 260, "animationClips": 5, "prefabs": 4, "testCsharp": 44},
+  "unity": {"editor": "6000.5.1f1", "renderPipeline": "Universal Render Pipeline", "input": "Unity Input System 1.19.0"},
+  "scenesInBuild": [
+    "Assets/_Game/Scenes/Boot/BootScene.unity",
+    "Assets/_Game/Scenes/Menu/MenuScene.unity",
+    "Assets/_Game/Scenes/Battle/BattleScene.unity"
+  ],
+  "assemblies": ["Game.Core", "Game.Data", "Game.Gameplay", "Game.App", "Game.UI", "Game.Progression", "Game.Economy", "Game.Inventory", "Game.Tutorial", "Game.Audio", "Game.Infrastructure", "Game.Infrastructure.Ugs", "Game.Tests.EditMode", "Game.Tests.PlayMode"],
+  "localization": {"languages": 13, "keysPerLanguage": 20, "directory": "Assets/_Game/Content/Resources/Localization"},
+  "serviceBoundaries": ["IAdsService", "IPurchaseService", "IAnalyticsService", "IAuthService", "ICloudSyncService", "IRemoteConfigService", "INotificationService", "IServerTimeService"],
+  "knownGaps": ["production service configuration", "final audio/presentation", "release/device verification", "content catalog scale", "MVP summary versus terrain implementation status"],
+  "report": "docs/knowledge/technical-scan.md"
+}

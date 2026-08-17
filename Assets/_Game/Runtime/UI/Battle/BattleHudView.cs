@@ -110,6 +110,7 @@ namespace Game.UI.Battle
         private TMP_Text _resultMissionText;
         private Image _resultMissionMark;
         private TMP_Text _resultMissionCross;
+        private bool _resultOffersRetry;
         private Button _resultContinueButton;
         private TMP_Text _resultContinueLabel;
 
@@ -551,28 +552,41 @@ namespace Game.UI.Battle
             // Mission strip: the mark sits at the left edge, the briefing text runs to its
             // right so both stay inside the card's narrower visible artwork.
             _resultMissionText = CreateText("Result Mission", _resultPanel.transform, new Vector2(0.26f, 0f), new Vector2(0.84f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0f, 104f), new Vector2(0f, 240f), 26, TextAlignmentOptions.MidlineLeft);
+                new Vector2(0f, 104f), new Vector2(0f, 320f), 26, TextAlignmentOptions.MidlineLeft);
             _resultMissionText.textWrappingMode = TextWrappingModes.Normal;
             _resultMissionText.enableAutoSizing = true;
             _resultMissionText.fontSizeMin = 20f;
             _resultMissionText.fontSizeMax = 28f;
             _resultMissionMark = CreatePanel("Result Mission Mark", _resultPanel.transform, new Vector2(0.26f, 0f),
-                new Vector2(0.26f, 0f), new Vector2(1f, 0.5f), ResultMissionMarkSize, new Vector2(-16f, 292f),
+                new Vector2(0.26f, 0f), new Vector2(1f, 0.5f), ResultMissionMarkSize, new Vector2(-16f, 372f),
                 Color.white, LoadResourceSprite(CheckmarkResource, Vector4.zero));
             _resultMissionMark.preserveAspect = true;
             // No cross artwork exists in the project, so a failed mission is marked with
             // a glyph tinted to match the mission line rather than a mismatched icon.
             _resultMissionCross = CreateText("Result Mission Cross", _resultPanel.transform, new Vector2(0.26f, 0f),
-                new Vector2(0.26f, 0f), new Vector2(1f, 0.5f), ResultMissionMarkSize, new Vector2(-16f, 292f),
+                new Vector2(0.26f, 0f), new Vector2(1f, 0.5f), ResultMissionMarkSize, new Vector2(-16f, 372f),
                 46, TextAlignmentOptions.Center);
-            _resultMissionCross.text = "✕";
+            // U+00D7, the same glyph the close buttons use - the font has no U+2715.
+            _resultMissionCross.text = "×";
             _resultMissionCross.color = SciFiTextStyle.WarningText;
             _resultMissionCross.fontStyle = FontStyles.Bold;
 
             CreateResultButton("Result Menu", _resultPanel.transform, "UI/Shop/btn_blue",
-                new Vector2(-128f, 118f), GameText.Menu, () => MenuRequested?.Invoke());
+                new Vector2(-128f, 178f), GameText.Menu, () => MenuRequested?.Invoke());
+            // On a loss this button retries the mission instead of advancing, so the
+            // action follows the rendered state rather than being fixed at build time.
             _resultContinueButton = CreateResultButton("Result Continue", _resultPanel.transform, "UI/Shop/btn_green",
-                new Vector2(128f, 118f), GameText.Continue, () => ContinueRequested?.Invoke());
+                new Vector2(128f, 178f), GameText.Continue, () =>
+                {
+                    if (_resultOffersRetry)
+                    {
+                        RestartRequested?.Invoke();
+                    }
+                    else
+                    {
+                        ContinueRequested?.Invoke();
+                    }
+                });
             _resultContinueLabel = _resultContinueButton.GetComponentInChildren<TMP_Text>();
 
             _resultRoot.SetActive(false);
@@ -609,7 +623,8 @@ namespace Game.UI.Battle
             _resultMissionMark.gameObject.SetActive(hasMission && state.ResultMissionCleared);
             _resultMissionCross.gameObject.SetActive(hasMission && !state.ResultMissionCleared);
 
-            _resultContinueLabel.text = state.ContinueLabel;
+            _resultOffersRetry = !state.ResultPlayerWon;
+            _resultContinueLabel.text = _resultOffersRetry ? GameText.Restart : state.ContinueLabel;
             _resultContinueButton.interactable = true;
             _resultContinueLabel.color = SciFiTextStyle.MainText;
         }

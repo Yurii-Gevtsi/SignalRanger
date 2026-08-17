@@ -1,0 +1,694 @@
+{
+  "schemaVersion": 1,
+  "activeModel": "gpt-5.6-terra",
+  "fallbackPolicy": "cost-ascending",
+  "models": {
+    "gpt-5.5": {
+      "provider": "codex",
+      "label": "GPT-5.5 (OpenAI)",
+      "description": "Frontier model for complex coding, research, and real-world work.",
+      "strengths": [
+        "general-reasoning",
+        "browser-automation",
+        "desktop-automation",
+        "knowledge-retrieval",
+        "code-execution",
+        "all-rounder"
+      ],
+      "weaknesses": [
+        "highest-cost"
+      ],
+      "cost": "highest",
+      "speed": "fast",
+      "contextWindow": "1M",
+      "cli": {
+        "command": "codex",
+        "argsTemplate": "exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.5",
+        "modelArg": "-m",
+        "modelValue": "gpt-5.5"
+      }
+    },
+    "kimi-k2.6": {
+      "provider": "claude",
+      "label": "Kimi K2.6 (Moonshot)",
+      "description": "开源 Agent 专用，300 子 Agent 并行编排、12+ 小时自主执行、编码驱动设计（前端 Awwwards 级）、文档→技能",
+      "strengths": [
+        "multi-agent-orchestration",
+        "long-running-execution",
+        "frontend-ui",
+        "full-stack",
+        "skill-learning"
+      ],
+      "weaknesses": [
+        "deep-security-review",
+        "enterprise-compliance"
+      ],
+      "cost": "low",
+      "speed": "fast",
+      "contextWindow": "200K",
+      "cli": {
+        "command": "claude",
+        "argsTemplate": "--model kimi-k2.6 -p",
+        "modelArg": "--model",
+        "modelValue": "kimi-k2.6"
+      }
+    },
+    "claude-opus": {
+      "provider": "claude",
+      "label": "Claude Opus 4.7 (Anthropic)",
+      "description": "质量天花板，代码架构判断、长文本写作、自我验证、高风险场景可靠性、幻觉率 36%",
+      "strengths": [
+        "code-review",
+        "architecture-design",
+        "security-audit",
+        "long-form-writing",
+        "self-verification",
+        "high-stakes-decision"
+      ],
+      "weaknesses": [
+        "browser-automation",
+        "real-time-execution",
+        "cost-sensitive-tasks"
+      ],
+      "cost": "highest",
+      "speed": "slow",
+      "contextWindow": "200K",
+      "cli": {
+        "command": "claude",
+        "argsTemplate": "--model claude-opus-5 --dangerously-skip-permissions -p",
+        "modelArg": "--model",
+        "modelValue": "claude-opus-5"
+      }
+    },
+    "claude-sonnet": {
+      "provider": "claude",
+      "label": "Claude Sonnet 4.6 (Anthropic)",
+      "description": "性价比之王，日常开发、RAG、Adaptive Thinking、速度均衡",
+      "strengths": [
+        "daily-development",
+        "rapid-prototyping",
+        "rag",
+        "classification",
+        "summarization"
+      ],
+      "weaknesses": [
+        "complex-architecture",
+        "deep-security-audit"
+      ],
+      "cost": "medium",
+      "speed": "fast",
+      "contextWindow": "200K",
+      "cli": {
+        "command": "claude",
+        "argsTemplate": "--model claude-sonnet-5 --dangerously-skip-permissions -p",
+        "modelArg": "--model",
+        "modelValue": "claude-sonnet-5"
+      }
+    },
+    "deepseek-v4": {
+      "provider": "claude",
+      "label": "DeepSeek-V4-Pro",
+      "description": "开源代码怪兽，1M 上下文、Terminal-Bench 67.9%、LiveCodeBench 93.5%、价格仅为 GPT-5.5 的 1/70",
+      "strengths": [
+        "algorithm-implementation",
+        "core-logic",
+        "long-log-analysis",
+        "batch-processing",
+        "cost-efficient-coding"
+      ],
+      "weaknesses": [
+        "frontend-ui",
+        "multimodal",
+        "creative-writing"
+      ],
+      "cost": "lowest",
+      "speed": "fast",
+      "contextWindow": "1M",
+      "cli": {
+        "command": "claude",
+        "argsTemplate": "--model deepseek-v4-pro -p",
+        "modelArg": "--model",
+        "modelValue": "deepseek-v4-pro"
+      }
+    },
+    "glm-5.1": {
+      "provider": "claude",
+      "label": "GLM-5.1 (智谱)",
+      "description": "自主推理引擎，8 小时自主循环、AIME 95.3%、复杂系统工程、MoE 744B 参数",
+      "strengths": [
+        "math-reasoning",
+        "science-reasoning",
+        "autonomous-loop",
+        "systems-engineering",
+        "long-running-planning"
+      ],
+      "weaknesses": [
+        "browser-automation",
+        "multimodal"
+      ],
+      "cost": "low",
+      "speed": "medium",
+      "contextWindow": "200K",
+      "cli": {
+        "command": "claude",
+        "argsTemplate": "--model glm-5.1 -p",
+        "modelArg": "--model",
+        "modelValue": "glm-5.1"
+      }
+    },
+    "minimax-m2.7": {
+      "provider": "claude",
+      "label": "MiniMax-M2.7",
+      "description": "自进化 Agent，自优化（100 轮自主迭代）、生产故障恢复（<3 分钟）、原生 Agent Teams",
+      "strengths": [
+        "self-healing",
+        "production-recovery",
+        "continuous-optimization",
+        "agent-teams"
+      ],
+      "weaknesses": [
+        "initial-bootstrap",
+        "creative-tasks"
+      ],
+      "cost": "low",
+      "speed": "medium",
+      "contextWindow": "200K",
+      "cli": {
+        "command": "claude",
+        "argsTemplate": "--model minimax-m2.7 -p",
+        "modelArg": "--model",
+        "modelValue": "minimax-m2.7"
+      }
+    },
+    "gemini-3-pro": {
+      "provider": "gemini",
+      "label": "Gemini-3-Pro (Google)",
+      "description": "多模态长文，1M+ 上下文、信息召回率 97%、原生视频/音频/图像融合、推测解码 2-3 倍速",
+      "strengths": [
+        "multimodal-analysis",
+        "long-document-research",
+        "video-analysis",
+        "audio-analysis",
+        "information-recall",
+        "large-context-processing"
+      ],
+      "weaknesses": [
+        "complex-code-architecture",
+        "precise-math"
+      ],
+      "cost": "medium",
+      "speed": "medium",
+      "contextWindow": "1M",
+      "cli": {
+        "command": "gemini",
+        "argsTemplate": "-m gemini-3-pro -p",
+        "modelArg": "-m",
+        "modelValue": "gemini-3-pro"
+      }
+    },
+    "gpt-5.6-sol": {
+      "provider": "codex",
+      "label": "GPT-5.6 Sol (OpenAI Codex)",
+      "description": "Latest frontier agentic coding model.",
+      "strengths": [
+        "general-reasoning",
+        "agentic-coding"
+      ],
+      "weaknesses": [],
+      "cost": "high",
+      "speed": "fast",
+      "contextWindow": "1M",
+      "cli": {
+        "command": "codex",
+        "argsTemplate": "exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-sol",
+        "modelArg": "-m",
+        "modelValue": "gpt-5.6-sol"
+      }
+    },
+    "gpt-5.6-terra": {
+      "provider": "codex",
+      "label": "GPT-5.6 Terra (OpenAI Codex)",
+      "description": "Balanced agentic coding model for everyday work.",
+      "strengths": [
+        "general-reasoning",
+        "agentic-coding"
+      ],
+      "weaknesses": [],
+      "cost": "medium",
+      "speed": "fast",
+      "contextWindow": "1M",
+      "cli": {
+        "command": "codex",
+        "argsTemplate": "exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-terra",
+        "modelArg": "-m",
+        "modelValue": "gpt-5.6-terra"
+      }
+    },
+    "gpt-5.6-luna": {
+      "provider": "codex",
+      "label": "GPT-5.6 Luna (OpenAI Codex)",
+      "description": "Fast and affordable agentic coding model.",
+      "strengths": [
+        "general-reasoning",
+        "agentic-coding"
+      ],
+      "weaknesses": [],
+      "cost": "low",
+      "speed": "fastest",
+      "contextWindow": "1M",
+      "cli": {
+        "command": "codex",
+        "argsTemplate": "exec --dangerously-bypass-approvals-and-sandbox -m gpt-5.6-luna",
+        "modelArg": "-m",
+        "modelValue": "gpt-5.6-luna"
+      }
+    }
+  },
+  "routingRules": [
+    {
+      "taskType": "code-review",
+      "description": "代码审查、架构评审、质量把关",
+      "primary": "gpt-5.6-terra",
+      "fallback": [
+        "gpt-5.6-sol",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "security-review",
+      "description": "安全审计、漏洞扫描、合规检查",
+      "primary": "gpt-5.6-terra",
+      "fallback": [
+        "gpt-5.6-sol",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "architecture",
+      "description": "架构设计、技术选型、系统设计",
+      "primary": "gpt-5.6-sol",
+      "fallback": [
+        "gpt-5.5",
+        "claude-opus"
+      ]
+    },
+    {
+      "taskType": "implementation",
+      "description": "写代码、算法实现、核心逻辑",
+      "primary": "gpt-5.6-terra",
+      "fallback": [
+        "gpt-5.6-luna",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "browser-automation",
+      "description": "浏览器操作、桌面自动化、网页抓取",
+      "primary": "gpt-5.6-terra",
+      "fallback": [
+        "gpt-5.6-luna",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "research",
+      "description": "读超长文档、视频分析、信息检索",
+      "primary": "gpt-5.5",
+      "fallback": [
+        "gpt-5.6-sol",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "planning",
+      "description": "任务拆解、方案设计、路线规划",
+      "primary": "gpt-5.6-terra",
+      "fallback": [
+        "gpt-5.6-sol",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "testing",
+      "description": "测试编写、测试策略、QA",
+      "primary": "gpt-5.6-terra",
+      "fallback": [
+        "gpt-5.6-luna",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "docs",
+      "description": "文档编写、README、知识库",
+      "primary": "gpt-5.6-luna",
+      "fallback": [
+        "gpt-5.6-terra",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "frontend",
+      "description": "前端UI、设计实现、Awwwards 级页面",
+      "primary": "gpt-5.6-terra",
+      "fallback": [
+        "gpt-5.6-luna",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "self-healing",
+      "description": "故障恢复、自优化、生产修复",
+      "primary": "gpt-5.6-terra",
+      "fallback": [
+        "gpt-5.6-luna",
+        "claude-sonnet"
+      ]
+    },
+    {
+      "taskType": "general",
+      "description": "通用任务（未匹配到特定类型时）",
+      "primary": "gpt-5.6-terra",
+      "fallback": [
+        "gpt-5.6-luna",
+        "claude-sonnet"
+      ]
+    }
+  ],
+  "roleDefaults": {
+    "planner": {
+      "taskType": "planning",
+      "preferredModel": "gpt-5.6-terra"
+    },
+    "implementer": {
+      "taskType": "implementation",
+      "preferredModel": "gpt-5.6-terra"
+    },
+    "reviewer": {
+      "taskType": "code-review",
+      "preferredModel": "gpt-5.6-terra"
+    },
+    "security-reviewer": {
+      "taskType": "security-review",
+      "preferredModel": "gpt-5.6-terra"
+    },
+    "discipline-planner": {
+      "taskType": "planning",
+      "preferredModel": "gpt-5.6-terra"
+    },
+    "discipline-builder": {
+      "taskType": "implementation",
+      "preferredModel": "gpt-5.6-terra"
+    },
+    "discipline-reviewer": {
+      "taskType": "code-review",
+      "preferredModel": "gpt-5.6-terra"
+    },
+    "discipline-orchestrator": {
+      "taskType": "planning",
+      "preferredModel": "gpt-5.6-terra"
+    },
+    "discipline-explorer": {
+      "taskType": "research",
+      "preferredModel": "gpt-5.5"
+    },
+    "team-lead": {
+      "taskType": "planning",
+      "preferredModel": "gpt-5.6-terra"
+    },
+    "team-member": {
+      "taskType": "implementation",
+      "preferredModel": "gpt-5.6-terra"
+    }
+  },
+  "defaultProfile": "balanced",
+  "routingProfiles": {
+    "balanced": {
+      "description": "Cost-aware default; upgrade on strong signals."
+    },
+    "premium": {
+      "description": "Prefer stronger subscribed models for complex or low-confidence work."
+    },
+    "budget": {
+      "description": "Prefer low-cost models except for hard capability requirements."
+    }
+  },
+  "signalRules": [
+    {
+      "taskType": "security-review",
+      "priority": 100,
+      "weight": 8,
+      "keywords": {
+        "cjk": [
+          "安全",
+          "漏洞",
+          "注入",
+          "权限",
+          "合规"
+        ],
+        "en": [
+          "secret",
+          "security",
+          "vulnerability",
+          "xss",
+          "csrf",
+          "injection",
+          "permission",
+          "compliance",
+          "auth"
+        ]
+      },
+      "reason": "security or auth risk"
+    },
+    {
+      "taskType": "code-review",
+      "priority": 98,
+      "weight": 7,
+      "keywords": {
+        "cjk": [
+          "代码审查",
+          "审查",
+          "评审",
+          "代码质量"
+        ],
+        "en": [
+          "code review",
+          "review",
+          "pull request",
+          "pr",
+          "code quality"
+        ]
+      },
+      "reason": "code review or quality gate"
+    },
+    {
+      "taskType": "browser-automation",
+      "priority": 95,
+      "weight": 8,
+      "keywords": {
+        "cjk": [
+          "浏览器",
+          "打开",
+          "上传",
+          "填写",
+          "截图",
+          "网页抓取",
+          "发布页面"
+        ],
+        "en": [
+          "browser",
+          "upload",
+          "screenshot",
+          "scrape",
+          "crawl",
+          "automation",
+          "computer use"
+        ]
+      },
+      "reason": "live browser or desktop workflow"
+    },
+    {
+      "taskType": "self-healing",
+      "priority": 90,
+      "weight": 8,
+      "keywords": {
+        "cjk": [
+          "线上",
+          "故障",
+          "恢复",
+          "自愈",
+          "事故",
+          "日志"
+        ],
+        "en": [
+          "incident",
+          "outage",
+          "recover",
+          "self-healing",
+          "production",
+          "logs"
+        ]
+      },
+      "reason": "production recovery or incident signal"
+    },
+    {
+      "taskType": "architecture",
+      "priority": 80,
+      "weight": 7,
+      "keywords": {
+        "cjk": [
+          "架构",
+          "技术选型",
+          "系统设计",
+          "跨模块",
+          "重构方案"
+        ],
+        "en": [
+          "architecture",
+          "system design",
+          "tech stack",
+          "cross-module",
+          "refactor plan"
+        ]
+      },
+      "reason": "architecture or system design"
+    },
+    {
+      "taskType": "research",
+      "priority": 70,
+      "weight": 7,
+      "keywords": {
+        "cjk": [
+          "很长",
+          "长文档",
+          "第三方 api",
+          "调研",
+          "研究",
+          "视频",
+          "图像",
+          "多模态"
+        ],
+        "en": [
+          "long document",
+          "research",
+          "migration strategy",
+          "video",
+          "image",
+          "multimodal"
+        ]
+      },
+      "reason": "long-context or multimodal research"
+    },
+    {
+      "taskType": "frontend",
+      "priority": 65,
+      "weight": 7,
+      "keywords": {
+        "cjk": [
+          "前端",
+          "组件",
+          "样式",
+          "界面",
+          "落地页"
+        ],
+        "en": [
+          "frontend",
+          "front-end",
+          "ui",
+          "landing page",
+          "component",
+          "css",
+          "style",
+          "beautiful"
+        ]
+      },
+      "reason": "frontend UI or visual design"
+    },
+    {
+      "taskType": "testing",
+      "priority": 50,
+      "weight": 4,
+      "keywords": {
+        "cjk": [
+          "测试",
+          "验证",
+          "qa"
+        ],
+        "en": [
+          "test",
+          "testing",
+          "verify",
+          "qa"
+        ]
+      },
+      "reason": "testing or QA"
+    },
+    {
+      "taskType": "docs",
+      "priority": 45,
+      "weight": 5,
+      "keywords": {
+        "cjk": [
+          "文档",
+          "博客",
+          "readme",
+          "指南",
+          "说明",
+          "skill"
+        ],
+        "en": [
+          "docs",
+          "blog",
+          "readme",
+          "guide",
+          "manual",
+          "skill"
+        ]
+      },
+      "reason": "documentation work"
+    },
+    {
+      "taskType": "planning",
+      "priority": 40,
+      "weight": 5,
+      "keywords": {
+        "cjk": [
+          "设计",
+          "方案",
+          "规划",
+          "拆解",
+          "计划"
+        ],
+        "en": [
+          "design",
+          "planning",
+          "plan",
+          "blueprint",
+          "roadmap"
+        ]
+      },
+      "reason": "planning or decomposition"
+    },
+    {
+      "taskType": "implementation",
+      "priority": 20,
+      "weight": 6,
+      "keywords": {
+        "cjk": [
+          "实现",
+          "写代码",
+          "编写",
+          "开发",
+          "构建"
+        ],
+        "en": [
+          "implement",
+          "build",
+          "coding",
+          "develop"
+        ]
+      },
+      "reason": "implementation work"
+    }
+  ],
+  "_note": "GAME registry (personal project). Codex ladder (gpt-5.6-sol only for architecture/global-decision signals, terra default, luna routine, 5.5 for research) is primary. Claude is fallback only, meant for use once Codex limits are exhausted. Project-local file: .aios/model-registry.json, loaded automatically by the patched registry.mjs loader."
+}

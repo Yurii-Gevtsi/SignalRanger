@@ -72,7 +72,9 @@ namespace Game.Progression
                 return new WeaponUpgradeResult(false, progress.rank, selectedBranch, cost, requiredCommanderLevel);
             }
 
-            var transactionId = $"weapon.upgrade.{weaponId}.r{targetRank}.{(int)selectedBranch}";
+            // A reset intentionally lets this same rank be bought again. The reset cycle
+            // keeps this purchase idempotent without colliding with its old purchase.
+            var transactionId = $"weapon.upgrade.{weaponId}.cycle.{progress.resetCycle}.r{targetRank}.{(int)selectedBranch}";
             var spend = _economy.TrySpendWeaponUpgrade(
                 cost.Credits,
                 weaponId,
@@ -120,6 +122,7 @@ namespace Game.Progression
             progress.rank = 1;
             progress.branch = 0;
             progress.blueprints += refundBlueprints;
+            progress.resetCycle++;
 
             if (refundCredits > 0)
             {

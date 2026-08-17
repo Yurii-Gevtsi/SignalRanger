@@ -15,7 +15,10 @@ namespace Game.Gameplay.Battle.Visuals
 
         private Transform _station;
         private Transform _smallPlanet;
+        private Transform _backdrop;
         private Vector3 _stationOrigin;
+        private Vector3 _baseLocalPosition;
+        private Vector3 _baseLocalScale;
         private float _elapsed;
 
         private sealed class CloudLayer
@@ -27,7 +30,9 @@ namespace Game.Gameplay.Battle.Visuals
 
         private void Awake()
         {
-            CreateLayer("Empty Background", "empty_back", Vector3.zero, Vector3.one, -30);
+            _baseLocalPosition = transform.localPosition;
+            _baseLocalScale = transform.localScale;
+            _backdrop = CreateLayer("Empty Background", "empty_back", Vector3.zero, Vector3.one, -30);
 
             _smallPlanet = CreateLayer(
                 "Orbiting Planet",
@@ -72,6 +77,80 @@ namespace Game.Gameplay.Battle.Visuals
             {
                 MoveCloud(_clouds[i], Time.deltaTime);
             }
+        }
+
+        /// <summary>
+        /// Places and sizes the sky once in fixed world space (rather than
+        /// re-centring on the camera every frame) so zooming and panning
+        /// naturally reveal more or less of it, just like any other world
+        /// layer. Sized to fully cover <paramref name="cameraWorldBounds"/>
+        /// expanded by the largest permitted view, so there is never a gap
+        /// no matter where the camera is clamped to. Vertical placement uses
+        /// the camera's position at call time (battle start), so the initial
+        /// framing is unchanged from before.
+        /// </summary>
+        public void ConfigureCoverage(Camera camera, float maximumOrthographicSize, Rect cameraWorldBounds)
+        {
+            if (camera == null || _backdrop == null || maximumOrthographicSize <= 0f)
+            {
+                return;
+            }
+
+            var backdropRenderer = _backdrop.GetComponent<SpriteRenderer>();
+            var backdropSprite = backdropRenderer != null ? backdropRenderer.sprite : null;
+            if (backdropSprite == null)
+            {
+                return;
+            }
+
+            var backdropSize = backdropSprite.bounds.size;
+            if (backdropSize.x <= 0f || backdropSize.y <= 0f)
+            {
+                return;
+            }
+
+            const float coveragePadding = 1.12f;
+            var maxHalfHeight = maximumOrthographicSize;
+            var maxHalfWidth = maximumOrthographicSize * camera.aspect;
+            var targetWidth = (cameraWorldBounds.width + maxHalfWidth * 2f) * coveragePadding;
+            var targetHeight = (cameraWorldBounds.height + maxHalfHeight * 2f) * coveragePadding;
+            var multiplier = Mathf.Max(
+                targetWidth / (backdropSize.x * _baseLocalScale.x),
+                targetHeight / (backdropSize.y * _baseLocalScale.y));
+            transform.localScale = _baseLocalScale * multiplier;
+            transform.position = new Vector3(
+                cameraWorldBounds.center.x,
+                camera.transform.position.y + _baseLocalPosition.y,
+                transform.position.z);
+        }
+
+        /// <summary>
+        /// Top world-space extent of the decorative layers (station/clouds),
+        /// used by the battle camera to make sure its pan bounds actually
+        /// reach up far enough to bring this content into view.
+        /// </summary>
+        public float GetHighestDecorativeWorldY()
+        {
+            var topY = float.NegativeInfinity;
+            topY = IncludeTop(topY, _station);
+            topY = IncludeTop(topY, _smallPlanet);
+            for (var i = 0; i < _clouds.Count; i++)
+            {
+                topY = IncludeTop(topY, _clouds[i].Transform);
+            }
+
+            return topY;
+        }
+
+        private static float IncludeTop(float topY, Transform layer)
+        {
+            var renderer = layer != null ? layer.GetComponent<SpriteRenderer>() : null;
+            if (renderer == null || renderer.sprite == null)
+            {
+                return topY;
+            }
+
+            return Mathf.Max(topY, renderer.bounds.max.y);
         }
 
         private void OnDestroy()

@@ -146,16 +146,18 @@ namespace Game.App
                 GameText.ArsenalTitle(), GameTextRole.DisplayTitle);
 
             var coins = CreateImage("Arsenal Coins", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-486f, 0f), "Coin_panel", true, null, false);
-            CreateText("Arsenal Coins Value", coins.transform, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
+                new Vector2(1f, 1f), new Vector2(372f, 155f), new Vector2(-486f, 0f), "Coin_panel", true, null, false);
+            var coinsValue = CreateText("Arsenal Coins Value", coins.transform, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 softCurrency.ToString(), GameTextRole.CurrencyGold);
+            CurrencyBalanceText.Bind(coinsValue, false);
 
             var premium = CreateImage("Arsenal Premium", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(1f, 1f), new Vector2(310f, 155f), new Vector2(-166f, 0f), "vip_coins_panel", true, null, false);
-            CreateText("Arsenal Premium Value", premium.transform, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
+                new Vector2(1f, 1f), new Vector2(372f, 155f), new Vector2(-166f, 0f), "vip_coins_panel", true, null, false);
+            var premiumValue = CreateText("Arsenal Premium Value", premium.transform, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 premiumCurrency.ToString(), GameTextRole.CurrencyCrystal);
+            CurrencyBalanceText.Bind(premiumValue, true);
 
             var settingsButton = CreateImageButton("Arsenal Settings", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(1f, 1f), SettingsButtonSize, SettingsButtonPosition, "settings_btn",

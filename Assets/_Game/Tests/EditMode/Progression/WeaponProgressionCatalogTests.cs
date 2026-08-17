@@ -105,6 +105,23 @@ namespace Game.Tests.EditMode.Progression
         }
 
         [Test]
+        public void UpgradeServiceAllowsRepurchasingRankAfterReset()
+        {
+            var saveData = SaveData.CreateNew();
+            var economy = new EconomyService(saveData);
+            economy.Grant(new ProgressionReward(30000, 0, 1000, "weapon.impulse"), "test", "", "seed.reset");
+            var service = new WeaponUpgradeService(saveData, economy);
+
+            Assert.That(service.TryUpgrade("weapon.impulse").Applied, Is.True);
+            Assert.That(service.TryReset("weapon.impulse"), Is.True);
+            Assert.That(service.TryUpgrade("weapon.impulse").Applied, Is.True);
+
+            var progress = saveData.inventory.GetOrCreateWeaponProgress("weapon.impulse");
+            Assert.That(progress.rank, Is.EqualTo(2));
+            Assert.That(progress.resetCycle, Is.EqualTo(1));
+        }
+
+        [Test]
         public void ImpulseEvolutionNodesHaveConfiguredNames()
         {
             Assert.That(WeaponProgressionCatalog.TryGet("weapon.impulse", out var impulse), Is.True);

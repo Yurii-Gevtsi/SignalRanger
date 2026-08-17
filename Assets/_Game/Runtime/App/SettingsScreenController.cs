@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Game.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace Game.App
@@ -99,6 +101,7 @@ namespace Game.App
 
         private void BuildLanguagePickerCanvas()
         {
+            EnsureEventSystem();
             var canvasObject = new GameObject("Initial Language Picker Canvas");
             _canvasObject = canvasObject;
             canvasObject.transform.SetParent(transform, false);
@@ -114,6 +117,18 @@ namespace Game.App
             canvasObject.AddComponent<GraphicRaycaster>();
 
             ShowLanguageOptions();
+        }
+
+        private static void EnsureEventSystem()
+        {
+            if (FindAnyObjectByType<EventSystem>() != null)
+            {
+                return;
+            }
+
+            var eventSystem = new GameObject("Language EventSystem");
+            eventSystem.AddComponent<EventSystem>();
+            eventSystem.AddComponent<InputSystemUIInputModule>();
         }
 
         private void Build()
@@ -145,9 +160,12 @@ namespace Game.App
                 LoadResourceSprite(BattleResourceRoot + "card", new Vector4(250f, 250f, 250f, 250f)));
             panel.type = Image.Type.Sliced;
             panel.preserveAspect = false;
-            var panelBlocker = panel.gameObject.AddComponent<Button>();
-            panelBlocker.targetGraphic = panel;
-            panelBlocker.transition = Selectable.Transition.None;
+            if (!_isLanguagePickerOnly)
+            {
+                var panelBlocker = panel.gameObject.AddComponent<Button>();
+                panelBlocker.targetGraphic = panel;
+                panelBlocker.transition = Selectable.Transition.None;
+            }
 
             CreateText("Title", panel.transform, new Vector2(0.18f, 0.70f), new Vector2(0.82f, 0.78f), new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, 48, TextAlignmentOptions.Center, T("ui.settings"), GameTextRole.DisplayTitle);

@@ -14,8 +14,16 @@ namespace Game.Gameplay.Battle.Runtime
         private const int ActiveTurnSortingOrder = 27;
         private const float WeaponVisualScale = 0.085f;
         private const float JetTrailVisualScale = 0.13f;
+        private static readonly Vector3 StatusOverlayPosition = new(-0.1f, 0.12f, 0f);
+        private static readonly Vector3 ElectroOverlayPosition = new(0f, 0.12f, 0f);
+        private static readonly Vector3 FreezeOverlayScale = new(0.15f, 0.1855469f, 1f);
+        private static readonly Vector3 PoisonOverlayScale = new(0.09f, 0.1855469f, 1f);
+        private static readonly Vector3 LavaOverlayScale = new(0.08f, 0.1855469f, 1f);
+        private static readonly Vector3 ElectroOverlayScale = new(0.06f, 0.16f, 1f);
         private const string HeadingFontResourcePath = "Fonts/Orbitron";
         private const string JetTrailResourcePath = "UI/Common/jet_trail_light";
+        private const string DeadWreckageResourcePath = "Visuals/Characters/dead";
+        private static readonly Vector3 DeadWreckageScale = new(0.9f, 0.9f, 1f);
         private static readonly Vector3 WeaponMountPosition = new(-0.68f, 0.42f, 0f);
         private static readonly Vector3 HealthLabelPosition = new(0f, 1.3f, 0f);
         private static readonly Vector3 HealthLabelScale = new(0.15f, 0.15f, 1f);
@@ -43,6 +51,14 @@ namespace Game.Gameplay.Battle.Runtime
         private Transform _weaponMount;
         private SpriteRenderer _weaponRenderer;
         private SpriteRenderer _jetTrailRenderer;
+        private SpriteRenderer _deadWreckageRenderer;
+        private bool _deadWreckageLoadAttempted;
+        private SpriteRenderer _freezeOverlayRenderer;
+        private SpriteRenderer _poisonOverlayRenderer;
+        private SpriteRenderer _lavaOverlayRenderer;
+        private SpriteRenderer _electroOverlayRenderer;
+        private WeaponProjectileSpriteAnimator _electroOverlayAnimator;
+        private Sprite[] _electroOverlayFrames;
         private int _facingDirectionX = 1;
         private bool _hasMovingParameter;
         private bool _movementSignalledThisFrame;
@@ -159,6 +175,105 @@ namespace Game.Gameplay.Battle.Runtime
             var scale = Mathf.Clamp01(scaleMultiplier) * JetTrailVisualScale;
             _jetTrailRenderer.transform.localScale = new Vector3(scale, scale, 1f);
             _jetTrailRenderer.enabled = isActive && scale > 0.001f && _jetTrailRenderer.sprite != null;
+        }
+
+        public void SetFreezeOverlay(Sprite sprite, bool isFrozen)
+        {
+            SetStatusOverlay(ref _freezeOverlayRenderer, "Freeze Overlay", sprite, isFrozen, 26, FreezeOverlayScale);
+        }
+
+        public void SetPoisonOverlay(Sprite sprite, bool isPoisoned)
+        {
+            SetStatusOverlay(ref _poisonOverlayRenderer, "Poison Overlay", sprite, isPoisoned, 25, PoisonOverlayScale);
+        }
+
+        public void SetLavaOverlay(Sprite sprite, bool isLavaBurning)
+        {
+            SetStatusOverlay(ref _lavaOverlayRenderer, "Lava Overlay", sprite, isLavaBurning, 24, LavaOverlayScale);
+        }
+
+        public void SetElectroOverlay(Sprite[] frames, bool isElectrified)
+        {
+            if (!isElectrified || frames == null || frames.Length == 0)
+            {
+                if (_electroOverlayRenderer != null)
+                {
+                    _electroOverlayRenderer.enabled = false;
+                }
+
+                return;
+            }
+
+            if (_electroOverlayRenderer == null)
+            {
+                var overlay = new GameObject("Electro Overlay");
+                overlay.transform.SetParent(transform, false);
+                _electroOverlayRenderer = overlay.AddComponent<SpriteRenderer>();
+                _electroOverlayRenderer.sortingOrder = 25;
+                _electroOverlayRenderer.color = Color.white;
+                _electroOverlayAnimator = overlay.AddComponent<WeaponProjectileSpriteAnimator>();
+            }
+
+            if (!FramesMatch(_electroOverlayFrames, frames))
+            {
+                _electroOverlayFrames = (Sprite[])frames.Clone();
+                _electroOverlayAnimator.SetFrames(_electroOverlayFrames);
+            }
+
+            _electroOverlayRenderer.transform.localPosition = ElectroOverlayPosition;
+            _electroOverlayRenderer.transform.localScale = ElectroOverlayScale;
+            _electroOverlayRenderer.enabled = true;
+        }
+
+        private static bool FramesMatch(Sprite[] existingFrames, Sprite[] newFrames)
+        {
+            if (existingFrames == null || newFrames == null || existingFrames.Length != newFrames.Length)
+            {
+                return false;
+            }
+
+            for (var index = 0; index < existingFrames.Length; index++)
+            {
+                if (existingFrames[index] != newFrames[index])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void SetStatusOverlay(
+            ref SpriteRenderer renderer,
+            string overlayName,
+            Sprite sprite,
+            bool isActive,
+            int sortingOrder,
+            Vector3 scale)
+        {
+            if (!isActive || sprite == null)
+            {
+                if (renderer != null)
+                {
+                    renderer.enabled = false;
+                }
+
+                return;
+            }
+
+            if (renderer == null)
+            {
+                var overlay = new GameObject(overlayName);
+                overlay.transform.SetParent(transform, false);
+                renderer = overlay.AddComponent<SpriteRenderer>();
+                renderer.sortingOrder = sortingOrder;
+                renderer.color = Color.white;
+            }
+
+            renderer.sprite = sprite;
+            renderer.transform.localPosition = StatusOverlayPosition;
+            renderer.transform.localScale = scale;
+            renderer.enabled = true;
         }
 
         private void LateUpdate()
@@ -283,12 +398,33 @@ namespace Game.Gameplay.Battle.Runtime
         public void SetDefeated(bool defeated)
         {
             EnsureReferences();
-            transform.localScale = defeated ? defeatedScale : _baseScale;
+            EnsureDeadWreckage();
 
             if (defeated)
             {
                 ForceMoving(false);
             }
+
+            if (_deadWreckageRenderer != null)
+            {
+                // A wreckage sprite exists for this rig: replace the animated rig
+                // entirely instead of shrinking/tinting it, for both allied and
+                // enemy units, so a kill reads clearly to everyone watching the battle.
+                transform.localScale = _baseScale;
+                _deadWreckageRenderer.enabled = defeated;
+                if (_visualRoot != null)
+                {
+                    _visualRoot.gameObject.SetActive(!defeated);
+                }
+                else if (bodyRenderer != null)
+                {
+                    bodyRenderer.enabled = !defeated;
+                }
+
+                return;
+            }
+
+            transform.localScale = defeated ? defeatedScale : _baseScale;
 
             if (bodyRenderer != null && defeated)
             {
@@ -393,6 +529,36 @@ namespace Game.Gameplay.Battle.Runtime
             _jetTrailRenderer.sortingOrder = IdleSortingOrder - 2;
             _jetTrailRenderer.color = Color.white;
             _jetTrailRenderer.enabled = false;
+        }
+
+        /// <summary>
+        /// Lazily builds the destroyed-unit wreckage sprite. Only droid rigs ship a
+        /// "dead" sprite today; other rig types silently keep the shrink+tint fallback
+        /// in <see cref="SetDefeated"/> since Resources.Load returns null for them.
+        /// </summary>
+        private void EnsureDeadWreckage()
+        {
+            if (_deadWreckageRenderer != null || _deadWreckageLoadAttempted)
+            {
+                return;
+            }
+
+            _deadWreckageLoadAttempted = true;
+            var sprite = Resources.Load<Sprite>(DeadWreckageResourcePath);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            var wreckageObject = new GameObject("Dead Wreckage");
+            var wreckageTransform = wreckageObject.transform;
+            wreckageTransform.SetParent(transform, false);
+            wreckageTransform.localScale = DeadWreckageScale;
+            _deadWreckageRenderer = wreckageObject.AddComponent<SpriteRenderer>();
+            _deadWreckageRenderer.sprite = sprite;
+            _deadWreckageRenderer.sortingOrder = IdleSortingOrder;
+            _deadWreckageRenderer.color = Color.white;
+            _deadWreckageRenderer.enabled = false;
         }
 
         private void UpdateWeaponMountPosition()

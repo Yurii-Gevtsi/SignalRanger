@@ -48,6 +48,21 @@ namespace Game.Tests.EditMode.Economy
         }
 
         [Test]
+        public void BalanceChanged_RaisesForSuccessfulGrantAndSpend()
+        {
+            var saveData = SaveData.CreateNew();
+            var service = new EconomyService(saveData);
+            var notifications = 0;
+            service.BalanceChanged += () => notifications++;
+
+            service.Grant(25, "test.reward");
+            service.TrySpend(10, "test.spend");
+
+            Assert.That(notifications, Is.EqualTo(2));
+            Assert.That(service.SoftCurrency, Is.EqualTo(15));
+        }
+
+        [Test]
         public void PremiumCurrencyCanBeGrantedAndSpentWithItsOwnLedgerDelta()
         {
             var saveData = SaveData.CreateNew();

@@ -8,6 +8,7 @@ namespace Game.App
 {
     public sealed class GameSessionService
     {
+        private const string TrainingArenaId = "arena.training-meadow";
         private readonly SaveData _saveData;
         private readonly CampaignProgressionService _campaign;
         private readonly RuntimeGameContentCatalog _content;
@@ -40,6 +41,9 @@ namespace Game.App
         {
             SelectMission(0);
             GameSessionContext.ConfigureTrainingSkirmish();
+            GameSessionContext.SelectArena(
+                _content?.ResolveArenaIndexById(TrainingArenaId) ?? 0,
+                TrainingArenaId);
         }
 
         private void PublishSelectedMission()

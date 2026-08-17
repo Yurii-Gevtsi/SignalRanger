@@ -19,24 +19,17 @@ namespace Game.App
         private const float MinimumDisplaySeconds = 0.85f;
 
         private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.92f);
-        private static readonly Vector2 MissionTitlePosition = new(-270f, 270f);
-        private static readonly Vector2 MissionTitleSize = new(520f, 76f);
-        private static readonly Vector2 MissionDescriptionPosition = new(-260f, 176f);
-        private static readonly Vector2 MissionDescriptionSize = new(520f, 150f);
-        private static readonly Vector2 TipPosition = new(230f, -438f);
-        private static readonly Vector2 TipSize = new(1040f, 82f);
-        private static readonly Vector2 LoaderPosition = new(0f, -230f);
+        // A fixed visual width makes TMP wrap by rendered glyph width rather than a
+        // language-specific character count. At 27 pt it fits the reference sentence
+        // "Знищити ворожого дроїда. Освоїти" on one line.
+        private static readonly Vector2 MissionDescriptionPosition = new(-420f, 245f);
+        private static readonly Vector2 MissionDescriptionSize = new(430f, 150f);
+        private static readonly Vector2 MissionCardPosition = new(-420f, 245f);
+        private static readonly Vector2 MissionCardSize = new(720f, 480f);
+        private static readonly Vector2 LoaderPosition = new(0f, -400f);
         private static readonly Vector2 LoaderSize = new(224f, 224f);
         private static readonly Vector2 PercentSize = new(210f, 100f);
 
-        private static readonly string[] Tips =
-        {
-            "tip.arc",
-            "tip.retreat",
-            "tip.ground",
-            "tip.straight",
-            "tip.repair"
-        };
 
         private readonly Dictionary<string, Sprite> _sprites = new();
 
@@ -121,28 +114,21 @@ namespace Game.App
             CreateImage("Loading Background", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, backgroundIndex.ToString(), false);
 
-            var mission = ResolveMission(sceneName);
-            CreateText("Mission Title", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), MissionTitleSize, MissionTitlePosition, 38,
-                TextAlignmentOptions.TopLeft, mission.title, GameTextRole.DisplayTitle);
+            var missionDescription = ResolveMissionDescription(sceneName);
+            CreateImage("Mission Description Card", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), MissionCardSize, MissionCardPosition, "UI/Common/card2", false);
             var description = CreateText("Mission Description", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), MissionDescriptionSize, MissionDescriptionPosition, 27,
-                TextAlignmentOptions.TopLeft, mission.description, GameTextRole.Body);
-            description.enableAutoSizing = true;
-            description.fontSizeMin = 20f;
-            description.fontSizeMax = 27f;
+                TextAlignmentOptions.TopLeft, missionDescription, GameTextRole.Body);
+            // Keep the intended 27 pt mission text. Longer localized copy wraps by
+            // its rendered width into the available lines instead of shrinking.
+            description.enableAutoSizing = false;
             description.textWrappingMode = TextWrappingModes.Normal;
             description.overflowMode = TextOverflowModes.Truncate;
 
-            var tip = CreateText("Loading Tip", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), TipSize, TipPosition, 28,
-                TextAlignmentOptions.MidlineLeft, ResolveTip(Tips[UnityEngine.Random.Range(0, Tips.Length)]), GameTextRole.Body);
-            tip.enableAutoSizing = true;
-            tip.fontSizeMin = 20f;
-            tip.fontSizeMax = 28f;
-
             _loaderRing = CreateImage("Loading Ring", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), LoaderSize, LoaderPosition, "loader", true);
+                new Vector2(0.5f, 0.5f), LoaderSize, LoaderPosition, "loader3", true);
+            _loaderRing.localScale = new Vector3(-1f, 1f, 1f);
             _percentText = CreateText("Loading Percent", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), PercentSize, LoaderPosition, 40,
                 TextAlignmentOptions.Center, "0%", GameTextRole.DisplayTitle);
@@ -200,42 +186,30 @@ namespace Game.App
             _percentText.text = $"{Mathf.RoundToInt(Mathf.Clamp01(progress) * 100f)}%";
         }
 
-        private static (string title, string description) ResolveMission(string sceneName)
+        private static string ResolveMissionDescription(string sceneName)
         {
             if (sceneName == GameSceneNames.Battle && AppServices.IsInitialized)
             {
                 var mission = AppServices.Session?.SelectedMission;
                 if (mission != null)
                 {
-                    return (
-                        string.IsNullOrWhiteSpace(mission.Title) ? GameText.Tip("battleTitle", "Бойова місія") : mission.Title,
-                        GameText.Tip("trainingMission", "Навчальна місія"));
+                    return string.IsNullOrWhiteSpace(mission.Description)
+                        ? GameText.Tip("trainingMission", "Навчальна місія")
+                        : mission.Description;
                 }
             }
 
             if (sceneName == GameSceneNames.Battle)
             {
-                return (GameText.Tip("battleTitle", "Бойова місія"), GameText.Tip("trainingMission", "Навчальна місія"));
+                return GameText.Tip("trainingMission", "Навчальна місія");
             }
 
             if (sceneName == GameSceneNames.Menu)
             {
-                return (GameText.Tip("returnBase", "Повернення на базу"), GameText.Tip("returnBaseDescription", "Оновлюємо прогрес, нагороди та доступний арсенал."));
+                return GameText.Tip("returnBaseDescription", "Оновлюємо прогрес, нагороди та доступний арсенал.");
             }
 
-            return (GameText.Tip("loading", "Завантаження"), GameText.Tip("loadingDescription", "Готуємо сцену, ресурси та бойові системи."));
-        }
-
-        private static string ResolveTip(string key)
-        {
-            return key switch
-            {
-                "tip.arc" => GameText.Tip(key, "Порада: висока дуга допомагає перекидати укриття."),
-                "tip.retreat" => GameText.Tip(key, "Порада: перед пострілом перевір, чи вистачить часу на відступ."),
-                "tip.ground" => GameText.Tip(key, "Порада: наземна зброя сильна біля проходів і країв ям."),
-                "tip.straight" => GameText.Tip(key, "Порада: пряма зброя найкраща, коли між дроїдами чистий простір."),
-                _ => GameText.Tip(key, "Порада: ремонт краще зберігати до моменту, коли хід ще можна використати.")
-            };
+            return GameText.Tip("loadingDescription", "Готуємо сцену, ресурси та бойові системи.");
         }
 
         private RectTransform CreateImage(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Core;
 using Game.Core.Localization;
+using Game.Data.Progression;
 using Game.Data.Save;
 using Game.UI;
 using TMPro;
@@ -41,10 +42,10 @@ namespace Game.App
         private static readonly Vector2 CampaignCardCloseSize = new(112f, 112f);
         private static readonly Vector2 CampaignCardClosePosition = new(-280f, -120f);
         private static readonly Vector2 TrainingCardSize = new(480f, 648f);
-        private static readonly Vector2 TrainingCardPosition = new(-640f, -30f);
+        private static readonly Vector2 TrainingCardPosition = new(-640f, 0f);
         private static readonly Vector2 CampaignCardOptionSize = new(480f, 648f);
-        private static readonly Vector2 CampaignCardOptionPosition = new(0f, -30f);
-        private static readonly Vector2 SigmaCardPosition = new(640f, -30f);
+        private static readonly Vector2 CampaignCardOptionPosition = new(0f, 0f);
+        private static readonly Vector2 SigmaCardPosition = new(640f, 0f);
         private static readonly Vector2 CampaignModeTitleSize = new(460f, 82f);
         private static readonly Vector2 CampaignModeTitlePosition = new(0f, 170f);
         private static readonly Vector4 CampaignCardSliceBorder = new(220f, 220f, 220f, 220f);
@@ -207,21 +208,29 @@ namespace Game.App
                 new Vector2(560f, 110f), new Vector2(80f, -40f), "UI/Shop/info_panel", true, null);
             var playerName = CreateLabel("Player Name", profile.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 46, TextAlignmentOptions.Center, ResolvePlayerName(saveData), GameTextRole.DisplayTitle);
-            playerName.rectTransform.sizeDelta = new Vector2(360f, 90f);
-            playerName.rectTransform.anchoredPosition = new Vector2(-100f, 0f);
+            playerName.rectTransform.sizeDelta = new Vector2(310f, 90f);
+            playerName.rectTransform.anchoredPosition = new Vector2(-145f, 0f);
+            var commanderLevel = CommanderProgressionTable.GetLevel(saveData?.profile?.commanderExperience ?? 0);
+            var levelLabel = CreateLabel("Player Level", profile.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                24, TextAlignmentOptions.Center, GameText.PlayerLevel(commanderLevel), GameTextRole.Caption);
+            levelLabel.color = SciFiTextStyle.CyanText;
+            levelLabel.rectTransform.sizeDelta = new Vector2(130f, 60f);
+            levelLabel.rectTransform.anchoredPosition = new Vector2(90f, 0f);
 
             CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 SettingsSize, SettingsPosition, "settings_btn", OpenSettings);
 
             var coins = CreateImage("Coins Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(310f, 155f), new Vector2(-486f, -20f), "Coin_panel", true, null);
-            CreateLabel("Coins Value", coins.transform, new Vector2(0.34f, 0.24f), new Vector2(0.76f, 0.80f),
-                35, TextAlignmentOptions.Center, softCurrency.ToString());
+                new Vector2(372f, 155f), new Vector2(-486f, -20f), "Coin_panel", true, null);
+            var coinsValue = CreateLabel("Coins Value", coins.transform, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
+                35, TextAlignmentOptions.Center, softCurrency.ToString(), GameTextRole.CurrencyGold);
+            CurrencyBalanceText.Bind(coinsValue, false);
 
             var premium = CreateImage("Premium Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(310f, 155f), new Vector2(-166f, -20f), "vip_coins_panel", true, null);
-            CreateLabel("Premium Value", premium.transform, new Vector2(0.36f, 0.24f), new Vector2(0.76f, 0.80f),
-                35, TextAlignmentOptions.Center, premiumCurrency.ToString());
+                new Vector2(372f, 155f), new Vector2(-166f, -20f), "vip_coins_panel", true, null);
+            var premiumValue = CreateLabel("Premium Value", premium.transform, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
+                35, TextAlignmentOptions.Center, premiumCurrency.ToString(), GameTextRole.CurrencyCrystal);
+            CurrencyBalanceText.Bind(premiumValue, true);
         }
 
         private void BuildBottomActions(Transform root)

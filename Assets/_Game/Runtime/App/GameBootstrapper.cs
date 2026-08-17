@@ -1,3 +1,4 @@
+using System.Collections;
 using Game.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,6 +7,8 @@ namespace Game.App
 {
     public sealed class GameBootstrapper : MonoBehaviour
     {
+        private bool _startupSequenceStarted;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         private static void ConfigureMobileOrientation()
         {
@@ -44,6 +47,16 @@ namespace Game.App
 
         private void Start()
         {
+            // Keep the branded entry splash even when a platform/editor launches the
+            // menu scene directly instead of honoring the Boot scene build entry.
+            var activeScene = SceneManager.GetActiveScene();
+            if (activeScene.name == GameSceneNames.Menu && !_startupSequenceStarted)
+            {
+                _startupSequenceStarted = true;
+                StartCoroutine(ShowStartupOverExistingMenu());
+                return;
+            }
+
             OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
         }
 
@@ -51,8 +64,11 @@ namespace Game.App
         {
             if (scene.name == GameSceneNames.Boot)
             {
-                AppServices.Session.SelectNextMission();
-                AppServices.SceneLoader.Load(GameSceneNames.Menu);
+                if (!_startupSequenceStarted)
+                {
+                    _startupSequenceStarted = true;
+                    StartCoroutine(ShowStartupThenLoadMenu());
+                }
                 return;
             }
 
@@ -75,6 +91,19 @@ namespace Game.App
             }
         }
 
+        private IEnumerator ShowStartupThenLoadMenu()
+        {
+            AppServices.Session.SelectNextMission();
+            yield return StartupSplashController.ShowWhileLoadingScene(GameSceneNames.Menu);
+        }
+
+        private IEnumerator ShowStartupOverExistingMenu()
+        {
+            AppServices.Session.SelectNextMission();
+            yield return StartupSplashController.ShowOverCurrentScene();
+            OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+        }
+
         private static void ApplyPendingMissionCompletion()
         {
             if (!GameSessionContext.HasPendingMissionCompletion)
@@ -83,6 +112,20 @@ namespace Game.App
             }
 
             var missionIndex = GameSessionContext.ConsumePendingMissionCompletion();
+
+            // Winning is necessary but no longer always sufficient: a mission with an
+            // objective only banks when the battle also met it. The mission stays
+            // outstanding otherwise, so the player can retry it for the objective.
+            var mission = AppServices.Campaign.GetMission(missionIndex);
+            var facts = new Game.Progression.Missions.BattleObjectiveFacts(
+                GameSessionContext.LastBattlePlayerWon,
+                GameSessionContext.LastBattleHealthPercent,
+                GameSessionContext.LastBattleOpponentRingOut);
+            if (mission != null && !mission.Objective.IsSatisfiedBy(facts))
+            {
+                return;
+            }
+
             var result = AppServices.Campaign.CompleteMission(missionIndex);
             AppServices.LastMissionCompletionResult = result;
             AppServices.MarkPendingLoadoutReview(result.Applied && result.HasUnlock);

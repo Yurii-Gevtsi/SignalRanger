@@ -6,8 +6,10 @@ using UnityEngine;
 namespace Game.App
 {
     /// <summary>
-    /// Concise player-facing text for a concrete workshop node.  Gameplay stays data-driven;
-    /// this class only explains the selected improvement in the workshop UI.
+    /// Concise player-facing text for a concrete workshop node. Gameplay stays data-driven;
+    /// this class only explains the selected improvement in the workshop UI. Every string
+    /// returned to callers is routed through <see cref="GameText"/> — the literals here are
+    /// fallback text only, used when a locale has no override for the key.
     /// </summary>
     public static class WeaponUpgradePresentation
     {
@@ -15,12 +17,12 @@ namespace Game.App
         {
             if (rank == 1)
             {
-                return "Базова конфігурація";
+                return GameText.UpgradeBaseConfigTitle();
             }
 
             if (!definition.TryGetNode(rank, branch, out var node))
             {
-                return "Покращення";
+                return GameText.UpgradeGenericTitle();
             }
 
             if (node.IsEvolution)
@@ -30,10 +32,10 @@ namespace Game.App
                     return GameText.WeaponEvolutionName(node.MechanicId, node.EvolutionName);
                 }
 
-                return rank == 5 ? "Вибір еволюції" : "Фінальна еволюція";
+                return rank == 5 ? GameText.UpgradeEvolutionChoiceTitle() : GameText.UpgradeFinalEvolutionTitle();
             }
 
-            return $"{GetStatName(node.Stat)} +{node.Amount}%";
+            return GameText.UpgradeStatBonusTitle(GetStatName(node.Stat), node.Amount);
         }
 
         public static string GetDescription(WeaponProgressionDefinition definition, int rank, WeaponUpgradeBranch branch)
@@ -45,7 +47,7 @@ namespace Game.App
 
             if (!node.IsEvolution)
             {
-                return $"Покращення параметра «{GetStatName(node.Stat)}» на {node.Amount}%.";
+                return GameText.UpgradeStatImprovement(GetStatName(node.Stat), node.Amount);
             }
 
             return GetMechanicDescription(definition.WeaponId, node.MechanicId);
@@ -118,7 +120,7 @@ namespace Game.App
 
         public static string GetStatName(WeaponUpgradeStat stat)
         {
-            return stat switch
+            var fallback = stat switch
             {
                 WeaponUpgradeStat.Damage => "Шкода",
                 WeaponUpgradeStat.ImpactRadius => "Радіус вибуху",
@@ -138,9 +140,16 @@ namespace Game.App
                 WeaponUpgradeStat.Charge => "Заряд",
                 _ => "Спецможливість"
             };
+            return GameText.UpgradeStatName(stat.ToString(), fallback);
         }
 
         private static string GetMechanicDescription(string weaponId, string mechanicId)
+        {
+            var fallback = GetMechanicDescriptionFallback(weaponId, mechanicId);
+            return GameText.WeaponEvolutionDescription(mechanicId, fallback);
+        }
+
+        private static string GetMechanicDescriptionFallback(string weaponId, string mechanicId)
         {
             return weaponId switch
             {
@@ -188,16 +197,16 @@ namespace Game.App
                 {
                     "protective-repair" => "Після лікування зменшує вхідну шкоду дроїду на 50% протягом наступного ходу.",
                     "enhanced-protective-repair" => "Після лікування зменшує вхідну шкоду дроїду на 50% протягом двох наступних ходів.",
-                    "regenerative-repair" => "На початку наступного ходу повторно лікує дроїда, якщо той не отримав шкоди.",
-                    "long-regenerative-repair" => "Перевіряє два наступні ходи: за кожен хід без шкоди повторно лікує дроїда.",
+                    "regenerative-repair" => "Якщо дроїд протримається хід без жодної шкоди, наноботи виконують ще один цикл лікування.",
+                    "long-regenerative-repair" => "Наноботи виконують додатковий цикл лікування за кожен із двох наступних ходів без шкоди.",
                     _ => string.Empty
                 },
                 "weapon.c4" => mechanicId switch
                 {
                     "enhanced-explosive-charge" => "Більший радіус вибуху, більше шкоди по зоні та більша вирва.",
-                    "breaching-explosive-charge" => "Ще сильніше руйнує ґрунт, ламає укриття й скидає ворога зі схилу.",
+                    "breaching-explosive-charge" => "Ще сильніше руйнує ґрунт і пробиває найміцніші укриття, лишаючи по-справжньому глибоку вирву.",
                     "impulse-explosive-charge" => "Звичайна або трохи менша вирва, зате значно сильніше відкидання дроїдів.",
-                    "shockwave-charge" => "Ще сильніша ударна хвиля: дроїдів відкидає далі рельєфом.",
+                    "shockwave-charge" => "Ще сильніша ударна хвиля: ураженого дроїда жбурляє ще далі, навіть якщо він не в самому епіцентрі.",
                     _ => string.Empty
                 },
                 "weapon.teleport" => mechanicId switch
@@ -242,10 +251,10 @@ namespace Game.App
                 },
                 "weapon.fire-gun" => mechanicId switch
                 {
-                    "stream" => "Більше крапель лави: струмінь випускає більше вогняних крапель за постріл.",
-                    "pool" => "Довше горіння: вогняні краплі горять довше і завдають більше сумарної шкоди.",
-                    "long-stream" => "Ще більше крапель лави за постріл.",
-                    "burning-ground" => "Тривале горіння: краплі горять ще довше.",
+                    "stream" => "Збільшені паливні баки: за один постріл випускається більше розпеченої лави.",
+                    "ignite" => "Запалювання: ціль після влучання горить і отримує шкоду на початку своїх ходів.",
+                    "long-stream" => "Тривале горіння: розлита лава горить значно довше.",
+                    "wildfire" => "Термічний резонанс: повторне влучання по палаючій цілі завдає більше шкоди й оновлює горіння.",
                     _ => string.Empty
                 },
                 "weapon.toxic" => mechanicId switch
