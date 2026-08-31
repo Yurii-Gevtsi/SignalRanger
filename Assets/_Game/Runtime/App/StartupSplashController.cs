@@ -14,6 +14,7 @@ namespace Game.App
     public sealed class StartupSplashController : MonoBehaviour
     {
         private const string ResourceRoot = "UI/Startup/";
+        private const float MinimumDisplayDurationSeconds = 3f;
 
         private static readonly string[] ImageNames =
         {
@@ -24,7 +25,8 @@ namespace Game.App
 
         public static IEnumerator ShowWhileLoadingScene(string sceneName)
         {
-            var controller = CreateOverlay(out var root);
+            var displayedAt = Time.unscaledTime;
+            CreateOverlay(out var root);
 
             var operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
             if (operation == null)
@@ -47,11 +49,7 @@ namespace Game.App
                 }
             }
 
-            // Scene activation and the first render happen on different frames. Keep
-            // the branded overlay alive through that first render so a fast device
-            // cannot skip it when the menu scene loads immediately.
-            yield return null;
-            yield return new WaitForEndOfFrame();
+            yield return WaitForMinimumDisplay(displayedAt);
 
             if (root != null)
             {
@@ -61,9 +59,9 @@ namespace Game.App
 
         public static IEnumerator ShowOverCurrentScene()
         {
-            var controller = CreateOverlay(out var root);
-            yield return null;
-            yield return new WaitForEndOfFrame();
+            var displayedAt = Time.unscaledTime;
+            CreateOverlay(out var root);
+            yield return WaitForMinimumDisplay(displayedAt);
 
             if (root != null)
             {
@@ -80,6 +78,20 @@ namespace Game.App
             controller.Build();
             controller._image.sprite = LoadSprite(ImageNames[0]);
             return controller;
+        }
+
+        private static IEnumerator WaitForMinimumDisplay(float displayedAt)
+        {
+            // Scene activation and the first render happen on different frames. On a
+            // fast device the menu can otherwise replace the branded screen before it
+            // has ever been visible to the player.
+            yield return null;
+            while (Time.unscaledTime - displayedAt < MinimumDisplayDurationSeconds)
+            {
+                yield return null;
+            }
+
+            yield return new WaitForEndOfFrame();
         }
 
         private void Build()

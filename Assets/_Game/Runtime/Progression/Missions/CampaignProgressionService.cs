@@ -41,7 +41,13 @@ namespace Game.Progression.Missions
 
         public bool IsUnlocked(int missionIndex)
         {
-            return missionIndex >= 0 && missionIndex <= _saveData.campaign.highestUnlockedMissionIndex && missionIndex < _missions.Length;
+            if (missionIndex < 0 || missionIndex >= _missions.Length)
+            {
+                return false;
+            }
+
+            return _saveData.settings.adminModeEnabled
+                || missionIndex <= _saveData.campaign.highestUnlockedMissionIndex;
         }
 
         public MissionCompletionResult CompleteMission(int missionIndex)

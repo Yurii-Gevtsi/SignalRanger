@@ -225,6 +225,68 @@ Dashboard: увімкнути **Lobby** і **Relay** (працюють одра�
 влаштовувати. Netcode бере Relay-транспорт
 (`UnityTransport` + Relay allocation з коду).
 
+### 11.1 Що вже готове в коді
+
+Мережева модель — хост-авторитет із корекцією на межі ходу (обґрунтування:
+`../design/raid-and-pvp-battle-modes.md`, фаза 5). Усе, що не потребує
+пакетів, уже написане й покрите тестами:
+
+| Готове | Роль |
+|---|---|
+| `BattleCommand` + `BattleCommandCodec` | команда ходу як дані, <64 байти |
+| `BattleUnitAuthority` | «командир → юніти», основа для 2×2/3×3 |
+| `BattleCommandDispatcher` | чужі юніти, застарілі ходи, дублі, перестановки |
+| `BattleTurnSnapshot` + кодек | авторитетна межа ходу; ландшафт — кратерами |
+| `BattleStateHash` | детекція розбіжності, квант 1 см |
+| `BattleTurnReconciler` | підтягування клієнта під хоста |
+| `IPvpSessionService` | транспортний контракт (байти, без знання про бій) |
+| `LoopbackPvpSessionService` | два ендпоінти в процесі, керована затримка |
+| `IMatchmakingService` + `LocalPvpMatchmakingService` | смуги ±10%/±20%, бек-філ на 45 с |
+
+### 11.2 Пакети
+
+Standalone `com.unity.services.lobby` і `com.unity.services.relay` **застарілі** —
+Unity згорнула Lobby, Relay і Matchmaker у спільний Sessions API. Актуальний набір
+(звірено з базою рекомендацій `com.unity.multiplayer.center` для Unity 6.5):
+
+```text
+com.unity.services.multiplayer      2.3.0   Sessions = Lobby + Relay + Matchmaker
+com.unity.netcode.gameobjects       2.13.1
+com.unity.transport                         (залежність Netcode)
+com.unity.multiplayer.playmode      2.0.2   кілька віртуальних гравців в одному редакторі
+```
+
+### 11.3 Адаптери (написані, компілюються)
+
+Збірка `Game.Infrastructure.Multiplayer` з `defineConstraints`
+`UGS_MULTIPLAYER`/`UGS_NETCODE`: без пакетів вона просто випадає зі збірки, гра
+лишається на офлайн-адаптерах.
+
+- `UgsMatchmakerService : IMatchmakingService` — `MatchmakeSessionAsync` із
+  quick-join фільтром по `FilterField.NumberIndex1` (там лежить historicalPower),
+  `CreateSession = true`, `WithRelayNetwork()`. Смуга ±10% до 20 с, потім ±20%,
+  на 45-й секунді — бот-заповнювач. Профіль суперника читається з його
+  player properties, включно зі списком звільнених арен (без нього не працює
+  правило проти спойлерів).
+- `MultiplayerPvpSessionService : IPvpSessionService` — байтова труба поверх
+  named messages Netcode (`ReliableSequenced`). Хто хост — читається з
+  `ISession.IsHost`, а не задається клієнтом.
+- `MultiplayerOnlineBootstrap` — підписується на `AppServices.OnlineServicesAttached`
+  і підміняє офлайн-адаптери після входу.
+
+**Ці адаптери жодного разу не працювали проти живого UGS** — вони перевірені
+тільки компіляцією проти API пакетів. Перший запуск робити через Multiplayer
+Play Mode з двома віртуальними гравцями.
+
+### 11.4 Що ще лишилось
+
+1. Винести `PvpMatchmakingPolicy` (смуги, поріг 45 с) у Remote Config.
+2. Прив'язати `BattleSceneController` до `IBattleCommandTarget` і збирати
+   кратери ходу для снапшота.
+3. `SubmitBattleResult` у Cloud Code: приймає `IsBotBackfill`, бій із
+   заповнювачем не рухає рейтинг.
+4. Міграція хоста і політика розривів — обов'язково до кланових 3×3.
+
 ## 12. Чекліст безпеки
 
 - [ ] Секрети (service account keys, OAuth client secret, Android Publisher

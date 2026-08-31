@@ -78,5 +78,18 @@ namespace Game.Tests.EditMode.Progression
 
             Assert.That(mission.MissionId, Is.EqualTo("mission.training.04"));
         }
+
+        [Test]
+        public void IsUnlocked_AdminModeAllowsEveryValidMissionWithoutChangingProgress()
+        {
+            var saveData = SaveData.CreateNew();
+            saveData.settings.adminModeEnabled = true;
+            var missions = MvpMissionLibrary.CreateAll();
+            var service = new CampaignProgressionService(saveData, missions);
+
+            Assert.That(service.IsUnlocked(missions.Length - 1), Is.True);
+            Assert.That(service.IsUnlocked(-1), Is.False);
+            Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.EqualTo(0));
+        }
     }
 }

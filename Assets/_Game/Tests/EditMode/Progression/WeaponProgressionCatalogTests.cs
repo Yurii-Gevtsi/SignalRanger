@@ -10,6 +10,23 @@ namespace Game.Tests.EditMode.Progression
     public sealed class WeaponProgressionCatalogTests
     {
         [Test]
+        public void ProgressionDefinitionReportsDevelopmentAndAvailableBranches()
+        {
+            var singleBranch = new WeaponProgressionDefinition(
+                "weapon.single-branch", 1, 0, 0, false, "only-path", string.Empty,
+                new[] { new WeaponUpgradeNodeDefinition(2, WeaponUpgradeBranch.None, WeaponUpgradeStat.Damage, 1) });
+            var unique = new WeaponProgressionDefinition(
+                "weapon.unique", 1, 0, 0, false, string.Empty, string.Empty, System.Array.Empty<WeaponUpgradeNodeDefinition>());
+
+            Assert.IsTrue(singleBranch.HasDevelopment);
+            Assert.IsTrue(singleBranch.HasBranch(WeaponUpgradeBranch.A));
+            Assert.IsFalse(singleBranch.HasBranch(WeaponUpgradeBranch.B));
+            Assert.IsFalse(unique.HasDevelopment);
+            Assert.IsFalse(unique.HasBranch(WeaponUpgradeBranch.A));
+            Assert.IsFalse(unique.HasBranch(WeaponUpgradeBranch.B));
+        }
+
+        [Test]
         public void CatalogDefinesEveryPurchasableWeaponAndTwoCompleteBranches()
         {
             Assert.That(WeaponProgressionCatalog.All, Has.Count.EqualTo(16));

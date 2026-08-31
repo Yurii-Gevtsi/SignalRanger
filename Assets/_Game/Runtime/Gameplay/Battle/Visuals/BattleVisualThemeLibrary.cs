@@ -7,13 +7,18 @@ namespace Game.Gameplay.Battle.Visuals
     {
         private const string FirstArenaId = "arena.training-meadow";
         private const string DesertArenaId = "arena.desert-sci-fi";
+        private const string ForestArenaId = "arena.forest";
         private const string AnimatedSkyBackgroundPrefab = "Visuals/Arenas/Backgrounds/Sky1/AnimatedSkyBackground";
+        private const string ForestCosmosBackground = "Visuals/Arenas/Backgrounds/Cosmos/cosmos";
+        private const string CityBackground = "Visuals/Arenas/Backgrounds/City/city";
+        private const string GribBackground = "Visuals/Arenas/Backgrounds/Grib/grib";
+        private const string LagunaBackground = "Visuals/Arenas/Backgrounds/Laguna/laguna";
         private const string TrainingGround = "Visuals/Arenas/Training/ground";
         private const string TrainingShip = "Visuals/Arenas/Training/ship";
         private const string TrainingBoxes = "Visuals/Arenas/Training/boxes";
         private const string TrainingRock = "Visuals/Arenas/Training/rock";
         private const string LaserKillZone = "Visuals/Arenas/KillZones/LaserLine/laser_line";
-        private const float DesertKillZoneY = -10.2f;
+        private const float DesertKillZoneY = -9.8f;
         private const string PlayerCharacter = "";
         private const string OpponentCharacter = "";
         private const string PlayerRig = "Visuals/Characters/DroidRig";
@@ -47,6 +52,34 @@ namespace Game.Gameplay.Battle.Visuals
                         KillZoneLayer(DesertKillZoneY)
                     },
                     killZoneY: DesertKillZoneY);
+            }
+
+            if (arena.ArenaId == ForestArenaId)
+            {
+                return new BattleVisualTheme(
+                    new BattleVisualLayer(ForestCosmosBackground, new Vector2(0f, 1.1f), Vector2.one, -30, coverCamera: true),
+                    default,
+                    PlayerCharacter,
+                    OpponentCharacter,
+                    new Vector2(0.18f, 0.18f),
+                    new Vector2(0f, -0.08f),
+                    true,
+                    false,
+                    playerSkinFacingDirectionX: 1,
+                    opponentSkinFacingDirectionX: 1,
+                    playerRigResourcePath: PlayerRig,
+                    opponentRigResourcePath: OpponentRig,
+                    overlayLayers: new[]
+                    {
+                        KillZoneLayer(-7.35f)
+                    },
+                    killZoneY: -7.35f);
+            }
+
+            var background = arena.ArenaId switch { "arena.city" => CityBackground, "arena.grib" => GribBackground, "arena.laguna" => LagunaBackground, _ => string.Empty };
+            if (!string.IsNullOrEmpty(background))
+            {
+                return new BattleVisualTheme(new BattleVisualLayer(background, Vector2.zero, Vector2.one, -30, coverCamera: true), default, PlayerCharacter, OpponentCharacter, new Vector2(0.18f, 0.18f), new Vector2(0f, -0.08f), true, false, playerRigResourcePath: PlayerRig, opponentRigResourcePath: OpponentRig);
             }
 
             if (arena.ArenaId != FirstArenaId)
@@ -86,7 +119,7 @@ namespace Game.Gameplay.Battle.Visuals
         private static BattleVisualLayer KillZoneLayer(float lethalY)
         {
             // The laser core is 0.7 world units above this wide overlay's centre.
-            return new BattleVisualLayer(LaserKillZone, new Vector2(0f, lethalY - 0.7f), new Vector2(5.7f, 4.55f), -6);
+            return new BattleVisualLayer(LaserKillZone, new Vector2(0f, lethalY - 0.7f), new Vector2(5.7f, 4.55f), 45);
         }
     }
 }

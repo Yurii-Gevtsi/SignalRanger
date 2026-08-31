@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core;
+using Game.Core.Modes;
 using Game.Core.Battle;
 using Game.Data.Progression;
 using Game.Data.Save;
@@ -13,6 +14,7 @@ using Game.Gameplay.Battle.AI.Movement;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Feedback;
 using Game.Gameplay.Battle.Motion;
+using Game.Gameplay.Battle.Net;
 using Game.Gameplay.Battle.Projectiles;
 using Game.Gameplay.Battle.Results;
 using Game.Gameplay.Battle.Runtime;
@@ -53,7 +55,7 @@ namespace Game.Gameplay.Battle.Assembly
         }
     }
 
-    public sealed class BattleSceneController : MonoBehaviour
+    public sealed class BattleSceneController : MonoBehaviour, IBattleCommandTarget
     {
         private const float GroundRayStartHeight = 3.5f;
         private const float GroundRayDistance = 8f;
@@ -132,11 +134,28 @@ namespace Game.Gameplay.Battle.Assembly
         private static readonly Color HealthRewardColor = new(0.32f, 0.96f, 0.64f, 1f);
         private readonly List<BattleUnitPresenter> _unitPresenters = new();
         private readonly List<GameObject> _arenaObjects = new();
+        // Full-screen backdrop sprites must follow the camera while the player
+        // pans. Their scale is fixed for the maximum zoom-out view, so this
+        // avoids exposing the camera clear colour at either arena edge.
+        private readonly List<(Transform Transform, Vector2 Offset)> _cameraCoverVisuals = new();
         private readonly List<ResourcePickup> _resourcePickups = new();
         private readonly Dictionary<string, UnitMotor> _unitMotors = new(System.StringComparer.Ordinal);
         private readonly Dictionary<string, WeaponDefinition> _weaponsById = new(System.StringComparer.Ordinal);
-        private readonly Dictionary<string, WeaponEvolutionProfile> _playerWeaponEvolutions = new(System.StringComparer.Ordinal);
-        private readonly Dictionary<string, WeaponUpgradeModifiers> _playerWeaponUpgradeModifiers = new(System.StringComparer.Ordinal);
+        /// <summary>Identifies this battle so its reward transaction is idempotent.</summary>
+        private string _battleId = string.Empty;
+
+        /// <summary>
+        /// Craters cut since the current turn began. Collected so the authoritative
+        /// side can describe the turn's terrain damage in a few dozen bytes instead
+        /// of shipping the whole destruction mask.
+        /// </summary>
+        private readonly List<BattleCraterSnapshot> _turnCraters = new();
+
+        /// <summary>Duel networking; null in every mode but <see cref="BattleMode.Pvp"/>.</summary>
+        private BattleDuelCoordinator _duel;
+        private BattleArenaReward _arenaReward = BattleArenaReward.None;
+        private BattleWeaponProgression _playerProgression = BattleWeaponProgression.Empty;
+        private BattleWeaponProgression _opponentProgression = BattleWeaponProgression.Empty;
         private readonly Dictionary<string, Sprite> _spriteResourceCache = new(System.StringComparer.Ordinal);
         private readonly Dictionary<int, GameObject> _projectileVisuals = new();
         private readonly Dictionary<int, GameObject> _mineVisuals = new();
@@ -261,22 +280,34 @@ namespace Game.Gameplay.Battle.Assembly
                 }
             }
 
-            PopulatePlayerWeaponEvolutions(allWeapons);
+            _battleId = System.Guid.NewGuid().ToString("N");
+            _arenaReward = BattleArenaReward.None;
+            _playerProgression = BattleWeaponProgression.FromResolver(
+                allWeapons,
+                WeaponProgressionBridge.Resolve);
+            _opponentProgression = BattleWeaponProgression.FromRanks(
+                _weaponsById,
+                GameSessionContext.SelectedOpponentWeaponIds,
+                GameSessionContext.SelectedOpponentWeaponRanks,
+                GameSessionContext.SelectedOpponentWeaponBranches);
 
             _weaponExecutor = new WeaponExecutor();
             _weaponExecutor.RegisterEffect(WeaponRole.ShortRangeBurst, new BurstProjectileEffect());
             _weaponExecutor.RegisterEffect("weapon.impulse", new ImpulseSalvoWeaponEffect());
             _aiDifficulty = MapDifficulty(GameSessionContext.SelectedAiDifficulty);
             _inventory = new WeaponInventoryRuntime(CreateMissionWeapons(allWeapons), 1);
-            ApplyPlayerEvolutionAmmo(_inventory);
+            ApplyEvolutionAmmo(_inventory, _playerProgression);
             _opponentInventory = new WeaponInventoryRuntime(CreateOpponentWeapons(allWeapons), 1);
+            ApplyEvolutionAmmo(_opponentInventory, _opponentProgression);
             RefreshArsenalHudItems();
-            _firstBattleGuide = new FirstBattleGuideState(GameSessionContext.SelectedMissionId);
-            _impactGuideEnabled = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId);
+            var showFirstBattleGuide = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId)
+                && !BattleTutorialBridge.IsActiveMissionTutorialCompleted();
+            _firstBattleGuide = new FirstBattleGuideState(showFirstBattleGuide ? GameSessionContext.SelectedMissionId : string.Empty);
+            _impactGuideEnabled = showFirstBattleGuide;
             SelectWeapon(_impactGuideEnabled ? 0 : _inventory.SelectedIndex);
             _playerWeaponSelected = false;
 
-            LoadArena(GameSessionContext.SelectedArenaIndex);
+            LoadArena(GameSessionContext.SelectedArenaIndex, GameSessionContext.SelectedArenaId);
         }
 
         private static WeaponDefinition[] CreateMissionWeapons(IEnumerable<WeaponDefinition> allWeapons)
@@ -286,50 +317,26 @@ namespace Game.Gameplay.Battle.Assembly
                 .ToArray();
         }
 
-        private void PopulatePlayerWeaponEvolutions(IEnumerable<WeaponDefinition> weapons)
+        /// <summary>
+        /// The blaster's burst count is part of its rank-5 evolution, so an inventory
+        /// has to be topped up from whichever side's progression owns it - the
+        /// opponent's evolved blaster fires as many shots as the player's would.
+        /// </summary>
+        private static void ApplyEvolutionAmmo(WeaponInventoryRuntime inventory, BattleWeaponProgression progression)
         {
-            _playerWeaponEvolutions.Clear();
-            _playerWeaponUpgradeModifiers.Clear();
-            if (weapons == null)
-            {
-                return;
-            }
-
-            foreach (var weapon in weapons)
-            {
-                if (weapon == null || string.IsNullOrWhiteSpace(weapon.WeaponId))
-                {
-                    continue;
-                }
-
-                var progress = WeaponProgressionBridge.Resolve(weapon.WeaponId);
-                if (progress == null)
-                {
-                    continue;
-                }
-
-                _playerWeaponEvolutions[weapon.WeaponId] = WeaponEvolutionRuntimeResolver.Resolve(weapon, progress);
-                _playerWeaponUpgradeModifiers[weapon.WeaponId] = WeaponUpgradeModifierResolver.Resolve(weapon, progress);
-            }
-        }
-
-        private void ApplyPlayerEvolutionAmmo(WeaponInventoryRuntime inventory)
-        {
-            if (inventory == null)
+            if (inventory == null || progression == null || progression.IsEmpty)
             {
                 return;
             }
 
             foreach (var weapon in inventory.Weapons)
             {
-                if (weapon == null
-                    || weapon.WeaponId != "weapon.blaster-caset"
-                    || !_playerWeaponEvolutions.TryGetValue(weapon.WeaponId, out var evolution))
+                if (weapon == null || weapon.WeaponId != "weapon.blaster-caset")
                 {
                     continue;
                 }
 
-                inventory.SetRemainingAmmo(weapon, evolution.BlasterBurstShotCount);
+                inventory.SetRemainingAmmo(weapon, progression.ResolveEvolution(weapon.WeaponId).BlasterBurstShotCount);
             }
         }
 
@@ -379,11 +386,35 @@ namespace Game.Gameplay.Battle.Assembly
             _hud.RestartRequested += RestartScene;
             _hud.ContinueRequested += ContinueFromResult;
             _hud.MenuRequested += ExitToMenu;
+            _hud.TutorialSkipRequested += SkipFirstBattleTutorial;
+        }
+
+        private void SkipFirstBattleTutorial()
+        {
+            if (_firstBattleGuide == null || !_firstBattleGuide.IsActive)
+            {
+                return;
+            }
+
+            ClearWalkInput();
+            _firstBattleGuide.Skip();
+            BattleTutorialBridge.SkipActiveMissionTutorial();
+            GameSessionContext.ReportBattleFacts(playerWon: true, healthPercent: 100, opponentRingOut: false);
+            GameSessionContext.ReportMissionCompleted();
+            GameSessionContext.RequestCampaignMissionView(GameSessionContext.SelectedMissionId);
+            LoadMenuScene();
         }
 
         private void OnDestroy()
         {
             RestoreBattleTimeScale();
+            if (_duel != null)
+            {
+                _duel.OpponentLeft -= OnDuelOpponentLeft;
+                _duel.Dispose();
+                _duel = null;
+                PvpSessionBridge.Resolve()?.Disconnect();
+            }
         }
 
         private void OpenBattleSettings()
@@ -428,6 +459,10 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            // Pumped before input so a command that arrived this frame is applied
+            // against the same turn the player is looking at.
+            _duel?.Tick(Time.unscaledDeltaTime, _battleState.Turn.TurnNumber);
+
             _simulation.SetPlayerTurnTimerPaused(_firstBattleGuide != null && _firstBattleGuide.PausesPlayerTimer);
 
             if (_coachTimer > 0f && !_arsenalMenuOpen)
@@ -445,6 +480,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             UpdateCameraZoom();
             UpdateCameraPan();
+            UpdateCameraCoverVisuals();
 
             if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
             {
@@ -545,7 +581,7 @@ namespace Game.Gameplay.Battle.Assembly
             _camera.backgroundColor = new Color(0.54f, 0.78f, 0.95f);
         }
 
-        private void LoadArena(int arenaIndex)
+        private void LoadArena(int arenaIndex, string arenaId = null)
         {
             if (_arenas == null || _arenas.Length == 0)
             {
@@ -557,7 +593,7 @@ namespace Game.Gameplay.Battle.Assembly
             _playerWeaponSelected = false;
             _cameraPanActive = false;
 
-            _arenaIndex = (arenaIndex % _arenas.Length + _arenas.Length) % _arenas.Length;
+            _arenaIndex = ResolveArenaIndex(arenaIndex, arenaId);
             _currentArena = _arenas[_arenaIndex];
             ApplyArenaCamera(_currentArena);
             BuildWorld(_currentArena);
@@ -577,9 +613,10 @@ namespace Game.Gameplay.Battle.Assembly
                 _weaponsById,
                 _playerArchetype,
                 _opponentArchetype,
-                _playerWeaponEvolutions,
-                _playerWeaponUpgradeModifiers);
+                _playerProgression,
+                _opponentProgression);
             SubscribeToSimulation(_simulation);
+            SetUpDuelNetworking();
             ConfigureSupportDrops();
             _botTurnController = CreateBotTurnController();
             _impactGuideProbe = _impactGuideEnabled
@@ -593,6 +630,8 @@ namespace Game.Gameplay.Battle.Assembly
 
             _aimState = new AimState(Vector2.zero, Vector2.right, _aimSettings.MinPower, false);
             _resultScreenState = default;
+            _arenaReward = BattleArenaReward.None;
+            _battleId = System.Guid.NewGuid().ToString("N");
             _status = GameText.BattleIntro(DescribeArena(_currentArena));
             _aimLine.enabled = false;
             HideTrajectoryPreview();
@@ -605,12 +644,29 @@ namespace Game.Gameplay.Battle.Assembly
             ReportTutorial(BattleTutorialBridge.MissionStart);
         }
 
+        private int ResolveArenaIndex(int fallbackIndex, string arenaId)
+        {
+            if (!string.IsNullOrWhiteSpace(arenaId))
+            {
+                for (var i = 0; i < _arenas.Length; i++)
+                {
+                    if (_arenas[i] != null && string.Equals(_arenas[i].ArenaId, arenaId, System.StringComparison.Ordinal))
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return (fallbackIndex % _arenas.Length + _arenas.Length) % _arenas.Length;
+        }
+
         private void SubscribeToSimulation(BattleSimulation simulation)
         {
             simulation.ShotFired += OnSimulationShotFired;
             simulation.ImpactResolved += OnSimulationImpactResolved;
             simulation.DamageApplied += OnSimulationDamageApplied;
             simulation.TerrainCellsDestroyed += OnSimulationTerrainCellsDestroyed;
+            simulation.TerrainCraterApplied += OnSimulationTerrainCraterApplied;
             simulation.UnitDefeated += OnSimulationUnitDefeated;
             simulation.TurnAdvanced += OnSimulationTurnAdvanced;
             simulation.BattleFinished += OnSimulationBattleFinished;
@@ -632,6 +688,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void SelectWeapon(int weaponIndex)
         {
+            EmitDuelCommand(BattleCommandKind.SelectWeapon, weaponIndex);
             if (_inventory == null || !_inventory.HasWeapons)
             {
                 return;
@@ -775,6 +832,8 @@ namespace Game.Gameplay.Battle.Assembly
         {
             if (_camera == null
                 || _playerWeaponSelected
+                || (_currentArena != null && _currentArena.LockCameraAtZoomOutLimit
+                    && Mathf.Approximately(_camera.orthographicSize, _maximumCameraSize))
                 || _battleState == null
                 || _battleState.Turn.ActiveTeam != BattleTeamId.Player
                 || _simulation == null
@@ -973,7 +1032,12 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var position = _camera.transform.position;
-            position.y = _cameraWorldBounds.yMin + _camera.orthographicSize + SpriteArenaBottomScreenOffset;
+            var visibleHeight = _camera.orthographicSize * 2f;
+            var availableVerticalTravel = Mathf.Max(0f, _cameraWorldBounds.height - visibleHeight);
+            position.y = _cameraWorldBounds.yMin + _camera.orthographicSize
+                + availableVerticalTravel * _currentArena.SpriteArenaVerticalAnchor
+                + SpriteArenaBottomScreenOffset * (1f - _currentArena.SpriteArenaVerticalAnchor)
+                + _currentArena.SpriteArenaVerticalScreenOffset;
             _camera.transform.position = position;
         }
 
@@ -1063,6 +1127,7 @@ namespace Game.Gameplay.Battle.Assembly
                 _cameraWorldBounds = ExpandCameraBounds(_cameraWorldBounds, runtimeSurface.Renderer.bounds);
             }
 
+            LimitZoomOutToSpriteArenaBounds(arena);
             ClampCameraToArena();
             AnchorSpriteArenaToCameraBottom();
 
@@ -1098,6 +1163,26 @@ namespace Game.Gameplay.Battle.Assembly
             // over the terrain-derived line so death matches what is on screen.
             _runtimeFallDeathY = _visualTheme?.KillZoneY
                 ?? ComputeFallDeathY(_battleTerrain.Grid, FallDeathY);
+        }
+
+        private void LimitZoomOutToSpriteArenaBounds(ArenaDefinition arena)
+        {
+            if (_camera == null || arena == null || !arena.LimitZoomOutToSpriteBounds
+                || _cameraWorldBounds.width <= 0f || _cameraWorldBounds.height <= 0f)
+            {
+                return;
+            }
+
+            var maxSizeForWidth = _cameraWorldBounds.width / (2f * Mathf.Max(0.01f, _camera.aspect));
+            var maxSizeForHeight = _cameraWorldBounds.height * 0.5f;
+            var containedSize = Mathf.Min(maxSizeForWidth, maxSizeForHeight);
+            if (containedSize <= 0f || containedSize < _minimumCameraSize)
+            {
+                return;
+            }
+
+            _maximumCameraSize = Mathf.Min(_maximumCameraSize, containedSize);
+            _camera.orthographicSize = Mathf.Min(_camera.orthographicSize, _maximumCameraSize);
         }
 
         private Rect ComputeArenaBounds(ArenaDefinition arena)
@@ -1179,7 +1264,7 @@ namespace Game.Gameplay.Battle.Assembly
                 return 3;
             }
 
-            var isStory = !string.IsNullOrWhiteSpace(GameSessionContext.SelectedMissionId);
+            var isStory = GameSessionContext.SelectedBattleMode.IsStory();
             var difficultyOffset = _aiDifficulty switch
             {
                 AiDifficulty.Hard => 2,
@@ -1278,8 +1363,10 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _arenaObjects.Clear();
+            _cameraCoverVisuals.Clear();
             _battleState = null;
             _resultScreenState = default;
+            _arenaReward = BattleArenaReward.None;
         }
 
         private BattleUnitView CreateUnitView(BattleUnitState state)
@@ -1726,7 +1813,26 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            var result = _simulation.TryFire(_aimState);
+            FireWithAim(_aimState);
+        }
+
+        /// <summary>
+        /// Fires with an explicit aim, whatever produced it - the local player's
+        /// drag, the bot, or a command that arrived over the wire. The checks in
+        /// <see cref="Fire"/> guard the local input path only; a remote command has
+        /// already been through its own authority checks and must not be refused
+        /// because of this client's UI state.
+        /// </summary>
+        private void FireWithAim(AimState aim)
+        {
+            if (!IsBattleReady())
+            {
+                return;
+            }
+
+            EmitDuelCommand(BattleCommandKind.Fire, 0, aim.Origin, aim.Direction, aim.Power);
+
+            var result = _simulation.TryFire(aim);
             switch (result.Outcome)
             {
                 case BattleFireOutcome.NoActiveUnit:
@@ -1891,28 +1997,46 @@ namespace Game.Gameplay.Battle.Assembly
         }
 
         /// <summary>
-        /// Rank/branch-aware mine sprite (armed/triggered), same convention as the
-        /// rocket body sprite - only the player's own saved progress is consulted,
-        /// AI opponents' mines always render at the base rank-1 look.
+        /// Rank/branch-aware mine sprite (armed/triggered), resolved from whichever
+        /// side laid it. A raid or duel opponent fielding an evolved mine must look
+        /// like it: art that lies about what is on the ground is worse than no art.
         /// </summary>
-        private static string ResolveMineSpriteId(string baseIconId, WeaponDefinition weapon, BattleTeamId team)
+        private string ResolveMineSpriteId(string baseIconId, WeaponDefinition weapon, BattleTeamId team)
         {
-            if (team == BattleTeamId.Player && weapon != null)
+            return ResolveEvolvedIconId(baseIconId, weapon, ProgressionForTeam(team));
+        }
+
+        private BattleWeaponProgression ProgressionForTeam(BattleTeamId team)
+        {
+            return team == BattleTeamId.Player ? _playerProgression : _opponentProgression;
+        }
+
+        /// <summary>
+        /// Evolved art for <paramref name="baseIconId"/> at the rank/branch
+        /// <paramref name="progression"/> holds, or the base icon when the weapon has
+        /// not evolved or has no evolved art authored.
+        /// </summary>
+        private static string ResolveEvolvedIconId(
+            string baseIconId,
+            WeaponDefinition weapon,
+            BattleWeaponProgression progression)
+        {
+            if (weapon == null || progression == null || string.IsNullOrEmpty(baseIconId))
             {
-                var progress = WeaponProgressionBridge.Resolve(weapon.WeaponId);
-                if (progress != null && progress.rank >= 5)
-                {
-                    var branch = (WeaponUpgradeBranch)progress.branch;
-                    var evolvedPath = WeaponEvolutionIconResolver.ResolveEvolutionIconResource(
-                        baseIconId, progress.rank, branch);
-                    if (!string.IsNullOrWhiteSpace(evolvedPath))
-                    {
-                        return evolvedPath.Substring(WeaponIconResourceRoot.Length);
-                    }
-                }
+                return baseIconId;
             }
 
-            return baseIconId;
+            var rank = progression.ResolveRank(weapon.WeaponId);
+            if (rank < OpponentLoadoutBuilder.EvolutionRank)
+            {
+                return baseIconId;
+            }
+
+            var branch = (WeaponUpgradeBranch)progression.ResolveBranch(weapon.WeaponId);
+            var evolvedPath = WeaponEvolutionIconResolver.ResolveEvolutionIconResource(baseIconId, rank, branch);
+            return string.IsNullOrWhiteSpace(evolvedPath)
+                ? baseIconId
+                : evolvedPath.Substring(WeaponIconResourceRoot.Length);
         }
 
         private void OnSimulationChargeDeployed(ChargeDeployedEvent charge)
@@ -2096,27 +2220,20 @@ namespace Game.Gameplay.Battle.Assembly
         }
 
         /// <summary>
-        /// Rank/branch-aware icon for a weapon's in-flight/held visual. Only the player's
-        /// own saved progress is consulted - AI opponents never evolve their loadout
-        /// (see WeaponEvolutionRuntimeResolver), so their projectiles always render at
-        /// the base rank-1 art.
+        /// Rank/branch-aware icon for a weapon's in-flight/held visual, resolved from
+        /// the progression of whichever side fired it.
         /// </summary>
         private string ResolveOwnerAwareEvolvedIconId(WeaponDefinition weapon, string ownerUnitId)
         {
-            if (!string.IsNullOrWhiteSpace(ownerUnitId)
-                && ownerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
+            var isPlayerOwned = !string.IsNullOrWhiteSpace(ownerUnitId)
+                && ownerUnitId.StartsWith("player.", System.StringComparison.Ordinal);
+            var evolved = ResolveEvolvedIconId(
+                weapon?.IconId,
+                weapon,
+                isPlayerOwned ? _playerProgression : _opponentProgression);
+            if (!string.Equals(evolved, weapon?.IconId, System.StringComparison.Ordinal))
             {
-                var progress = WeaponProgressionBridge.Resolve(weapon.WeaponId);
-                if (progress != null && progress.rank >= 5)
-                {
-                    var branch = (WeaponUpgradeBranch)progress.branch;
-                    var evolvedPath = WeaponEvolutionIconResolver.ResolveEvolutionIconResource(
-                        weapon.IconId, progress.rank, branch);
-                    if (!string.IsNullOrWhiteSpace(evolvedPath))
-                    {
-                        return evolvedPath.Substring(WeaponIconResourceRoot.Length);
-                    }
-                }
+                return evolved;
             }
 
             return weapon.IconId;
@@ -2320,8 +2437,156 @@ namespace Game.Gameplay.Battle.Assembly
             EmitFeedback(BattleFeedbackEventType.UnitDefeated);
         }
 
+        void IBattleCommandTarget.SelectWeapon(int weaponIndex)
+        {
+            SelectWeapon(weaponIndex);
+        }
+
+        void IBattleCommandTarget.SetWalkIntent(int direction)
+        {
+            if (direction == 0)
+            {
+                ClearWalkInput();
+                return;
+            }
+
+            SetUiWalkInput(direction > 0 ? 1 : -1);
+        }
+
+        void IBattleCommandTarget.Jump(int direction)
+        {
+            TryStartJump(direction);
+        }
+
+        void IBattleCommandTarget.Fire(Vector2 origin, Vector2 direction, float power)
+        {
+            FireWithAim(new AimState(origin, direction, power, true));
+        }
+
+        void IBattleCommandTarget.SetProjectileInput(Vector2 direction)
+        {
+            _simulation?.SetControlledProjectileInput(direction);
+        }
+
+        void IBattleCommandTarget.EndTurn()
+        {
+            _simulation?.EndActiveTurn();
+        }
+
+        /// <summary>
+        /// Connects the duel transport and states who owns which unit. Both sides
+        /// build their own side as <c>player.*</c>, so the authority map is what lets
+        /// a command name a commander rather than a local id.
+        /// </summary>
+        /// <summary>
+        /// Mirrors a local action onto the wire. No-op outside a networked duel, and
+        /// suppressed while a remote command is being replayed so an incoming action
+        /// is never echoed back at its sender.
+        /// </summary>
+        private void EmitDuelCommand(
+            BattleCommandKind kind,
+            int value = 0,
+            Vector2 origin = default,
+            Vector2 direction = default,
+            float power = 0f)
+        {
+            if (_duel == null || _duel.IsApplyingRemote)
+            {
+                return;
+            }
+
+            var localUnit = GetPresenter(BattleTeamId.Player)?.State;
+            if (localUnit != null)
+            {
+                _duel.SendLocalCommand(kind, localUnit.UnitId, value, origin, direction, power);
+            }
+        }
+
+        private void SetUpDuelNetworking()
+        {
+            _duel = null;
+            if (GameSessionContext.SelectedBattleMode != BattleMode.Pvp)
+            {
+                return;
+            }
+
+            var session = PvpSessionBridge.Resolve();
+            var opponent = GameSessionContext.SelectedPvpOpponent;
+            // No transport, or an opponent that never came from a live match: the
+            // duel simply plays out locally against the profile it was handed.
+            if (session == null || opponent == null || opponent.IsBotBackfill)
+            {
+                return;
+            }
+
+            var localPlayerId = GameSessionContext.LocalPlayerId;
+            var authority = new BattleUnitAuthority();
+            authority.SetLocalPlayer(localPlayerId);
+            foreach (var unit in _battleState.Teams.SelectMany(team => team.Units))
+            {
+                authority.Assign(
+                    unit.TeamId == BattleTeamId.Player ? localPlayerId : opponent.PlayerId,
+                    unit.UnitId);
+            }
+
+            var coordinator = new BattleDuelCoordinator(
+                session,
+                this,
+                authority,
+                CaptureTurnSnapshot,
+                ApplyAuthoritativeTurn);
+            coordinator.OpponentLeft += OnDuelOpponentLeft;
+            _duel = coordinator;
+
+            session.Connect(
+                GameSessionContext.SelectedMatchId,
+                localPlayerId,
+                PvpSessionRole.Guest,
+                connected =>
+                {
+                    if (!connected)
+                    {
+                        Debug.LogWarning("Duel transport did not connect; the battle continues locally.");
+                    }
+                });
+        }
+
+        private void ApplyAuthoritativeTurn(BattleTurnSnapshot snapshot)
+        {
+            var result = BattleTurnReconciler.Apply(_battleState, _battleTerrain, snapshot);
+            _duel?.ReportReconcileResult(result);
+            if (result.CorrectedUnits > 0)
+            {
+                RefreshUnitViews();
+            }
+        }
+
+        private void OnDuelOpponentLeft(string playerId)
+        {
+            // A commander who leaves mid-battle concedes it; the player is not left
+            // staring at a turn that will never come.
+            _status = GameText.OpponentLeftDuel();
+        }
+
+        private void OnSimulationTerrainCraterApplied(BattleTeamId sourceTeam, Vector2 center, float radius)
+        {
+            _turnCraters.Add(new BattleCraterSnapshot(center, radius));
+        }
+
+        /// <summary>
+        /// The battle as the authoritative side sees it right now, for publishing at a
+        /// turn boundary or for comparing against what another client believes.
+        /// </summary>
+        public BattleTurnSnapshot CaptureTurnSnapshot()
+        {
+            return BattleTurnSnapshot.Capture(_battleState, _turnCraters.ToArray());
+        }
+
         private void OnSimulationTurnAdvanced(BattleTeamId newActiveTeam, TurnAdvanceReason reason)
         {
+            _duel?.PublishTurnBoundary();
+            // Craters belong to the turn that cut them; the next turn starts clean.
+            _turnCraters.Clear();
             _playerWeaponSelected = false;
             _controlledPointerActive = false;
             if (reason == TurnAdvanceReason.PlayerTimerExpired)
@@ -2509,7 +2774,8 @@ namespace Game.Gameplay.Battle.Assembly
         {
             RecordFinishedBattleActivity(result);
             ReportObjectiveFacts(result);
-            _resultScreenState = CreateResultScreenState(result, _battleState.Turn.TurnNumber);
+            _arenaReward = GrantArenaReward(result);
+            _resultScreenState = CreateResultScreenState(result, _battleState.Turn.TurnNumber, _arenaReward);
             _status = GameText.ResultPrompt(_resultScreenState.Title);
             if (result.Outcome == BattleOutcome.PlayerWon && reason != BattleFinishReason.InstantActionCompleted)
             {
@@ -2518,6 +2784,62 @@ namespace Game.Gameplay.Battle.Assembly
 
             _firstBattleGuide?.ObserveBattleFinished();
             EmitFeedback(BattleFeedbackEventType.BattleFinished);
+        }
+
+        /// <summary>
+        /// Banks the payout for a finished raid or duel. Story and training pay
+        /// nothing here: the campaign grants its first-completion reward when the menu
+        /// banks the mission, and training is not an economy source at all.
+        /// </summary>
+        private BattleArenaReward GrantArenaReward(BattleResult result)
+        {
+            if (!GameSessionContext.SelectedBattleMode.IsArena() || result.Outcome == BattleOutcome.InProgress)
+            {
+                return BattleArenaReward.None;
+            }
+
+            var maxHealth = GetTeamMaxHealth(BattleTeamId.Player);
+            var healthPercent = maxHealth > 0
+                ? Mathf.RoundToInt(100f * GetTeamHealth(BattleTeamId.Player) / maxHealth)
+                : 0;
+
+            return BattleRewardBridge.GrantArenaReward(new BattleArenaRewardRequest(
+                GameSessionContext.SelectedBattleMode,
+                GameSessionContext.SelectedAiDifficulty,
+                ResolveArenaOutcome(result.Outcome),
+                healthPercent,
+                _battleId));
+        }
+
+        /// <summary>
+        /// Reward line for the result card: the full credits/XP/blueprints breakdown
+        /// once a repeatable battle has actually paid, and the plain credit line for a
+        /// campaign mission, which is still banked later on the map.
+        /// </summary>
+        private static string DescribeResultReward(BattleRewardPreview preview)
+        {
+            if (preview.CommanderExperience <= 0 && preview.Blueprints <= 0)
+            {
+                return GameText.Reward(preview.SoftCurrency);
+            }
+
+            var summary = GameText.RewardSummary(
+                preview.SoftCurrency,
+                preview.CommanderExperience,
+                preview.Blueprints);
+            return preview.IsReduced
+                ? summary + System.Environment.NewLine + GameText.RewardDailyLimit()
+                : summary;
+        }
+
+        private static BattleArenaOutcome ResolveArenaOutcome(BattleOutcome outcome)
+        {
+            return outcome switch
+            {
+                BattleOutcome.PlayerWon => BattleArenaOutcome.Victory,
+                BattleOutcome.Draw => BattleArenaOutcome.Draw,
+                _ => BattleArenaOutcome.Defeat
+            };
         }
 
         /// <summary>
@@ -2544,13 +2866,11 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _activityBattleRecorded = true;
-            var isTraining = GameSessionContext.IsTrainingSkirmish;
-            var isStoryBattle = !isTraining && !string.IsNullOrWhiteSpace(GameSessionContext.SelectedMissionId);
-            var isArenaBattle = !isTraining && !isStoryBattle;
+            var mode = GameSessionContext.SelectedBattleMode;
             BattleActivityBridge.ReportBattleFinished(
                 result.Outcome == BattleOutcome.PlayerWon,
-                isStoryBattle,
-                isArenaBattle);
+                mode.IsStory(),
+                mode.IsArena());
         }
 
         private void OnSimulationCoverDeployed(CoverDeployedEvent cover)
@@ -2871,6 +3191,24 @@ namespace Game.Gameplay.Battle.Assembly
 
         private Vector2 ResolveUnitLandingPosition(Vector2 desiredPoint, BattleTeamId teamId)
         {
+            var profile = CreateMotionProfile(ArchetypeFor(teamId));
+            var resolver = new BattleSpawnResolver(
+                _battleTerrain?.Grid,
+                profile,
+                GetFallDeathY(),
+                GroundRayStartHeight,
+                GroundRayDistance,
+                _battleTerrain == null
+                    ? 2.5f
+                    : _battleTerrain.Grid.WorldMaxX - _battleTerrain.Grid.WorldMinX);
+            if (resolver.TryResolve(desiredPoint, out var safePosition))
+            {
+                return safePosition;
+            }
+
+            // Preserve the authored anchor as a last-resort fallback for a
+            // malformed arena, but make the failure visible for content QA.
+            Debug.LogWarning($"No safe spawn found near {desiredPoint} for {teamId} in arena '{_currentArena?.ArenaId}'.");
             return TryResolveGroundPosition(desiredPoint, teamId, out var landingPosition)
                 ? landingPosition
                 : desiredPoint;
@@ -2917,6 +3255,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _uiWalkInputDirection = NormalizeDirection(direction);
+            EmitDuelCommand(BattleCommandKind.WalkIntent, _uiWalkInputDirection);
         }
 
         private void StopUiWalkInput(int direction)
@@ -2924,6 +3263,7 @@ namespace Game.Gameplay.Battle.Assembly
             if (_uiWalkInputDirection == NormalizeDirection(direction))
             {
                 _uiWalkInputDirection = 0;
+                EmitDuelCommand(BattleCommandKind.WalkIntent, 0);
             }
         }
 
@@ -3021,6 +3361,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void ClearWalkInput()
         {
+            EmitDuelCommand(BattleCommandKind.WalkIntent, 0);
             _uiWalkInputDirection = 0;
             _keyboardWalkInputDirection = 0;
             _pendingTutorialWalkDirection = 0;
@@ -3049,6 +3390,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void TryStartJump(int direction)
         {
+            EmitDuelCommand(BattleCommandKind.Jump, direction);
             if (_firstBattleGuide != null && _firstBattleGuide.IsActive && !_firstBattleGuide.AllowsJumpDirection(direction))
             {
                 return;
@@ -3161,9 +3503,32 @@ namespace Game.Gameplay.Battle.Assembly
             _aimSettings = weapon.CreateAimSettings(_baseAimSettings);
         }
 
-        private static BattleResultScreenState CreateResultScreenState(BattleResult result, int turnNumber)
+        private static BattleResultScreenState CreateResultScreenState(
+            BattleResult result,
+            int turnNumber,
+            BattleArenaReward arenaReward)
         {
             var state = BattleResultScreenFactory.Create(result, turnNumber);
+
+            // A raid or duel has already been paid by the time the card appears, so it
+            // shows the banked numbers - including on a loss, which still pays a
+            // reduced amount and should say so.
+            if (arenaReward.Granted)
+            {
+                return new BattleResultScreenState(
+                    result,
+                    state.Title,
+                    state.Subtitle,
+                    new BattleRewardPreview(
+                        arenaReward.Credits,
+                        string.Empty,
+                        arenaReward.CommanderExperience,
+                        arenaReward.Blueprints,
+                        arenaReward.IsReduced),
+                    state.RetryLabel,
+                    state.ContinueLabel);
+            }
+
             if (result.Outcome != BattleOutcome.PlayerWon)
             {
                 return state;
@@ -3516,7 +3881,10 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var visual = new GameObject(objectName);
-            visual.transform.position = new Vector3(layer.Value.Position.x, layer.Value.Position.y, 0f);
+            var position = layer.Value.CoverCamera && _camera != null
+                ? (Vector2)_camera.transform.position + layer.Value.Position
+                : layer.Value.Position;
+            visual.transform.position = new Vector3(position.x, position.y, 0f);
             visual.transform.localScale = new Vector3(layer.Value.Scale.x, layer.Value.Scale.y, 1f);
 
             var renderer = visual.AddComponent<SpriteRenderer>();
@@ -3526,6 +3894,7 @@ namespace Game.Gameplay.Battle.Assembly
             if (layer.Value.CoverCamera)
             {
                 ScaleSpriteToCoverCamera(visual.transform, sprite);
+                _cameraCoverVisuals.Add((visual.transform, layer.Value.Position));
             }
 
             _arenaObjects.Add(visual);
@@ -3609,6 +3978,28 @@ namespace Game.Gameplay.Battle.Assembly
             visual.localScale = new Vector3(scale, scale, 1f);
         }
 
+        private void UpdateCameraCoverVisuals()
+        {
+            if (_camera == null)
+            {
+                return;
+            }
+
+            var cameraPosition = (Vector2)_camera.transform.position;
+            for (var i = _cameraCoverVisuals.Count - 1; i >= 0; i--)
+            {
+                var entry = _cameraCoverVisuals[i];
+                if (entry.Transform == null)
+                {
+                    _cameraCoverVisuals.RemoveAt(i);
+                    continue;
+                }
+
+                var position = cameraPosition + entry.Offset;
+                entry.Transform.position = new Vector3(position.x, position.y, entry.Transform.position.z);
+            }
+        }
+
         private Sprite GetUnitSkin(BattleTeamId teamId)
         {
             if (_visualTheme == null)
@@ -3653,6 +4044,19 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var sprite = Resources.Load<Sprite>(resourcePath);
+            if (sprite == null)
+            {
+                var texture = Resources.Load<Texture2D>(resourcePath);
+                if (texture != null)
+                {
+                    sprite = Sprite.Create(
+                        texture,
+                        new Rect(0f, 0f, texture.width, texture.height),
+                        new Vector2(0.5f, 0.5f),
+                        100f);
+                }
+            }
+
             if (sprite != null)
             {
                 _spriteResourceCache.Add(resourcePath, sprite);
@@ -4014,6 +4418,7 @@ namespace Game.Gameplay.Battle.Assembly
                 && (!guideActive || _firstBattleGuide.AllowsWalkDirection(-1) || _firstBattleGuide.AllowsWalkDirection(1)
                     || _firstBattleGuide.AllowsJumpDirection(-1) || _firstBattleGuide.AllowsJumpDirection(1));
             var mobilityLabel = GameText.MobilityLabel(_simulation.MovementTimeRemaining);
+            var opponentWeapon = _opponentInventory?.Selected;
             var canOpenArsenal = !_simulation.Result.IsFinished
                 && _battleState.Turn.ActiveTeam == BattleTeamId.Player
                 && !HasProjectilesInFlight
@@ -4050,6 +4455,7 @@ namespace Game.Gameplay.Battle.Assembly
                 guideActive && _firstBattleGuide.BlocksWeaponSwitch,
                 guideActive && _firstBattleGuide.BlocksCancelAim,
                 guideActive && !(_firstBattleGuide.AllowsWalkDirection(-1) || _firstBattleGuide.AllowsWalkDirection(1)),
+                guideActive && isFirstTrainingBattle,
                 _aimState.Power,
                 _aimSettings.MinPower,
                 _aimSettings.MaxPower,
@@ -4059,7 +4465,7 @@ namespace Game.Gameplay.Battle.Assembly
                 _resultScreenState.Title,
                 _resultScreenState.Subtitle,
                 _simulation.Result.IsFinished ? DescribeOutcome(_resultScreenState.Result.Outcome) : string.Empty,
-                _simulation.Result.IsFinished ? GameText.Reward(_resultScreenState.RewardPreview.SoftCurrency) : string.Empty,
+                _simulation.Result.IsFinished ? DescribeResultReward(_resultScreenState.RewardPreview) : string.Empty,
                 _simulation.Result.IsFinished && _resultScreenState.RewardPreview.HasUnlock ? _resultScreenState.RewardPreview.UnlockText : GameText.NoUnlocks,
                 _simulation.Result.IsFinished && _resultScreenState.CanContinue,
                 _simulation.Result.IsFinished ? _resultScreenState.RetryLabel : GameText.Restart,
@@ -4068,9 +4474,27 @@ namespace Game.Gameplay.Battle.Assembly
                 GameSessionContext.SelectedMissionText,
                 // Only a won battle banks the mission - a loss leaves it outstanding even
                 // when its objective was met, matching what the campaign map will show.
-                _simulation.Result.Outcome == BattleOutcome.PlayerWon);
+                _simulation.Result.Outcome == BattleOutcome.PlayerWon,
+                ResolveOpponentName(),
+                DescribeWeapon(opponentWeapon),
+                opponentWeapon != null ? _opponentProgression.ResolveRank(opponentWeapon.WeaponId) : 0);
 
             _hud.Render(state);
+        }
+
+        /// <summary>
+        /// Who the HUD names as the opponent. Story and training already say it
+        /// through the mission briefing, so only the repeatable modes fill this in:
+        /// the antagonist for a raid, the matched commander's call sign for a duel.
+        /// </summary>
+        private static string ResolveOpponentName()
+        {
+            return GameSessionContext.SelectedBattleMode switch
+            {
+                BattleMode.Raid => GameText.SigmaName(),
+                BattleMode.Pvp => GameSessionContext.SelectedPvpOpponent?.DisplayName ?? string.Empty,
+                _ => string.Empty
+            };
         }
 
         private void RefreshArsenalHudItems()

@@ -135,8 +135,8 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly Vector2 _projectileGravityPerScale;
         private readonly BattleSimulationSettings _settings;
         private readonly IReadOnlyDictionary<string, WeaponDefinition> _weaponsById;
-        private readonly IReadOnlyDictionary<string, WeaponEvolutionProfile> _playerWeaponEvolutions;
-        private readonly IReadOnlyDictionary<string, WeaponUpgradeModifiers> _playerWeaponUpgradeModifiers;
+        private readonly BattleWeaponProgression _playerProgression;
+        private readonly BattleWeaponProgression _opponentProgression;
         private readonly CharacterArchetype _playerArchetype;
         private readonly CharacterArchetype _opponentArchetype;
         private readonly TurnMovementState _playerMovement;
@@ -183,8 +183,8 @@ namespace Game.Gameplay.Battle.Simulation
             IReadOnlyDictionary<string, WeaponDefinition> weaponsById,
             CharacterArchetype playerArchetype,
             CharacterArchetype opponentArchetype,
-            IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null,
-            IReadOnlyDictionary<string, WeaponUpgradeModifiers> playerWeaponUpgradeModifiers = null)
+            BattleWeaponProgression playerProgression = null,
+            BattleWeaponProgression opponentProgression = null)
         {
             var turnService = new TurnService();
             turnService.StartFirstTurn(state, BattleTeamId.Player);
@@ -201,8 +201,8 @@ namespace Game.Gameplay.Battle.Simulation
                 weaponsById,
                 playerArchetype,
                 opponentArchetype,
-                playerWeaponEvolutions,
-                playerWeaponUpgradeModifiers);
+                playerProgression,
+                opponentProgression);
         }
 
         public BattleSimulation(
@@ -218,8 +218,8 @@ namespace Game.Gameplay.Battle.Simulation
             IReadOnlyDictionary<string, WeaponDefinition> weaponsById,
             CharacterArchetype playerArchetype,
             CharacterArchetype opponentArchetype,
-            IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null,
-            IReadOnlyDictionary<string, WeaponUpgradeModifiers> playerWeaponUpgradeModifiers = null)
+            BattleWeaponProgression playerProgression = null,
+            BattleWeaponProgression opponentProgression = null)
         {
             _state = state;
             _turnService = turnService;
@@ -231,10 +231,8 @@ namespace Game.Gameplay.Battle.Simulation
             _projectileGravityPerScale = projectileGravityPerScale;
             _settings = settings;
             _weaponsById = weaponsById;
-            _playerWeaponEvolutions = playerWeaponEvolutions
-                ?? new Dictionary<string, WeaponEvolutionProfile>();
-            _playerWeaponUpgradeModifiers = playerWeaponUpgradeModifiers
-                ?? new Dictionary<string, WeaponUpgradeModifiers>();
+            _playerProgression = playerProgression ?? BattleWeaponProgression.Empty;
+            _opponentProgression = opponentProgression ?? BattleWeaponProgression.Empty;
             _playerArchetype = playerArchetype;
             _opponentArchetype = opponentArchetype;
             _playerMovement = new TurnMovementState(settings.PlayerTurnDurationSeconds);
@@ -243,6 +241,14 @@ namespace Game.Gameplay.Battle.Simulation
         public event Action<BattleTeamId, WeaponDefinition, bool> ShotFired;
         public event Action<ImpactResolvedEvent> ImpactResolved;
         public event Action<BattleTeamId, int> TerrainCellsDestroyed;
+
+        /// <summary>
+        /// Geometry of a hole cut in the terrain: centre and radius. The cell count
+        /// above is enough for scoring, but replicating terrain to another client
+        /// needs the shape that produced it - a crater replays exactly from these two
+        /// numbers, while the resulting mask is far too large to send.
+        /// </summary>
+        public event Action<BattleTeamId, Vector2, float> TerrainCraterApplied;
         public event Action<BattleTeamId, DamageEvent> DamageApplied;
         public event Action<UnitDefeatedEvent> UnitDefeated;
         public event Action<BattleTeamId, TurnAdvanceReason> TurnAdvanced;
@@ -510,33 +516,32 @@ namespace Game.Gameplay.Battle.Simulation
                 : Vector2.zero;
         }
 
+        /// <summary>
+        /// Rank 5/10 branch mechanics for whichever side is firing. Both sides are
+        /// looked up the same way: a raid or duel opponent is developed exactly as
+        /// far as its own <see cref="BattleWeaponProgression"/> says.
+        /// </summary>
         private WeaponEvolutionProfile ResolveEvolutionFor(BattleTeamId teamId, WeaponDefinition weapon)
         {
-            if (teamId == BattleTeamId.Player
-                && weapon != null
-                && _playerWeaponEvolutions.TryGetValue(weapon.WeaponId, out var evolution))
-            {
-                return evolution;
-            }
-
-            return WeaponEvolutionProfile.Base;
+            return weapon == null
+                ? WeaponEvolutionProfile.Base
+                : ProgressionFor(teamId).ResolveEvolution(weapon.WeaponId);
         }
 
         /// <summary>
-        /// Flat % Damage/ImpactRadius bonuses the player has purchased for this
-        /// weapon (ranks 2-4, 6-9). AI opponents never modernize, matching
-        /// <see cref="ResolveEvolutionFor"/>.
+        /// Flat % Damage/ImpactRadius bonuses from ranks 2-4 and 6-9, resolved per
+        /// side exactly like <see cref="ResolveEvolutionFor"/>.
         /// </summary>
         private WeaponUpgradeModifiers ResolveModifiersFor(BattleTeamId teamId, WeaponDefinition weapon)
         {
-            if (teamId == BattleTeamId.Player
-                && weapon != null
-                && _playerWeaponUpgradeModifiers.TryGetValue(weapon.WeaponId, out var modifiers))
-            {
-                return modifiers;
-            }
+            return weapon == null
+                ? default
+                : ProgressionFor(teamId).ResolveModifiers(weapon.WeaponId);
+        }
 
-            return default;
+        private BattleWeaponProgression ProgressionFor(BattleTeamId teamId)
+        {
+            return teamId == BattleTeamId.Player ? _playerProgression : _opponentProgression;
         }
 
         private static AimState CreateImmediateActionAim(BattleUnitState unit)
@@ -636,6 +641,21 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Ends the active turn without an action, the same way the turn timer does.
+        /// Used when a combatant gives their turn up explicitly - a remote player
+        /// passing, or a battle being resynchronised past a turn nobody completed.
+        /// </summary>
+        public void EndActiveTurn()
+        {
+            if (Result.IsFinished || GetActiveUnitOrNull() == null)
+            {
+                return;
+            }
+
+            EndPlayerTurnFromTimer();
         }
 
         public void AdvanceTurnDueToNoUsableWeapon()
@@ -3097,6 +3117,7 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             TerrainCellsDestroyed?.Invoke(sourceTeam, destroyedCellCount);
+            TerrainCraterApplied?.Invoke(sourceTeam, point, radius);
             return true;
         }
 

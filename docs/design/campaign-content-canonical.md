@@ -15,7 +15,7 @@ Status: editable planning baseline. Runtime currently contains four planet slots
 | Planet slot | Chapter | Missions | Status | Primary arena |
 |---|---|---:|---|---|
 | 1 | `chapter.basics` | 1–5 | implemented | `arena.desert-sci-fi` |
-| 2 | `chapter.tactical-tools` | 6–8 | implemented | `arena.desert-sci-fi` |
+| 2 | `chapter.tactical-tools` | 6–8 | implemented | `arena.forest` |
 | 3 | TBD | TBD | reserved | TBD |
 | 4 | TBD | TBD | reserved | TBD |
 
@@ -74,4 +74,3 @@ Balance notes:
 ```
 
 Before moving a planet from `reserved` to `implemented`, add its chapter, mission definitions, arena IDs, tests, localization keys and reward rows to the runtime catalog and update this sheet.
-

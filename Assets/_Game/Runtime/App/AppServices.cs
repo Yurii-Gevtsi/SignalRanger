@@ -3,6 +3,7 @@ using Game.Audio;
 using Game.App.Content;
 using Game.Core;
 using Game.Core.Localization;
+using Game.Core.Modes;
 using Game.Data.Progression;
 using Game.Data.Save;
 using Game.Economy;
@@ -10,6 +11,7 @@ using Game.Inventory;
 using Game.Infrastructure;
 using Game.Progression.Missions;
 using Game.Progression;
+using Game.Progression.Modes;
 using Game.Tutorial;
 
 namespace Game.App
@@ -22,6 +24,7 @@ namespace Game.App
         public static bool IsInitialized { get; private set; }
         public static bool IsFirstLoginToday { get; private set; }
         public static ISceneLoadingService SceneLoader { get; private set; }
+        public static bool IsAdminModeEnabled => SaveService?.Current?.settings?.adminModeEnabled == true;
         public static ILocalizationService Localization { get; private set; }
         public static GameSessionService Session { get; private set; }
         public static ISaveService SaveService { get; private set; }
@@ -34,6 +37,9 @@ namespace Game.App
         public static HistoricalPowerService HistoricalPower { get; private set; }
         public static WeaponUpgradeService WeaponUpgrades { get; private set; }
         public static BattleRewardService BattleRewards { get; private set; }
+
+        /// <summary>Banks raid and duel rewards under the shared daily budget.</summary>
+        public static RepeatableBattleRewardService RepeatableBattleRewards { get; private set; }
         public static ActivityProgressService ActivityProgress { get; private set; }
         public static InventoryService Inventory { get; private set; }
         public static IAudioService Audio { get; private set; }
@@ -47,6 +53,22 @@ namespace Game.App
         public static ICloudSyncService CloudSync { get; private set; }
         public static IServerTimeService ServerTime { get; private set; }
         public static IPremiumStatusService PremiumStatus { get; private set; }
+
+        /// <summary>Duel opponent search. Offline stand-in until the network adapter lands.</summary>
+        public static IMatchmakingService Matchmaking { get; private set; }
+
+        /// <summary>Duel transport; null while the game is offline.</summary>
+        public static IPvpSessionService PvpSession { get; private set; }
+
+        /// <summary>True once live online adapters have replaced the no-op ones.</summary>
+        public static bool AreOnlineServicesAttached { get; private set; }
+
+        /// <summary>
+        /// Raised once the online bootstrap has signed in and swapped the no-op
+        /// services. Adapters that need a signed-in session - duel matchmaking and
+        /// transport - hook this instead of racing the bootstrap.
+        /// </summary>
+        public static event Action OnlineServicesAttached;
         public static MissionCompletionResult LastMissionCompletionResult { get; set; }
 
         public static void Initialize()
@@ -67,6 +89,7 @@ namespace Game.App
             Game.Data.Progression.CommanderProgressionTable.ForceMaxLevel = SaveService.Current.settings.adminModeEnabled;
             WeaponUpgrades = new WeaponUpgradeService(SaveService.Current, Economy);
             BattleRewards = new BattleRewardService(Economy);
+            RepeatableBattleRewards = new RepeatableBattleRewardService(SaveService.Current, BattleRewards);
             ActivityProgress = new ActivityProgressService(SaveService.Current);
             IsFirstLoginToday = ActivityProgress.RecordLogin();
             var loginPeriod = SaveService.Current.activity.dailyPeriodStartUtcTicks;
@@ -91,6 +114,7 @@ namespace Game.App
             CloudSync = new NoOpCloudSyncService();
             ServerTime = new NoOpServerTimeService();
             PremiumStatus = new NoOpPremiumStatusService();
+            Matchmaking = new LocalPvpMatchmakingService();
             Content = DefaultGameContentCatalog.Create();
             Missions = Content.Missions;
             Campaign = new CampaignProgressionService(SaveService.Current, Missions, Economy);
@@ -108,10 +132,34 @@ namespace Game.App
             Game.Core.BattleRewardBridge.CoinsGranted =
                 (amount, sourceType, sourceId) => Economy?.Grant(amount, sourceType, sourceId, null);
             Game.Core.BattleRewardBridge.CommanderExperienceResolver = () => Economy?.CommanderExperience ?? 0;
+            Game.Core.BattleRewardBridge.ArenaRewardGranter = GrantRepeatableBattleReward;
+            Game.Core.PvpSessionBridge.Resolver = () => PvpSession;
             Session = new GameSessionService(SaveService.Current, Campaign, Content);
             LastMissionCompletionResult = default;
             SaveService.Save(SaveService.Current);
             IsInitialized = true;
+        }
+
+        /// <summary>
+        /// Banks a finished raid or duel. Saving here rather than leaving it to the
+        /// next scene keeps the payout durable even if the player kills the app on
+        /// the result card.
+        /// </summary>
+        private static Game.Core.Battle.BattleArenaReward GrantRepeatableBattleReward(
+            Game.Core.Battle.BattleArenaRewardRequest request)
+        {
+            if (!IsInitialized || RepeatableBattleRewards == null)
+            {
+                return Game.Core.Battle.BattleArenaReward.None;
+            }
+
+            var reward = RepeatableBattleRewards.Grant(request);
+            if (reward.Granted)
+            {
+                SaveService?.Save(SaveService.Current);
+            }
+
+            return reward;
         }
 
         /// <summary>Refreshes and persists the monotonic account-strength high-water mark.</summary>
@@ -193,6 +241,35 @@ namespace Game.App
                 _cloudSyncCoordinator.OnSignedIn(decision =>
                     Analytics?.TrackEvent($"cloud_sync_resolved.{decision}"));
             }
+
+            AreOnlineServicesAttached = true;
+            OnlineServicesAttached?.Invoke();
+        }
+
+        /// <summary>
+        /// Swaps the offline stand-in for the real matchmaker once the online
+        /// bootstrap has a session. Nothing above <see cref="IMatchmakingService"/>
+        /// needs to know this happened.
+        /// </summary>
+        public static void AttachMatchmakingService(IMatchmakingService matchmaking)
+        {
+            if (!IsInitialized || matchmaking == null)
+            {
+                return;
+            }
+
+            Matchmaking = matchmaking;
+        }
+
+        /// <summary>Installs the duel transport once a match has a live session.</summary>
+        public static void AttachPvpSessionService(IPvpSessionService pvpSession)
+        {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
+            PvpSession = pvpSession;
         }
 
         public static void AttachAdsService(IAdsService ads)

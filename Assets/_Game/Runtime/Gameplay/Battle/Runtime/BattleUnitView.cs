@@ -23,7 +23,7 @@ namespace Game.Gameplay.Battle.Runtime
         private const string HeadingFontResourcePath = "Fonts/Orbitron";
         private const string JetTrailResourcePath = "UI/Common/jet_trail_light";
         private const string DeadWreckageResourcePath = "Visuals/Characters/dead";
-        private static readonly Vector3 DeadWreckageScale = new(0.9f, 0.9f, 1f);
+        private static readonly Vector3 DeadWreckageScale = new(0.15f, 0.15f, 1f);
         private static readonly Vector3 WeaponMountPosition = new(-0.68f, 0.42f, 0f);
         private static readonly Vector3 HealthLabelPosition = new(0f, 1.3f, 0f);
         private static readonly Vector3 HealthLabelScale = new(0.15f, 0.15f, 1f);

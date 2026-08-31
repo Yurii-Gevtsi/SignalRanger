@@ -27,8 +27,8 @@ namespace Game.App.Content
             {
                 CampaignChapterDefinition.CreateRuntime(
                     "chapter.basics",
-                    GameText.Localized("campaignText.chapter.basics.title", "Розділ 1. Основи пострілу"),
-                    GameText.Localized("campaignText.chapter.basics.summary", "Перші бої без зайвого шуму: приціл, сила, дуга, коротка дистанція та вибір правильного інструмента."),
+                    GameText.Localized("campaignText.chapter.basics.title", "Campaign"),
+                    GameText.Localized("campaignText.chapter.basics.summary", "Mission briefing"),
                     new[]
                     {
                         "mission.training.01",
@@ -55,8 +55,8 @@ namespace Game.App.Content
                     }),
                 CampaignChapterDefinition.CreateRuntime(
                     "chapter.tactical-tools",
-                    GameText.Localized("campaignText.chapter.tactical-tools.title", "Розділ 2. Тактичні інструменти"),
-                    GameText.Localized("campaignText.chapter.tactical-tools.summary", "Коли пряма атака вже не найкраща, бій вчить використовувати укриття, захист і перепозиціювання."),
+                    GameText.Localized("campaignText.chapter.tactical-tools.title", "Campaign"),
+                    GameText.Localized("campaignText.chapter.tactical-tools.summary", "Mission briefing"),
                     new[]
                     {
                         "mission.training.06",
@@ -77,7 +77,28 @@ namespace Game.App.Content
                         "weapon.c4",
                         "weapon.heal",
                         "weapon.teleport"
-                    })
+                    }),
+                CampaignChapterDefinition.CreateRuntime(
+                    "chapter.city",
+                    GameText.Localized("campaign.defaultTitle", "Campaign"),
+                    GameText.Localized("campaign.defaultSummary", "Mission briefing"),
+                    new[] { "mission.training.09", "mission.training.10" },
+                    new[] { "tutorial.review" },
+                    new[] { "weapon.blaster-caset", "weapon.granata", "weapon.bur", "weapon.c4" }),
+                CampaignChapterDefinition.CreateRuntime(
+                    "chapter.grib",
+                    GameText.Localized("campaign.defaultTitle", "Campaign"),
+                    GameText.Localized("campaign.defaultSummary", "Mission briefing"),
+                    new[] { "mission.training.11", "mission.training.12" },
+                    new[] { "tutorial.review" },
+                    new[] { "weapon.granata", "weapon.bur", "weapon.mine", "weapon.heal", "weapon.teleport" }),
+                CampaignChapterDefinition.CreateRuntime(
+                    "chapter.laguna",
+                    GameText.Localized("campaign.defaultTitle", "Campaign"),
+                    GameText.Localized("campaign.defaultSummary", "Mission briefing"),
+                    new[] { "mission.training.13", "mission.training.14" },
+                    new[] { "tutorial.review" },
+                    new[] { "weapon.granata", "weapon.bur", "weapon.c4", "weapon.heal", "weapon.teleport" })
             };
         }
 

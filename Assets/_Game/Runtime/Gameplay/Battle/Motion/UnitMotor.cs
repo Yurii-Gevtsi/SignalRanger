@@ -93,6 +93,28 @@ namespace Game.Gameplay.Battle.Motion
 
         private float Skin => _terrain.CellSize.y * SkinCellFraction;
 
+        /// <summary>
+        /// Validates an initial position before the battle starts. A spawn is
+        /// safe only when the body is clear, supported by ground, and can take
+        /// at least one cell-sized walk step in either direction.
+        /// </summary>
+        public bool IsSafeSpawn()
+        {
+            if (_terrain == null || IsBodyBlocked(Position) || !IsGrounded(Position))
+            {
+                return false;
+            }
+
+            var probeDelta = _terrain.CellSize.x / _profile.WalkSpeed + 0.0001f;
+            return CanWalkOneStep(-1, probeDelta) || CanWalkOneStep(1, probeDelta);
+        }
+
+        private bool CanWalkOneStep(int direction, float deltaTime)
+        {
+            var probe = new UnitMotor(_terrain, _profile, Position, _killY);
+            return probe.Walk(direction, deltaTime) == WalkOutcome.Moved;
+        }
+
         public void Teleport(Vector2 position)
         {
             Position = position;

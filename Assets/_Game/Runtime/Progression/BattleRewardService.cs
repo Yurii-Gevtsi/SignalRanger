@@ -18,13 +18,15 @@ namespace Game.Progression
             BattleRewardOutcome outcome,
             int creditPerformanceBonusPercent,
             int blueprintPerformanceBonusPercent,
-            string blueprintWeaponId)
+            string blueprintWeaponId,
+            int dailyScalePercent = 100)
         {
             var baseReward = BattleRewardCatalog.GetArenaReward(difficulty, outcome, blueprintWeaponId);
-            return BattleRewardCatalog.ApplyPerformanceBonus(
+            var withBonus = BattleRewardCatalog.ApplyPerformanceBonus(
                 baseReward,
                 creditPerformanceBonusPercent,
                 blueprintPerformanceBonusPercent);
+            return BattleRewardCatalog.ApplyScale(withBonus, dailyScalePercent);
         }
 
         public EconomyTransactionResult GrantArenaReward(
@@ -35,19 +37,48 @@ namespace Game.Progression
             string blueprintWeaponId,
             string battleId)
         {
+            return GrantArenaReward(
+                difficulty,
+                outcome,
+                creditPerformanceBonusPercent,
+                blueprintPerformanceBonusPercent,
+                blueprintWeaponId,
+                battleId,
+                100,
+                out _);
+        }
+
+        /// <summary>
+        /// Banks an arena reward and hands back exactly what was paid, so the result
+        /// card shows the granted numbers rather than a second, separate estimate.
+        /// The transaction id is derived from the battle, so re-banking the same
+        /// finished battle cannot pay twice.
+        /// </summary>
+        public EconomyTransactionResult GrantArenaReward(
+            BattleRewardDifficulty difficulty,
+            BattleRewardOutcome outcome,
+            int creditPerformanceBonusPercent,
+            int blueprintPerformanceBonusPercent,
+            string blueprintWeaponId,
+            string battleId,
+            int dailyScalePercent,
+            out ProgressionReward granted)
+        {
+            granted = default;
             if (string.IsNullOrWhiteSpace(battleId))
             {
                 return new EconomyTransactionResult(false, _economy.SoftCurrency, "battle.arena");
             }
 
-            var reward = CalculateArenaReward(
+            granted = CalculateArenaReward(
                 difficulty,
                 outcome,
                 creditPerformanceBonusPercent,
                 blueprintPerformanceBonusPercent,
-                blueprintWeaponId);
+                blueprintWeaponId,
+                dailyScalePercent);
             return _economy.Grant(
-                reward,
+                granted,
                 "battle.arena",
                 difficulty.ToString().ToLowerInvariant(),
                 $"battle.arena.{battleId}");

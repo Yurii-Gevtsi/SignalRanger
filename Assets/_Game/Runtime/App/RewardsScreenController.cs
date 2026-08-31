@@ -523,7 +523,7 @@ namespace Game.App
                 var claimed = progress.IsClaimed(period, quest.Id);
                 view.QuestId = quest.Id;
                 view.Number.text = (i + 1).ToString();
-                view.Title.text = GameText.RewardQuest(quest.Id, quest.FallbackTitle);
+                view.Title.text = GameText.RewardQuest(quest.Id, string.Empty);
                 view.Progress.text = $"{Mathf.Min(current, quest.Target)}/{quest.Target}";
                 var progressWidth = 476f * Mathf.Clamp01((float)current / quest.Target);
                 view.ProgressFill.rectTransform.sizeDelta = new Vector2(progressWidth, 13f);

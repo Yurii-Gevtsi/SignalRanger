@@ -13,105 +13,105 @@ namespace Game.Tutorial
             {
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.aim",
-                    Text("tutorial.aim", "Затисни й потягни в зоні бою. Дуга покаже, куди саме піде постріл."),
+                    Text("tutorial.aim"),
                     "battle.aim-area",
                     TutorialStepTrigger.OnMissionStart,
                     TutorialCompletionType.OnTriggerObserved),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.fire",
-                    Text("tutorial.fire", "Коли траєкторія влаштовує, підтверди постріл кнопкою «Вогонь»."),
+                    Text("tutorial.fire"),
                     "battle.fire-button",
                     TutorialStepTrigger.OnAimStarted,
                     TutorialCompletionType.OnTriggerObserved,
                     new[] { "tutorial.aim" }),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.impact",
-                    Text("tutorial.impact", "Стартова сфера карає за точність: чим ближче до центру удару, тим більше шкоди."),
+                    Text("tutorial.impact"),
                     "battle.impact",
                     TutorialStepTrigger.OnShotFired,
                     TutorialCompletionType.OnTriggerObserved,
                     new[] { "tutorial.fire" }),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.turn",
-                    Text("tutorial.turn", "Після пострілу хід переходить супернику. Плануй не лише удар, а й відповідь у відповідь."),
+                    Text("tutorial.turn"),
                     "battle.turn-label",
                     TutorialStepTrigger.OnProjectileImpact,
                     TutorialCompletionType.OnTriggerObserved,
                     new[] { "tutorial.impact" }),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.win",
-                    Text("tutorial.win", "Перемога дає монети, відкриває наступну місію й підштовхує до нових інструментів."),
+                    Text("tutorial.win"),
                     "battle.result",
                     TutorialStepTrigger.OnBattleWon,
                     TutorialCompletionType.OnMissionCompleted,
                     new[] { "tutorial.turn" }),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.arc",
-                    Text("tutorial.arc", "У цій місії веди приціл вище цілі: навісний постріл має перелетіти перепад висоти."),
+                    Text("tutorial.arc"),
                     "battle.aim-area",
                     TutorialStepTrigger.OnMissionStart,
                     TutorialCompletionType.OnTriggerObserved),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.power",
-                    Text("tutorial.power", "Якщо дуга вже висока, дотягни силу ще трохи, щоб снаряд не впав перед суперником."),
+                    Text("tutorial.power"),
                     "battle.power-meter",
                     TutorialStepTrigger.OnAimStarted,
                     TutorialCompletionType.OnTriggerObserved,
                     new[] { "tutorial.arc" }),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.arc-review",
-                    Text("tutorial.arc-review", "Після першої спроби коригуй одне з двох: або вище дуга, або трохи більша сила."),
+                    Text("tutorial.arc-review"),
                     "battle.status",
                     TutorialStepTrigger.OnShotFired,
                     TutorialCompletionType.OnTriggerObserved,
                     new[] { "tutorial.power" }),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.cover-target",
-                    Text("tutorial.cover-target", "Не шукай прямого влучання: цілься в землю або край укриття поруч із суперником."),
+                    Text("tutorial.cover-target"),
                     "battle.aim-area",
                     TutorialStepTrigger.OnMissionStart,
                     TutorialCompletionType.OnTriggerObserved),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.radius",
-                    Text("tutorial.radius", "Вибух поруч теж рахується. У цій місії важливіший радіус, ніж ідеальний центр попадання."),
+                    Text("tutorial.radius"),
                     "battle.impact",
                     TutorialStepTrigger.OnShotFired,
                     TutorialCompletionType.OnTriggerObserved,
                     new[] { "tutorial.cover-target" }),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.close-range",
-                    Text("tutorial.close-range", "Коротка арена не про довгу дугу. Тут краще швидко оцінити ризик і вдарити без зайвого розгону."),
+                    Text("tutorial.close-range"),
                     "battle.aim-area",
                     TutorialStepTrigger.OnMissionStart,
                     TutorialCompletionType.OnTriggerObserved),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.weapon-switch",
-                    Text("tutorial.weapon-switch", "Перед пострілом перевір кнопку зброї зліва: правильний інструмент часто важливіший за ідеальний кут."),
+                    Text("tutorial.weapon-switch"),
                     "battle.weapon-strip",
                     TutorialStepTrigger.OnMissionStart,
                     TutorialCompletionType.OnTriggerObserved),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.area-choice",
-                    Text("tutorial.area-choice", "Інколи вигідніше змінити саму арену під себе: укриття й зональний тиск створюють безпечніші ходи."),
+                    Text("tutorial.area-choice"),
                     "battle.weapon-strip",
                     TutorialStepTrigger.OnMissionStart,
                     TutorialCompletionType.OnTriggerObserved),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.precision",
-                    Text("tutorial.precision", "Точний постріл винагороджує терпіння: спочатку вирівняй кут, а вже потім додавай силу."),
+                    Text("tutorial.precision"),
                     "battle.aim-area",
                     TutorialStepTrigger.OnAimStarted,
                     TutorialCompletionType.OnTriggerObserved),
                 TutorialStepDefinition.CreateRuntime(
                     "tutorial.review",
-                    Text("tutorial.review", "Перед «Вогонь» перевір три речі: позицію, обрану зброю й ризик відповіді суперника."),
+                    Text("tutorial.review"),
                     "battle.status",
                     TutorialStepTrigger.OnMissionStart,
                     TutorialCompletionType.OnTriggerObserved)
             };
         }
 
-        private static string Text(string key, string fallback) =>
-            Game.Core.Localization.GameText.Localized("tutorialSteps." + key, fallback);
+        private static string Text(string key) =>
+            Game.Core.Localization.GameText.Localized("tutorialSteps." + key, string.Empty);
     }
 }

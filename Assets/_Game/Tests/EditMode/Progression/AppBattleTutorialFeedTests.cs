@@ -100,5 +100,24 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(tutorial.IsCompleted("tutorial.aim"), Is.False);
             Assert.That(save.SaveCount, Is.EqualTo(1));
         }
+
+        [Test]
+        public void SkipActiveMissionTutorial_CompletesAndSavesEveryMissionStep()
+        {
+            var (feed, tutorial, save) = CreateFeed();
+            GameSessionContext.SelectMission(0, 0, "mission.training.01", "arena.training-meadow", null,
+                new[] { "tutorial.aim", "tutorial.fire", "tutorial.impact", "tutorial.turn", "tutorial.win" },
+                string.Empty, null, string.Empty, string.Empty, 0, string.Empty, 0);
+
+            feed.SkipActiveMissionTutorial();
+
+            Assert.That(tutorial.IsCompleted("tutorial.aim"), Is.True);
+            Assert.That(tutorial.IsCompleted("tutorial.fire"), Is.True);
+            Assert.That(tutorial.IsCompleted("tutorial.impact"), Is.True);
+            Assert.That(tutorial.IsCompleted("tutorial.turn"), Is.True);
+            Assert.That(tutorial.IsCompleted("tutorial.win"), Is.True);
+            Assert.That(save.SaveCount, Is.EqualTo(1));
+            Assert.That(feed.IsActiveMissionTutorialCompleted(), Is.True);
+        }
     }
 }

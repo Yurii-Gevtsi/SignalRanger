@@ -10,7 +10,7 @@ namespace Game.Tests.EditMode.Progression
         {
             var missions = MvpMissionLibrary.CreateAll();
 
-            Assert.That(missions.Length, Is.InRange(8, 12));
+            Assert.That(missions.Length, Is.EqualTo(14));
             foreach (var mission in missions)
             {
                 Assert.That(mission.IsValid(), Is.True);

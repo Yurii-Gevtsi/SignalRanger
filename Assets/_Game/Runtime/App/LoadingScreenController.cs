@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Game.Core;
 using Game.Core.Localization;
+using Game.Progression.Missions;
 using Game.UI;
 using TMPro;
 using UnityEngine;
@@ -19,13 +20,15 @@ namespace Game.App
         private const float MinimumDisplaySeconds = 0.85f;
 
         private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.92f);
-        // A fixed visual width makes TMP wrap by rendered glyph width rather than a
-        // language-specific character count. At 27 pt it fits the reference sentence
-        // "Знищити ворожого дроїда. Освоїти" on one line.
-        private static readonly Vector2 MissionDescriptionPosition = new(-420f, 245f);
-        private static readonly Vector2 MissionDescriptionSize = new(430f, 150f);
+        // TMP wraps by rendered glyph width rather than by a language-specific
+        // character count, so every supported language uses the same card layout.
+        private static readonly Vector2 MissionDescriptionPosition = new(-420f, 270f);
+        private static readonly Vector2 MissionDescriptionSize = new(590f, 150f);
         private static readonly Vector2 MissionCardPosition = new(-420f, 245f);
         private static readonly Vector2 MissionCardSize = new(720f, 480f);
+        private static readonly Vector2 MissionRewardRowPosition = new(-640f, 160f);
+        private static readonly Vector2 MissionRewardIconSize = new(53f, 53f);
+        private static readonly Vector2 MissionRewardValueSize = new(86f, 53f);
         private static readonly Vector2 LoaderPosition = new(0f, -400f);
         private static readonly Vector2 LoaderSize = new(224f, 224f);
         private static readonly Vector2 PercentSize = new(210f, 100f);
@@ -126,6 +129,11 @@ namespace Game.App
             description.textWrappingMode = TextWrappingModes.Normal;
             description.overflowMode = TextOverflowModes.Truncate;
 
+            if (sceneName == GameSceneNames.Battle && AppServices.IsInitialized && AppServices.Session?.SelectedMission != null)
+            {
+                CreateMissionRewardRow(root, AppServices.Session.SelectedMission);
+            }
+
             _loaderRing = CreateImage("Loading Ring", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), LoaderSize, LoaderPosition, "loader3", true);
             _loaderRing.localScale = new Vector3(-1f, 1f, 1f);
@@ -193,23 +201,55 @@ namespace Game.App
                 var mission = AppServices.Session?.SelectedMission;
                 if (mission != null)
                 {
-                    return string.IsNullOrWhiteSpace(mission.Description)
-                        ? GameText.Tip("trainingMission", "Навчальна місія")
-                        : mission.Description;
+                    return GameText.MissionDescription(mission.MissionId, string.Empty);
                 }
             }
 
             if (sceneName == GameSceneNames.Battle)
             {
-                return GameText.Tip("trainingMission", "Навчальна місія");
+                return GameText.Tip("trainingMission", string.Empty);
             }
 
             if (sceneName == GameSceneNames.Menu)
             {
-                return GameText.Tip("returnBaseDescription", "Оновлюємо прогрес, нагороди та доступний арсенал.");
+            return GameText.Tip("returnBaseDescription", string.Empty);
             }
 
-            return GameText.Tip("loadingDescription", "Готуємо сцену, ресурси та бойові системи.");
+            return GameText.Tip("loadingDescription", string.Empty);
+        }
+
+        private void CreateMissionRewardRow(Transform parent, MissionDefinition mission)
+        {
+            var reward = mission.Reward;
+            CreateMissionReward(parent, "Loading Mission Coins", "UI/Shop/coin", reward.softCurrency,
+                MissionRewardRowPosition, SciFiTextStyle.GoldText);
+            CreateMissionReward(parent, "Loading Mission Crystals", "UI/Menu/Rewards/Icons/reward_crystal", reward.blueprints,
+                MissionRewardRowPosition + new Vector2(195f, 0f), SciFiTextStyle.CyanText);
+
+            var experience = CreateText("Loading Mission Experience Label", parent, new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(72f, 53f),
+                MissionRewardRowPosition + new Vector2(355f, 0f), 36, TextAlignmentOptions.MidlineLeft,
+                GameText.CampaignExperienceAbbreviation(), GameTextRole.Body);
+            experience.fontWeight = FontWeight.Bold;
+            experience.color = new Color(1f, 0.25f, 0.2f, 1f);
+
+            var experienceAmount = CreateText("Loading Mission Experience Amount", parent, new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), MissionRewardValueSize,
+                MissionRewardRowPosition + new Vector2(425f, 0f), 24, TextAlignmentOptions.MidlineLeft,
+                reward.commanderExperience.ToString(), GameTextRole.Body);
+            experienceAmount.color = SciFiTextStyle.MainText;
+        }
+
+        private void CreateMissionReward(Transform parent, string name, string iconResource, int amount, Vector2 position, Color color)
+        {
+            var icon = CreateImage(name + " Icon", parent, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), MissionRewardIconSize, position, iconResource, true);
+            icon.GetComponent<Image>().color = color;
+
+            var value = CreateText(name + " Amount", parent, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), MissionRewardValueSize, position + new Vector2(62f, 0f), 24,
+                TextAlignmentOptions.MidlineLeft, amount.ToString(), GameTextRole.Body);
+            value.color = SciFiTextStyle.MainText;
         }
 
         private RectTransform CreateImage(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Core.Localization;
 
 namespace Game.Data.Save
 {
@@ -180,7 +181,7 @@ namespace Game.Data.Save
 
             if (string.IsNullOrWhiteSpace(playerName))
             {
-                playerName = "Гравець";
+                playerName = GameText.DefaultPlayerName();
             }
 
             if (createdUtcTicks <= 0)

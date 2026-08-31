@@ -1,4 +1,5 @@
 using System;
+using Game.Core.Battle;
 
 namespace Game.Core
 {
@@ -14,11 +15,25 @@ namespace Game.Core
         public static Action<int, string, string> CoinsGranted { get; set; }
         public static Func<int> CommanderExperienceResolver { get; set; }
 
+        /// <summary>
+        /// Banks the reward for a finished raid or duel and reports what was paid.
+        /// The battle knows how the fight went; the app layer owns the daily budget,
+        /// the ledger and which weapon the blueprints land on.
+        /// </summary>
+        public static Func<BattleArenaRewardRequest, BattleArenaReward> ArenaRewardGranter { get; set; }
+
         public static void GrantWeaponBlueprints(int amount, string sourceType, string sourceId) =>
             WeaponBlueprintsGranted?.Invoke(amount, sourceType, sourceId);
 
         public static void GrantCoins(int amount, string sourceType, string sourceId) =>
             CoinsGranted?.Invoke(amount, sourceType, sourceId);
+
+        /// <summary>
+        /// Grants the arena reward, or <see cref="BattleArenaReward.None"/> when no app
+        /// layer is wired - e.g. EditMode tests that run a battle standalone.
+        /// </summary>
+        public static BattleArenaReward GrantArenaReward(BattleArenaRewardRequest request) =>
+            ArenaRewardGranter?.Invoke(request) ?? BattleArenaReward.None;
 
         /// <summary>
         /// The player's commander XP, or 0 when the resolver isn't wired yet - e.g.

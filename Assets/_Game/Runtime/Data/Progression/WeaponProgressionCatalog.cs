@@ -90,6 +90,17 @@ namespace Game.Data.Progression
         public string BranchAId { get; }
         public string BranchBId { get; }
         public IReadOnlyList<WeaponUpgradeNodeDefinition> Nodes => _nodes;
+        public bool HasDevelopment => _nodes.Length > 0;
+
+        public bool HasBranch(WeaponUpgradeBranch branch)
+        {
+            return branch switch
+            {
+                WeaponUpgradeBranch.A => !string.IsNullOrWhiteSpace(BranchAId),
+                WeaponUpgradeBranch.B => !string.IsNullOrWhiteSpace(BranchBId),
+                _ => false
+            };
+        }
 
         public bool TryGetNode(int rank, WeaponUpgradeBranch branch, out WeaponUpgradeNodeDefinition node)
         {

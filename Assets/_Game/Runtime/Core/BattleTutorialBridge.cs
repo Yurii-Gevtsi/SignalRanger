@@ -11,6 +11,8 @@ namespace Game.Core
     {
         /// <summary>Reports a battle event; returns a coaching cue to show, or empty.</summary>
         BattleTutorialCue ReportTrigger(string triggerKey);
+        bool IsActiveMissionTutorialCompleted();
+        void SkipActiveMissionTutorial();
     }
 
     /// <summary>
@@ -30,6 +32,16 @@ namespace Game.Core
         public static BattleTutorialCue Report(string triggerKey)
         {
             return Feed?.ReportTrigger(triggerKey) ?? BattleTutorialCue.Empty;
+        }
+
+        public static void SkipActiveMissionTutorial()
+        {
+            Feed?.SkipActiveMissionTutorial();
+        }
+
+        public static bool IsActiveMissionTutorialCompleted()
+        {
+            return Feed?.IsActiveMissionTutorialCompleted() ?? false;
         }
     }
 }

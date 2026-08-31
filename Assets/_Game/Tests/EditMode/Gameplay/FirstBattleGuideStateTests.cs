@@ -72,5 +72,17 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(guide.IsActive, Is.False);
             Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.None));
         }
+
+        [Test]
+        public void Skip_DeactivatesTheGuideImmediately()
+        {
+            var guide = new FirstBattleGuideState("mission.training.01");
+
+            guide.Skip();
+
+            Assert.That(guide.IsActive, Is.False);
+            Assert.That(guide.CurrentPhase, Is.EqualTo(FirstBattleGuideState.GuidePhase.Done));
+            Assert.That(guide.AllowsWalkDirection(-1), Is.True);
+        }
     }
 }

@@ -96,11 +96,13 @@ namespace Game.App
         private readonly List<SlotView> _slots = new();
         private readonly List<EvolutionIconView> _evolutionIcons = new();
         private readonly List<ChevronIconView> _chevronIcons = new();
+        private readonly Dictionary<WeaponUpgradeBranch, List<GameObject>> _branchObjects = new();
         private Sprite _whiteSprite;
         private Transform _screenRoot;
         private Action _onClosed;
         private Button _leftArrowButton;
         private Button _rightArrowButton;
+        private Image _blueprintBackgroundImage;
         private Image _selectedWeaponNodeImage;
         private GameObject _detailsOverlay;
         private RectTransform _detailsCard;
@@ -221,9 +223,11 @@ namespace Game.App
             foreach (var weapon in PrototypeWeaponLibrary.CreateAll())
             {
                 if (weapon == null
-                    || WeaponPresentationText.IsDropOnly(weapon)
-                    || !AppServices.Inventory.IsWeaponUnlocked(weapon.WeaponId)
-                    || !WeaponProgressionCatalog.TryGet(weapon.WeaponId, out _))
+                || WeaponPresentationText.IsDropOnly(weapon)
+                || !AppServices.Inventory.IsWeaponUnlocked(weapon.WeaponId)
+                    || !WeaponProgressionCatalog.TryGet(weapon.WeaponId, out var progression)
+                    || progression == null
+                    || !progression.HasDevelopment)
                 {
                     continue;
                 }
@@ -249,8 +253,9 @@ namespace Game.App
 
             var root = canvasObject.transform;
             _screenRoot = root;
-            CreateImage("Architect Blueprint", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
-                Vector2.zero, Vector2.zero, MenuResourceRoot + "arch_menu", false, Color.white);
+            _blueprintBackgroundImage = CreateImage("Architect Blueprint", root, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero,
+                MenuResourceRoot + "arch_menu", false, Color.white).GetComponent<Image>();
 
             BuildTopBar(root);
             BuildResetButton(root);
@@ -403,11 +408,11 @@ namespace Game.App
                     node.Number);
 
                 var isEvolutionNode = node.Number == 5 || node.Number == 10;
+                var branch = node.Number >= 5
+                    ? node.ChevronPosition.y > 0f ? WeaponUpgradeBranch.A : WeaponUpgradeBranch.B
+                    : WeaponUpgradeBranch.None;
                 if (isEvolutionNode)
                 {
-                    var branch = node.ChevronPosition.y > 0f
-                        ? WeaponUpgradeBranch.A
-                        : WeaponUpgradeBranch.B;
                     var hitArea = CreateTransparentButton($"Architect Evolution Hit Area {node.Number} {node.ChevronPosition.y}", root,
                         new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                         EvolutionNodeHitAreaSize, node.ChevronPosition, clickAction);
@@ -437,6 +442,7 @@ namespace Game.App
                         Icon = icon,
                         Checkmark = checkmark
                     });
+                    RegisterBranchObject(branch, hitArea.gameObject);
                 }
                 else
                 {
@@ -450,6 +456,7 @@ namespace Game.App
                         BlueprintChevronSize, node.ChevronPosition, "UI/Common/chevron", clickAction)
                         .GetComponent<Image>();
                     _chevronIcons.Add(new ChevronIconView { Rank = node.Number, Branch = chevronBranch, Icon = chevronIcon });
+                    RegisterBranchObject(chevronBranch, chevronIcon.gameObject);
                 }
 
                 if (isEvolutionNode)
@@ -462,10 +469,12 @@ namespace Game.App
                     new Vector2(150f, 48f), node.NumberPosition, 36,
                     TextAlignmentOptions.Center, node.Number.ToString(), GameTextRole.Caption);
                 label.color = SciFiTextStyle.CyanText;
+                RegisterBranchObject(branch, label.gameObject);
             }
 
             RefreshEvolutionIcons();
             RefreshChevronIcons();
+            RefreshBranchVisibility();
         }
 
         private void BuildSelectedWeaponNode(Transform root)
@@ -573,10 +582,65 @@ namespace Game.App
             _selectedWeaponNodeImage.enabled = _selectedWeaponNodeImage.sprite != null;
             _selectedWeaponIndex = index;
 
+            var hasSingleBranch = WeaponProgressionCatalog.TryGet(weapon.WeaponId, out var progression)
+                && progression != null
+                && progression.HasDevelopment
+                && (progression.HasBranch(WeaponUpgradeBranch.A) ^ progression.HasBranch(WeaponUpgradeBranch.B));
+            _blueprintBackgroundImage.sprite = LoadSprite(MenuResourceRoot + (hasSingleBranch ? "arch_menu_2" : "arch_menu"));
+
             RefreshCarouselSlots();
             RefreshEvolutionIcons();
             RefreshChevronIcons();
+            RefreshBranchVisibility();
             RefreshResetButtonVisibility();
+        }
+
+        private void RegisterBranchObject(WeaponUpgradeBranch branch, GameObject target)
+        {
+            if (branch == WeaponUpgradeBranch.None || target == null)
+            {
+                return;
+            }
+
+            if (!_branchObjects.TryGetValue(branch, out var objects))
+            {
+                objects = new List<GameObject>();
+                _branchObjects.Add(branch, objects);
+            }
+
+            objects.Add(target);
+        }
+
+        private void RefreshBranchVisibility()
+        {
+            var hasA = false;
+            var hasB = false;
+            if (_selectedWeaponIndex >= 0 && _selectedWeaponIndex < _items.Count
+                && WeaponProgressionCatalog.TryGet(_items[_selectedWeaponIndex].WeaponId, out var progression)
+                && progression != null)
+            {
+                hasA = progression.HasBranch(WeaponUpgradeBranch.A);
+                hasB = progression.HasBranch(WeaponUpgradeBranch.B);
+            }
+
+            SetBranchObjectsActive(WeaponUpgradeBranch.A, hasA);
+            SetBranchObjectsActive(WeaponUpgradeBranch.B, hasB);
+        }
+
+        private void SetBranchObjectsActive(WeaponUpgradeBranch branch, bool active)
+        {
+            if (!_branchObjects.TryGetValue(branch, out var objects))
+            {
+                return;
+            }
+
+            for (var i = 0; i < objects.Count; i++)
+            {
+                if (objects[i] != null)
+                {
+                    objects[i].SetActive(active);
+                }
+            }
         }
 
         private void RefreshEvolutionIcons()

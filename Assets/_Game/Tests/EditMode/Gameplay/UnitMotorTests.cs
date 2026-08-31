@@ -77,6 +77,34 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void SafeSpawn_RecognizesFlatGround()
+        {
+            var grid = CreateFlatGround();
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0f, 0.5f), KillY);
+
+            Assert.IsTrue(motor.IsSafeSpawn());
+        }
+
+        [Test]
+        public void SafeSpawn_RejectsUnsupportedBody()
+        {
+            var grid = CreateFlatGround();
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(0f, 1.35f), KillY);
+
+            Assert.IsFalse(motor.IsSafeSpawn());
+        }
+
+        [Test]
+        public void SafeSpawn_RejectsOneCellEdgeWithNoWalkableExit()
+        {
+            var grid = new TerrainGrid(new Vector2(-4f, -6f), new Vector2(1f / 32f, 1f / 32f), 256, 384);
+            grid.StampRect(new Vector2(-0.2f, -3f), new Vector2(1f / 32f, 6f), true, out _);
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(-0.2f, 0.5f), KillY);
+
+            Assert.IsFalse(motor.IsSafeSpawn());
+        }
+
+        [Test]
         public void HighSpeedFall_DoesNotTunnelThroughGround()
         {
             var grid = CreateFlatGround();

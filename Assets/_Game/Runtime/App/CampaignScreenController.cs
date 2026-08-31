@@ -267,7 +267,7 @@ namespace Game.App
                 var planetIndex = i;
                 var star = CreateImageButton($"Campaign Planet {i + 1}", clusterNode, new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), StarSize, layout.Position,
-                    CampaignResourceRoot + layout.StarResource, () => OpenMissionCard(planetIndex));
+                    "UI/Generated/Campaign/" + layout.MapResource, () => OpenMissionCard(planetIndex));
 
                 var checkmark = CreateImage($"Campaign Planet {i + 1} Checkmark", star, new Vector2(0.5f, 0.5f),
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), StarCheckmarkSize, Vector2.zero,
@@ -483,7 +483,9 @@ namespace Game.App
 
             _openPlanetIndex = planetIndex;
             var missions = _planets[planetIndex].MissionIndices;
-            _cardTitle.text = CampaignPlanetCatalog.Planets[planetIndex].Name;
+            _cardTitle.text = GameText.Localized(
+                CampaignPlanetCatalog.Planets[planetIndex].LocalizationKey,
+                string.Empty);
             _cardEmptyLabel.gameObject.SetActive(missions.Count == 0);
             var currentMission = FindNextMission(missions);
 
@@ -537,10 +539,12 @@ namespace Game.App
 
             if (!string.IsNullOrWhiteSpace(mission.Description))
             {
-                return mission.Description;
+                return GameText.MissionDescription(mission.MissionId, mission.Description);
             }
 
-            return string.IsNullOrWhiteSpace(mission.Title) ? GameText.DefaultMissionDetails() : mission.Title;
+            return string.IsNullOrWhiteSpace(mission.Title)
+                ? GameText.DefaultMissionDetails()
+                : GameText.MissionTitle(mission.MissionId, mission.Title);
         }
 
         private void CloseMissionCard()

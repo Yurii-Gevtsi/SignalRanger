@@ -1,3 +1,4 @@
+using System;
 using Game.Core;
 using Game.Core.Battle;
 using Game.Data.Save;
@@ -43,6 +44,34 @@ namespace Game.App
             }
 
             return cue;
+        }
+
+        public void SkipActiveMissionTutorial()
+        {
+            if (_tutorial == null)
+            {
+                return;
+            }
+
+            var changed = false;
+            foreach (var stepId in GameSessionContext.SelectedTutorialStepIds ?? Array.Empty<string>())
+            {
+                changed |= _tutorial.Complete(stepId);
+            }
+
+            if (changed)
+            {
+                _saveService?.Save(_saveService.Current);
+            }
+        }
+
+        public bool IsActiveMissionTutorialCompleted()
+        {
+            var stepIds = GameSessionContext.SelectedTutorialStepIds;
+            return _tutorial != null
+                && stepIds != null
+                && stepIds.Length > 0
+                && stepIds.All(_tutorial.IsCompleted);
         }
 
         private static bool TryMap(string triggerKey, out TutorialStepTrigger trigger)

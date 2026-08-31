@@ -22,6 +22,7 @@ namespace Game.Core.Battle
         event Action RestartRequested;
         event Action ContinueRequested;
         event Action MenuRequested;
+        event Action TutorialSkipRequested;
 
         void Render(in BattleHudState state);
     }

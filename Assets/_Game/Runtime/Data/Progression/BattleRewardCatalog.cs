@@ -78,6 +78,15 @@ namespace Game.Data.Progression
                 reward.BlueprintWeaponId);
         }
 
+        /// <summary>
+        /// Scales a reward to <paramref name="percent"/>, used for the reduced rate a
+        /// repeatable battle pays once the day's full-reward budget is spent.
+        /// </summary>
+        public static ProgressionReward ApplyScale(ProgressionReward reward, int percent)
+        {
+            return Scale(reward, Clamp(percent, 0, 100));
+        }
+
         private static ProgressionReward Scale(ProgressionReward reward, int percent)
         {
             return new ProgressionReward(

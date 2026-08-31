@@ -14,6 +14,10 @@ namespace Game.Gameplay.Battle.Arenas
         [SerializeField] private Vector2 _opponentSpawn;
         [SerializeField] private ArenaTerrainBlock[] _terrainBlocks;
         [SerializeField] private ArenaSpriteSurface[] _spriteSurfaces;
+        [SerializeField] private bool _limitZoomOutToSpriteBounds;
+        [SerializeField, Range(0f, 1f)] private float _spriteArenaVerticalAnchor;
+        [SerializeField] private float _spriteArenaVerticalScreenOffset;
+        [SerializeField] private bool _lockCameraAtZoomOutLimit;
 
         public string ArenaId => _arenaId;
         public string DisplayName => _displayName;
@@ -23,6 +27,10 @@ namespace Game.Gameplay.Battle.Arenas
         public Vector2 OpponentSpawn => _opponentSpawn;
         public IReadOnlyList<ArenaTerrainBlock> TerrainBlocks => _terrainBlocks ?? System.Array.Empty<ArenaTerrainBlock>();
         public IReadOnlyList<ArenaSpriteSurface> SpriteSurfaces => _spriteSurfaces ?? System.Array.Empty<ArenaSpriteSurface>();
+        public bool LimitZoomOutToSpriteBounds => _limitZoomOutToSpriteBounds;
+        public float SpriteArenaVerticalAnchor => _spriteArenaVerticalAnchor;
+        public float SpriteArenaVerticalScreenOffset => _spriteArenaVerticalScreenOffset;
+        public bool LockCameraAtZoomOutLimit => _lockCameraAtZoomOutLimit;
 
         public static ArenaDefinition CreateRuntime(
             string arenaId,
@@ -32,7 +40,11 @@ namespace Game.Gameplay.Battle.Arenas
             Vector2 playerSpawn,
             Vector2 opponentSpawn,
             ArenaTerrainBlock[] terrainBlocks,
-            ArenaSpriteSurface[] spriteSurfaces = null)
+            ArenaSpriteSurface[] spriteSurfaces = null,
+            bool limitZoomOutToSpriteBounds = false,
+            float spriteArenaVerticalAnchor = 0f,
+            float spriteArenaVerticalScreenOffset = 0f,
+            bool lockCameraAtZoomOutLimit = false)
         {
             var definition = CreateInstance<ArenaDefinition>();
             definition._arenaId = arenaId;
@@ -43,6 +55,10 @@ namespace Game.Gameplay.Battle.Arenas
             definition._opponentSpawn = opponentSpawn;
             definition._terrainBlocks = terrainBlocks ?? System.Array.Empty<ArenaTerrainBlock>();
             definition._spriteSurfaces = spriteSurfaces ?? System.Array.Empty<ArenaSpriteSurface>();
+            definition._limitZoomOutToSpriteBounds = limitZoomOutToSpriteBounds;
+            definition._spriteArenaVerticalAnchor = Mathf.Clamp01(spriteArenaVerticalAnchor);
+            definition._spriteArenaVerticalScreenOffset = spriteArenaVerticalScreenOffset;
+            definition._lockCameraAtZoomOutLimit = lockCameraAtZoomOutLimit;
             return definition;
         }
     }

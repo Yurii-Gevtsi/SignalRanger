@@ -1,6 +1,8 @@
 using System.Linq;
 using Game.App.Content;
+using Game.Gameplay.Battle.Arenas;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Game.Tests.EditMode.Progression
 {
@@ -13,9 +15,9 @@ namespace Game.Tests.EditMode.Progression
             var report = ContentValidationReport.Validate(content);
 
             Assert.That(report.Errors, Is.Empty, string.Join("\n", report.Errors));
-            Assert.That(content.Missions.Length, Is.InRange(8, 12));
-            Assert.That(content.Arenas.Length, Is.GreaterThanOrEqualTo(3));
-            Assert.That(content.Chapters.Length, Is.GreaterThanOrEqualTo(2));
+            Assert.That(content.Missions.Length, Is.EqualTo(14));
+            Assert.That(content.Arenas.Length, Is.GreaterThanOrEqualTo(6));
+            Assert.That(content.Chapters.Length, Is.EqualTo(5));
             Assert.That(content.EnemyLoadouts.Length, Is.GreaterThanOrEqualTo(3));
             Assert.That(content.DifficultyProfiles.Select(profile => profile.ProfileId).Distinct().Count(),
                 Is.EqualTo(content.DifficultyProfiles.Length));
@@ -38,13 +40,23 @@ namespace Game.Tests.EditMode.Progression
         }
 
         [Test]
-        public void KerionCampaignMissions_UseDesertSciFiArena()
+        public void FirstKerionMission_UsesKerionsBattleArena()
+        {
+            var content = DefaultGameContentCatalog.Create();
+
+            Assert.That(content.TryGetMission("mission.training.01", out var firstMission), Is.True);
+            Assert.That(firstMission.ArenaId, Is.EqualTo("arena.desert-sci-fi"));
+            Assert.That(content.ResolveArenaIndex(firstMission), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void KerionCampaignMissions_AfterTheTutorial_UseDesertSciFiArena()
         {
             var content = DefaultGameContentCatalog.Create();
 
             foreach (var missionId in new[]
                      {
-                         "mission.training.01", "mission.training.02", "mission.training.03",
+                         "mission.training.02", "mission.training.03",
                          "mission.training.04", "mission.training.05"
                      })
             {
@@ -52,6 +64,52 @@ namespace Game.Tests.EditMode.Progression
                 Assert.That(mission.ArenaId, Is.EqualTo("arena.desert-sci-fi"));
                 Assert.That(content.ResolveArenaIndex(mission), Is.EqualTo(1));
             }
+        }
+
+        [Test]
+        public void SecondPlanetCampaignMissions_UseForestArena()
+        {
+            var content = DefaultGameContentCatalog.Create();
+
+            foreach (var missionId in new[]
+                     {
+                         "mission.training.06", "mission.training.07", "mission.training.08"
+                     })
+            {
+                Assert.That(content.TryGetMission(missionId, out var mission), Is.True);
+                Assert.That(mission.ChapterId, Is.EqualTo("chapter.tactical-tools"));
+                Assert.That(mission.ArenaId, Is.EqualTo("arena.forest"));
+                Assert.That(content.ResolveArenaIndex(mission), Is.EqualTo(2));
+            }
+        }
+
+        [TestCase("chapter.city", "mission.training.09", "mission.training.10", "arena.city", 3)]
+        [TestCase("chapter.grib", "mission.training.11", "mission.training.12", "arena.grib", 4)]
+        [TestCase("chapter.laguna", "mission.training.13", "mission.training.14", "arena.laguna", 5)]
+        public void NewPlanetCampaignMissions_UseTheirDedicatedArena(
+            string chapterId, string firstMissionId, string secondMissionId, string arenaId, int arenaIndex)
+        {
+            var content = DefaultGameContentCatalog.Create();
+
+            foreach (var missionId in new[] { firstMissionId, secondMissionId })
+            {
+                Assert.That(content.TryGetMission(missionId, out var mission), Is.True);
+                Assert.That(mission.ChapterId, Is.EqualTo(chapterId));
+                Assert.That(mission.ArenaId, Is.EqualTo(arenaId));
+                Assert.That(content.ResolveArenaIndex(mission), Is.EqualTo(arenaIndex));
+            }
+        }
+
+        [Test]
+        public void ForestArena_FillsTheZoomOutFrameAndStartsAtItsUpperEdge()
+        {
+            var forest = PrototypeArenaLibrary.CreateAll().Single(arena => arena.ArenaId == "arena.forest");
+
+            Assert.That(forest.LimitZoomOutToSpriteBounds, Is.False);
+            Assert.That(forest.SpriteArenaVerticalAnchor, Is.EqualTo(1f));
+            Assert.That(forest.SpriteArenaVerticalScreenOffset, Is.EqualTo(0.15f));
+            Assert.That(forest.LockCameraAtZoomOutLimit, Is.True);
+            Assert.That(Resources.Load<Texture2D>("Visuals/Arenas/Backgrounds/Cosmos/cosmos"), Is.Not.Null);
         }
     }
 }

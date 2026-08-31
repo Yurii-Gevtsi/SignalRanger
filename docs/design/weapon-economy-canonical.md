@@ -52,7 +52,7 @@ currentAccountPower =
 
 Recommended `droneUpgradePower` values: +100 per armor/health tier, +80 per mobility tier, +60 per jump/trajectory tier and +40 per comfort-only tier. Cosmetic items, subscriptions, ad skips and inventory capacity do not add power.
 
-Matchmaking starts within ±10% of historical power, expands to ±20% after 20 seconds and ±35% after 45 seconds. Use selected-loadout power only as a tie-breaker and abuse detector; never let a player lower matchmaking power by equipping an intentionally weak loadout. Competitive season resets may reset visible rating, but not historical power.
+Matchmaking starts within ±10% of historical power and expands to ±20% after 20 seconds. At 45 seconds the search stops waiting for a live opponent and the match is filled by a generated one built inside the same band, so an empty early queue never becomes an empty screen; see `raid-and-pvp-battle-modes.md`. Use selected-loadout power only as a tie-breaker and abuse detector; never let a player lower matchmaking power by equipping an intentionally weak loadout. Competitive season resets may reset visible rating, but not historical power.
 
 ## Monetization guardrails
 

@@ -19,7 +19,7 @@ namespace Game.EditorTools.Art
     internal static class Unity2DArtImporterAutomation
     {
         private const string ArenaRoot = "Assets/_Game/Content/Art/Arenas/";
-        private const string RuntimeArenaRoot = "Assets/_Game/Content/Resources/Visuals/Arenas/DesertSciFi/";
+        private const string RuntimeArenaRoot = "Assets/_Game/Content/Resources/Visuals/Arenas/";
         private const string GeneratedUiRoot = "Assets/_Game/Content/Resources/UI/Generated/";
         private const string SupportDropBeamPath = "Assets/_Game/Content/Resources/UI/Battle/resource_drop_beam.png";
         private const string GeneratedArtRoot = "Assets/_Game/Content/Art/Generated/";

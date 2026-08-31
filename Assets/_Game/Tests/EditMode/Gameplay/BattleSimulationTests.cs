@@ -103,7 +103,7 @@ namespace Game.Tests.EditMode.Gameplay
                 weaponsById,
                 playerArchetype,
                 opponentArchetype,
-                playerWeaponEvolutions);
+                BattleWeaponProgression.FromEvolutions(playerWeaponEvolutions));
 
             return new Harness
             {

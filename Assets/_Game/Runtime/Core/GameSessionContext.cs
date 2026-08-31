@@ -1,3 +1,5 @@
+using Game.Core.Modes;
+
 namespace Game.Core
 {
     public static class GameSessionContext
@@ -19,7 +21,26 @@ namespace Game.Core
         public static int SelectedMissionRewardSoftCurrency { get; private set; }
         public static string SelectedMissionRewardUnlockWeaponId { get; private set; } = string.Empty;
         public static int SelectedAiDifficulty { get; private set; }
-        public static bool IsTrainingSkirmish { get; private set; }
+
+        /// <summary>Rank per opponent weapon, aligned by index with <see cref="SelectedOpponentWeaponIds"/>.</summary>
+        public static int[] SelectedOpponentWeaponRanks { get; private set; } = System.Array.Empty<int>();
+
+        /// <summary>Evolution branch per opponent weapon, aligned the same way; 0 below rank 5.</summary>
+        public static int[] SelectedOpponentWeaponBranches { get; private set; } = System.Array.Empty<int>();
+
+        /// <summary>Which mode the next battle belongs to; the single source of truth.</summary>
+        public static BattleMode SelectedBattleMode { get; private set; } = BattleMode.Story;
+
+        /// <summary>Opponent shown on the duel card; null outside <see cref="BattleMode.Pvp"/>.</summary>
+        public static PvpOpponentProfile SelectedPvpOpponent { get; private set; }
+
+        /// <summary>Shared match seed for the duel; empty outside <see cref="BattleMode.Pvp"/>.</summary>
+        public static string SelectedMatchId { get; private set; } = string.Empty;
+
+        /// <summary>This commander's id, so the battle knows which units it may drive.</summary>
+        public static string LocalPlayerId { get; private set; } = string.Empty;
+
+        public static bool IsTrainingSkirmish => SelectedBattleMode == BattleMode.Training;
         public static bool SupportDropsEnabled { get; private set; } = true;
         public static bool HasPendingMissionCompletion { get; private set; }
         public static int PendingCompletedMissionIndex { get; private set; }
@@ -54,18 +75,104 @@ namespace Game.Core
             SelectedOpponentArchetypeId = opponentArchetypeId ?? string.Empty;
             SelectedMissionRewardSoftCurrency = rewardSoftCurrency < 0 ? 0 : rewardSoftCurrency;
             SelectedMissionRewardUnlockWeaponId = rewardUnlockWeaponId ?? string.Empty;
-            SelectedAiDifficulty = aiDifficulty < 0 ? 0 : aiDifficulty > 2 ? 2 : aiDifficulty;
+            SelectedAiDifficulty = ClampDifficulty(aiDifficulty);
+            SelectedOpponentWeaponRanks = System.Array.Empty<int>();
+            SelectedOpponentWeaponBranches = System.Array.Empty<int>();
             SupportDropsEnabled = supportDropsEnabled;
-            IsTrainingSkirmish = false;
+            SelectedPvpOpponent = null;
+            SelectedMatchId = string.Empty;
+            SelectedBattleMode = BattleMode.Story;
         }
 
         public static void ConfigureTrainingSkirmish()
         {
-            IsTrainingSkirmish = true;
+            SelectedBattleMode = BattleMode.Training;
             SelectedDifficultyProfileId = "difficulty.normal";
             SelectedOpponentArchetypeId = "archetype.striker";
             SelectedAiDifficulty = 1;
             SupportDropsEnabled = true;
+            SelectedPvpOpponent = null;
+            SelectedMatchId = string.Empty;
+        }
+
+        /// <summary>
+        /// Configures an offline raid on a liberated arena. Raids carry no mission,
+        /// so the mission id is deliberately cleared - anything asking "is this a
+        /// story battle" must read the mode, not the presence of an id.
+        /// </summary>
+        public static void ConfigureRaid(
+            int arenaIndex,
+            string arenaId,
+            string difficultyProfileId,
+            string opponentArchetypeId,
+            string[] opponentWeaponIds,
+            int[] opponentWeaponRanks,
+            int[] opponentWeaponBranches,
+            int aiDifficulty)
+        {
+            ClearMissionSelection();
+            SelectedBattleMode = BattleMode.Raid;
+            SelectedArenaIndex = arenaIndex < 0 ? 0 : arenaIndex;
+            SelectedArenaId = arenaId ?? string.Empty;
+            SelectedDifficultyProfileId = difficultyProfileId ?? string.Empty;
+            SelectedOpponentArchetypeId = opponentArchetypeId ?? string.Empty;
+            SelectedOpponentWeaponIds = opponentWeaponIds ?? System.Array.Empty<string>();
+            SelectedOpponentWeaponRanks = opponentWeaponRanks ?? System.Array.Empty<int>();
+            SelectedOpponentWeaponBranches = opponentWeaponBranches ?? System.Array.Empty<int>();
+            SelectedAiDifficulty = ClampDifficulty(aiDifficulty);
+            SupportDropsEnabled = BattleMode.Raid.AllowsSupportDrops();
+        }
+
+        /// <summary>
+        /// Configures a duel against a matched commander. Support drops stay off:
+        /// handing one side a random weapon mid-fight is not a fair 1v1.
+        /// </summary>
+        public static void ConfigurePvpMatch(
+            int arenaIndex,
+            string arenaId,
+            string matchId,
+            string localPlayerId,
+            PvpOpponentProfile opponent,
+            string opponentArchetypeId,
+            string[] opponentWeaponIds,
+            int[] opponentWeaponRanks,
+            int[] opponentWeaponBranches,
+            int aiDifficulty)
+        {
+            ClearMissionSelection();
+            SelectedBattleMode = BattleMode.Pvp;
+            SelectedArenaIndex = arenaIndex < 0 ? 0 : arenaIndex;
+            SelectedArenaId = arenaId ?? string.Empty;
+            SelectedMatchId = matchId ?? string.Empty;
+            LocalPlayerId = localPlayerId ?? string.Empty;
+            SelectedPvpOpponent = opponent;
+            SelectedDifficultyProfileId = string.Empty;
+            SelectedOpponentArchetypeId = opponentArchetypeId ?? string.Empty;
+            SelectedOpponentWeaponIds = opponentWeaponIds ?? System.Array.Empty<string>();
+            SelectedOpponentWeaponRanks = opponentWeaponRanks ?? System.Array.Empty<int>();
+            SelectedOpponentWeaponBranches = opponentWeaponBranches ?? System.Array.Empty<int>();
+            SelectedAiDifficulty = ClampDifficulty(aiDifficulty);
+            SupportDropsEnabled = BattleMode.Pvp.AllowsSupportDrops();
+        }
+
+        private static void ClearMissionSelection()
+        {
+            SelectedMissionIndex = 0;
+            SelectedMissionId = string.Empty;
+            SelectedMissionText = string.Empty;
+            SelectedAllowedWeaponIds = System.Array.Empty<string>();
+            SelectedTutorialStepIds = System.Array.Empty<string>();
+            SelectedEnemyLoadoutId = string.Empty;
+            SelectedOpponentWeaponBranches = System.Array.Empty<int>();
+            SelectedMissionRewardSoftCurrency = 0;
+            SelectedMissionRewardUnlockWeaponId = string.Empty;
+            SelectedPvpOpponent = null;
+            SelectedMatchId = string.Empty;
+        }
+
+        private static int ClampDifficulty(int aiDifficulty)
+        {
+            return aiDifficulty < 0 ? 0 : aiDifficulty > 2 ? 2 : aiDifficulty;
         }
 
         /// <summary>

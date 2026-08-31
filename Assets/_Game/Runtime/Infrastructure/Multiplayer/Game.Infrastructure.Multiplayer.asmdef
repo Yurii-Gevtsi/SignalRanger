@@ -1,0 +1,38 @@
+{
+    "name": "Game.Infrastructure.Multiplayer",
+    "rootNamespace": "Game.Infrastructure.Multiplayer",
+    "references": [
+        "Game.Core",
+        "Game.Data",
+        "Game.Infrastructure",
+        "Game.App",
+        "Unity.Services.Core",
+        "Unity.Services.Authentication",
+        "Unity.Services.Multiplayer",
+        "Unity.Netcode.Runtime",
+        "Unity.Collections"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UGS_MULTIPLAYER",
+        "UGS_NETCODE"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.services.multiplayer",
+            "expression": "2.0.0",
+            "define": "UGS_MULTIPLAYER"
+        },
+        {
+            "name": "com.unity.netcode.gameobjects",
+            "expression": "2.0.0",
+            "define": "UGS_NETCODE"
+        }
+    ],
+    "noEngineReferences": false
+}

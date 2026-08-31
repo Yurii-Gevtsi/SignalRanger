@@ -16,6 +16,7 @@ namespace Game.UI.Battle
         private const float TutorialCardPositionY = 24f;
         private const float TimerPositionY = 0f;
         private const float SettingsPositionY = -20f;
+        private const float OpponentBarPositionY = -192f;
         private const float ArsenalPositionY = -30f;
         private const float WalkButtonSize = 202f;
         private const float JumpButtonSize = 134f;
@@ -57,6 +58,7 @@ namespace Game.UI.Battle
         private Sprite _circleSprite;
         private Sprite _fireRingSprite;
         private Sprite _tutorialCardSprite;
+        private Sprite _tutorialSkipButtonSprite;
         private Sprite _timerPanelSprite;
         private Sprite _moveButtonSprite;
         private Sprite _jumpButtonSprite;
@@ -91,6 +93,7 @@ namespace Game.UI.Battle
         private Image _firePanel;
         private Image _fireIcon;
         private Button _weaponResetButton;
+        private Button _tutorialSkipButton;
         private GameObject _tutorialOverlayRoot;
         private Image _tutorialDimOverlay;
         private readonly List<Canvas> _tutorialCanvases = new();
@@ -103,11 +106,13 @@ namespace Game.UI.Battle
         private Canvas _arsenalTutorialCanvas;
         private Canvas _arsenalOverlayTutorialCanvas;
         private Canvas _fireTutorialCanvas;
+        private TMP_Text _opponentBarText;
         private GameObject _resultRoot;
         private Image _resultPanel;
         private TMP_Text _resultTitleText;
         private Image _resultContentImage;
         private TMP_Text _resultMissionText;
+        private TMP_Text _resultRewardText;
         private Image _resultMissionMark;
         private TMP_Text _resultMissionCross;
         private bool _resultOffersRetry;
@@ -128,6 +133,7 @@ namespace Game.UI.Battle
         public event Action RestartRequested;
         public event Action ContinueRequested;
         public event Action MenuRequested;
+        public event Action TutorialSkipRequested;
 
         private void Awake()
         {
@@ -138,6 +144,7 @@ namespace Game.UI.Battle
             _circleSprite = CreateRoundedSprite(128, 62, 10);
             _fireRingSprite = CreateCircleFrameSprite(256, 7f);
             _tutorialCardSprite = LoadResourceSprite(BattleResourceRoot + "card", new Vector4(250f, 250f, 250f, 250f));
+            _tutorialSkipButtonSprite = LoadResourceSprite("UI/Shop/btn_yellow", Vector4.zero);
             _timerPanelSprite = LoadResourceSprite(BattleResourceRoot + "smal_panel", Vector4.zero);
             _moveButtonSprite = LoadResourceSprite(BattleResourceRoot + "btn_move", Vector4.zero);
             _jumpButtonSprite = LoadResourceSprite(BattleResourceRoot + "btn_jump", Vector4.zero);
@@ -188,7 +195,9 @@ namespace Game.UI.Battle
 
             _weaponResetButton.gameObject.SetActive(state.HasSelectedWeapon);
             _weaponResetButton.interactable = state.HasSelectedWeapon && state.CanOpenArsenal;
+            _tutorialSkipButton.gameObject.SetActive(state.ShowTutorialSkip);
 
+            RenderOpponentBar(state);
             RenderTutorialHighlight(state.TutorialTargetId, state.ShowTutorialCard);
             RenderResult(state);
         }
@@ -265,6 +274,17 @@ namespace Game.UI.Battle
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 36, TextAlignmentOptions.Center);
             SciFiTextStyle.Apply(_turnText, GameTextRole.Numeric, 36, TextAlignmentOptions.Center);
 
+            // Opponent readout, centred under the turn timer. Text only: the strip has
+            // to work for any name length and no artwork exists that would frame it.
+            _opponentBarText = CreateText("Opponent Bar", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(560f, 52f), new Vector2(0f, OpponentBarPositionY),
+                26, TextAlignmentOptions.Center);
+            _opponentBarText.enableAutoSizing = true;
+            _opponentBarText.fontSizeMin = 18f;
+            _opponentBarText.fontSizeMax = 26f;
+            _opponentBarText.raycastTarget = false;
+            _opponentBarText.gameObject.SetActive(false);
+
             var settingsRect = CreateRect("Settings", root, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(0.5f, 1f), new Vector2(140f, 140f), new Vector2(220f, SettingsPositionY));
             var settingsImage = settingsRect.gameObject.AddComponent<Image>();
@@ -276,6 +296,22 @@ namespace Game.UI.Battle
             settingsButton.targetGraphic = settingsImage;
             settingsButton.colors = CreateButtonColors(Color.white);
             settingsButton.onClick.AddListener(() => SettingsRequested?.Invoke());
+
+            var skipImage = CreatePanel("Tutorial Skip", _statusPanel.transform,
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0.5f),
+                new Vector2(380f, 82f), new Vector2(0f, 92f), Color.white, _tutorialSkipButtonSprite);
+            skipImage.type = Image.Type.Simple;
+            skipImage.preserveAspect = false;
+            _tutorialSkipButton = skipImage.gameObject.AddComponent<Button>();
+            _tutorialSkipButton.targetGraphic = skipImage;
+            _tutorialSkipButton.transition = Selectable.Transition.ColorTint;
+            _tutorialSkipButton.colors = CreateButtonColors(Color.white);
+            _tutorialSkipButton.onClick.AddListener(() => TutorialSkipRequested?.Invoke());
+            var skipLabel = CreateText("Tutorial Skip Label", skipImage.transform, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 19, TextAlignmentOptions.Center);
+            skipLabel.text = GameText.SkipTutorial();
+            skipLabel.fontStyle = FontStyles.Bold;
+            _tutorialSkipButton.gameObject.SetActive(false);
         }
 
         private void BuildTutorialOverlay(Transform root)
@@ -571,6 +607,18 @@ namespace Game.UI.Battle
             _resultMissionCross.color = SciFiTextStyle.WarningText;
             _resultMissionCross.fontStyle = FontStyles.Bold;
 
+            // Reward line between the mission strip and the buttons. A raid or duel has
+            // already been paid by the time this card appears, so these are banked
+            // numbers rather than a promise.
+            _resultRewardText = CreateText("Result Reward", _resultPanel.transform, new Vector2(0.16f, 0f),
+                new Vector2(0.84f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 92f), new Vector2(0f, 250f),
+                24, TextAlignmentOptions.Center);
+            _resultRewardText.textWrappingMode = TextWrappingModes.Normal;
+            _resultRewardText.enableAutoSizing = true;
+            _resultRewardText.fontSizeMin = 17f;
+            _resultRewardText.fontSizeMax = 24f;
+            _resultRewardText.raycastTarget = false;
+
             CreateResultButton("Result Menu", _resultPanel.transform, "UI/Shop/btn_blue",
                 new Vector2(-128f, 178f), GameText.Menu, () => MenuRequested?.Invoke());
             // On a loss this button retries the mission instead of advancing, so the
@@ -590,6 +638,24 @@ namespace Game.UI.Battle
             _resultContinueLabel = _resultContinueButton.GetComponentInChildren<TMP_Text>();
 
             _resultRoot.SetActive(false);
+        }
+
+        private void RenderOpponentBar(in BattleHudState state)
+        {
+            if (_opponentBarText == null)
+            {
+                return;
+            }
+
+            _opponentBarText.gameObject.SetActive(state.ShowOpponentBar);
+            if (!state.ShowOpponentBar)
+            {
+                return;
+            }
+
+            _opponentBarText.text = state.ShowOpponentRank
+                ? GameText.OpponentBarRanked(state.OpponentName, state.OpponentWeaponLabel, state.OpponentWeaponRank)
+                : GameText.OpponentBar(state.OpponentName, state.OpponentWeaponLabel);
         }
 
         private void RenderResult(in BattleHudState state)
@@ -622,6 +688,13 @@ namespace Game.UI.Battle
             var hasMission = !string.IsNullOrWhiteSpace(state.ResultMissionTitle);
             _resultMissionMark.gameObject.SetActive(hasMission && state.ResultMissionCleared);
             _resultMissionCross.gameObject.SetActive(hasMission && !state.ResultMissionCleared);
+
+            var hasReward = !string.IsNullOrWhiteSpace(state.ResultReward);
+            _resultRewardText.text = state.ResultReward;
+            _resultRewardText.gameObject.SetActive(hasReward);
+            _resultRewardText.color = state.ResultPlayerWon
+                ? SciFiTextStyle.SuccessText
+                : SciFiTextStyle.MainText;
 
             _resultOffersRetry = !state.ResultPlayerWon;
             _resultContinueLabel.text = _resultOffersRetry ? GameText.Restart : state.ContinueLabel;

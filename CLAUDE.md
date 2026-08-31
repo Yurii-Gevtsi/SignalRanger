@@ -205,3 +205,9 @@ This project exposes a structural knowledge graph via the `code-review-graph` MC
 
 When an active structured-plan task has implementation targets, call AIOS MCP `aios_plan_task` with `action="propose_context"`, the task id, and workspace-relative targets when the task has none. The tool derives target, caller, callee, and test candidates from codemap, but it does not modify the active plan. Present the candidate refs to a human. An explicit human-controlled CLI confirmation with `aios plan task <id> --confirm-context-candidates` (optionally repeated `--candidate-ref <ref>`) activates selected refs for orchestration; it is a process boundary, not an identity/authentication boundary. Do not claim context will be delivered before that command succeeds.
 <!-- AIOS CODEMAP END -->
+
+### Localization Integrity Gate
+
+Any localization edit is incomplete until all 13 JSON dictionaries parse as strict UTF-8, have an identical flattened key set, and contain no empty player-facing value. For Ukrainian, reject replacement characters and literal `?` loss markers. These checks must be automated in `LocalizationCoverageTests` and run before handoff.
+
+Before every commit, the versioned `.githooks/pre-commit` hook must run `node tools/localization-integrity-gate.mjs --staged`; bypassing the hook is not permitted. The hook rejects invalid or divergent dictionaries and staged player text that bypasses localization.

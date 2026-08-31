@@ -217,6 +217,11 @@ namespace Game.Gameplay.Battle.Assembly
             }
         }
 
+        public void Skip()
+        {
+            CurrentPhase = GuidePhase.Done;
+        }
+
         private static string Text(string key, string fallback) => GameText.Localized(key, fallback);
     }
 }

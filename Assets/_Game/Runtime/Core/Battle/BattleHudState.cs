@@ -65,6 +65,7 @@ namespace Game.Core.Battle
             bool tutorialBlocksWeaponSwitch,
             bool tutorialBlocksCancel,
             bool tutorialBlocksMovement,
+            bool showTutorialSkip,
             float power,
             float minPower,
             float maxPower,
@@ -81,7 +82,10 @@ namespace Game.Core.Battle
             string continueLabel,
             bool resultPlayerWon = false,
             string resultMissionTitle = null,
-            bool resultMissionCleared = false)
+            bool resultMissionCleared = false,
+            string opponentName = null,
+            string opponentWeaponLabel = null,
+            int opponentWeaponRank = 0)
         {
             Status = status;
             TurnNumber = turnNumber;
@@ -108,6 +112,7 @@ namespace Game.Core.Battle
             TutorialBlocksWeaponSwitch = tutorialBlocksWeaponSwitch;
             TutorialBlocksCancel = tutorialBlocksCancel;
             TutorialBlocksMovement = tutorialBlocksMovement;
+            ShowTutorialSkip = showTutorialSkip;
             Power = power;
             MinPower = minPower;
             MaxPower = maxPower;
@@ -125,7 +130,29 @@ namespace Game.Core.Battle
             ResultPlayerWon = resultPlayerWon;
             ResultMissionTitle = resultMissionTitle ?? string.Empty;
             ResultMissionCleared = resultMissionCleared;
+            OpponentName = opponentName ?? string.Empty;
+            OpponentWeaponLabel = opponentWeaponLabel ?? string.Empty;
+            OpponentWeaponRank = opponentWeaponRank < 0 ? 0 : opponentWeaponRank;
         }
+
+        /// <summary>
+        /// Who the player is fighting: the antagonist in a raid, the matched
+        /// commander's call sign in a duel, empty in story and training where the
+        /// mission already says.
+        /// </summary>
+        public string OpponentName { get; }
+
+        /// <summary>The weapon the opponent is holding this turn.</summary>
+        public string OpponentWeaponLabel { get; }
+
+        /// <summary>
+        /// Rank that weapon fights at. Shown only above 1: a rank-1 badge on every
+        /// opponent is noise, while a rank-6 one tells the player why that shot hurt.
+        /// </summary>
+        public int OpponentWeaponRank { get; }
+
+        public bool ShowOpponentBar => !string.IsNullOrEmpty(OpponentName) && !ShowResult;
+        public bool ShowOpponentRank => OpponentWeaponRank > 1;
 
         /// <summary>Whether the finished battle was a win, which drives the result artwork.</summary>
         public bool ResultPlayerWon { get; }
@@ -162,6 +189,7 @@ namespace Game.Core.Battle
         public bool TutorialBlocksWeaponSwitch { get; }
         public bool TutorialBlocksCancel { get; }
         public bool TutorialBlocksMovement { get; }
+        public bool ShowTutorialSkip { get; }
         public float Power { get; }
         public float MinPower { get; }
         public float MaxPower { get; }
