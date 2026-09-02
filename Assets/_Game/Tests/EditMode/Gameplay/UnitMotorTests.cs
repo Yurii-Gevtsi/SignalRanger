@@ -150,6 +150,24 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void JumpIntoSideWall_StopsJumpTrailAndFallsInsteadOfHanging()
+        {
+            var grid = CreateFlatGround();
+            grid.StampRect(new Vector2(0.3f, 1.2f), new Vector2(0.18f, 2.4f), true, out _);
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(-0.65f, 0.5f), KillY);
+
+            motor.StartJump(2f, 0.75f);
+            for (var i = 0; i < 240 && motor.IsJumping; i++)
+            {
+                motor.Step(Step);
+            }
+
+            Assert.IsFalse(motor.IsJumping, "a side collision cancels the jump visual state");
+            Assert.IsFalse(motor.IsStable, "only the lower track can make the unit stable");
+            Assert.Less(motor.Velocity.y, 0f, "a non-support contact transitions into falling");
+        }
+
+        [Test]
         public void FallOffMap_ReportsOutOfBounds()
         {
             var grid = CreateFlatGround();

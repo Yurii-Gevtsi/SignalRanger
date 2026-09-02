@@ -371,7 +371,8 @@ namespace Game.App
                 var labelMin = isLocked ? new Vector2(0.367f, 0.143f) : new Vector2(0.197f, 0.161f);
                 var labelMax = isLocked ? new Vector2(0.897f, 0.303f) : new Vector2(0.897f, 0.321f);
                 var label = CreateText($"Weapon Slot Level {i}", slotRoot.transform, labelMin, labelMax,
-                    new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 18, TextAlignmentOptions.MidlineLeft, $"LVL {_items[i].RequiredLevel}");
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 18, TextAlignmentOptions.MidlineLeft,
+                    GameText.LevelLabel() + " " + _items[i].RequiredLevel);
                 _slots.Add(new SlotView
                 {
                     WeaponId = _items[i].Definition.WeaponId,

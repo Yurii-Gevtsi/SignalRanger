@@ -8,11 +8,11 @@ namespace Game.Core.Localization
         {
             if (Service == null)
             {
-                return fallback;
+                return string.Empty;
             }
 
             var value = Service.Translate(key, arguments);
-            return value.StartsWith("[", System.StringComparison.Ordinal) ? fallback : value;
+            return value.StartsWith("[", System.StringComparison.Ordinal) ? string.Empty : value;
         }
     }
 }

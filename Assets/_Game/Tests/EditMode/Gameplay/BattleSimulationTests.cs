@@ -166,6 +166,27 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void Projectile_GrazingDroidUpperBody_DetonatesBeforePassingThrough()
+        {
+            var weapon = CreateWeapon("weapon.test.upper-body", gravityScale: 0f);
+            var harness = CreateHarness(weapon);
+            var exploded = false;
+            harness.Simulation.ProjectileExploded += (projectileId, impact) => exploded = true;
+
+            Assert.AreEqual(
+                BattleFireOutcome.Fired,
+                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0.7f), Vector2.right, 20f, true)).Outcome);
+
+            for (var i = 0; i < 240 && !exploded; i++)
+            {
+                harness.Simulation.Tick(1f / 60f);
+            }
+
+            Assert.IsTrue(exploded,
+                "a projectile touching the droid's upper body must detonate instead of passing through it");
+        }
+
+        [Test]
         public void FallOutOfBounds_DefeatsUnit_AndFinishesBattle()
         {
             var weapon = CreateWeapon("weapon.test.arc2");

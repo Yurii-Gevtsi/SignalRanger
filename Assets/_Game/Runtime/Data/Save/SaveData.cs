@@ -205,6 +205,7 @@ namespace Game.Data.Save
     public sealed class SaveCampaignData
     {
         public int highestUnlockedMissionIndex;
+        public string lastPlayedPlanetChapterId;
         public List<string> completedMissionIds;
 
         public static SaveCampaignData CreateDefault()
@@ -222,6 +223,7 @@ namespace Game.Data.Save
             }
 
             completedMissionIds ??= new List<string>();
+            lastPlayedPlanetChapterId ??= string.Empty;
         }
     }
 

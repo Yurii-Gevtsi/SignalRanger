@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 3,
+  "title": "Battle droid collision correctness",
+  "objective": "Ensure projectiles detonate on any contact with a droid body, and terrain supports droid movement only through the lower track/platform contact surface; body or weapon terrain contact while airborne must resolve as falling rather than sticking.",
+  "status": "active",
+  "relativePath": "docs/plans/2026-09-02-battle-droid-collision-correctness.md",
+  "absolutePath": "C:\\Projects\\Game\\docs\\plans\\2026-09-02-battle-droid-collision-correctness.md",
+  "client": "cli",
+  "sessionId": "",
+  "source": "aios plan start",
+  "createdAt": "2026-09-02T09:10:03.457Z",
+  "updatedAt": "2026-09-02T09:10:03.457Z",
+  "route": "implement",
+  "contextRevision": "",
+  "skills": [],
+  "tasks": [
+    {
+      "id": "t1-understand",
+      "title": "Clarify objective: Ensure projectiles detonate on any contact with a droid body, and terrai",
+      "status": "pending",
+      "acceptance": "Objective restated; constraints listed",
+      "dependsOn": [],
+      "targets": [],
+      "allowedWrites": [],
+      "contextRequirements": [],
+      "interfaces": [],
+      "verification": [],
+      "contextRevision": "",
+      "contextCandidateConfirmationId": "",
+      "updatedAt": null
+    },
+    {
+      "id": "t2-plan",
+      "title": "Break work into executable tasks",
+      "status": "pending",
+      "acceptance": "Plan tasks updated beyond scaffold if needed",
+      "dependsOn": [
+        "t1-understand"
+      ],
+      "targets": [],
+      "allowedWrites": [],
+      "contextRequirements": [],
+      "interfaces": [],
+      "verification": [],
+      "contextRevision": "",
+      "contextCandidateConfirmationId": "",
+      "updatedAt": null
+    },
+    {
+      "id": "t3-implement",
+      "title": "Implement changes",
+      "status": "pending",
+      "acceptance": "Code changes match objective",
+      "dependsOn": [
+        "t2-plan"
+      ],
+      "targets": [],
+      "allowedWrites": [],
+      "contextRequirements": [],
+      "interfaces": [],
+      "verification": [],
+      "contextRevision": "",
+      "contextCandidateConfirmationId": "",
+      "updatedAt": null
+    },
+    {
+      "id": "t4-verify",
+      "title": "Verify with tests/checks",
+      "status": "pending",
+      "acceptance": "Evidence recorded (command or artifact path)",
+      "dependsOn": [
+        "t3-implement"
+      ],
+      "targets": [],
+      "allowedWrites": [],
+      "contextRequirements": [],
+      "interfaces": [],
+      "verification": [],
+      "contextRevision": "",
+      "contextCandidateConfirmationId": "",
+      "updatedAt": null
+    }
+  ],
+  "evidence": []
+}

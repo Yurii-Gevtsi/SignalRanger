@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Core.Localization;
 using Game.UI;
 using TMPro;
 using UnityEngine;

@@ -4226,9 +4226,7 @@ namespace Game.Gameplay.Battle.Simulation
                 return false;
             }
 
-            var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
-            return Mathf.Abs(point.x - unit.Position.x) <= _settings.UnitCollisionHalfWidth + radius
-                && Mathf.Abs(point.y - unit.Position.y) <= halfHeight + radius;
+            return IsTouchingUnitHitbox(point, radius, unit);
         }
 
         private bool TryHitUnit(Vector2 point, float radius, string ignoredUnitId, out Vector2 hitPoint)
@@ -4254,9 +4252,7 @@ namespace Game.Gameplay.Battle.Simulation
                         continue;
                     }
 
-                    var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
-                    if (Mathf.Abs(point.x - unit.Position.x) <= _settings.UnitCollisionHalfWidth + radius
-                        && Mathf.Abs(point.y - unit.Position.y) <= halfHeight + radius)
+                    if (IsTouchingUnitHitbox(point, radius, unit))
                     {
                         hitUnit = unit;
                         hitPoint = unit.Position + (point - unit.Position) * 0.5f;
@@ -4266,6 +4262,16 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             return false;
+        }
+
+        private bool IsTouchingUnitHitbox(Vector2 point, float radius, BattleUnitState unit)
+        {
+            var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
+            var lowerY = unit.Position.y - halfHeight - radius;
+            var upperY = unit.Position.y + halfHeight + _settings.UnitCollisionTopPadding + radius;
+            return Mathf.Abs(point.x - unit.Position.x) <= _settings.UnitCollisionHalfWidth + radius
+                && point.y >= lowerY
+                && point.y <= upperY;
         }
 
         private void StepUnits()

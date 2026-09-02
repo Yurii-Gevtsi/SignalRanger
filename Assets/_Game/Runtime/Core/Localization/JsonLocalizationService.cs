@@ -53,9 +53,7 @@ namespace Game.Core.Localization
                 return string.Empty;
             }
 
-            var value = FindTranslation(LanguageCode, key)
-                ?? FindTranslation(DefaultLanguageCode, key)
-                ?? $"[{key}]";
+            var value = FindTranslation(LanguageCode, key) ?? $"[{key}]";
 
             if (arguments == null)
             {

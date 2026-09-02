@@ -64,7 +64,6 @@ namespace Game.App
 
         private enum CampaignModeTab
         {
-            Training,
             Map,
             Raid,
             Arena,
@@ -81,7 +80,6 @@ namespace Game.App
         private readonly List<(Image Image, TMP_Text Label)> _campaignModeTabs = new();
         private CampaignModeTab _selectedCampaignMode;
         private RaidDifficulty _selectedRaidDifficulty = RaidDifficulty.Normal;
-        private RaidDifficulty _selectedTrainingDifficulty = RaidDifficulty.Easy;
         private int _selectedPlanetIndex;
         private int _selectedCampaignClusterIndex;
         private string _selectedCampaignMissionId = string.Empty;
@@ -334,7 +332,7 @@ namespace Game.App
                             _selectedCampaignClusterIndex = sectorIndex;
                             _selectedPlanetIndex = planetIndex;
                             _selectedCampaignMissionId = string.Empty;
-                            ShowCampaignCard();
+                            ShowCampaignCard(restoreLastPlayedPlanet: false);
                             return;
                         }
                     }
@@ -343,14 +341,19 @@ namespace Game.App
                 }
             }
 
-            ShowCampaignCard();
+            ShowCampaignCard(restoreLastPlayedPlanet: false);
         }
 
-        private void ShowCampaignCard()
+        private void ShowCampaignCard(bool restoreLastPlayedPlanet = true)
         {
             if (_campaignCardOverlay != null || _canvasObject == null)
             {
                 return;
+            }
+
+            if (restoreLastPlayedPlanet)
+            {
+                RestoreLastPlayedCampaignPlanet();
             }
 
             var overlay = CreateRect("Campaign Card Overlay", _canvasObject.transform, Vector2.zero, Vector2.one,
@@ -383,13 +386,13 @@ namespace Game.App
             lineImage.color = new Color32(0x4C, 0xCE, 0xF9, 0xFF);
             lineImage.raycastTarget = false;
 
-            var labels = new[] { GameText.ModeTraining(), GameText.ModeMap(), GameText.RaidTitle(), GameText.ModeArena(), GameText.ModeBosses() };
+            var labels = new[] { GameText.ModeMap(), GameText.RaidTitle(), GameText.ModeArena(), GameText.ModeBosses() };
             for (var i = 0; i < labels.Length; i++)
             {
                 var tab = (CampaignModeTab)i;
                 var tabRect = CreateImageButton($"Campaign Mode Tab {tab}", parent,
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                    CampaignModeTabSize, new Vector2((i - 2) * 340f - 90f, 405f), "UI/Generated/campaign_mode_tab_inactive",
+                    CampaignModeTabSize, new Vector2((i - 1.5f) * 340f - 90f, 405f), "UI/Generated/campaign_mode_tab_inactive",
                     () => SelectCampaignMode(tab));
                 var label = CreateLabel($"Campaign Mode Tab {tab} Label", tabRect, Vector2.zero, Vector2.one,
                     40, TextAlignmentOptions.Center, labels[i], GameTextRole.ScreenTitle);
@@ -429,9 +432,6 @@ namespace Game.App
 
             switch (mode)
             {
-                case CampaignModeTab.Training:
-                    BuildTrainingModeContent(_campaignModeContent);
-                    break;
                 case CampaignModeTab.Map:
                     BuildMapModeContent(_campaignModeContent);
                     break;
@@ -445,21 +445,6 @@ namespace Game.App
                     BuildBossModeContent(_campaignModeContent);
                     break;
             }
-        }
-
-        private void BuildTrainingModeContent(Transform parent)
-        {
-            CreateModeImage(parent, "Training Map Preview", "UI/Menu/training_card", CampaignModeLeftPosition, CampaignModeLeftSize);
-            CreateModeText(parent, "Training Map Title", GameText.ModeSelectMap(), new Vector2(CampaignModeLeftPosition.x, 190f), 34, TextAlignmentOptions.Center, SciFiTextStyle.GoldText);
-            CreateModeText(parent, "Training Map Name", GameText.DefaultMissionTitle(), new Vector2(CampaignModeLeftPosition.x, -170f), 30, TextAlignmentOptions.Center, SciFiTextStyle.MainText);
-
-            var right = CreateModePanel(parent, "Training Difficulty Panel", CampaignModeRightPosition, CampaignModeRightSize);
-            CreateModeText(right.transform, "Training Hint", GameText.ModeTrainingHint(), new Vector2(0f, 135f), 26, TextAlignmentOptions.Center, SciFiTextStyle.SecondaryText, CampaignRightTextWidth);
-            CreateModeText(right.transform, "Training Difficulty", GameText.RaidDifficultyLabel(), new Vector2(0f, 50f), 28, TextAlignmentOptions.Center, SciFiTextStyle.GoldText, CampaignRightTextWidth);
-            CreateDifficultyButton(right.transform, "Training Easy", GameText.RaidDifficultyEasy(), new Vector2(-150f, -20f), _selectedTrainingDifficulty == RaidDifficulty.Easy, () => SelectTrainingDifficulty(RaidDifficulty.Easy));
-            CreateDifficultyButton(right.transform, "Training Normal", GameText.RaidDifficultyNormal(), new Vector2(0f, -20f), _selectedTrainingDifficulty == RaidDifficulty.Normal, () => SelectTrainingDifficulty(RaidDifficulty.Normal));
-            CreateDifficultyButton(right.transform, "Training Hard", GameText.RaidDifficultyHard(), new Vector2(150f, -20f), _selectedTrainingDifficulty == RaidDifficulty.Hard, () => SelectTrainingDifficulty(RaidDifficulty.Hard));
-            CreateModeButton(right.transform, "Start Training", GameText.EnterBattle(), new Vector2(0f, -145f), StartTrainingSkirmish, true);
         }
 
         private void BuildMapModeContent(Transform parent)
@@ -854,13 +839,34 @@ namespace Game.App
                 return false;
             }
 
+            return HasCompletedMissionForChapter(previous.ChapterId)
+                || HasUnlockedMissionForChapter(sector.Planets[planetIndex].ChapterId);
+        }
+
+        private static bool HasCompletedMissionForChapter(string chapterId)
+        {
             for (var i = 0; i < AppServices.Missions.Length; i++)
             {
                 var mission = AppServices.Missions[i];
-                if (mission != null && string.Equals(mission.ChapterId, previous.ChapterId, StringComparison.Ordinal)
+                if (mission != null && string.Equals(mission.ChapterId, chapterId, StringComparison.Ordinal)
                     && IsCampaignMissionCompleted(mission.MissionId))
                 {
                     return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasUnlockedMissionForChapter(string chapterId)
+        {
+            var highestUnlockedMissionIndex = AppServices.SaveService?.Current?.campaign?.highestUnlockedMissionIndex ?? -1;
+            for (var i = 0; i < AppServices.Missions.Length; i++)
+            {
+                var mission = AppServices.Missions[i];
+                if (mission != null && string.Equals(mission.ChapterId, chapterId, StringComparison.Ordinal))
+                {
+                    return highestUnlockedMissionIndex >= i;
                 }
             }
 
@@ -1098,9 +1104,50 @@ namespace Game.App
                 return;
             }
 
+            RememberLastPlayedCampaignPlanet(selectedPlanet.ChapterId);
             AppServices.Session.SelectMission(missionIndex);
             HideCampaignCard();
             AppServices.SceneLoader.Load(GameSceneNames.Battle);
+        }
+
+        private void RestoreLastPlayedCampaignPlanet()
+        {
+            var chapterId = AppServices.SaveService?.Current?.campaign?.lastPlayedPlanetChapterId;
+            if (string.IsNullOrWhiteSpace(chapterId))
+            {
+                return;
+            }
+
+            for (var sectorIndex = 0; sectorIndex < CampaignPlanetCatalog.Sectors.Length; sectorIndex++)
+            {
+                var planets = CampaignPlanetCatalog.Sectors[sectorIndex].Planets;
+                for (var planetIndex = 0; planetIndex < planets.Length; planetIndex++)
+                {
+                    if (!string.Equals(planets[planetIndex].ChapterId, chapterId, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    _selectedCampaignClusterIndex = sectorIndex;
+                    _selectedPlanetIndex = planetIndex;
+                    _selectedCampaignMissionId = string.Empty;
+                    return;
+                }
+            }
+        }
+
+        private static void RememberLastPlayedCampaignPlanet(string chapterId)
+        {
+            var saveService = AppServices.SaveService;
+            var saveData = saveService?.Current;
+            if (saveData?.campaign == null || string.IsNullOrWhiteSpace(chapterId)
+                || string.Equals(saveData.campaign.lastPlayedPlanetChapterId, chapterId, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            saveData.campaign.lastPlayedPlanetChapterId = chapterId;
+            saveService.Save(saveData);
         }
 
         private bool EnsureSelectedCampaignMission(string chapterId)
@@ -1240,15 +1287,6 @@ namespace Game.App
             }
         }
 
-        private void SelectTrainingDifficulty(RaidDifficulty difficulty)
-        {
-            _selectedTrainingDifficulty = difficulty;
-            if (_campaignModeContent != null && _selectedCampaignMode == CampaignModeTab.Training)
-            {
-                BuildTrainingModeContent(_campaignModeContent);
-            }
-        }
-
         private void SelectRaidDifficulty(RaidDifficulty difficulty)
         {
             _selectedRaidDifficulty = difficulty;
@@ -1306,13 +1344,6 @@ namespace Game.App
             Destroy(_campaignCardOverlay);
             _campaignCardOverlay = null;
             _campaignSectorProgressDialog = null;
-        }
-
-        private void StartTrainingSkirmish()
-        {
-            HideCampaignCard();
-            AppServices.Session.SelectTrainingSkirmish();
-            AppServices.SceneLoader.Load(GameSceneNames.Battle);
         }
 
         private void OpenCampaignMap()

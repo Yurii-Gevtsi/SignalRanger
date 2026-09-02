@@ -35,6 +35,7 @@ namespace Game.Gameplay.Battle.Motion
         // Feet rest this fraction of a cell above the surface top, keeping the
         // body clear of the ground while staying inside the grounded window.
         private const float SkinCellFraction = 0.25f;
+        private const float MinimumFallingSpeed = 0.2f;
         // Lateral offset of the outer foot/edge samples, as a fraction of half width.
         private const float BodySampleSpread = 0.7f;
         // Ground-support columns across the body, as fractions of half width.
@@ -436,7 +437,7 @@ namespace Game.Gameplay.Battle.Motion
             if (!IsBodyBlocked(verticalOnly))
             {
                 Position = verticalOnly;
-                Velocity = new Vector2(Velocity.x * -_profile.BounceDampingX, Velocity.y);
+                BeginFallingAfterNonSupportContact();
                 return MotorStepOutcome.Airborne;
             }
 
@@ -447,19 +448,26 @@ namespace Game.Gameplay.Battle.Motion
             Position = previous;
             if (Velocity.y > 0f)
             {
-                Velocity = new Vector2(
-                    Velocity.x * -_profile.BounceDampingX,
-                    -Mathf.Abs(Velocity.y) * _profile.BounceDampingY);
+                BeginFallingAfterNonSupportContact();
                 return MotorStepOutcome.Airborne;
             }
 
-            Velocity = new Vector2(Velocity.x * -_profile.BounceDampingX, 0f);
-            if (Velocity.magnitude <= _profile.RestSpeed)
+            BeginFallingAfterNonSupportContact();
+            if (Velocity.magnitude <= _profile.RestSpeed && IsGrounded(previous))
             {
                 return Settle(previous);
             }
 
             return MotorStepOutcome.Airborne;
+        }
+
+        private void BeginFallingAfterNonSupportContact()
+        {
+            IsJumping = false;
+            ResetJumpPhase();
+            Velocity = new Vector2(
+                Velocity.x * -_profile.BounceDampingX,
+                Mathf.Min(Velocity.y, -MinimumFallingSpeed));
         }
 
         private MotorStepOutcome DampenOrRest(Vector2 position)

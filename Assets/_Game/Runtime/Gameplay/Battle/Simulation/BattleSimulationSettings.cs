@@ -16,7 +16,8 @@ namespace Game.Gameplay.Battle.Simulation
             float unitCollisionHalfWidth,
             float knockbackLandingSearchPadding,
             float groundRayStartHeight,
-            float groundRayDistance)
+            float groundRayDistance,
+            float unitCollisionTopPadding = 0.2f)
         {
             FallDeathY = fallDeathY;
             SimulationTickSeconds = Mathf.Max(1f / 480f, simulationTickSeconds);
@@ -26,6 +27,7 @@ namespace Game.Gameplay.Battle.Simulation
             KnockbackLandingSearchPadding = Mathf.Max(0f, knockbackLandingSearchPadding);
             GroundRayStartHeight = Mathf.Max(0f, groundRayStartHeight);
             GroundRayDistance = Mathf.Max(0f, groundRayDistance);
+            UnitCollisionTopPadding = Mathf.Max(0f, unitCollisionTopPadding);
         }
 
         public float FallDeathY { get; }
@@ -36,5 +38,7 @@ namespace Game.Gameplay.Battle.Simulation
         public float KnockbackLandingSearchPadding { get; }
         public float GroundRayStartHeight { get; }
         public float GroundRayDistance { get; }
+        /// <summary>Extra upper-body coverage for projectile hit tests; support remains track-only.</summary>
+        public float UnitCollisionTopPadding { get; }
     }
 }

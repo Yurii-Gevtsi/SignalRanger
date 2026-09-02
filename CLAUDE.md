@@ -76,7 +76,7 @@
 - Для ранньої розробки використовувати Unity 2D, URP, Input System, ScriptableObject-конфіги та просту composition root.
 - Прогресію, економіку, магазин, рекламу, IAP, remote config і live-ops додавати шарами.
 - Не робити платну або VIP-перевагу в ranked/competitive combat.
-- **Жодного хардкоду гравцеського тексту в C#** — без винятків для «старого коду» чи «поступової міграції». Кожен рядок, який бачить гравець, проходить через `GameText`/локалізацію; рядок-літерал у коді допустимий лише як fallback-параметр цього виклику. Деталі й перевірка — `docs/architecture/localization.md`.
+- **Жодного хардкоду гравцеського тексту в C#** — без винятків для старого коду чи поступової міграції. Кожен рядок, який бачить гравець, проходить через `GameText`/локалізацію; player-facing fallback-параметри заборонені. Для кожної зміни тексту використовувати агента `localization-translator` і виконувати `node tools/localization-audit.mjs` та `node tools/localization-integrity-gate.mjs`. Деталі — `docs/architecture/localization.md`.
 
 ## Правила співпраці
 

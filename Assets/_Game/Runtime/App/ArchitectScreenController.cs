@@ -1212,7 +1212,7 @@ namespace Game.App
                 ApplySlotWeaponVisual(slot.Weapon, weapon.WeaponId);
                 slot.Frame.color = NormalSlotColor;
                 slot.Lock.enabled = false;
-                slot.Label.text = $"LVL {progress.rank}";
+                slot.Label.text = GameText.LevelLabel() + " " + progress.rank;
                 slot.Label.color = SciFiTextStyle.SecondaryText;
 
                 var labelRect = slot.Label.rectTransform;

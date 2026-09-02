@@ -8,6 +8,9 @@
       ],
       "type": "stdio",
       "cwd": "C:\\Projects\\Game"
+    },
+    "UnityMCP": {
+      "url": "http://localhost:8080/mcp"
     }
   }
 }

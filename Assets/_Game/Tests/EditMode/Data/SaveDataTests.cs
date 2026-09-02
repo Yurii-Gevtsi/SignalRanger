@@ -27,6 +27,7 @@ namespace Game.Tests.EditMode.Data
             var saveData = SaveData.CreateNew();
             saveData.profile.playerName = "Тестер";
             saveData.campaign.highestUnlockedMissionIndex = 2;
+            saveData.campaign.lastPlayedPlanetChapterId = "chapter.ferrum";
             saveData.campaign.completedMissionIds.Add("mission.training.01");
             saveData.economy.softCurrency = 75;
             saveData.economy.premiumCurrency = 16;
@@ -37,6 +38,7 @@ namespace Game.Tests.EditMode.Data
 
             Assert.That(restored.profile.playerName, Is.EqualTo("Тестер"));
             Assert.That(restored.campaign.highestUnlockedMissionIndex, Is.EqualTo(2));
+            Assert.That(restored.campaign.lastPlayedPlanetChapterId, Is.EqualTo("chapter.ferrum"));
             Assert.That(restored.campaign.completedMissionIds, Contains.Item("mission.training.01"));
             Assert.That(restored.economy.softCurrency, Is.EqualTo(75));
             Assert.That(restored.economy.premiumCurrency, Is.EqualTo(16));

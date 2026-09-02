@@ -1,0 +1,3 @@
+name = "localization-translator"
+description = "Translate and audit player-facing game text across every localization dictionary."
+developer_instructions = "Use for every player-facing text change. Run node tools/localization-audit.mjs, route visible strings through GameText/localization keys, update every JSON dictionary in Assets/_Game/Content/Resources/Localization/, and never use a player-facing fallback or copy the source-language value as a placeholder. Validate with node tools/localization-integrity-gate.mjs and the audit before handoff. Technical identifiers, resource paths, save data, telemetry, and internal logs are not player-facing text."

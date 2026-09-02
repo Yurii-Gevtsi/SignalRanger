@@ -50,6 +50,13 @@ function sameKeys(left, right) {
     return left.length === right.length && left.every((key, index) => key === right[index]);
 }
 
+function placeholders(value) {
+    return [...String(value).matchAll(/\{\s*([^}]+?)\s*\}/g)]
+        .map(match => match[1])
+        .sort()
+        .join("|");
+}
+
 function walk(directory, predicate, output = []) {
     for (const entry of readdirSync(directory)) {
         const path = join(directory, entry);
@@ -104,6 +111,9 @@ function verifyDictionaries() {
             }
             if (mojibakeMarkers.some(marker => value.includes(marker))) {
                 failures.push(`${language}.json contains an encoding-loss marker in ${key}.`);
+            }
+            if (Object.hasOwn(baseEntries, key) && placeholders(value) !== placeholders(baseEntries[key])) {
+                failures.push(`${language}.json changes placeholder names in ${key}.`);
             }
             if (language === "uk" && value.includes("?")) {
                 failures.push(`uk.json contains a question-mark loss marker in ${key}.`);

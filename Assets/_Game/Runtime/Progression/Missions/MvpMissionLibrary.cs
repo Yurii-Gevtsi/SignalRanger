@@ -278,8 +278,8 @@ namespace Game.Progression.Missions
             // New planets may be shipped before their localized copy lands, so
             // retain a neutral readable fallback instead of silently dropping
             // those missions and shifting every later mission index.
-            title = Game.Core.Localization.GameText.Localized("missionText." + missionId + ".title", missionId);
-            description = Game.Core.Localization.GameText.Localized("missionText." + missionId + ".description", "Mission briefing");
+            title = Game.Core.Localization.GameText.Localized("missionText." + missionId + ".title", string.Empty);
+            description = Game.Core.Localization.GameText.Localized("missionText." + missionId + ".description", string.Empty);
             return MissionDefinition.CreateRuntime(
                 missionId,
                 title,
