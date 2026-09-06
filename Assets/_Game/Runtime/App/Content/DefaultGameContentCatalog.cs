@@ -98,8 +98,23 @@ namespace Game.App.Content
                     GameText.Localized("campaign.defaultSummary", string.Empty),
                     new[] { "mission.training.13", "mission.training.14" },
                     new[] { "tutorial.review" },
-                    new[] { "weapon.granata", "weapon.bur", "weapon.c4", "weapon.heal", "weapon.teleport" })
+                    new[] { "weapon.granata", "weapon.bur", "weapon.c4", "weapon.heal", "weapon.teleport" }),
+                CreatePlaceholderChapter("chapter.monument", "mission.placeholder.monument"),
+                CreatePlaceholderChapter("chapter.kraken", "mission.placeholder.kraken"),
+                CreatePlaceholderChapter("chapter.vines", "mission.placeholder.vines"),
+                CreatePlaceholderChapter("chapter.robots", "mission.placeholder.robots")
             };
+        }
+
+        private static CampaignChapterDefinition CreatePlaceholderChapter(string chapterId, string missionId)
+        {
+            return CampaignChapterDefinition.CreateRuntime(
+                chapterId,
+                GameText.Localized("campaign.defaultTitle", string.Empty),
+                GameText.Localized("campaign.defaultSummary", string.Empty),
+                new[] { missionId },
+                System.Array.Empty<string>(),
+                new[] { "weapon.impulse" });
         }
 
         private static EnemyLoadoutDefinition[] CreateEnemyLoadouts()

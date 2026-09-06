@@ -478,9 +478,9 @@ namespace Game.App
                 var planetSelectable = planetButton.GetComponent<Button>();
                 var isSectorLocked = !IsCampaignSectorUnlocked(_selectedCampaignClusterIndex);
                 var isReachable = !isSectorLocked && IsPlanetReachable(planetIndex);
-                planetSelectable.interactable = true;
+                planetSelectable.interactable = isReachable;
                 planetButton.GetComponent<Image>().preserveAspect = true;
-                planetButton.GetComponent<Image>().color = isSectorLocked ? new Color(0.38f, 0.42f, 0.48f, 1f) : Color.white;
+                planetButton.GetComponent<Image>().color = isReachable ? Color.white : new Color(0.38f, 0.42f, 0.48f, 1f);
                 _campaignPlanetButtons.Add(planetButton);
                 ApplyCampaignPlanetSelection(planetButton, i == _selectedPlanetIndex);
                 CreateModeText(planetButton, $"Planet {i + 1} Label", GameText.Localized(planet.LocalizationKey, string.Empty), new Vector2(0f, -125f), 19,
@@ -822,6 +822,20 @@ namespace Game.App
 
         private bool IsPlanetReachable(int planetIndex)
         {
+            var sector = CampaignPlanetCatalog.Sectors[Mathf.Clamp(_selectedCampaignClusterIndex, 0, CampaignPlanetCatalog.Sectors.Length - 1)];
+            if (planetIndex < 0 || planetIndex >= sector.Planets.Length)
+            {
+                return false;
+            }
+
+            var planet = sector.Planets[planetIndex];
+            // Admin mode unlocks every implemented map for QA, but cannot
+            // bypass content that does not own an arena yet.
+            if (string.IsNullOrWhiteSpace(planet.ChapterId) || string.IsNullOrWhiteSpace(planet.ArenaId))
+            {
+                return false;
+            }
+
             if (AppServices.IsAdminModeEnabled)
             {
                 return true;
@@ -832,7 +846,6 @@ namespace Game.App
                 return true;
             }
 
-            var sector = CampaignPlanetCatalog.Sectors[Mathf.Clamp(_selectedCampaignClusterIndex, 0, CampaignPlanetCatalog.Sectors.Length - 1)];
             var previous = sector.Planets[planetIndex - 1];
             if (string.IsNullOrWhiteSpace(previous.ChapterId) || AppServices.Missions == null)
             {
@@ -1077,7 +1090,9 @@ namespace Game.App
 
             var sector = CampaignPlanetCatalog.Sectors[Mathf.Clamp(_selectedCampaignClusterIndex, 0, CampaignPlanetCatalog.Sectors.Length - 1)];
             var selectedPlanet = sector.Planets[Mathf.Clamp(_selectedPlanetIndex, 0, sector.Planets.Length - 1)];
-            if (string.IsNullOrWhiteSpace(_selectedCampaignMissionId))
+            if (string.IsNullOrWhiteSpace(_selectedCampaignMissionId)
+                || !IsPlanetReachable(_selectedPlanetIndex)
+                || string.IsNullOrWhiteSpace(selectedPlanet.ArenaId))
             {
                 return;
             }
@@ -1106,6 +1121,12 @@ namespace Game.App
 
             RememberLastPlayedCampaignPlanet(selectedPlanet.ChapterId);
             AppServices.Session.SelectMission(missionIndex);
+            if (!string.IsNullOrWhiteSpace(selectedPlanet.ArenaId))
+            {
+                GameSessionContext.SelectArena(
+                    AppServices.Content?.ResolveArenaIndexById(selectedPlanet.ArenaId) ?? 0,
+                    selectedPlanet.ArenaId);
+            }
             HideCampaignCard();
             AppServices.SceneLoader.Load(GameSceneNames.Battle);
         }
@@ -1214,6 +1235,11 @@ namespace Game.App
                 || string.IsNullOrWhiteSpace(missionId))
             {
                 return false;
+            }
+
+            if (AppServices.IsAdminModeEnabled)
+            {
+                return true;
             }
 
             var firstMissionId = string.Empty;

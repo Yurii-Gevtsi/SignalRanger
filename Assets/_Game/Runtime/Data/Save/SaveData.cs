@@ -260,14 +260,26 @@ namespace Game.Data.Save
 
             if (unlockedWeaponIds.Count == 0)
             {
+                unlockedWeaponIds.Add("weapon.rope");
                 unlockedWeaponIds.Add("weapon.impulse");
                 unlockedWeaponIds.Add("weapon.blaster-caset");
             }
 
+            if (!unlockedWeaponIds.Contains("weapon.rope"))
+            {
+                unlockedWeaponIds.Add("weapon.rope");
+            }
+
             if (selectedLoadoutWeaponIds.Count == 0)
             {
+                selectedLoadoutWeaponIds.Add("weapon.rope");
                 selectedLoadoutWeaponIds.Add("weapon.impulse");
                 selectedLoadoutWeaponIds.Add("weapon.blaster-caset");
+            }
+
+            if (!selectedLoadoutWeaponIds.Contains("weapon.rope"))
+            {
+                selectedLoadoutWeaponIds.Insert(0, "weapon.rope");
             }
 
             weaponProgress.RemoveAll(item => item == null || string.IsNullOrWhiteSpace(item.weaponId));

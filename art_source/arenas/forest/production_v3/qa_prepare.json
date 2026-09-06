@@ -1,0 +1,6 @@
+{
+  "arena": "forest",
+  "sections": 4,
+  "source_alpha_pixels": 803407,
+  "rule": "Guide contour faces partition every visible source pixel. Reference crops are two-times resolution only; they cannot be promoted before an individual enhancement exists."
+}

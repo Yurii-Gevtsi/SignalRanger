@@ -79,19 +79,10 @@ namespace Game.Gameplay.Battle.Visuals
             }
         }
 
-        /// <summary>
-        /// Places and sizes the sky once in fixed world space (rather than
-        /// re-centring on the camera every frame) so zooming and panning
-        /// naturally reveal more or less of it, just like any other world
-        /// layer. Sized to fully cover <paramref name="cameraWorldBounds"/>
-        /// expanded by the largest permitted view, so there is never a gap
-        /// no matter where the camera is clamped to. Vertical placement uses
-        /// the camera's position at call time (battle start), so the initial
-        /// framing is unchanged from before.
-        /// </summary>
-        public void ConfigureCoverage(Camera camera, float maximumOrthographicSize, Rect cameraWorldBounds)
+        /// <summary>Places the animated sky inside the fixed camera frame at the arena's world offset.</summary>
+        public void ConfigureCoverage(Rect cameraFrame, Vector2 worldOffset, float topPanAllowance)
         {
-            if (camera == null || _backdrop == null || maximumOrthographicSize <= 0f)
+            if (_backdrop == null || cameraFrame.width <= 0f || cameraFrame.height <= 0f)
             {
                 return;
             }
@@ -109,18 +100,17 @@ namespace Game.Gameplay.Battle.Visuals
                 return;
             }
 
-            const float coveragePadding = 1.12f;
-            var maxHalfHeight = maximumOrthographicSize;
-            var maxHalfWidth = maximumOrthographicSize * camera.aspect;
-            var targetWidth = (cameraWorldBounds.width + maxHalfWidth * 2f) * coveragePadding;
-            var targetHeight = (cameraWorldBounds.height + maxHalfHeight * 2f) * coveragePadding;
-            var multiplier = Mathf.Max(
-                targetWidth / (backdropSize.x * _baseLocalScale.x),
-                targetHeight / (backdropSize.y * _baseLocalScale.y));
-            transform.localScale = _baseLocalScale * multiplier;
+            transform.localScale = new Vector3(
+                cameraFrame.width / backdropSize.x,
+                cameraFrame.height / backdropSize.y,
+                _baseLocalScale.z);
+            _backdrop.localScale = new Vector3(
+                1f,
+                1f + (Mathf.Max(0f, topPanAllowance) * 2f / cameraFrame.height),
+                1f);
             transform.position = new Vector3(
-                cameraWorldBounds.center.x,
-                camera.transform.position.y + _baseLocalPosition.y,
+                cameraFrame.center.x + worldOffset.x,
+                cameraFrame.center.y + _baseLocalPosition.y + worldOffset.y,
                 transform.position.z);
         }
 

@@ -1,0 +1,45 @@
+{
+  "rule": "Every fragment is individually enhanced after the guide-contour crop; resize-only output cannot be promoted.",
+  "pieces": [
+    {
+      "id": "section_01",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "b1babe8fcdded83d0c43a7ca425e2c92e23b75fb986a391c2b23ebdc87e26d81",
+      "enhanced_sha256": "4938e202bb71b7feeaca574d42c8fd5ad6b27432d94e72419e533b136bf4c86e",
+      "final_visual_sha256": "a0d76c943fbb0625f8de4f17f8b91056c4a700a80e736d66c112b3d86b6afbeb",
+      "width": 1466,
+      "height": 1256,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "id": "section_02",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "aaf5958dd2423705fcf1b49baba24f6760e5e8f48bbb9685f103b8a36d45a9ed",
+      "enhanced_sha256": "0059c0be3a0b625e2ae2174f4a38c3059946bc26a7f4b001ce3fbbbcb85d5493",
+      "final_visual_sha256": "3b15466f3326e460ed135980660a86f60a1a2f0226d299f44fe236a33f341fb3",
+      "width": 1158,
+      "height": 1578,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "id": "section_03",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "0520fa5dbade4b43255d1ea8cc8ee6e77a88154c50e6d84730018e201ff26f08",
+      "enhanced_sha256": "91ca141bce40ae4319ff5a531c16ce20dacd778eba037e9a82c62a0d742639e5",
+      "final_visual_sha256": "62c28baa51b9a172e0248362d37c0e3317323386161eea49c00730832529e51c",
+      "width": 1480,
+      "height": 1172,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "id": "section_04",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "ff8d12afde3a7824d2607d6283c3b89a78a9b43c8bcc72835f0b6084b9557278",
+      "enhanced_sha256": "6d62b4ab1e4701c227d8e40b91e3507c08925a0ea74121402c3c7d5e50fd76c4",
+      "final_visual_sha256": "0b699d6a599c48cc2f578a7d5a89686d799f8372f74a386b1ded4e9235fc779f",
+      "width": 1370,
+      "height": 706,
+      "alpha_source": "reference_crop"
+    }
+  ]
+}

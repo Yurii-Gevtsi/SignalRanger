@@ -124,6 +124,11 @@ namespace Game.Gameplay.Battle.Simulation
         private const float MortarCascadeDamageScale = 0.5f;
         private const float MortarCascadeSpeed = 2.2f;
         private const string MortarCascadeProjectilePrefix = "projectile.weapon.mortira.cascade.";
+        private const string RopeWeaponId = "weapon.rope";
+        private const float RopeBaseLength = 8f;
+        private const float RopeHookSpeed = 18f;
+        private const float RopeBaseSectorDegrees = 45f;
+        private const float RopeBaseSwingAcceleration = 8f;
 
         private readonly BattleState _state;
         private readonly TurnService _turnService;
@@ -170,6 +175,7 @@ namespace Game.Gameplay.Battle.Simulation
         private TurnAdvanceReason _pendingRetreatReason;
         private bool _playerTurnTimerPaused;
         private int _turnSequence;
+        private RopeTraversal _ropeTraversal;
 
         public static BattleSimulation CreatePlayerFirst(
             BattleState state,
@@ -274,7 +280,15 @@ namespace Game.Gameplay.Battle.Simulation
         public IReadOnlyList<SimProjectile> Projectiles => _projectiles;
         public int ProjectilesInFlight => _projectiles.Count;
         public bool HasProjectilesInFlight => _projectiles.Count > 0;
-        public bool HasActiveWeaponEffect => _activeTimedEffects.Count > 0 || _scheduledProjectileSpawns.Count > 0;
+        public bool HasActiveWeaponEffect => _activeTimedEffects.Count > 0
+            || _scheduledProjectileSpawns.Count > 0
+            || _ropeTraversal != null && !_ropeTraversal.IsAttached;
+        public bool HasPlayerRopeTraversal => _ropeTraversal != null
+            && _ropeTraversal.OwnerUnitId == _state.Turn.ActiveUnitId;
+        public bool IsPlayerRopeAttached => HasPlayerRopeTraversal && _ropeTraversal.IsAttached;
+        public Vector2 RopeHookPosition => _ropeTraversal?.HookPosition ?? Vector2.zero;
+        public Vector2 RopeHookDirection => _ropeTraversal?.Direction ?? Vector2.up;
+        public Vector2 RopeAnchor => _ropeTraversal?.Anchor ?? Vector2.zero;
         public bool HasPendingGroundAction => _activeCharges.Count > 0;
         public bool HasActiveControlledProjectile => _controlledProjectileId >= 0;
         public bool CanContinueBlasterBurst => _state.Turn.ActiveTeam == BattleTeamId.Player
@@ -396,6 +410,15 @@ namespace Game.Gameplay.Battle.Simulation
 
         public BattleFireResult TryFire(AimState aim)
         {
+            if (_ropeTraversal != null && _ropeTraversal.IsAttached
+                && _ropeTraversal.OwnerUnitId == _state.Turn.ActiveUnitId)
+            {
+                _ropeTraversal.Detach(GetMotor(_ropeTraversal.OwnerUnitId));
+                _ropeTraversal = null;
+                UnitsMoved?.Invoke();
+                return new BattleFireResult(BattleFireOutcome.Fired, _state.Turn.ActiveTeam, _weaponsById[RopeWeaponId]);
+            }
+
             if (Result.IsFinished || HasProjectilesInFlight || HasActiveMotion || HasActiveWeaponEffect
                 || HasPendingGroundAction || _state.Turn.ActionSpent)
             {
@@ -445,6 +468,22 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var effectiveAim = aim.HasInput ? aim : CreateImmediateActionAim(unit);
+
+            if (weapon.WeaponId == RopeWeaponId)
+            {
+                var rank = ResolveRankFor(unit.TeamId, weapon);
+                _ropeTraversal = new RopeTraversal(
+                    unit.UnitId,
+                    effectiveAim.Origin,
+                    effectiveAim.Direction,
+                    RopeBaseLength + (rank - 1) * 0.75f,
+                    RopeHookSpeed,
+                    RopeBaseSectorDegrees + (rank - 1) * 2f,
+                    RopeBaseSwingAcceleration + (rank - 1) * 0.65f);
+                ShotFired?.Invoke(unit.TeamId, weapon, false);
+                UnitsMoved?.Invoke();
+                return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon);
+            }
 
             if (weapon.WeaponId == BlasterWeaponId)
             {
@@ -516,6 +555,16 @@ namespace Game.Gameplay.Battle.Simulation
                 : Vector2.zero;
         }
 
+        public void SetRopeTraversalInput(int horizontalDirection, int verticalDirection)
+        {
+            if (_ropeTraversal == null || !_ropeTraversal.IsAttached)
+            {
+                return;
+            }
+
+            _ropeTraversal.SetInput(GetMotor(_ropeTraversal.OwnerUnitId), horizontalDirection, verticalDirection);
+        }
+
         /// <summary>
         /// Rank 5/10 branch mechanics for whichever side is firing. Both sides are
         /// looked up the same way: a raid or duel opponent is developed exactly as
@@ -537,6 +586,14 @@ namespace Game.Gameplay.Battle.Simulation
             return weapon == null
                 ? default
                 : ProgressionFor(teamId).ResolveModifiers(weapon.WeaponId);
+        }
+
+        private int ResolveRankFor(BattleTeamId teamId, WeaponDefinition weapon)
+        {
+            return weapon == null
+                ? 1
+                : Mathf.Max(1, (teamId == BattleTeamId.Player ? _playerProgression : _opponentProgression)
+                    .ResolveRank(weapon.WeaponId));
         }
 
         private BattleWeaponProgression ProgressionFor(BattleTeamId teamId)
@@ -683,6 +740,7 @@ namespace Game.Gameplay.Battle.Simulation
                 StepPlayerTurnTimer(_settings.SimulationTickSeconds);
                 StepRetreat(_settings.SimulationTickSeconds);
                 StepWalkIntent(_settings.SimulationTickSeconds);
+                StepRopeTraversal(_settings.SimulationTickSeconds);
                 StepScheduledProjectileSpawns(_settings.SimulationTickSeconds);
                 StepProjectiles(_settings.SimulationTickSeconds);
                 StepTimedWeaponEffects(_settings.SimulationTickSeconds);
@@ -1084,6 +1142,11 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void ResetMotionForNewTurn()
         {
+            if (_ropeTraversal != null)
+            {
+                _ropeTraversal.Detach(GetMotor(_ropeTraversal.OwnerUnitId));
+                _ropeTraversal = null;
+            }
             _walkIntentDirection = 0;
             _retreatRemaining = -1f;
             _controlledProjectileInput = Vector2.zero;
@@ -3338,6 +3401,35 @@ namespace Game.Gameplay.Battle.Simulation
             if (outcome != WalkOutcome.Moved)
             {
                 _walkIntentDirection = 0;
+            }
+        }
+
+        private void StepRopeTraversal(float tickSeconds)
+        {
+            if (_ropeTraversal == null)
+            {
+                return;
+            }
+
+            if (_ropeTraversal.IsAttached)
+            {
+                if (!_motors.TryGetValue(_ropeTraversal.OwnerUnitId, out var motor) || motor == null)
+                {
+                    _ropeTraversal = null;
+                }
+
+                return;
+            }
+
+            if (!_ropeTraversal.StepHook(_terrain, tickSeconds))
+            {
+                _ropeTraversal = null;
+                return;
+            }
+
+            if (_ropeTraversal.IsAttached)
+            {
+                _ropeTraversal.Attach(GetMotor(_ropeTraversal.OwnerUnitId));
             }
         }
 

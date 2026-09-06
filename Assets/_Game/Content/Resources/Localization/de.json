@@ -198,7 +198,8 @@
       "weapon.freeze": "Kryo-Kanone",
       "weapon.fire-gun": "Lavakanone",
       "weapon.missle": "Zielsuchende Rakete",
-      "weapon.fpv-drone": "FPV-Drohne"
+      "weapon.fpv-drone": "FPV-Drohne",
+      "weapon.rope": "Seil"
     },
     "weaponDescription": {
       "weapon.impulse": "Die Standard-Reaktorladung des Droiden — fliegt in einem Bogen und erreicht den Feind selbst hinter Deckung. Keine wirkliche Schwäche, deshalb ist das die erste Waffe, die sich für jeden Kampf lohnt.",
@@ -217,7 +218,8 @@
       "weapon.freeze": "Verursacht Schaden und friert das Ziel ein, blockiert zunächst die Bewegung und verlangsamt dann den Droiden.",
       "weapon.fire-gun": "Feuert einen Strahl geschmolzener Lava ab — der erste Tropfen schadet sofort, und der glühende Boden brennt noch einige Sekunden lang jeden, der ihn betritt.",
       "weapon.missle": "Feuere in Richtung des Gegners — der Suchkopf übernimmt den Rest der Zielverfolgung. Am besten auf mittlere bis große Distanz, wo manuelles Zielen unzuverlässig ist.",
-      "weapon.fpv-drone": "Übernimm die manuelle Kontrolle der Drohne und fliege sie live an Deckungen und Fallen vorbei direkt in den Rumpf des Gegners."
+      "weapon.fpv-drone": "Übernimm die manuelle Kontrolle der Drohne und fliege sie live an Deckungen und Fallen vorbei direkt in den Rumpf des Gegners.",
+      "weapon.rope": "Schieße einen Enterhaken in den oberen Sektor und verankere ihn im Gelände. Klettere, seile dich ab und schwinge, bevor du das Seil löst."
     },
     "weaponEvolutionName": {
       "double-impulse": "Doppelimpuls",

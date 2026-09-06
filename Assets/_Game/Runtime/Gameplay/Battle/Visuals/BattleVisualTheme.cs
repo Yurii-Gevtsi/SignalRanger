@@ -22,9 +22,19 @@ namespace Game.Gameplay.Battle.Visuals
             string backgroundPrefabResourcePath = null,
             IReadOnlyList<BattleVisualLayer> additionalDestructibleLayers = null,
             IReadOnlyList<BattleVisualLayer> overlayLayers = null,
-            float? killZoneY = null)
+            Rect? cameraFrame = null,
+            Vector2? worldOffset = null,
+            Vector2? arenaScale = null,
+            Vector2? arenaScalePivot = null,
+            float cameraTopPanAllowancePercent = 0f,
+            float killZoneOffsetY = 0f)
         {
-            KillZoneY = killZoneY;
+            CameraFrame = cameraFrame;
+            WorldOffset = worldOffset ?? Vector2.zero;
+            ArenaScale = arenaScale ?? Vector2.one;
+            ArenaScalePivot = arenaScalePivot ?? Vector2.zero;
+            CameraTopPanAllowancePercent = Mathf.Max(0f, cameraTopPanAllowancePercent);
+            KillZoneOffsetY = killZoneOffsetY;
             Background = background;
             Foreground = foreground;
             PlayerSkinResourcePath = playerSkinResourcePath ?? string.Empty;
@@ -53,13 +63,16 @@ namespace Game.Gameplay.Battle.Visuals
         public string BackgroundPrefabResourcePath { get; }
         public IReadOnlyList<BattleVisualLayer> AdditionalDestructibleLayers { get; }
         public IReadOnlyList<BattleVisualLayer> OverlayLayers { get; }
+        public Rect? CameraFrame { get; }
 
-        /// <summary>
-        /// World height of the lethal line matching the arena's kill-zone art
-        /// (e.g. the laser barrier). When set it overrides the terrain-derived
-        /// kill height, so dying lines up with what the player sees.
-        /// </summary>
-        public float? KillZoneY { get; }
+        /// <summary>Shared placement offset for the background, terrain and kill-zone.</summary>
+        public Vector2 WorldOffset { get; }
+
+        /// <summary>Scale applied only to the arena and its collision world, not the sky.</summary>
+        public Vector2 ArenaScale { get; }
+        public Vector2 ArenaScalePivot { get; }
+        public float CameraTopPanAllowancePercent { get; }
+        public float KillZoneOffsetY { get; }
 
         /// <summary>Which way the source art looks before any runtime flip.</summary>
         public int PlayerSkinFacingDirectionX { get; }

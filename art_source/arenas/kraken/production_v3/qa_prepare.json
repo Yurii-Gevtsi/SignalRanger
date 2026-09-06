@@ -1,0 +1,11 @@
+{
+  "arena": "kraken",
+  "sections": 3,
+  "source_alpha_pixels": 1110243,
+  "rule": "Guide contour faces partition every visible source pixel. Reference crops are two-times resolution only; they cannot be promoted before an individual enhancement exists.",
+  "source_mask_sha256": {
+    "left": "3ffd3c649523b17408eb43ef7b4a8e94bc9a5801c03454f65297f59e3840fab3",
+    "center": "4011da44fe3347dd46016f9ba995a1d36ce4b14a41d574a9b1e2cf333f3f70ed",
+    "right": "fcc1ac57a3fa194bafc4be19e2cd0a3eb1ef0aa1d38bf43489ce74b80376f3ce"
+  }
+}

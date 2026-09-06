@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.requirements-decision.v1",
+  "decisionRef": "artifact:arena-guide-contour-rebuild-requirements",
+  "acceptanceCriteria": [
+    "City, Forest, Grib, Laguna and Monument reconstruct from guide-contour fragments with no visible gaps, guide-colour pixels or unassigned source pixels.",
+    "Every rebuilt fragment has a same-size binary collision mask, a transparent RGBA visual, and a two-times-resolution individual quality pass.",
+    "Kraken retains its existing segmentation and masks while its three visuals receive the same quality pass."
+  ],
+  "nonGoals": [
+    "Do not modify Desert Sci-Fi, gameplay geometry, camera behaviour or Kraken collision masks.",
+    "Do not manufacture final Robots or Vines assets from their red-marked images without a clean source master."
+  ],
+  "firstSlice": {
+    "outcome": "City is rebuilt as five red-guide-enclosed fragments that exactly reconstruct its clean master.",
+    "verification": "Run source coverage, alpha, pair-dimension and dark/light/blue composite checks for the City output."
+  },
+  "observations": [
+    {
+      "kind": "change.behavior-requested",
+      "evidenceRefs": [
+        "artifact:arena-guide-contour-rebuild-requirements"
+      ]
+    }
+  ]
+}

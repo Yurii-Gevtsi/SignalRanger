@@ -19,8 +19,9 @@ from PIL import Image, ImageFilter
 
 
 ROOT = Path(__file__).resolve().parents[2]
-MASTER = ROOT / "art_source/arenas/desert_sci_fi/master/arena_desert_sci_fi_master_v5.png"
+MASTER = Path(r"C:\Users\Yurii\Desktop\Game\UI\Arenas\Scenes\каньйон.png")
 OUTPUT = ROOT / "art_source/arenas/desert_sci_fi/production_v1"
+SOURCE_SNAPSHOT = ROOT / "art_source/arenas/desert_sci_fi/production_source/layout_master.png"
 SCALE = 2
 PADDING_MASTER = 16
 
@@ -145,16 +146,24 @@ def write_outputs() -> None:
     for folder in (visuals, masks, review):
         folder.mkdir(parents=True, exist_ok=True)
 
-    master = Image.open(MASTER).convert("RGB")
-    rgb = np.asarray(master)
-    base_alpha = foreground_alpha(rgb)
+    source = Image.open(MASTER).convert("RGBA")
+    master = resize_rgba(source, (2048, 1152))
+    source_rgba = np.asarray(master, dtype=np.uint8)
+    rgb = source_rgba[..., :3]
+    source_alpha = source_rgba[..., 3]
+    base_alpha = source_alpha if source_alpha.min() < 255 else foreground_alpha(rgb)
+    SOURCE_SNAPSHOT.parent.mkdir(parents=True, exist_ok=True)
+    master.save(SOURCE_SNAPSHOT)
     rows: list[dict[str, object]] = []
     assets: dict[int, dict[str, object]] = {}
 
     reconstruction = Image.new("RGBA", master.size, (0, 0, 0, 0))
     for cluster in CLUSTERS:
         selection = np.asarray(polygon_mask(master.size, cluster.polygons), dtype=np.uint8)
+        # A binary silhouette avoids semi-transparent blue/white fringe pixels
+        # from the removed concept backdrop becoming visible at joins.
         visual_alpha = np.minimum(base_alpha, selection)
+        visual_alpha = (visual_alpha >= 128).astype(np.uint8) * 255
         if cluster.category == "floating_platform":
             visual_alpha = keep_largest_component(visual_alpha)
         collision_alpha = ((visual_alpha >= 128) * 255).astype(np.uint8)
@@ -163,6 +172,7 @@ def write_outputs() -> None:
         crop_rgb = rgb[y0:y1, x0:x1]
         crop_alpha = visual_alpha[y0:y1, x0:x1]
         rgba = np.dstack((crop_rgb, crop_alpha)).astype(np.uint8)
+        rgba[rgba[..., 3] == 0, :3] = 0
         visual_master = Image.fromarray(rgba, "RGBA")
         mask_master = Image.fromarray(collision_alpha[y0:y1, x0:x1], "L")
         production_size = (visual_master.width * SCALE, visual_master.height * SCALE)
@@ -213,7 +223,7 @@ def write_outputs() -> None:
 
     layout = {
         "arena_id": "arena.desert-sci-fi",
-        "source_master": str(MASTER.relative_to(ROOT)).replace("\\", "/"),
+        "source_master": "art_source/arenas/desert_sci_fi/production_source/layout_master.png",
         "master_width_px": master.width,
         "master_height_px": master.height,
         "production_scale": SCALE,

@@ -198,7 +198,8 @@
       "weapon.freeze": "Działo kriogeniczne",
       "weapon.fire-gun": "Pistolet lawowy",
       "weapon.missle": "Rakieta naprowadzająca",
-      "weapon.fpv-drone": "Dron FPV"
+      "weapon.fpv-drone": "Dron FPV",
+      "weapon.rope": "Lina"
     },
     "weaponDescription": {
       "weapon.impulse": "Standardowy ładunek reaktora droida — leci po łuku i dosięga wroga nawet zza osłony. Nie ma realnej słabości, dlatego to pierwsza broń, którą warto zabrać do każdej walki.",
@@ -217,7 +218,8 @@
       "weapon.freeze": "Zadaje obrażenia i zamraża cel, najpierw blokując ruch, a następnie spowalniając droida.",
       "weapon.fire-gun": "Wystrzeliwuje strumień roztopionej lawy — pierwsza kropla rani od razu, a rozgrzana ziemia jeszcze przez kilka sekund pali każdego, kto na nią wejdzie.",
       "weapon.missle": "Strzelasz w kierunku wroga — głowica naprowadzająca sama dokańcza namierzanie. Najlepsza na średnim i dużym dystansie, gdzie ręczne celowanie zawodzi.",
-      "weapon.fpv-drone": "Przejmujesz ręczne sterowanie dronem i prowadzisz go na żywo obok osłon i pułapek prosto w kadłub wroga."
+      "weapon.fpv-drone": "Przejmujesz ręczne sterowanie dronem i prowadzisz go na żywo obok osłon i pułapek prosto w kadłub wroga.",
+      "weapon.rope": "Wystrzel hak w górny sektor i zakotwicz go w terenie. Wspinaj się, opuszczaj i rozbujaj, zanim puścisz linę."
     },
     "weaponEvolutionName": {
       "double-impulse": "Podwójny Impuls",

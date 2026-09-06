@@ -32,17 +32,6 @@ namespace Game.Gameplay.Battle.Assembly
 {
     public static class BattleSceneBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void CreateBattleController()
-        {
-            if (SceneManager.GetActiveScene().name != GameSceneNames.Battle)
-            {
-                return;
-            }
-
-            EnsureCreated();
-        }
-
         public static void EnsureCreated()
         {
             if (Object.FindAnyObjectByType<BattleSceneController>() != null)
@@ -79,17 +68,19 @@ namespace Game.Gameplay.Battle.Assembly
         private const string DroidRigResourcePath = "Visuals/Characters/DroidRig";
         private const float DroidBodyLocalY = 1.8f;
         private const float CameraZoomInMultiplier = 0.58f;
-        // Battle-start framing already shows the whole map, so it is the
-        // zoom-out floor: players can only zoom in from there, never further out.
-        private const float CameraZoomOutMultiplier = 1f;
-        private const float CameraZoomStep = 0.62f;
-        private const float SpriteArenaBottomScreenOffset = 0.5f;
+        private const float CameraZoomStep = 1.25f;
+        private const float KillZoneBottomInset = 0.55f;
+        private const float KillZoneVisualHeightScale = 0.45f;
+        private const float ArenaSpriteSeamOverdrawPixels = 2f;
+        private const string KillZoneResourcePath = "Visuals/Arenas/KillZones/LaserLine/laser_line";
         private const float PinchZoomSensitivity = 0.008f;
         private const float DirectAimCenterDeadZone = 0.32f;
         private const float FirstBattleNavigationDistance = 1.2f;
         // High enough that the barrel visibly sticks to the finger (time
         // constant ~70 ms); the old 5.5 made straight-shot aiming feel laggy.
         private const float DirectAimSmoothingSpeed = 14f;
+        private const float RopeAimHalfSectorDegrees = 22.5f;
+        private const string RopeHookSpriteId = "rope_shot";
         // Barrels of these weapons visually match the aim only after this art
         // correction, and their resting pose tilts slightly toward the ground.
         private const float RestingWeaponTiltDegrees = 10f;
@@ -184,6 +175,8 @@ namespace Game.Gameplay.Battle.Assembly
         private Sprite _circleSprite;
         private LineRenderer _aimLine;
         private LineRenderer _trajectoryLine;
+        private LineRenderer _ropeLine;
+        private GameObject _ropeHookVisual;
         private readonly List<SpriteRenderer> _trajectoryDots = new();
 
         // Training-mission aim help: the dotted arc statically extends all the
@@ -213,6 +206,7 @@ namespace Game.Gameplay.Battle.Assembly
         private Vector2 _controlledPointerPreviousScreenPosition;
         private int _uiWalkInputDirection;
         private int _keyboardWalkInputDirection;
+        private int _ropeVerticalInput;
         private int _pendingTutorialWalkDirection;
         private float _pendingTutorialWalkStartX;
         private float _minimumCameraSize;
@@ -223,6 +217,16 @@ namespace Game.Gameplay.Battle.Assembly
         private bool _cameraPanActive;
         private Vector2 _previousCameraPanScreenPosition;
         private Rect _cameraWorldBounds;
+        private Rect _cameraPanBounds;
+        private Rect? _configuredCameraFrame;
+        private Vector2 _arenaWorldOffset;
+        private Vector2 _arenaScale = Vector2.one;
+        private Vector2 _arenaScalePivot;
+        private float _cameraTopPanAllowancePercent;
+        private float _killZoneOffsetY;
+        private SpriteRenderer _staticBackgroundRenderer;
+        private AnimatedSkyBackground _animatedBackground;
+        private Transform _killZoneVisual;
         private bool _battleSettingsOpen;
         private bool _arsenalMenuOpen;
         private float _timeScaleBeforeSettings = 1f;
@@ -383,6 +387,10 @@ namespace Game.Gameplay.Battle.Assembly
             _hud.MoveRightStopped += () => StopUiWalkInput(1);
             _hud.JumpLeftRequested += () => TryStartJump(-1);
             _hud.JumpRightRequested += () => TryStartJump(1);
+            _hud.RopeUpStarted += () => _ropeVerticalInput = -1;
+            _hud.RopeUpStopped += () => _ropeVerticalInput = 0;
+            _hud.RopeDownStarted += () => _ropeVerticalInput = 1;
+            _hud.RopeDownStopped += () => _ropeVerticalInput = 0;
             _hud.RestartRequested += RestartScene;
             _hud.ContinueRequested += ContinueFromResult;
             _hud.MenuRequested += ExitToMenu;
@@ -471,6 +479,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             RenderHud();
+            UpdateRopeVisual();
             if (_arsenalMenuOpen)
             {
                 ClearWalkInput();
@@ -478,6 +487,7 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            RefreshCameraFrameForViewport();
             UpdateCameraZoom();
             UpdateCameraPan();
             UpdateCameraCoverVisuals();
@@ -502,6 +512,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (HasActiveMotion || HasProjectilesInFlight || HasActiveWeaponEffect)
             {
+                UpdateRopeTraversalInput();
                 _simulation.Tick(Time.deltaTime);
                 return;
             }
@@ -595,6 +606,12 @@ namespace Game.Gameplay.Battle.Assembly
 
             _arenaIndex = ResolveArenaIndex(arenaIndex, arenaId);
             _currentArena = _arenas[_arenaIndex];
+            _visualTheme = BattleVisualThemeLibrary.ForArena(_currentArena);
+            _arenaWorldOffset = _visualTheme?.WorldOffset ?? Vector2.zero;
+            _arenaScale = _visualTheme?.ArenaScale ?? Vector2.one;
+            _arenaScalePivot = _visualTheme?.ArenaScalePivot ?? Vector2.zero;
+            _cameraTopPanAllowancePercent = _visualTheme?.CameraTopPanAllowancePercent ?? 0f;
+            _killZoneOffsetY = _visualTheme?.KillZoneOffsetY ?? 0f;
             ApplyArenaCamera(_currentArena);
             BuildWorld(_currentArena);
             BuildBattleState(_currentArena);
@@ -760,11 +777,17 @@ namespace Game.Gameplay.Battle.Assembly
         private void ApplyArenaCamera(ArenaDefinition arena)
         {
             _camera.transform.position = arena.CameraPosition;
-            _camera.orthographicSize = arena.CameraSize;
             _minimumCameraSize = arena.CameraSize * CameraZoomInMultiplier;
-            _maximumCameraSize = arena.CameraSize * CameraZoomOutMultiplier;
+            _configuredCameraFrame = _visualTheme?.CameraFrame;
+            _cameraWorldBounds = _configuredCameraFrame is Rect configuredFrame
+                ? ResolveCameraFrame(configuredFrame, _camera.aspect)
+                : CalculateCameraWorldBounds(arena);
+            RefreshCameraPanBounds();
+            _maximumCameraSize = Mathf.Max(
+                _minimumCameraSize,
+                CalculateCameraSizeToContainBounds(_cameraWorldBounds, _camera.aspect));
+            _camera.orthographicSize = Mathf.Clamp(arena.CameraSize, _minimumCameraSize, _maximumCameraSize);
             _hasPreviousPinchDistance = false;
-            _cameraWorldBounds = CalculateCameraWorldBounds(arena);
             ClampCameraToArena();
         }
 
@@ -832,8 +855,6 @@ namespace Game.Gameplay.Battle.Assembly
         {
             if (_camera == null
                 || _playerWeaponSelected
-                || (_currentArena != null && _currentArena.LockCameraAtZoomOutLimit
-                    && Mathf.Approximately(_camera.orthographicSize, _maximumCameraSize))
                 || _battleState == null
                 || _battleState.Turn.ActiveTeam != BattleTeamId.Player
                 || _simulation == null
@@ -979,32 +1000,6 @@ namespace Game.Gameplay.Battle.Assembly
             return bounds;
         }
 
-        private static Rect ExpandHorizontalCameraBounds(Rect bounds, Bounds visualBounds)
-        {
-            if (visualBounds.size.x <= 0f)
-            {
-                return bounds;
-            }
-
-            bounds.xMin = Mathf.Min(bounds.xMin, visualBounds.min.x);
-            bounds.xMax = Mathf.Max(bounds.xMax, visualBounds.max.x);
-            return bounds;
-        }
-
-        private static Rect ExpandCameraBounds(Rect bounds, Bounds visualBounds)
-        {
-            if (visualBounds.size.x <= 0f || visualBounds.size.y <= 0f)
-            {
-                return bounds;
-            }
-
-            bounds.xMin = Mathf.Min(bounds.xMin, visualBounds.min.x);
-            bounds.xMax = Mathf.Max(bounds.xMax, visualBounds.max.x);
-            bounds.yMin = Mathf.Min(bounds.yMin, visualBounds.min.y);
-            bounds.yMax = Mathf.Max(bounds.yMax, visualBounds.max.y);
-            return bounds;
-        }
-
         private void ClampCameraToArena()
         {
             if (_camera == null || _cameraWorldBounds.width <= 0f || _cameraWorldBounds.height <= 0f)
@@ -1017,28 +1012,10 @@ namespace Game.Gameplay.Battle.Assembly
                 : _cameraWorldBounds.center;
             _camera.transform.position = ClampCameraPositionToBounds(
                 _camera.transform.position,
-                _cameraWorldBounds,
+                _cameraPanBounds,
                 _camera.orthographicSize,
                 _camera.aspect,
                 fallbackCenter);
-        }
-
-        private void AnchorSpriteArenaToCameraBottom()
-        {
-            if (_camera == null || _currentArena == null || _currentArena.SpriteSurfaces.Count == 0
-                || _cameraWorldBounds.height <= 0f)
-            {
-                return;
-            }
-
-            var position = _camera.transform.position;
-            var visibleHeight = _camera.orthographicSize * 2f;
-            var availableVerticalTravel = Mathf.Max(0f, _cameraWorldBounds.height - visibleHeight);
-            position.y = _cameraWorldBounds.yMin + _camera.orthographicSize
-                + availableVerticalTravel * _currentArena.SpriteArenaVerticalAnchor
-                + SpriteArenaBottomScreenOffset * (1f - _currentArena.SpriteArenaVerticalAnchor)
-                + _currentArena.SpriteArenaVerticalScreenOffset;
-            _camera.transform.position = position;
         }
 
         private static Vector3 ClampCameraPositionToBounds(
@@ -1064,13 +1041,84 @@ namespace Game.Gameplay.Battle.Assembly
                 : Mathf.Clamp(fallback, minimum, maximum);
         }
 
+        private static float CalculateCameraSizeToContainBounds(Rect bounds, float aspect)
+        {
+            if (bounds.width <= 0f || bounds.height <= 0f)
+            {
+                return 0f;
+            }
+
+            return Mathf.Max(bounds.height * 0.5f, bounds.width / (2f * Mathf.Max(0.01f, aspect)));
+        }
+
+        private static Rect ResolveCameraFrame(Rect configuredFrame, float aspect)
+        {
+            aspect = Mathf.Max(0.01f, aspect);
+            var requiredWidth = configuredFrame.height * aspect;
+            if (requiredWidth > configuredFrame.width)
+            {
+                var horizontalPadding = (requiredWidth - configuredFrame.width) * 0.5f;
+                configuredFrame.xMin -= horizontalPadding;
+                configuredFrame.xMax += horizontalPadding;
+                return configuredFrame;
+            }
+
+            var requiredHeight = configuredFrame.width / aspect;
+            if (requiredHeight > configuredFrame.height)
+            {
+                configuredFrame.yMax = configuredFrame.yMin + requiredHeight;
+            }
+
+            return configuredFrame;
+        }
+
+        private void RefreshCameraPanBounds()
+        {
+            _cameraPanBounds = _cameraWorldBounds;
+            _cameraPanBounds.yMax += GetCameraTopPanAllowance();
+        }
+
+        private float GetCameraTopPanAllowance()
+        {
+            return _cameraWorldBounds.height * _cameraTopPanAllowancePercent;
+        }
+
+        private void RefreshCameraFrameForViewport()
+        {
+            if (_camera == null || !_configuredCameraFrame.HasValue)
+            {
+                return;
+            }
+
+            var resolvedFrame = ResolveCameraFrame(_configuredCameraFrame.Value, _camera.aspect);
+            if (Mathf.Approximately(resolvedFrame.xMin, _cameraWorldBounds.xMin)
+                && Mathf.Approximately(resolvedFrame.yMin, _cameraWorldBounds.yMin)
+                && Mathf.Approximately(resolvedFrame.xMax, _cameraWorldBounds.xMax)
+                && Mathf.Approximately(resolvedFrame.yMax, _cameraWorldBounds.yMax))
+            {
+                return;
+            }
+
+            _cameraWorldBounds = resolvedFrame;
+            RefreshCameraPanBounds();
+            _maximumCameraSize = Mathf.Max(
+                _minimumCameraSize,
+                CalculateCameraSizeToContainBounds(_cameraWorldBounds, _camera.aspect));
+            _camera.orthographicSize = Mathf.Min(_camera.orthographicSize, _maximumCameraSize);
+            FitStaticBackgroundToCameraFrame(_staticBackgroundRenderer);
+            _animatedBackground?.ConfigureCoverage(_cameraWorldBounds, _arenaWorldOffset, GetCameraTopPanAllowance());
+            UpdateKillZoneVisual();
+            ClampCameraToArena();
+        }
+
         private void BuildWorld(ArenaDefinition arena)
         {
-            _visualTheme = BattleVisualThemeLibrary.ForArena(arena);
             _battleTerrain = null;
 
             AddBackgroundPrefab();
-            var solidLayer = AddVisualLayer("Arena Background", _visualTheme?.Background, null);
+            var solidLayer = AddVisualLayer("Arena Background", _visualTheme?.Background, null, out var backgroundRenderer);
+            _staticBackgroundRenderer = backgroundRenderer;
+            FitStaticBackgroundToCameraFrame(backgroundRenderer);
             var solidLayers = new List<SpriteRenderer>();
             var spriteSurfaces = new List<BattleTerrainSpriteSurface>();
             var solidBlocks = new List<ArenaTerrainBlock>();
@@ -1079,11 +1127,12 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 var showProceduralBlock = _visualTheme == null || !_visualTheme.HideProceduralTerrain;
                 var solidProceduralBlock = block.Solid && (_visualTheme == null || _visualTheme.UseProceduralTerrainColliders);
-                var blockObject = CreateBox(block.BlockId, block.Position, block.Size, block.Color, block.SortingOrder, showProceduralBlock);
+                var transformedBlock = TransformArenaBlock(block);
+                var blockObject = CreateBox(transformedBlock.BlockId, transformedBlock.Position, transformedBlock.Size, transformedBlock.Color, transformedBlock.SortingOrder, showProceduralBlock);
                 _arenaObjects.Add(blockObject);
                 if (solidProceduralBlock)
                 {
-                    solidBlocks.Add(block);
+                    solidBlocks.Add(transformedBlock);
                 }
             }
 
@@ -1091,8 +1140,6 @@ namespace Game.Gameplay.Battle.Assembly
             if (solidLayer != null)
             {
                 solidLayers.Add(solidLayer);
-                _cameraWorldBounds = ExpandHorizontalCameraBounds(_cameraWorldBounds, solidLayer.bounds);
-                ClampCameraToArena();
             }
 
             if (_visualTheme != null)
@@ -1115,6 +1162,9 @@ namespace Game.Gameplay.Battle.Assembly
                 }
             }
 
+            var killZoneY = _cameraWorldBounds.yMin + KillZoneBottomInset + _arenaWorldOffset.y + _killZoneOffsetY;
+            AddKillZoneVisual();
+
             foreach (var surface in arena.SpriteSurfaces)
             {
                 var runtimeSurface = AddArenaSpriteSurface(surface);
@@ -1124,14 +1174,11 @@ namespace Game.Gameplay.Battle.Assembly
                 }
 
                 spriteSurfaces.Add(runtimeSurface);
-                _cameraWorldBounds = ExpandCameraBounds(_cameraWorldBounds, runtimeSurface.Renderer.bounds);
             }
 
-            LimitZoomOutToSpriteArenaBounds(arena);
             ClampCameraToArena();
-            AnchorSpriteArenaToCameraBottom();
 
-            var bounds = ComputeArenaBounds(arena);
+            var bounds = ExpandArenaBoundsToIncludeSpriteSurfaces(ComputeArenaBounds(arena), spriteSurfaces);
             if (spriteSurfaces.Count > 0)
             {
                 for (var i = 0; i < solidLayers.Count; i++)
@@ -1161,28 +1208,7 @@ namespace Game.Gameplay.Battle.Assembly
             // simulation and the bot planners all take the kill height from
             // GetFallDeathY(). An arena's kill-zone art (laser barrier) wins
             // over the terrain-derived line so death matches what is on screen.
-            _runtimeFallDeathY = _visualTheme?.KillZoneY
-                ?? ComputeFallDeathY(_battleTerrain.Grid, FallDeathY);
-        }
-
-        private void LimitZoomOutToSpriteArenaBounds(ArenaDefinition arena)
-        {
-            if (_camera == null || arena == null || !arena.LimitZoomOutToSpriteBounds
-                || _cameraWorldBounds.width <= 0f || _cameraWorldBounds.height <= 0f)
-            {
-                return;
-            }
-
-            var maxSizeForWidth = _cameraWorldBounds.width / (2f * Mathf.Max(0.01f, _camera.aspect));
-            var maxSizeForHeight = _cameraWorldBounds.height * 0.5f;
-            var containedSize = Mathf.Min(maxSizeForWidth, maxSizeForHeight);
-            if (containedSize <= 0f || containedSize < _minimumCameraSize)
-            {
-                return;
-            }
-
-            _maximumCameraSize = Mathf.Min(_maximumCameraSize, containedSize);
-            _camera.orthographicSize = Mathf.Min(_camera.orthographicSize, _maximumCameraSize);
+            _runtimeFallDeathY = killZoneY;
         }
 
         private Rect ComputeArenaBounds(ArenaDefinition arena)
@@ -1196,7 +1222,7 @@ namespace Game.Gameplay.Battle.Assembly
             var maxY = arena.CameraPosition.y + cameraHeight * 0.5f + margin;
             var minY = Mathf.Min(arena.CameraPosition.y - cameraHeight * 0.5f, GetFallDeathY()) - margin;
             var bounds = new Rect(minX, minY, maxX - minX, maxY - minY);
-            if (arena.SpriteSurfaces.Count > 0 && _cameraWorldBounds.width > 0f && _cameraWorldBounds.height > 0f)
+            if (_cameraWorldBounds.width > 0f && _cameraWorldBounds.height > 0f)
             {
                 bounds.xMin = Mathf.Min(bounds.xMin, _cameraWorldBounds.xMin - margin);
                 bounds.xMax = Mathf.Max(bounds.xMax, _cameraWorldBounds.xMax + margin);
@@ -1212,8 +1238,8 @@ namespace Game.Gameplay.Battle.Assembly
             _playerArchetype = PrototypeArchetypeLibrary.PlayerArchetype;
             _opponentArchetype = ResolveOpponentArchetype(GameSessionContext.SelectedOpponentArchetypeId, _aiDifficulty);
 
-            var playerSpawn = ResolveUnitLandingPosition(arena.PlayerSpawn, BattleTeamId.Player);
-            var opponentSpawn = ResolveUnitLandingPosition(arena.OpponentSpawn, BattleTeamId.Opponent);
+            var playerSpawn = ResolveUnitLandingPosition(TransformArenaPosition(arena.PlayerSpawn), BattleTeamId.Player);
+            var opponentSpawn = ResolveUnitLandingPosition(TransformArenaPosition(arena.OpponentSpawn), BattleTeamId.Opponent);
             var playerUnit = new BattleUnitState($"player.{_playerArchetype.Id}.01", BattleTeamId.Player, playerSpawn, _playerArchetype.MaxHealth, 1);
             var opponentUnit = new BattleUnitState($"opponent.{_opponentArchetype.Id}.01", BattleTeamId.Opponent, opponentSpawn, _opponentArchetype.MaxHealth, -1);
 
@@ -1343,6 +1369,16 @@ namespace Game.Gameplay.Battle.Assembly
             _supportDropInProgress = false;
             _nextSupportDropTurn = int.MaxValue;
             _runtimeFallDeathY = FallDeathY;
+            _configuredCameraFrame = null;
+            _cameraPanBounds = default;
+            _arenaWorldOffset = Vector2.zero;
+            _arenaScale = Vector2.one;
+            _arenaScalePivot = Vector2.zero;
+            _cameraTopPanAllowancePercent = 0f;
+            _killZoneOffsetY = 0f;
+            _staticBackgroundRenderer = null;
+            _animatedBackground = null;
+            _killZoneVisual = null;
 
             foreach (var presenter in _unitPresenters)
             {
@@ -1465,6 +1501,8 @@ namespace Game.Gameplay.Battle.Assembly
         {
             _aimLine = CreateLine("Aim Line", 0.08f, Color.white);
             _trajectoryLine = CreateLine("Trajectory Preview", 0.035f, new Color(1f, 1f, 1f, 0.55f));
+            _ropeLine = CreateLine("Rope Tether", 0.028f, new Color(0.88f, 0.82f, 0.68f, 1f));
+            _ropeLine.sortingOrder = 31;
             BuildTrajectoryDots();
         }
 
@@ -1587,6 +1625,8 @@ namespace Game.Gameplay.Battle.Assembly
                     _aimState = new AimState(origin, direction, _aimState.Power, true);
                 }
 
+                _aimState = ClampRopeAimToUpwardSector(_aimState);
+
                 FaceUnitTowardAim(activePresenter);
 
                 if (_aimState.HasInput && !_aimHadInput)
@@ -1664,6 +1704,21 @@ namespace Game.Gameplay.Battle.Assembly
         {
             return weapon?.Role == WeaponRole.DirectProjectile
                 && weapon.WeaponId != "weapon.fpv-drone";
+        }
+
+        private AimState ClampRopeAimToUpwardSector(in AimState aim)
+        {
+            if (!aim.HasInput || _inventory?.Selected?.WeaponId != "weapon.rope")
+            {
+                return aim;
+            }
+
+            var angle = Mathf.Atan2(aim.Direction.y, aim.Direction.x);
+            var halfSector = RopeAimHalfSectorDegrees * Mathf.Deg2Rad;
+            var upward = Mathf.PI * 0.5f;
+            var constrained = Mathf.Clamp(angle, upward - halfSector, upward + halfSector);
+            var direction = new Vector2(Mathf.Cos(constrained), Mathf.Sin(constrained));
+            return new AimState(aim.Origin, direction, aim.Power, true);
         }
 
         private void FaceUnitTowardAim(BattleUnitPresenter presenter)
@@ -3307,6 +3362,11 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void UpdateWalking()
         {
+            if (_simulation != null && _simulation.IsPlayerRopeAttached)
+            {
+                UpdateRopeTraversalInput();
+                return;
+            }
             var walkDirection = _keyboardWalkInputDirection != 0 ? _keyboardWalkInputDirection : _uiWalkInputDirection;
             if (walkDirection == 0)
             {
@@ -3356,6 +3416,63 @@ namespace Game.Gameplay.Battle.Assembly
                     // Regular physics takes over from here (HasActiveMotion).
                     ResetAimState();
                     break;
+            }
+        }
+
+        private void UpdateRopeTraversalInput()
+        {
+            if (_simulation == null || !_simulation.IsPlayerRopeAttached)
+            {
+                return;
+            }
+
+            var horizontal = _keyboardWalkInputDirection != 0 ? _keyboardWalkInputDirection : _uiWalkInputDirection;
+            _simulation.SetRopeTraversalInput(horizontal, _ropeVerticalInput);
+        }
+
+        private void UpdateRopeVisual()
+        {
+            if (_ropeLine == null || _simulation == null || !_simulation.HasPlayerRopeTraversal)
+            {
+                if (_ropeLine != null) _ropeLine.enabled = false;
+                if (_ropeHookVisual != null) _ropeHookVisual.SetActive(false);
+                return;
+            }
+
+            var presenter = GetPresenter(BattleTeamId.Player);
+            if (presenter == null)
+            {
+                return;
+            }
+
+            var hookPosition = _simulation.RopeHookPosition;
+            _ropeLine.enabled = true;
+            _ropeLine.SetPosition(0, presenter.State.Position);
+            _ropeLine.SetPosition(1, hookPosition);
+            if (_ropeHookVisual == null)
+            {
+                _ropeHookVisual = new GameObject("Rope Hook");
+                _arenaObjects.Add(_ropeHookVisual);
+                _ropeHookVisual.AddComponent<SpriteRenderer>();
+                var renderer = _ropeHookVisual.GetComponent<SpriteRenderer>();
+                renderer.sortingOrder = 32;
+                _ropeHookVisual.transform.localScale = Vector3.one * 0.045f;
+            }
+
+            var hookRenderer = _ropeHookVisual.GetComponent<SpriteRenderer>();
+            var hookSprite = LoadWeaponIconSprite(RopeHookSpriteId);
+            if (hookRenderer != null && hookSprite != null && hookRenderer.sprite != hookSprite)
+            {
+                hookRenderer.sprite = hookSprite;
+            }
+
+            _ropeHookVisual.SetActive(true);
+            _ropeHookVisual.transform.position = hookPosition;
+            var hookDirection = _simulation.RopeHookDirection;
+            if (hookDirection.sqrMagnitude > 0.0001f)
+            {
+                _ropeHookVisual.transform.rotation = Quaternion.Euler(0f, 0f,
+                    Mathf.Atan2(hookDirection.y, hookDirection.x) * Mathf.Rad2Deg);
             }
         }
 
@@ -3869,6 +3986,16 @@ namespace Game.Gameplay.Battle.Assembly
 
         private SpriteRenderer AddVisualLayer(string objectName, BattleVisualLayer? layer, SpriteRenderer currentSolidLayer)
         {
+            return AddVisualLayer(objectName, layer, currentSolidLayer, out _);
+        }
+
+        private SpriteRenderer AddVisualLayer(
+            string objectName,
+            BattleVisualLayer? layer,
+            SpriteRenderer currentSolidLayer,
+            out SpriteRenderer addedRenderer)
+        {
+            addedRenderer = null;
             if (layer == null || !layer.Value.HasSprite)
             {
                 return currentSolidLayer;
@@ -3884,12 +4011,16 @@ namespace Game.Gameplay.Battle.Assembly
             var position = layer.Value.CoverCamera && _camera != null
                 ? (Vector2)_camera.transform.position + layer.Value.Position
                 : layer.Value.Position;
-            visual.transform.position = new Vector3(position.x, position.y, 0f);
+            visual.transform.position = new Vector3(
+                position.x + _arenaWorldOffset.x,
+                position.y + _arenaWorldOffset.y,
+                0f);
             visual.transform.localScale = new Vector3(layer.Value.Scale.x, layer.Value.Scale.y, 1f);
 
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
             renderer.sortingOrder = layer.Value.SortingOrder;
+            addedRenderer = renderer;
 
             if (layer.Value.CoverCamera)
             {
@@ -3899,6 +4030,70 @@ namespace Game.Gameplay.Battle.Assembly
 
             _arenaObjects.Add(visual);
             return layer.Value.Solid ? renderer : currentSolidLayer;
+        }
+
+        private Vector2 TransformArenaPosition(Vector2 position)
+        {
+            return _arenaScalePivot
+                + Vector2.Scale(position - _arenaScalePivot, _arenaScale)
+                + _arenaWorldOffset;
+        }
+
+        private ArenaTerrainBlock TransformArenaBlock(ArenaTerrainBlock block)
+        {
+            return new ArenaTerrainBlock(
+                block.BlockId,
+                TransformArenaPosition(block.Position),
+                Vector2.Scale(block.Size, _arenaScale),
+                block.Color,
+                block.Solid,
+                block.SortingOrder,
+                block.Material);
+        }
+
+        private static Rect ExpandArenaBoundsToIncludeSpriteSurfaces(
+            Rect bounds,
+            IReadOnlyList<BattleTerrainSpriteSurface> surfaces)
+        {
+            for (var i = 0; i < surfaces.Count; i++)
+            {
+                var renderer = surfaces[i].Renderer;
+                if (renderer == null || renderer.sprite == null)
+                {
+                    continue;
+                }
+
+                var surfaceBounds = renderer.bounds;
+                bounds.xMin = Mathf.Min(bounds.xMin, surfaceBounds.min.x);
+                bounds.xMax = Mathf.Max(bounds.xMax, surfaceBounds.max.x);
+                bounds.yMin = Mathf.Min(bounds.yMin, surfaceBounds.min.y);
+                bounds.yMax = Mathf.Max(bounds.yMax, surfaceBounds.max.y);
+            }
+
+            return bounds;
+        }
+
+        private void FitStaticBackgroundToCameraFrame(SpriteRenderer renderer)
+        {
+            if (renderer == null || renderer.sprite == null || _cameraWorldBounds.width <= 0f || _cameraWorldBounds.height <= 0f)
+            {
+                return;
+            }
+
+            var spriteSize = renderer.sprite.bounds.size;
+            if (spriteSize.x <= 0f || spriteSize.y <= 0f)
+            {
+                return;
+            }
+
+            renderer.transform.position = new Vector3(
+                _cameraWorldBounds.center.x + _arenaWorldOffset.x,
+                _cameraWorldBounds.center.y + _arenaWorldOffset.y,
+                0f);
+            renderer.transform.localScale = new Vector3(
+                _cameraWorldBounds.width / spriteSize.x,
+                _cameraWorldBounds.height / spriteSize.y,
+                1f);
         }
 
         private BattleTerrainSpriteSurface AddArenaSpriteSurface(ArenaSpriteSurface surface)
@@ -3914,13 +4109,25 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             var visual = new GameObject(surface.InstanceId);
-            visual.transform.position = new Vector3(surface.Position.x, surface.Position.y, 0f);
-            visual.transform.localScale = Vector3.one * surface.Scale;
+            var position = TransformArenaPosition(surface.Position);
+            visual.transform.position = new Vector3(position.x, position.y, 0f);
+            var seamOverdraw = CalculateArenaSpriteSeamOverdraw(sprite.rect.size);
+            visual.transform.localScale = new Vector3(
+                surface.Scale * _arenaScale.x * seamOverdraw.x,
+                surface.Scale * _arenaScale.y * seamOverdraw.y,
+                1f);
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
             renderer.sortingOrder = surface.SortingOrder;
             _arenaObjects.Add(visual);
             return new BattleTerrainSpriteSurface(renderer, mask);
+        }
+
+        private static Vector2 CalculateArenaSpriteSeamOverdraw(Vector2 spritePixels)
+        {
+            return new Vector2(
+                1f + ArenaSpriteSeamOverdrawPixels * 2f / Mathf.Max(1f, spritePixels.x),
+                1f + ArenaSpriteSeamOverdrawPixels * 2f / Mathf.Max(1f, spritePixels.y));
         }
 
         private void AddBackgroundPrefab()
@@ -3942,21 +4149,46 @@ namespace Game.Gameplay.Battle.Assembly
             var skyBackground = background.GetComponent<AnimatedSkyBackground>();
             if (skyBackground != null)
             {
-                skyBackground.ConfigureCoverage(_camera, _maximumCameraSize, _cameraWorldBounds);
-
-                // The sky art (station/clouds) is now placed in fixed world
-                // space instead of following the camera every frame, so the
-                // pan clamp must actually allow reaching up to it - otherwise
-                // it would sit above the frustum at high zoom with no way to
-                // pan into view, no matter how far up the player drags.
-                var topWorldY = skyBackground.GetHighestDecorativeWorldY();
-                if (topWorldY > _cameraWorldBounds.yMax)
-                {
-                    _cameraWorldBounds.yMax = topWorldY + 1f;
-                }
+                _animatedBackground = skyBackground;
+                skyBackground.ConfigureCoverage(_cameraWorldBounds, _arenaWorldOffset, GetCameraTopPanAllowance());
             }
 
             _arenaObjects.Add(background);
+        }
+
+        private void AddKillZoneVisual()
+        {
+            var sprite = LoadSpriteResource(KillZoneResourcePath);
+            if (sprite == null || sprite.bounds.size.x <= 0f)
+            {
+                return;
+            }
+
+            var visual = new GameObject("Arena Kill Zone");
+            _killZoneVisual = visual.transform;
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.sortingOrder = 45;
+            UpdateKillZoneVisual();
+            _arenaObjects.Add(visual);
+        }
+
+        private void UpdateKillZoneVisual()
+        {
+            if (_killZoneVisual == null || !_killZoneVisual.TryGetComponent<SpriteRenderer>(out var renderer)
+                || renderer.sprite == null || renderer.sprite.bounds.size.x <= 0f)
+            {
+                return;
+            }
+
+            _killZoneVisual.position = new Vector3(
+                _cameraWorldBounds.center.x,
+                _cameraWorldBounds.yMin + KillZoneBottomInset + _arenaWorldOffset.y + _killZoneOffsetY,
+                0f);
+            _killZoneVisual.localScale = new Vector3(
+                _cameraWorldBounds.width / renderer.sprite.bounds.size.x,
+                KillZoneVisualHeightScale,
+                1f);
         }
 
         private void ScaleSpriteToCoverCamera(Transform visual, Sprite sprite)
@@ -4390,11 +4622,10 @@ namespace Game.Gameplay.Battle.Assembly
 
             var weapon = _inventory.Selected;
             var playerHasTime = _simulation.MovementTimeRemaining > 0f;
-            var fireInputReady = !BattleSimulation.RequiresAim(weapon) || _aimState.HasInput;
+            var ropeAttached = _simulation.IsPlayerRopeAttached;
+            var fireInputReady = ropeAttached || !BattleSimulation.RequiresAim(weapon) || _aimState.HasInput;
             var canFire = !_simulation.Result.IsFinished
-                && !HasProjectilesInFlight
-                && !HasActiveMotion
-                && !HasActiveWeaponEffect
+                && (ropeAttached || (!HasProjectilesInFlight && !HasActiveMotion && !HasActiveWeaponEffect))
                 && !HasPendingGroundAction
                 && playerHasTime
                 && _playerWeaponSelected
@@ -4477,7 +4708,8 @@ namespace Game.Gameplay.Battle.Assembly
                 _simulation.Result.Outcome == BattleOutcome.PlayerWon,
                 ResolveOpponentName(),
                 DescribeWeapon(opponentWeapon),
-                opponentWeapon != null ? _opponentProgression.ResolveRank(opponentWeapon.WeaponId) : 0);
+                opponentWeapon != null ? _opponentProgression.ResolveRank(opponentWeapon.WeaponId) : 0,
+                ropeAttached);
 
             _hud.Render(state);
         }

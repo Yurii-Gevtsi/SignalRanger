@@ -168,6 +168,22 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void SideSnagOnThinOverhang_RecoversThenLandsInsteadOfLockingTheBattle()
+        {
+            var grid = CreateFlatGround();
+            grid.StampRect(new Vector2(0.3f, 1.65f), new Vector2(0.18f, 1.8f), true, out _);
+            var motor = new UnitMotor(grid, CreateProfile(), new Vector2(-0.7f, 1.35f), KillY);
+
+            motor.AddImpulse(new Vector2(3.8f, 0.45f));
+            var outcome = Simulate(motor, 10f, out var elapsed);
+
+            Assert.That(outcome, Is.EqualTo(MotorStepOutcome.Landed));
+            Assert.That(motor.IsStable, Is.True);
+            Assert.That(elapsed, Is.LessThan(10f), "a side snag must resolve rather than leaving the battle in an airborne loop");
+            Assert.That(motor.IsGrounded(motor.Position), Is.True);
+        }
+
+        [Test]
         public void FallOffMap_ReportsOutOfBounds()
         {
             var grid = CreateFlatGround();

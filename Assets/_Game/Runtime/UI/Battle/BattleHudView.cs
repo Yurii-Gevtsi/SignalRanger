@@ -106,6 +106,7 @@ namespace Game.UI.Battle
         private Canvas _arsenalTutorialCanvas;
         private Canvas _arsenalOverlayTutorialCanvas;
         private Canvas _fireTutorialCanvas;
+        private bool _ropeControlsActive;
         private TMP_Text _opponentBarText;
         private GameObject _resultRoot;
         private Image _resultPanel;
@@ -130,6 +131,10 @@ namespace Game.UI.Battle
         public event Action MoveRightStopped;
         public event Action JumpLeftRequested;
         public event Action JumpRightRequested;
+        public event Action RopeUpStarted;
+        public event Action RopeUpStopped;
+        public event Action RopeDownStarted;
+        public event Action RopeDownStopped;
         public event Action RestartRequested;
         public event Action ContinueRequested;
         public event Action MenuRequested;
@@ -160,6 +165,8 @@ namespace Game.UI.Battle
 
         public void Render(in BattleHudState state)
         {
+            _ropeControlsActive = state.RopeControlsActive;
+            ApplyMovementControlLayout();
             if (_statusText == null)
             {
                 return;
@@ -344,7 +351,10 @@ namespace Game.UI.Battle
             WireHold(_moveLeftButton.gameObject, () => MoveLeftStarted?.Invoke(), () => MoveLeftStopped?.Invoke());
 
             _jumpLeftButton = CreateMovementButton("Jump Left", root, new Vector2(0f, 0f), new Vector2(0f, 0f),
-                JumpButtonSize, new Vector2(58f + JumpButtonSize, jumpBottom), _jumpButtonSprite, true, () => JumpLeftRequested?.Invoke());
+                JumpButtonSize, new Vector2(58f + JumpButtonSize, jumpBottom), _jumpButtonSprite, true, null);
+            WireHold(_jumpLeftButton.gameObject,
+                () => { if (_ropeControlsActive) RopeUpStarted?.Invoke(); else JumpLeftRequested?.Invoke(); },
+                () => { if (_ropeControlsActive) RopeUpStopped?.Invoke(); });
             _jumpLeftPanel = _jumpLeftButton.GetComponent<Image>();
 
             _moveRightButton = CreateMovementButton("Move Right", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
@@ -353,8 +363,61 @@ namespace Game.UI.Battle
             WireHold(_moveRightButton.gameObject, () => MoveRightStarted?.Invoke(), () => MoveRightStopped?.Invoke());
 
             _jumpRightButton = CreateMovementButton("Jump Right", root, new Vector2(1f, 0f), new Vector2(1f, 0f),
-                JumpButtonSize, new Vector2(-58f, jumpBottom), _jumpButtonSprite, false, () => JumpRightRequested?.Invoke());
+                JumpButtonSize, new Vector2(-58f, jumpBottom), _jumpButtonSprite, false, null);
+            WireHold(_jumpRightButton.gameObject,
+                () => { if (_ropeControlsActive) RopeDownStarted?.Invoke(); else JumpRightRequested?.Invoke(); },
+                () => { if (_ropeControlsActive) RopeDownStopped?.Invoke(); });
             _jumpRightPanel = _jumpRightButton.GetComponent<Image>();
+        }
+
+        private void ApplyMovementControlLayout()
+        {
+            if (_moveLeftButton == null || _moveRightButton == null || _jumpLeftButton == null || _jumpRightButton == null)
+            {
+                return;
+            }
+
+            var leftPosition = new Vector2(36f + WalkButtonSize, MovementBottomMargin);
+            var leftUpperPosition = new Vector2(leftPosition.x, MovementBottomMargin + WalkButtonSize + MovementButtonGap);
+            var rightPosition = new Vector2(-36f, MovementBottomMargin);
+
+            if (!_ropeControlsActive)
+            {
+                ConfigureMovementControl(_moveLeftButton, _moveButtonSprite, WalkButtonSize, new Vector2(0f, 0f),
+                    new Vector2(0f, 0f), leftPosition, new Vector3(-1f, 1f, 1f), 0f);
+                ConfigureMovementControl(_jumpLeftButton, _jumpButtonSprite, JumpButtonSize, new Vector2(0f, 0f),
+                    new Vector2(0f, 0f), new Vector2(58f + JumpButtonSize, leftUpperPosition.y), new Vector3(-1f, 1f, 1f), 0f);
+                ConfigureMovementControl(_moveRightButton, _moveButtonSprite, WalkButtonSize, new Vector2(1f, 0f),
+                    new Vector2(1f, 0f), rightPosition, Vector3.one, 0f);
+                ConfigureMovementControl(_jumpRightButton, _jumpButtonSprite, JumpButtonSize, new Vector2(1f, 0f),
+                    new Vector2(1f, 0f), new Vector2(-58f, leftUpperPosition.y), Vector3.one, 0f);
+                return;
+            }
+
+            // Rope controls repurpose the same four input targets: up/down stack on
+            // the left; the unchanged left/right pair shares one row on the right.
+            ConfigureMovementControl(_jumpLeftButton, _moveButtonSprite, WalkButtonSize, new Vector2(0f, 0f),
+                new Vector2(0f, 0f), leftUpperPosition, Vector3.one, 90f);
+            ConfigureMovementControl(_jumpRightButton, _moveButtonSprite, WalkButtonSize, new Vector2(0f, 0f),
+                new Vector2(0f, 0f), leftPosition, Vector3.one, -90f);
+            ConfigureMovementControl(_moveLeftButton, _moveButtonSprite, WalkButtonSize, new Vector2(1f, 0f),
+                new Vector2(1f, 0f), new Vector2(-36f - WalkButtonSize - MovementButtonGap, MovementBottomMargin), new Vector3(-1f, 1f, 1f), 0f);
+            ConfigureMovementControl(_moveRightButton, _moveButtonSprite, WalkButtonSize, new Vector2(1f, 0f),
+                new Vector2(1f, 0f), rightPosition, Vector3.one, 0f);
+        }
+
+        private static void ConfigureMovementControl(Button button, Sprite sprite, float size, Vector2 anchor,
+            Vector2 pivot, Vector2 position, Vector3 scale, float rotationDegrees)
+        {
+            var rect = button.GetComponent<RectTransform>();
+            rect.anchorMin = anchor;
+            rect.anchorMax = anchor;
+            rect.pivot = pivot;
+            rect.sizeDelta = new Vector2(size, size);
+            rect.anchoredPosition = position;
+            rect.localScale = scale;
+            rect.localRotation = Quaternion.Euler(0f, 0f, rotationDegrees);
+            button.GetComponent<Image>().sprite = sprite;
         }
 
         private void BuildWeaponControls(Transform root)

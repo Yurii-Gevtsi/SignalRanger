@@ -36,6 +36,8 @@ namespace Game.Gameplay.Battle.Motion
         // body clear of the ground while staying inside the grounded window.
         private const float SkinCellFraction = 0.25f;
         private const float MinimumFallingSpeed = 0.2f;
+        private const int SideSnagRecoveryDepthCells = 12;
+        private const int SideSnagRecoveryLateralCells = 3;
         // Lateral offset of the outer foot/edge samples, as a fraction of half width.
         private const float BodySampleSpread = 0.7f;
         // Ground-support columns across the body, as fractions of half width.
@@ -48,6 +50,13 @@ namespace Game.Gameplay.Battle.Motion
         private float _climbDebt;
         private float _jumpElapsed;
         private float _jumpDuration;
+        private bool _hasRope;
+        private Vector2 _ropeAnchor;
+        private float _ropeLength;
+        private float _ropeMaximumLength;
+        private float _ropeSwingAcceleration;
+        private int _ropeHorizontalInput;
+        private int _ropeVerticalInput;
 
         public UnitMotor(TerrainGrid terrain, UnitMotionProfile profile, Vector2 position, float killY)
         {
@@ -66,6 +75,7 @@ namespace Game.Gameplay.Battle.Motion
 
         /// <summary>True only for a player or bot initiated jump, not a fall or knockback.</summary>
         public bool IsJumping { get; private set; }
+        public bool HasRope => _hasRope;
 
         /// <summary>
         /// Jet-trail scale over the designed jump arc: it grows toward the apex,
@@ -124,6 +134,34 @@ namespace Game.Gameplay.Battle.Motion
             IsJumping = false;
             ResetJumpPhase();
             _climbDebt = 0f;
+            DetachRope();
+        }
+
+        public void AttachRope(Vector2 anchor, float length, float maximumLength, float swingAcceleration)
+        {
+            _ropeAnchor = anchor;
+            _ropeMaximumLength = Mathf.Max(0.5f, maximumLength);
+            _ropeLength = Mathf.Clamp(length, 0.5f, _ropeMaximumLength);
+            _ropeSwingAcceleration = Mathf.Max(0.1f, swingAcceleration);
+            _ropeHorizontalInput = 0;
+            _ropeVerticalInput = 0;
+            _hasRope = true;
+            IsStable = false;
+            IsJumping = false;
+            ResetJumpPhase();
+        }
+
+        public void SetRopeInput(int horizontalDirection, int verticalDirection)
+        {
+            _ropeHorizontalInput = horizontalDirection == 0 ? 0 : horizontalDirection > 0 ? 1 : -1;
+            _ropeVerticalInput = verticalDirection == 0 ? 0 : verticalDirection > 0 ? 1 : -1;
+        }
+
+        public void DetachRope()
+        {
+            _hasRope = false;
+            _ropeHorizontalInput = 0;
+            _ropeVerticalInput = 0;
         }
 
         /// <summary>Knockback entry point: push the unit and let physics resolve the rest.</summary>
@@ -191,6 +229,11 @@ namespace Game.Gameplay.Battle.Motion
             }
 
             var velocity = Velocity;
+            if (_hasRope)
+            {
+                velocity.x += _ropeHorizontalInput * _ropeSwingAcceleration * deltaTime;
+                _ropeLength = Mathf.Clamp(_ropeLength + _ropeVerticalInput * 2.6f * deltaTime, 0.5f, _ropeMaximumLength);
+            }
             velocity.y -= _profile.Gravity * deltaTime;
             if (velocity.magnitude > _profile.MaxSpeed)
             {
@@ -210,6 +253,7 @@ namespace Game.Gameplay.Battle.Motion
             {
                 var previous = Position;
                 Position += step;
+                ConstrainToRope();
 
                 if (Position.y + _profile.HalfHeight < _killY)
                 {
@@ -441,17 +485,21 @@ namespace Game.Gameplay.Battle.Motion
                 return MotorStepOutcome.Airborne;
             }
 
-            // Wedged: both the full step and a pure vertical retreat are
-            // blocked. Whatever snags the body also supports it, so bleed the
-            // motion off here — keeping the velocity would let gravity feed a
-            // block that never resolves and the unit would hang unstable forever.
-            Position = previous;
-            if (Velocity.y > 0f)
+            // A body can straddle a thin cliff or an overhang: both positions
+            // above are blocked even though neither track has support. Find a
+            // clear cell below/away from the side instead of repeatedly feeding
+            // gravity into the same blocked position.
+            if (TryRecoverFromSideSnag(previous, out var recovered))
             {
+                Position = recovered;
                 BeginFallingAfterNonSupportContact();
                 return MotorStepOutcome.Airborne;
             }
 
+            // No nearby clear cell exists. Keep the last valid position and
+            // still clear jump state; the next cell-stepped tick can resolve a
+            // regular landing or fall rather than leaving the controls locked.
+            Position = previous;
             BeginFallingAfterNonSupportContact();
             if (Velocity.magnitude <= _profile.RestSpeed && IsGrounded(previous))
             {
@@ -459,6 +507,54 @@ namespace Game.Gameplay.Battle.Motion
             }
 
             return MotorStepOutcome.Airborne;
+        }
+
+        private bool TryRecoverFromSideSnag(Vector2 previous, out Vector2 recovered)
+        {
+            var cell = _terrain.CellSize;
+            var horizontalDirection = Mathf.Sign(Position.x - previous.x);
+            if (Mathf.Approximately(horizontalDirection, 0f))
+            {
+                horizontalDirection = Mathf.Sign(Velocity.x);
+            }
+
+            if (Mathf.Approximately(horizontalDirection, 0f))
+            {
+                horizontalDirection = 1f;
+            }
+
+            // Move downward first and prefer the direction opposite the hit.
+            // All candidates are cell-aligned, so this recovery cannot skip a
+            // collision row in the terrain mask.
+            for (var depth = 1; depth <= SideSnagRecoveryDepthCells; depth++)
+            {
+                var y = previous.y - depth * cell.y;
+                for (var lateral = 0; lateral <= SideSnagRecoveryLateralCells; lateral++)
+                {
+                    var offset = lateral * cell.x;
+                    var away = new Vector2(previous.x - horizontalDirection * offset, y);
+                    if (!IsBodyBlocked(away))
+                    {
+                        recovered = away;
+                        return true;
+                    }
+
+                    if (lateral == 0)
+                    {
+                        continue;
+                    }
+
+                    var forward = new Vector2(previous.x + horizontalDirection * offset, y);
+                    if (!IsBodyBlocked(forward))
+                    {
+                        recovered = forward;
+                        return true;
+                    }
+                }
+            }
+
+            recovered = previous;
+            return false;
         }
 
         private void BeginFallingAfterNonSupportContact()
@@ -482,6 +578,14 @@ namespace Game.Gameplay.Battle.Motion
 
         private MotorStepOutcome Settle(Vector2 position)
         {
+            if (_hasRope)
+            {
+                Position = position;
+                IsStable = false;
+                IsJumping = false;
+                ResetJumpPhase();
+                return MotorStepOutcome.Airborne;
+            }
             Position = SnapFeetToSurface(position);
             Velocity = Vector2.zero;
             IsStable = true;
@@ -495,6 +599,29 @@ namespace Game.Gameplay.Battle.Motion
         {
             _jumpElapsed = 0f;
             _jumpDuration = 0f;
+        }
+
+        private void ConstrainToRope()
+        {
+            if (!_hasRope)
+            {
+                return;
+            }
+
+            var offset = Position - _ropeAnchor;
+            var distance = offset.magnitude;
+            if (distance <= _ropeLength || distance < 0.0001f)
+            {
+                return;
+            }
+
+            var normal = offset / distance;
+            Position = _ropeAnchor + normal * _ropeLength;
+            var outwardSpeed = Vector2.Dot(Velocity, normal);
+            if (outwardSpeed > 0f)
+            {
+                Velocity -= normal * outwardSpeed;
+            }
         }
 
         /// <summary>

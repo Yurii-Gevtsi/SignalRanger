@@ -250,8 +250,29 @@ namespace Game.Progression.Missions
                     blueprints: 140,
                     blueprintWeaponId: "weapon.teleport",
                     objectiveKind: MissionObjectiveKind.RingOut,
-                    objectiveThreshold: 0)
+                    objectiveThreshold: 0),
+                PlaceholderMission("mission.placeholder.monument", 6, "arena.monument", "chapter.monument"),
+                PlaceholderMission("mission.placeholder.kraken", 7, "arena.kraken", "chapter.kraken"),
+                PlaceholderMission("mission.placeholder.vines", 8, "arena.vines", "chapter.vines"),
+                PlaceholderMission("mission.placeholder.robots", 9, "arena.robots", "chapter.robots")
             };
+        }
+
+        private static MissionDefinition PlaceholderMission(string missionId, int arenaIndex, string arenaId, string chapterId)
+        {
+            return Mission(
+                missionId,
+                string.Empty,
+                string.Empty,
+                arenaIndex,
+                arenaId,
+                new[] { "weapon.impulse" },
+                System.Array.Empty<string>(),
+                0,
+                difficulty: 2,
+                chapterId: chapterId,
+                enemyLoadoutId: "enemy.training.direct",
+                difficultyProfileId: "difficulty.hard");
         }
 
         private static MissionDefinition Mission(
@@ -274,10 +295,8 @@ namespace Game.Progression.Missions
             MissionObjectiveKind objectiveKind = MissionObjectiveKind.None,
             int objectiveThreshold = 0)
         {
-            // CampaignProgressionService rejects missions with an empty title.
-            // New planets may be shipped before their localized copy lands, so
-            // retain a neutral readable fallback instead of silently dropping
-            // those missions and shifting every later mission index.
+            // A map-only QA placeholder intentionally has no player-facing
+            // copy. Released missions obtain copy from the localization table.
             title = Game.Core.Localization.GameText.Localized("missionText." + missionId + ".title", string.Empty);
             description = Game.Core.Localization.GameText.Localized("missionText." + missionId + ".description", string.Empty);
             return MissionDefinition.CreateRuntime(

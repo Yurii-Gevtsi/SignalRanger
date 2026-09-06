@@ -198,7 +198,8 @@
       "weapon.freeze": "Cañón criogénico",
       "weapon.fire-gun": "Pistola de lava",
       "weapon.missle": "Cohete guiado",
-      "weapon.fpv-drone": "Dron FPV"
+      "weapon.fpv-drone": "Dron FPV",
+      "weapon.rope": "Cuerda"
     },
     "weaponDescription": {
       "weapon.impulse": "La carga estándar del reactor del droide — vuela en arco y alcanza al enemigo incluso detrás de cobertura. No tiene un punto débil real, lo que la convierte en la primera arma que vale la pena llevar a cualquier combate.",
@@ -217,7 +218,8 @@
       "weapon.freeze": "Inflige daño y congela al objetivo, primero bloqueando el movimiento y luego ralentizando al droide.",
       "weapon.fire-gun": "Dispara un chorro de lava fundida — la primera gota hace daño de inmediato, y el suelo al rojo vivo sigue quemando durante unos segundos a quien lo pise.",
       "weapon.missle": "Disparas hacia el enemigo — la cabeza buscadora se encarga del resto del guiado. Mejor a media y larga distancia, donde apuntar manualmente no es fiable.",
-      "weapon.fpv-drone": "Tomas el control manual del dron y lo pilotas en vivo esquivando coberturas y trampas directo al casco del enemigo."
+      "weapon.fpv-drone": "Tomas el control manual del dron y lo pilotas en vivo esquivando coberturas y trampas directo al casco del enemigo.",
+      "weapon.rope": "Dispara un gancho al sector superior y anclalo al terreno. Sube, baja y toma impulso antes de soltar la cuerda."
     },
     "weaponEvolutionName": {
       "double-impulse": "Impulso Doble",

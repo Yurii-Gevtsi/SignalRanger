@@ -62,6 +62,43 @@ filtered, and Clamp wrapped. It must have the same dimensions and stem pair as
 the visual texture. The mask, not decorative visual alpha, is the collision
 authority.
 
+### Fragment quality contract
+
+When a layout master is decomposed into runtime arena fragments, resizing a
+crop is allowed only to prepare the image-to-image reference. It is forbidden
+to promote that resize directly to Unity. Each fragment must receive an
+individual high-detail image-to-image enhancement at its target production
+canvas before it becomes a runtime visual.
+
+The accepted reference alpha is reapplied after the quality pass. This keeps
+the approved fragment bounds, transparent padding, mask alignment and
+neighbouring-fragment seams deterministic while the enhanced RGB supplies the
+close-zoom detail. The source package must retain the reference crop, enhanced
+render, per-fragment quality manifest and dark/light/colour composite QA.
+
+### Approved arena visual style
+
+Every image-to-image enhancement for a battle-arena fragment must use this
+visual direction in addition to the map-specific prompt:
+
+> Stylized hand-painted 2D sci-fi illustration for a game. Use large clean
+> shapes, soft cel-shaded lighting, light coloured shadows without deep black,
+> moderate contrast, and warm diffused light. Keep fine texture detail,
+> scratches, and micro-cracks restrained. Prioritize clear silhouettes, large
+> colour planes, and readable forms. Use a slightly muted but lively palette of
+> pastel turquoise, green, sand, cream, and warm orange. Keep the background
+> simpler, lighter, and lower-contrast than the foreground, with gentle
+> atmospheric perspective. Lines should be clean without excessive sharpening,
+> HDR treatment, or coloured halos. The result should feel hand-painted,
+> expressive, and alive, but not childish or overly cartoonish. No
+> photorealism and no excessive material micro-detail.
+
+The style brief must not override the locked crop, silhouette, object position,
+alpha boundary, production scale, or mask. It controls only the visual finish:
+colour language, lighting, texture density, line treatment, and detail level.
+The provider must not introduce deep-black background pixels, magenta/chroma
+backgrounds, checkerboards, UI, text, or a new distant scene.
+
 ## Automation boundary
 
 `Unity2DArtImporterAutomation` provides:

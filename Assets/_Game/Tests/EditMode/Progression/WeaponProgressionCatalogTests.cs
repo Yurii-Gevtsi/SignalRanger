@@ -27,14 +27,22 @@ namespace Game.Tests.EditMode.Progression
         }
 
         [Test]
-        public void CatalogDefinesEveryPurchasableWeaponAndTwoCompleteBranches()
+        public void CatalogDefinesEveryPurchasableWeaponAndItsApprovedDevelopmentPath()
         {
-            Assert.That(WeaponProgressionCatalog.All, Has.Count.EqualTo(16));
-            Assert.That(WeaponProgressionCatalog.All.Select(item => item.WeaponId).Distinct(), Has.Count.EqualTo(16));
+            Assert.That(WeaponProgressionCatalog.All.Count, Is.EqualTo(17));
+            Assert.That(WeaponProgressionCatalog.All.Select(item => item.WeaponId).Distinct().Count(), Is.EqualTo(17));
 
             foreach (var definition in WeaponProgressionCatalog.All)
             {
-                Assert.That(definition.Nodes, Has.Count.EqualTo(15), definition.WeaponId);
+                if (definition.WeaponId == "weapon.rope")
+                {
+                    Assert.That(definition.Nodes.Count, Is.EqualTo(9));
+                    Assert.That(definition.TryGetNode(5, WeaponUpgradeBranch.A, out _), Is.True);
+                    Assert.That(definition.HasBranch(WeaponUpgradeBranch.B), Is.False);
+                    continue;
+                }
+
+                Assert.That(definition.Nodes.Count, Is.EqualTo(15), definition.WeaponId);
                 Assert.That(definition.TryGetNode(5, WeaponUpgradeBranch.A, out _), Is.True, definition.WeaponId);
                 Assert.That(definition.TryGetNode(5, WeaponUpgradeBranch.B, out _), Is.True, definition.WeaponId);
                 Assert.That(definition.TryGetNode(10, WeaponUpgradeBranch.A, out var capA), Is.True, definition.WeaponId);
@@ -68,6 +76,7 @@ namespace Game.Tests.EditMode.Progression
         [Test]
         public void CatalogOrderMovesFromBasicToolsToPowerWeapons()
         {
+            AssertCatalogEntry("weapon.rope", 1, 0);
             AssertCatalogEntry("weapon.bur", 2, 800);
             AssertCatalogEntry("weapon.granata", 3, 1000);
             AssertCatalogEntry("weapon.mine", 4, 1500);

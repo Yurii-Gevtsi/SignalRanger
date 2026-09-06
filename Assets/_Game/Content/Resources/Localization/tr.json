@@ -198,7 +198,8 @@
       "weapon.freeze": "Kriyo Topu",
       "weapon.fire-gun": "Lav Silahı",
       "weapon.missle": "Güdümlü Roket",
-      "weapon.fpv-drone": "FPV Drone"
+      "weapon.fpv-drone": "FPV Drone",
+      "weapon.rope": "Halat"
     },
     "weaponDescription": {
       "weapon.impulse": "Droid'in standart reaktör şarjı — bir yay çizerek uçar ve siperin arkasındaki düşmana bile ulaşır. Gerçek bir zayıflığı yok, bu yüzden her savaşa götürülmeye değer ilk silah.",
@@ -217,7 +218,8 @@
       "weapon.freeze": "Hasar verir ve hedefi dondurur, önce hareketi engeller ve ardından droidi yavaşlatır.",
       "weapon.fire-gun": "Erimiş bir lav akışı fırlatır — ilk damla anında zarar verir, kızgın zemin ise üzerine basanı birkaç saniye daha yakmaya devam eder.",
       "weapon.missle": "Düşman yönüne ateş edersin — güdüm başlığı takibin gerisini halleder. Elle nişan almanın güvenilmez olduğu orta ve uzun menzilde en iyisi.",
-      "weapon.fpv-drone": "Drone'un manuel kontrolünü eline alır ve siperleri, tuzakları aşarak onu canlı canlı düşmanın gövdesine sürersin."
+      "weapon.fpv-drone": "Drone'un manuel kontrolünü eline alır ve siperleri, tuzakları aşarak onu canlı canlı düşmanın gövdesine sürersin.",
+      "weapon.rope": "Kancayı üst sektöre fırlatıp araziye sabitle. Halatı bırakmadan önce tırman, in ve sallanarak hız kazan."
     },
     "weaponEvolutionName": {
       "double-impulse": "Çift İtki",

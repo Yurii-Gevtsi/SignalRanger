@@ -54,7 +54,7 @@ namespace Game.Tests.EditMode.App
             var campaign = new CampaignProgressionService(save, content.Missions);
             var session = new GameSessionService(save, campaign, content);
 
-            Assert.That(campaign.MissionCount, Is.EqualTo(14));
+            Assert.That(campaign.MissionCount, Is.EqualTo(18));
             session.SelectMission(missionIndex);
 
             Assert.That(GameSessionContext.SelectedMissionId, Is.EqualTo(missionId));

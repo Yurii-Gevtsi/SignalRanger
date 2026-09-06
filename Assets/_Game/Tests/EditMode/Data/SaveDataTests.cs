@@ -15,6 +15,7 @@ namespace Game.Tests.EditMode.Data
             Assert.That(saveData.profile.playerName, Is.EqualTo("Гравець"));
             Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.EqualTo(0));
             Assert.That(saveData.inventory.unlockedWeaponIds, Contains.Item("weapon.impulse"));
+            Assert.That(saveData.inventory.unlockedWeaponIds, Contains.Item("weapon.rope"));
             Assert.That(saveData.economy.softCurrency, Is.EqualTo(0));
             Assert.That(saveData.economy.premiumCurrency, Is.EqualTo(0));
             Assert.That(saveData.settings.languageCode, Is.EqualTo("uk"));
@@ -79,8 +80,8 @@ namespace Game.Tests.EditMode.Data
             Assert.That(saveData.settings.sfxVolume, Is.EqualTo(0.4f));
             Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.Zero);
             Assert.That(saveData.campaign.completedMissionIds, Is.Empty);
-            Assert.That(saveData.inventory.unlockedWeaponIds, Is.EquivalentTo(new[] { "weapon.impulse", "weapon.blaster-caset" }));
-            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EquivalentTo(new[] { "weapon.impulse", "weapon.blaster-caset" }));
+            Assert.That(saveData.inventory.unlockedWeaponIds, Is.EquivalentTo(new[] { "weapon.rope", "weapon.impulse", "weapon.blaster-caset" }));
+            Assert.That(saveData.inventory.selectedLoadoutWeaponIds, Is.EquivalentTo(new[] { "weapon.rope", "weapon.impulse", "weapon.blaster-caset" }));
             Assert.That(saveData.profile.commanderExperience, Is.Zero);
             Assert.That(saveData.economy.softCurrency, Is.Zero);
             Assert.That(saveData.tutorial.completedStepIds, Is.Empty);

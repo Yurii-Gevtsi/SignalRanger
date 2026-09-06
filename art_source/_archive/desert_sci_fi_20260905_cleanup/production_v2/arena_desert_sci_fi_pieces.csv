@@ -1,0 +1,9 @@
+piece_id,file,mask_file,category,sorting_order,x_px,y_px,width_px,height_px,padding_px,destructible,notes
+arena_desert_sci_fi_upper_left_01,visuals/arena_desert_sci_fi_upper_left_01_visual.png,masks/arena_desert_sci_fi_upper_left_01_mask.png,terrain,0,0,6,1254,1578,32,true,"Upper-left cliff, upper bridge and lift."
+arena_desert_sci_fi_inner_left_01,visuals/arena_desert_sci_fi_inner_left_01_visual.png,masks/arena_desert_sci_fi_inner_left_01_mask.png,terrain,1,778,688,726,1266,32,true,Inner-left rock formation.
+arena_desert_sci_fi_lower_left_01,visuals/arena_desert_sci_fi_lower_left_01_visual.png,masks/arena_desert_sci_fi_lower_left_01_mask.png,terrain,2,0,1408,1554,844,32,true,Lower-left ground and embedded lower cover.
+arena_desert_sci_fi_center_01,visuals/arena_desert_sci_fi_center_01_visual.png,masks/arena_desert_sci_fi_center_01_mask.png,terrain,3,1098,858,1726,1396,32,true,"Central tower, attached platform, bridge, arch and lower covers."
+arena_desert_sci_fi_floating_large_01,visuals/arena_desert_sci_fi_floating_large_01_visual.png,masks/arena_desert_sci_fi_floating_large_01_mask.png,floating_platform,5,1138,406,988,542,32,true,Unique large floating platform with full reactor body; excludes neighboring terrain and long tether ends.
+arena_desert_sci_fi_floating_small_01,visuals/arena_desert_sci_fi_floating_small_01_visual.png,masks/arena_desert_sci_fi_floating_small_01_mask.png,floating_platform,5,2156,720,648,428,32,true,Canonical small floating platform; instantiated twice.
+arena_desert_sci_fi_upper_right_01,visuals/arena_desert_sci_fi_upper_right_01_visual.png,masks/arena_desert_sci_fi_upper_right_01_mask.png,terrain,0,3328,108,768,1506,32,true,Upper-right cliff and lift.
+arena_desert_sci_fi_lower_right_01,visuals/arena_desert_sci_fi_lower_right_01_visual.png,masks/arena_desert_sci_fi_lower_right_01_mask.png,terrain,2,2668,1018,1428,1232,32,true,"Lower-right ground, entrance and embedded lower cover."

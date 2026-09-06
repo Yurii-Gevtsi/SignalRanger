@@ -16,7 +16,7 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = Path(r"C:\Users\Yurii\Desktop\Game\UI\Arenas\Scenes\forest.png")
+SOURCE = Path(r"C:\Users\Yurii\Desktop\Game\UI\Arenas\Scenes\ліс.png")
 OUTPUT = ROOT / "tools/arena-assets/forest"
 SOURCE_OUTPUT = ROOT / "art_source/arenas/forest/production_source"
 GENERATED_CANOPY = SOURCE_OUTPUT / "forest_right_canopy_generated.png"
@@ -24,9 +24,12 @@ MASTER_SIZE = (2048, 1152)
 PADDING = 24
 
 REGIONS = (
-    ("left", (0, 255, 790, 1152), -7),
-    ("center", (650, 650, 1435, 1152), -8),
-    ("right", (1190, 0, 2048, 1152), -7),
+    # Four authored pieces matching the requested cut lines: left ledges,
+    # central ground, right tree/ground, and the upper canopy/branch.
+    ("left", (0, 240, 790, 1152), -7),
+    ("center", (590, 560, 1450, 1152), -8),
+    ("right", (1240, 300, 2048, 1152), -7),
+    ("extension", (1080, 0, 2048, 660), -6),
 )
 
 
@@ -46,6 +49,57 @@ def resize_premultiplied(image: Image.Image, size: tuple[int, int]) -> Image.Ima
     return Image.fromarray(np.clip(np.concatenate((rgb, resized_alpha), axis=2) * 255.0, 0, 255).astype(np.uint8), "RGBA")
 
 
+def sanitize_rgba(image: Image.Image) -> Image.Image:
+    pixels = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
+    pixels[pixels[..., 3] == 0, :3] = 0
+    return Image.fromarray(pixels, "RGBA")
+
+
+def remove_exterior_dark_backdrop(image: Image.Image) -> Image.Image:
+    """Remove the supplied scene's border-connected charcoal backdrop.
+
+    Interior dark pixels remain intact because only pixels connected to the
+    image border are treated as backdrop.
+    """
+    rgba = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
+    rgb = rgba[..., :3].astype(np.int16)
+    candidate = (rgb.max(axis=2) <= 70) & ((rgb.max(axis=2) - rgb.min(axis=2)) <= 12)
+    exterior = np.zeros(candidate.shape, dtype=bool)
+    stack = [(x, 0) for x in range(image.width)] + [(x, image.height - 1) for x in range(image.width)]
+    stack += [(0, y) for y in range(image.height)] + [(image.width - 1, y) for y in range(image.height)]
+    while stack:
+        x, y = stack.pop()
+        if x < 0 or y < 0 or x >= image.width or y >= image.height or exterior[y, x] or not candidate[y, x]:
+            continue
+        exterior[y, x] = True
+        stack.extend(((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)))
+    rgba[exterior, 3] = 0
+    # Enclosed, pure-black regions are also background (for example holes
+    # between branches). Keep softer brown/charcoal shading in the artwork.
+    pure_black = (rgba[..., :3].max(axis=2) < 18) & ~exterior
+    seen = np.zeros(pure_black.shape, dtype=bool)
+    height, width = pure_black.shape
+    for y in range(height):
+        for x in range(width):
+            if seen[y, x] or not pure_black[y, x]:
+                continue
+            stack = [(x, y)]
+            seen[y, x] = True
+            component = []
+            while stack:
+                current_x, current_y = stack.pop()
+                component.append((current_x, current_y))
+                for next_x, next_y in ((current_x - 1, current_y), (current_x + 1, current_y), (current_x, current_y - 1), (current_x, current_y + 1)):
+                    if 0 <= next_x < width and 0 <= next_y < height and pure_black[next_y, next_x] and not seen[next_y, next_x]:
+                        seen[next_y, next_x] = True
+                        stack.append((next_x, next_y))
+            if len(component) >= 64:
+                for current_x, current_y in component:
+                    rgba[current_y, current_x, 3] = 0
+    rgba[rgba[..., 3] == 0, :3] = 0
+    return Image.fromarray(rgba, "RGBA")
+
+
 def tight_crop(image: Image.Image, box: tuple[int, int, int, int]) -> tuple[Image.Image, Image.Image, tuple[int, int, int, int]]:
     rgba = np.asarray(image.convert("RGBA"), dtype=np.uint8)
     x0, y0, x1, y1 = box
@@ -57,7 +111,7 @@ def tight_crop(image: Image.Image, box: tuple[int, int, int, int]) -> tuple[Imag
     crop_y0 = max(0, y0 + int(ys.min()) - PADDING)
     crop_x1 = min(image.width, x0 + int(xs.max()) + 1 + PADDING)
     crop_y1 = min(image.height, y0 + int(ys.max()) + 1 + PADDING)
-    visual = image.crop((crop_x0, crop_y0, crop_x1, crop_y1)).convert("RGBA")
+    visual = sanitize_rgba(image.crop((crop_x0, crop_y0, crop_x1, crop_y1)))
     mask = Image.fromarray((np.asarray(visual)[..., 3] >= 128).astype(np.uint8) * 255, "L")
     return visual, mask, (crop_x0, crop_y0, crop_x1, crop_y1)
 
@@ -125,18 +179,17 @@ def save_ground_extension(source_dir: Path, master: Image.Image) -> None:
 
 def main() -> None:
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    source = Image.open(SOURCE).convert("RGBA")
+    source = remove_exterior_dark_backdrop(Image.open(SOURCE))
     # Preserve the complete source composition while conforming to the 16:9 master.
     scale = MASTER_SIZE[0] / source.width
     fitted = resize_premultiplied(source, (MASTER_SIZE[0], round(source.height * scale)))
     master = Image.new("RGBA", MASTER_SIZE, (0, 0, 0, 0))
     top = (MASTER_SIZE[1] - fitted.height) // 2
     master.alpha_composite(fitted, (0, top))
+    master = sanitize_rgba(master)
     source_dir = SOURCE_OUTPUT
     source_dir.mkdir(parents=True, exist_ok=True)
     master.save(source_dir / "layout_master.png")
-    save_ground_extension(source_dir, master)
-
     rows = []
     preview = Image.new("RGBA", MASTER_SIZE, (0, 0, 0, 0))
     for piece_id, source_box, sorting_order in REGIONS:

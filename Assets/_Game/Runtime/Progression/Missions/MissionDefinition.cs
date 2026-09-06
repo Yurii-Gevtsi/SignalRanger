@@ -103,7 +103,6 @@ namespace Game.Progression.Missions
                 && !string.IsNullOrWhiteSpace(_chapterId)
                 && !string.IsNullOrWhiteSpace(_displayNameKey)
                 && !string.IsNullOrWhiteSpace(_descriptionKey)
-                && !string.IsNullOrWhiteSpace(_title)
                 && !string.IsNullOrWhiteSpace(_arenaId)
                 && !string.IsNullOrWhiteSpace(_enemyLoadoutId)
                 && !string.IsNullOrWhiteSpace(_difficultyProfileId)

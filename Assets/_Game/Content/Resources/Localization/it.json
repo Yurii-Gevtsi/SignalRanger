@@ -198,7 +198,8 @@
       "weapon.freeze": "Cannone criogenico",
       "weapon.fire-gun": "Pistola di lava",
       "weapon.missle": "Razzo a ricerca",
-      "weapon.fpv-drone": "Drone FPV"
+      "weapon.fpv-drone": "Drone FPV",
+      "weapon.rope": "Corda"
     },
     "weaponDescription": {
       "weapon.impulse": "La carica standard del reattore del droide — vola ad arco e raggiunge il nemico anche dietro copertura. Nessun vero punto debole, il che la rende la prima arma da portare in ogni battaglia.",
@@ -217,7 +218,8 @@
       "weapon.freeze": "Infligge danni e congela il bersaglio, prima bloccando il movimento e poi rallentando il droide.",
       "weapon.fire-gun": "Spara un getto di lava fusa — la prima goccia ferisce subito, e il terreno incandescente continua a bruciare per qualche secondo chiunque ci metta piede.",
       "weapon.missle": "Spari in direzione del nemico — la testa cercante completa da sola la guida. Ideale a media e lunga distanza, dove la mira manuale non è affidabile.",
-      "weapon.fpv-drone": "Prendi il controllo manuale del drone e lo piloti dal vivo oltre coperture e trappole, dritto nello scafo del nemico."
+      "weapon.fpv-drone": "Prendi il controllo manuale del drone e lo piloti dal vivo oltre coperture e trappole, dritto nello scafo del nemico.",
+      "weapon.rope": "Spara un rampino nel settore superiore e ancoralo al terreno. Sali, scendi e oscilla prima di sganciare la corda."
     },
     "weaponEvolutionName": {
       "double-impulse": "Impulso Doppio",

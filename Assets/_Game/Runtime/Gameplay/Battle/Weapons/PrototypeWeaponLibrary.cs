@@ -6,6 +6,7 @@ namespace Game.Gameplay.Battle.Weapons
         {
             return new[]
             {
+                Weapon("weapon.rope", WeaponRole.MovementTool, 0, 0.1f, 0.08f, 0f, 2f, 1f, 1f, -1, "rope", "straight-close", "engineering", "rope", "traversal", "starter"),
                 Weapon("weapon.impulse", WeaponRole.ArcingExplosive, 34, 1.15f, 0.12f, 1f, 8f, 5f, 13f, -1, "impulse", "arc", "starter"),
                 Weapon("weapon.blaster-caset", WeaponRole.DirectProjectile, 30, 0.9f, 0.09f, 0f, 4.5f, 14f, 14f, 3, "blaster_caset", "straight-long", "burst"),
                 Weapon("weapon.bur", WeaponRole.ShortRangeBurst, 18, 0.7f, 0.08f, 0f, 1.2f, 3f, 3f, 3, "bur", "straight-close", "engineering", "drill"),

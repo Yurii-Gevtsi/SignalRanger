@@ -19,6 +19,10 @@ namespace Game.Core.Battle
         event Action MoveRightStopped;
         event Action JumpLeftRequested;
         event Action JumpRightRequested;
+        event Action RopeUpStarted;
+        event Action RopeUpStopped;
+        event Action RopeDownStarted;
+        event Action RopeDownStopped;
         event Action RestartRequested;
         event Action ContinueRequested;
         event Action MenuRequested;

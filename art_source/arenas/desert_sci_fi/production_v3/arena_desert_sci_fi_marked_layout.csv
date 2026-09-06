@@ -1,0 +1,7 @@
+asset_id,x,y,width,height,sorting_order
+arena_desert_sci_fi_upper_left_01,0,0,1536,1458,0
+arena_desert_sci_fi_floating_large_01,1792,256,676,426,5
+arena_desert_sci_fi_upper_right_01,3132,66,964,1210,0
+arena_desert_sci_fi_lower_left_01,0,1446,1536,812,2
+arena_desert_sci_fi_center_01,1526,976,1194,1290,3
+arena_desert_sci_fi_lower_right_01,2708,1264,1388,988,2

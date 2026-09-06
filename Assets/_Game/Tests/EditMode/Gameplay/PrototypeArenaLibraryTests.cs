@@ -1,3 +1,4 @@
+using System.Linq;
 using Game.Gameplay.Battle.Arenas;
 using NUnit.Framework;
 
@@ -22,18 +23,18 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void DesertSciFi_UsesEightAssetsAcrossNineIndependentInstances()
+        public void DesertSciFi_UsesTheSixFragmentsFromTheMarkedLayout()
         {
             var arenas = PrototypeArenaLibrary.CreateAll();
             var arena = System.Array.Find(arenas, item => item.ArenaId == "arena.desert-sci-fi");
 
             Assert.IsNotNull(arena);
-            Assert.That(arena.SpriteSurfaces.Count, Is.EqualTo(9));
+            Assert.That(arena.SpriteSurfaces.Count, Is.EqualTo(6));
             Assert.That(arena.TerrainBlocks, Is.Empty);
-            Assert.That(arena.SpriteSurfaces[5].VisualResourcePath, Is.EqualTo(arena.SpriteSurfaces[6].VisualResourcePath));
-            Assert.That(arena.SpriteSurfaces[5].Position, Is.Not.EqualTo(arena.SpriteSurfaces[6].Position));
+            Assert.That(arena.SpriteSurfaces.Select(surface => surface.VisualResourcePath), Is.Unique);
+            Assert.That(arena.SpriteSurfaces.Select(surface => surface.MaskResourcePath), Is.Unique);
             Assert.That(arena.CameraSize, Is.EqualTo(9.25f));
-            Assert.That(arena.CameraPosition.y, Is.EqualTo(-1.75f));
+            Assert.That(arena.CameraPosition.y, Is.EqualTo(-2f));
             Assert.That(arena.SpriteSurfaces[0].Scale, Is.EqualTo(2.5f));
         }
     }

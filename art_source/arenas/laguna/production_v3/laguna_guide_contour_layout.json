@@ -1,0 +1,54 @@
+{
+  "canvas": {
+    "width": 2048,
+    "height": 1152
+  },
+  "production_scale": 2,
+  "pieces": [
+    {
+      "id": "section_01",
+      "x": 1255,
+      "y": 152,
+      "width": 793,
+      "height": 558,
+      "sorting_order": -9,
+      "reference": "laguna_section_01_reference.png"
+    },
+    {
+      "id": "section_02",
+      "x": 0,
+      "y": 187,
+      "width": 686,
+      "height": 509,
+      "sorting_order": -8,
+      "reference": "laguna_section_02_reference.png"
+    },
+    {
+      "id": "section_03",
+      "x": 466,
+      "y": 343,
+      "width": 640,
+      "height": 696,
+      "sorting_order": -7,
+      "reference": "laguna_section_03_reference.png"
+    },
+    {
+      "id": "section_04",
+      "x": 0,
+      "y": 624,
+      "width": 589,
+      "height": 411,
+      "sorting_order": -6,
+      "reference": "laguna_section_04_reference.png"
+    },
+    {
+      "id": "section_05",
+      "x": 1071,
+      "y": 678,
+      "width": 977,
+      "height": 369,
+      "sorting_order": -5,
+      "reference": "laguna_section_05_reference.png"
+    }
+  ]
+}

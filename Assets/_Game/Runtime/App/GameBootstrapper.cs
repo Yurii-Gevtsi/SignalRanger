@@ -8,6 +8,7 @@ namespace Game.App
     public sealed class GameBootstrapper : MonoBehaviour
     {
         private bool _startupSequenceStarted;
+        private bool _initialSceneResolved;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         private static void ConfigureMobileOrientation()
@@ -47,21 +48,34 @@ namespace Game.App
 
         private void Start()
         {
-            // Keep the branded entry splash even when a platform/editor launches the
-            // menu scene directly instead of honoring the Boot scene build entry.
-            var activeScene = SceneManager.GetActiveScene();
-            if (activeScene.name == GameSceneNames.Menu && !_startupSequenceStarted)
+            // The initial sceneLoaded callback normally arrives before Start. This
+            // fallback covers editor/domain-reload edge cases without allowing a
+            // directly opened Battle scene to construct a combat controller.
+            if (!_initialSceneResolved)
             {
-                _startupSequenceStarted = true;
-                StartCoroutine(ShowStartupOverExistingMenu());
-                return;
+                HandleSceneLoaded(SceneManager.GetActiveScene());
             }
-
-            OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            HandleSceneLoaded(scene);
+        }
+
+        private void HandleSceneLoaded(Scene scene)
+        {
+            if (!_initialSceneResolved)
+            {
+                _initialSceneResolved = true;
+                if (scene.name != GameSceneNames.Boot)
+                {
+                    // Every application launch has one route: Boot -> loading -> menu.
+                    // This also makes pressing Play from Battle in the editor harmless.
+                    SceneManager.LoadScene(GameSceneNames.Boot);
+                    return;
+                }
+            }
+
             if (scene.name == GameSceneNames.Boot)
             {
                 if (!_startupSequenceStarted)
@@ -95,13 +109,6 @@ namespace Game.App
         {
             AppServices.Session.SelectNextMission();
             yield return StartupSplashController.ShowWhileLoadingScene(GameSceneNames.Menu);
-        }
-
-        private IEnumerator ShowStartupOverExistingMenu()
-        {
-            AppServices.Session.SelectNextMission();
-            yield return StartupSplashController.ShowOverCurrentScene();
-            OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
         }
 
         private static void ApplyPendingMissionCompletion()

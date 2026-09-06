@@ -85,7 +85,8 @@ namespace Game.Core.Battle
             bool resultMissionCleared = false,
             string opponentName = null,
             string opponentWeaponLabel = null,
-            int opponentWeaponRank = 0)
+            int opponentWeaponRank = 0,
+            bool ropeControlsActive = false)
         {
             Status = status;
             TurnNumber = turnNumber;
@@ -133,6 +134,7 @@ namespace Game.Core.Battle
             OpponentName = opponentName ?? string.Empty;
             OpponentWeaponLabel = opponentWeaponLabel ?? string.Empty;
             OpponentWeaponRank = opponentWeaponRank < 0 ? 0 : opponentWeaponRank;
+            RopeControlsActive = ropeControlsActive;
         }
 
         /// <summary>
@@ -150,6 +152,7 @@ namespace Game.Core.Battle
         /// opponent is noise, while a rank-6 one tells the player why that shot hurt.
         /// </summary>
         public int OpponentWeaponRank { get; }
+        public bool RopeControlsActive { get; }
 
         public bool ShowOpponentBar => !string.IsNullOrEmpty(OpponentName) && !ShowResult;
         public bool ShowOpponentRank => OpponentWeaponRank > 1;

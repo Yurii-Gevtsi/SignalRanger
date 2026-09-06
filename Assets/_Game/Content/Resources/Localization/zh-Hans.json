@@ -198,7 +198,8 @@
       "weapon.freeze": "冷冻炮",
       "weapon.fire-gun": "熔岩枪",
       "weapon.missle": "寻的火箭",
-      "weapon.fpv-drone": "FPV无人机"
+      "weapon.fpv-drone": "FPV无人机",
+      "weapon.rope": "绳索"
     },
     "weaponDescription": {
       "weapon.impulse": "机器人反应堆的标准充能弹——呈弧线飞行，即使敌人躲在掩体后也能命中。没有明显弱点，因此是任何战斗中都值得优先携带的武器。",
@@ -217,7 +218,8 @@
       "weapon.freeze": "造成伤害并冻结目标，首先阻止机器人移动，然后减慢机器人速度。",
       "weapon.fire-gun": "喷射一股熔岩——第一滴岩浆立即造成伤害，炽热的地面还会继续灼烧踩上去的任何目标数秒。",
       "weapon.missle": "朝敌人方向发射，导引头会自动完成剩余的追踪。在手动瞄准不可靠的中远距离效果最佳。",
-      "weapon.fpv-drone": "亲自手动操控无人机，穿越掩体和陷阱，直接撞向敌人的外壳。"
+      "weapon.fpv-drone": "亲自手动操控无人机，穿越掩体和陷阱，直接撞向敌人的外壳。",
+      "weapon.rope": "向上方扇形区域射出抓钩并固定在地形上。松开绳索前，可以攀爬、下滑并摆动蓄力。"
     },
     "weaponEvolutionName": {
       "double-impulse": "双重脉冲",

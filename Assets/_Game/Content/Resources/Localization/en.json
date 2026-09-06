@@ -199,7 +199,8 @@
       "weapon.freeze": "Cryo Cannon",
       "weapon.fire-gun": "Lava Gun",
       "weapon.missle": "Homing Rocket",
-      "weapon.fpv-drone": "FPV Drone"
+      "weapon.fpv-drone": "FPV Drone",
+      "weapon.rope": "Rope"
     },
     "weaponDescription": {
       "weapon.impulse": "The droid's standard reactor charge — arcs in and reaches the enemy even behind cover. No real weakness, which makes it the first weapon worth taking into any fight.",
@@ -218,7 +219,8 @@
       "weapon.freeze": "Deals damage and freezes the target, first blocking movement and then slowing the droid.",
       "weapon.fire-gun": "Fires a stream of molten lava — the first drop hurts immediately, and the scorched ground keeps burning anyone who steps on it for a few more seconds.",
       "weapon.missle": "Fire it toward the enemy and the seeker head handles the rest of the guidance. Best at medium-to-long range, where manual aiming isn't reliable.",
-      "weapon.fpv-drone": "Take manual control of the drone and fly it live past cover and traps straight into the enemy's hull."
+      "weapon.fpv-drone": "Take manual control of the drone and fly it live past cover and traps straight into the enemy's hull.",
+      "weapon.rope": "Fire a grappling hook into the upper sector and anchor it to terrain. Climb, descend, and build a swing before releasing the line."
     },
     "weaponEvolutionName": {
       "double-impulse": "Twin Impulse",

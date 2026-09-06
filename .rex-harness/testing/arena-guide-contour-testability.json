@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decisionRef": "artifact:arena-guide-contour-testability",
+  "decision": "behavior-delta",
+  "redCandidate": {
+    "publicEntry": "tools/arena-assets/rebuild_guide_contour_arenas.py --prepare city",
+    "setup": "The existing City production_v2 output is the current artifact presented for the user-marked layout.",
+    "command": {
+      "executable": "python",
+      "args": [
+        "-c",
+        "from pathlib import Path; p=Path(r'art_source/arenas/city/production_v2/source_layers/reference_crops'); files=list(p.glob('*.png')); assert len(files)==5, f'Expected 5 guide-contour City fragments; found {len(files)} legacy rectangular crops'"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "Five City fragments, one for each red-guide-enclosed section.",
+    "observed": "The legacy output contains three rectangular crops.",
+    "failureReason": "The current crop layout cannot represent the five user-drawn contour sections.",
+    "receiptRef": "receipt:6e57d1fe-a242-4b29-8cd7-93c5280e43fa"
+  }
+}

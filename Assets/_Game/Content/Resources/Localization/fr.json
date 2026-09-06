@@ -198,7 +198,8 @@
       "weapon.freeze": "Canon cryogénique",
       "weapon.fire-gun": "Pistolet à lave",
       "weapon.missle": "Fusée à tête chercheuse",
-      "weapon.fpv-drone": "Drone FPV"
+      "weapon.fpv-drone": "Drone FPV",
+      "weapon.rope": "Corde"
     },
     "weaponDescription": {
       "weapon.impulse": "La charge de réacteur standard du droïde — décrit un arc et atteint l'ennemi même derrière une couverture. Aucun vrai point faible, ce qui en fait la première arme à emporter dans n'importe quel combat.",
@@ -217,7 +218,8 @@
       "weapon.freeze": "Inflige des dégâts et gèle la cible, bloquant d'abord le mouvement puis ralentissant le droïde.",
       "weapon.fire-gun": "Tire un jet de lave en fusion — la première goutte blesse immédiatement, et le sol incandescent continue de brûler pendant quelques secondes quiconque marche dessus.",
       "weapon.missle": "Tire en direction de l'ennemi — la tête chercheuse s'occupe du reste du guidage. Idéal à moyenne ou longue portée, là où la visée manuelle n'est pas fiable.",
-      "weapon.fpv-drone": "Prends le contrôle manuel du drone et pilote-le en direct au-delà des couvertures et des pièges, droit dans la coque de l'ennemi."
+      "weapon.fpv-drone": "Prends le contrôle manuel du drone et pilote-le en direct au-delà des couvertures et des pièges, droit dans la coque de l'ennemi.",
+      "weapon.rope": "Tire un grappin dans le secteur supérieur et ancre-le au terrain. Monte, descends et prends de l'élan avant de lâcher la corde."
     },
     "weaponEvolutionName": {
       "double-impulse": "Impulsion Double",

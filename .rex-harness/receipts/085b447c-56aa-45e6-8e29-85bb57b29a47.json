@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "085b447c-56aa-45e6-8e29-85bb57b29a47",
+  "command": {
+    "executable": "python",
+    "args": [
+      "-c",
+      "from pathlib import Path; p=Path(r'art_source/arenas/city/production_v2/source_layers/reference_crops'); files=list(p.glob('*.png')); assert len(files)==5, f'Expected 5 guide-contour City fragments; found {len(files)} legacy rectangular crops'"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "ae458030da4ad9838344adeed1a61180aac8c083bc806f749238e270205ce9e6",
+  "observedAt": "2026-09-06T06:39:20.681Z"
+}

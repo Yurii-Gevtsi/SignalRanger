@@ -198,7 +198,8 @@
       "weapon.freeze": "크라이오 캐논",
       "weapon.fire-gun": "라바 건",
       "weapon.missle": "호밍 로켓",
-      "weapon.fpv-drone": "FPV 드론"
+      "weapon.fpv-drone": "FPV 드론",
+      "weapon.rope": "로프"
     },
     "weaponDescription": {
       "weapon.impulse": "드로이드 표준 원자로 충전탄——호를 그리며 날아가 엄폐물 뒤의 적에게도 닿는다. 뚜렷한 약점이 없어 어떤 전투에도 가장 먼저 챙길 가치가 있는 무기다.",
@@ -217,7 +218,8 @@
       "weapon.freeze": "대상에게 피해를 입히고 얼려 먼저 움직임을 차단한 다음 드로이드의 속도를 늦춥니다.",
       "weapon.fire-gun": "녹은 용암 줄기를 발사한다——첫 방울이 즉시 피해를 입히고, 달궈진 땅은 이후 몇 초간 밟는 자를 계속 태운다.",
       "weapon.missle": "적 방향으로 발사하면 유도탄두가 나머지 추적을 맡는다. 수동 조준이 불안정한 중장거리에서 가장 효과적이다.",
-      "weapon.fpv-drone": "드론을 직접 조종해 엄폐물과 함정을 피해 적의 선체로 곧장 몰아간다."
+      "weapon.fpv-drone": "드론을 직접 조종해 엄폐물과 함정을 피해 적의 선체로 곧장 몰아간다.",
+      "weapon.rope": "상단 부채꼴 범위로 그래플링 훅을 쏘아 지형에 고정한다. 로프를 놓기 전에 오르고, 내리고, 그네처럼 흔들어 추진력을 만든다."
     },
     "weaponEvolutionName": {
       "double-impulse": "이중 임펄스",

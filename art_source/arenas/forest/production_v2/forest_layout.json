@@ -1,0 +1,35 @@
+{
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "x": 80,
+      "y": 285,
+      "width": 680,
+      "height": 845,
+      "sorting_order": -8,
+      "reference": "forest_left_reference.png"
+    },
+    {
+      "id": "center",
+      "x": 620,
+      "y": 600,
+      "width": 690,
+      "height": 535,
+      "sorting_order": -7,
+      "reference": "forest_center_reference.png"
+    },
+    {
+      "id": "right",
+      "x": 1210,
+      "y": 30,
+      "width": 838,
+      "height": 1105,
+      "sorting_order": -6,
+      "reference": "forest_right_reference.png"
+    }
+  ]
+}

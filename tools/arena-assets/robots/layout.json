@@ -1,0 +1,39 @@
+{
+  "arena_id": "arena.robots",
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "crop": [
+        72,
+        159,
+        874,
+        1049
+      ],
+      "sorting_order": -8
+    },
+    {
+      "id": "center",
+      "crop": [
+        566,
+        159,
+        1454,
+        1049
+      ],
+      "sorting_order": -7
+    },
+    {
+      "id": "right",
+      "crop": [
+        1136,
+        221,
+        1999,
+        1050
+      ],
+      "sorting_order": -6
+    }
+  ]
+}

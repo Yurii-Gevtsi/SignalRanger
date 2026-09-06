@@ -10,7 +10,7 @@ namespace Game.Tests.EditMode.Progression
         {
             var missions = MvpMissionLibrary.CreateAll();
 
-            Assert.That(missions.Length, Is.EqualTo(14));
+            Assert.That(missions.Length, Is.EqualTo(18));
             foreach (var mission in missions)
             {
                 Assert.That(mission.IsValid(), Is.True);
@@ -55,6 +55,21 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(missions[2].TutorialStepIds, Contains.Item("tutorial.cover-target"));
             Assert.That(missions[2].TutorialStepIds, Contains.Item("tutorial.radius"));
             Assert.That(missions[4].TutorialStepIds, Contains.Item("tutorial.weapon-switch"));
+        }
+
+        [TestCase("mission.placeholder.monument", "chapter.monument", "arena.monument")]
+        [TestCase("mission.placeholder.kraken", "chapter.kraken", "arena.kraken")]
+        [TestCase("mission.placeholder.vines", "chapter.vines", "arena.vines")]
+        [TestCase("mission.placeholder.robots", "chapter.robots", "arena.robots")]
+        public void PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet(string missionId, string chapterId, string arenaId)
+        {
+            var mission = System.Array.Find(MvpMissionLibrary.CreateAll(), candidate => candidate.MissionId == missionId);
+
+            Assert.That(mission, Is.Not.Null);
+            Assert.That(mission.ChapterId, Is.EqualTo(chapterId));
+            Assert.That(mission.ArenaId, Is.EqualTo(arenaId));
+            Assert.That(mission.Title, Is.Empty);
+            Assert.That(mission.Description, Is.Empty);
         }
     }
 }

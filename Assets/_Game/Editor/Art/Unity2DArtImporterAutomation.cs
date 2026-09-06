@@ -151,11 +151,11 @@ namespace Game.EditorTools.Art
                     ConfigureUiTexture(importer);
                     break;
                 case Unity2DArtImportProfile.GeneratedSprite:
-                    ConfigureSprite(importer, UiAndSpritePixelsPerUnit, SpriteMaxTextureSize, false, true);
+                    ConfigureSprite(importer, UiAndSpritePixelsPerUnit, SpriteMaxTextureSize, false, true, false);
                     ConfigureAndroidCompression(importer, SpriteMaxTextureSize, TextureImporterFormat.ASTC_4x4);
                     break;
                 case Unity2DArtImportProfile.ArenaVisual:
-                    ConfigureSprite(importer, ArenaPixelsPerUnit, ArenaMaxTextureSize, true, true);
+                    ConfigureSprite(importer, ArenaPixelsPerUnit, ArenaMaxTextureSize, true, true, true);
                     ConfigureAndroidCompression(importer, ArenaMaxTextureSize, TextureImporterFormat.ASTC_4x4);
                     break;
                 case Unity2DArtImportProfile.ArenaMask:
@@ -187,7 +187,8 @@ namespace Game.EditorTools.Art
             float pixelsPerUnit,
             int maxTextureSize,
             bool readable,
-            bool alphaIsTransparency)
+            bool alphaIsTransparency,
+            bool uncompressed)
         {
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
@@ -199,9 +200,16 @@ namespace Game.EditorTools.Art
             importer.filterMode = FilterMode.Bilinear;
             importer.wrapMode = TextureWrapMode.Clamp;
             importer.maxTextureSize = maxTextureSize;
-            importer.textureCompression = TextureImporterCompression.Compressed;
+            importer.textureCompression = uncompressed
+                ? TextureImporterCompression.Uncompressed
+                : TextureImporterCompression.Compressed;
             importer.compressionQuality = 100;
             importer.crunchedCompression = false;
+
+            if (uncompressed)
+            {
+                ConfigureUncompressedEditorPlatforms(importer, maxTextureSize);
+            }
 
             var settings = new TextureImporterSettings();
             importer.ReadTextureSettings(settings);
@@ -209,6 +217,21 @@ namespace Game.EditorTools.Art
             settings.spritePivot = new Vector2(0.5f, 0.5f);
             settings.spriteMeshType = (int)SpriteMeshType.FullRect;
             importer.SetTextureSettings(settings);
+        }
+
+        private static void ConfigureUncompressedEditorPlatforms(TextureImporter importer, int maxTextureSize)
+        {
+            foreach (var target in new[] { "DefaultTexturePlatform", "Standalone", "WebGL" })
+            {
+                var platform = importer.GetPlatformTextureSettings(target);
+                platform.name = target;
+                platform.maxTextureSize = maxTextureSize;
+                platform.textureCompression = TextureImporterCompression.Uncompressed;
+                platform.compressionQuality = 100;
+                platform.crunchedCompression = false;
+                platform.overridden = target != "DefaultTexturePlatform";
+                importer.SetPlatformTextureSettings(platform);
+            }
         }
 
         private static void ConfigureMask(TextureImporter importer)

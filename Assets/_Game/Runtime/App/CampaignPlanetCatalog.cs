@@ -17,12 +17,13 @@ namespace Game.App
         /// </summary>
         public readonly struct Planet
         {
-            public Planet(string mapResource, Vector2 position, string chapterId, string localizationKey)
+            public Planet(string mapResource, Vector2 position, string chapterId, string localizationKey, string arenaId = "")
             {
                 MapResource = mapResource;
                 Position = position;
                 ChapterId = chapterId;
                 LocalizationKey = localizationKey;
+                ArenaId = arenaId ?? string.Empty;
             }
 
             public string MapResource { get; }
@@ -31,6 +32,7 @@ namespace Game.App
             public Vector2 Position { get; }
             public string ChapterId { get; }
             public string LocalizationKey { get; }
+            public string ArenaId { get; }
         }
 
         public readonly struct Sector
@@ -49,31 +51,36 @@ namespace Game.App
 
         public static readonly Planet[] Planets =
         {
-            new("campaign_planet_03", new Vector2(-390f, 60f), "chapter.basics", "campaign.planet.kerion"),
-            new("campaign_planet_02", new Vector2(-130f, -70f), "chapter.tactical-tools", "campaign.planet.valtara"),
-            new("campaign_planet_01", new Vector2(150f, 50f), "chapter.city", "campaign.planet.gale-foundry"),
-            new("campaign_planet_04", new Vector2(410f, -70f), "chapter.grib", "campaign.planet.cryo-relay")
+            new("campaign_planet_03", new Vector2(-390f, 60f), "chapter.basics", "campaign.planet.kerion", "arena.desert-sci-fi"),
+            new("campaign_planet_02", new Vector2(-130f, -70f), "chapter.tactical-tools", "campaign.planet.valtara", "arena.forest"),
+            new("campaign_planet_01", new Vector2(150f, 50f), "chapter.city", "campaign.planet.gale-foundry", "arena.city"),
+            new("campaign_planet_04", new Vector2(410f, -70f), "chapter.grib", "campaign.planet.cryo-relay", "arena.grib"),
+            new("campaign_planet_05", new Vector2(-390f, 60f), "chapter.laguna", "campaign.planet.hailis", "arena.laguna"),
+            new("campaign_planet_06", new Vector2(-130f, -70f), "chapter.monument", "campaign.planet.ferrum", "arena.monument"),
+            new("campaign_planet_07", new Vector2(150f, 50f), "chapter.kraken", "campaign.planet.pyra", "arena.kraken"),
+            new("campaign_planet_08", new Vector2(410f, -70f), "chapter.vines", "campaign.planet.noctara", "arena.vines"),
+            new("campaign_planet_09", new Vector2(-390f, 60f), "chapter.robots", "campaign.planet.selene", "arena.robots")
         };
 
         public static readonly Sector[] Sectors =
         {
             new("campaign_sector_01_background", "campaign.sector.1", new[]
             {
-                new Planet("campaign_planet_03", new Vector2(-390f, 60f), "chapter.basics", "campaign.planet.kerion"),
-                new Planet("campaign_planet_02", new Vector2(-130f, -70f), "chapter.tactical-tools", "campaign.planet.valtara"),
-                new Planet("campaign_planet_01", new Vector2(150f, 50f), "chapter.city", "campaign.planet.gale-foundry"),
-                new Planet("campaign_planet_04", new Vector2(410f, -70f), "chapter.grib", "campaign.planet.cryo-relay")
+                new Planet("campaign_planet_03", new Vector2(-390f, 60f), "chapter.basics", "campaign.planet.kerion", "arena.desert-sci-fi"),
+                new Planet("campaign_planet_02", new Vector2(-130f, -70f), "chapter.tactical-tools", "campaign.planet.valtara", "arena.forest"),
+                new Planet("campaign_planet_01", new Vector2(150f, 50f), "chapter.city", "campaign.planet.gale-foundry", "arena.city"),
+                new Planet("campaign_planet_04", new Vector2(410f, -70f), "chapter.grib", "campaign.planet.cryo-relay", "arena.grib")
             }),
             new("campaign_sector_02_background", "campaign.sector.2", new[]
             {
-                new Planet("campaign_planet_05", new Vector2(-390f, 60f), "chapter.laguna", "campaign.planet.hailis"),
-                new Planet("campaign_planet_06", new Vector2(-130f, -70f), string.Empty, "campaign.planet.ferrum"),
-                new Planet("campaign_planet_07", new Vector2(150f, 50f), string.Empty, "campaign.planet.pyra"),
-                new Planet("campaign_planet_08", new Vector2(410f, -70f), string.Empty, "campaign.planet.noctara")
+                new Planet("campaign_planet_05", new Vector2(-390f, 60f), "chapter.laguna", "campaign.planet.hailis", "arena.laguna"),
+                new Planet("campaign_planet_06", new Vector2(-130f, -70f), "chapter.monument", "campaign.planet.ferrum", "arena.monument"),
+                new Planet("campaign_planet_07", new Vector2(150f, 50f), "chapter.kraken", "campaign.planet.pyra", "arena.kraken"),
+                new Planet("campaign_planet_08", new Vector2(410f, -70f), "chapter.vines", "campaign.planet.noctara", "arena.vines")
             }),
             new("campaign_sector_03_background", "campaign.sector.3", new[]
             {
-                new Planet("campaign_planet_09", new Vector2(-390f, 60f), string.Empty, "campaign.planet.selene"),
+                new Planet("campaign_planet_09", new Vector2(-390f, 60f), "chapter.robots", "campaign.planet.selene", "arena.robots"),
                 new Planet("campaign_planet_10", new Vector2(-130f, -70f), string.Empty, "campaign.planet.pelagos"),
                 new Planet("campaign_planet_11", new Vector2(150f, 50f), string.Empty, "campaign.planet.cinder"),
                 new Planet("campaign_planet_12", new Vector2(410f, -70f), string.Empty, "campaign.planet.asteron")

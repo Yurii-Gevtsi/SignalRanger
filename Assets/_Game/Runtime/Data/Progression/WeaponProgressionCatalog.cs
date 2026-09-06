@@ -224,6 +224,7 @@ namespace Game.Data.Progression
     {
         private static readonly WeaponProgressionDefinition[] Definitions =
         {
+            SingleTrack("weapon.rope", WeaponUpgradeStat.Range, WeaponUpgradeStat.Accuracy, WeaponUpgradeStat.Mobility),
             Track("weapon.impulse", 1, 0, 0, true, "double-impulse", "impact-impulse",
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.ImpactRadius, WeaponUpgradeStat.Range,
                 WeaponUpgradeStat.Damage, WeaponUpgradeStat.Knockback, "triple-impulse", "assault-impulse",
@@ -372,6 +373,34 @@ namespace Game.Data.Progression
                     Node(8, WeaponUpgradeBranch.B, CompensationFor(branchBPrimary), 4),
                     Node(9, WeaponUpgradeBranch.B, branchBPrimary, 3),
                     Node(10, WeaponUpgradeBranch.B, WeaponUpgradeStat.None, 0, branchBCapstone, branchBCapstoneName)
+                });
+        }
+
+        private static WeaponProgressionDefinition SingleTrack(
+            string weaponId,
+            WeaponUpgradeStat rank2,
+            WeaponUpgradeStat rank3,
+            WeaponUpgradeStat rank4)
+        {
+            return new WeaponProgressionDefinition(
+                weaponId,
+                1,
+                0,
+                0,
+                true,
+                "rope-utility",
+                string.Empty,
+                new[]
+                {
+                    Node(2, WeaponUpgradeBranch.None, rank2, 1),
+                    Node(3, WeaponUpgradeBranch.None, rank3, 1),
+                    Node(4, WeaponUpgradeBranch.None, rank4, 1),
+                    Node(5, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0, "rope-utility"),
+                    Node(6, WeaponUpgradeBranch.A, rank2, 1),
+                    Node(7, WeaponUpgradeBranch.A, rank3, 1),
+                    Node(8, WeaponUpgradeBranch.A, rank4, 1),
+                    Node(9, WeaponUpgradeBranch.A, rank2, 1),
+                    Node(10, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0, "rope-mastery")
                 });
         }
 

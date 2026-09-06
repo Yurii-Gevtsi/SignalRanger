@@ -567,6 +567,13 @@ namespace Game.App
             }
 
             AppServices.Session.SelectMission(nextMission);
+            var planet = CampaignPlanetCatalog.Planets[_openPlanetIndex];
+            if (!string.IsNullOrWhiteSpace(planet.ArenaId))
+            {
+                GameSessionContext.SelectArena(
+                    AppServices.Content?.ResolveArenaIndexById(planet.ArenaId) ?? 0,
+                    planet.ArenaId);
+            }
             AppServices.SceneLoader.Load(GameSceneNames.Battle);
         }
 

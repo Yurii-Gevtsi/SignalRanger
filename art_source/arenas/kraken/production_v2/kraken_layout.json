@@ -1,0 +1,35 @@
+{
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "x": 0,
+      "y": 128,
+      "width": 794,
+      "height": 1015,
+      "sorting_order": -8,
+      "reference": "kraken_left_reference.png"
+    },
+    {
+      "id": "center",
+      "x": 566,
+      "y": 64,
+      "width": 828,
+      "height": 1088,
+      "sorting_order": -7,
+      "reference": "kraken_center_reference.png"
+    },
+    {
+      "id": "right",
+      "x": 1096,
+      "y": 207,
+      "width": 952,
+      "height": 945,
+      "sorting_order": -6,
+      "reference": "kraken_right_reference.png"
+    }
+  ]
+}

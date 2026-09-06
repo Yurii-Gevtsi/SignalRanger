@@ -1,0 +1,35 @@
+{
+  "rule": "Every fragment is individually enhanced after the guide-contour crop; resize-only output cannot be promoted.",
+  "pieces": [
+    {
+      "id": "left",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "de39c4ceda3f2abd158cbb0712eb0b5ee748b6c61f15fdd6f2480cec84619b10",
+      "enhanced_sha256": "dbd5b157365212064fd97f9d8c7e10c5b273728dfaf2ae1e9d44144db157e604",
+      "final_visual_sha256": "8735530e9d267df2f78f76bd55eab903235bdcc69a9ccce0d82ca18d6abcb2fb",
+      "width": 1588,
+      "height": 2030,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "id": "center",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "f70ee7fa7952fd5ab35dba107c006b4893cc4171d10c7c55443f48eba13f9149",
+      "enhanced_sha256": "5aaf75dd0086ee1ac2b4a19279bd1800f309ec85791eb88d216aa188b3e907a7",
+      "final_visual_sha256": "13334b83d9b63b334f004ef8104a1c309efa01ac3f02d887eebf05d1a1fd98bf",
+      "width": 1656,
+      "height": 2176,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "id": "right",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "e1e8325ce3800560dbfd4a926583004b9734f03bff20305c9f247e780edcadb2",
+      "enhanced_sha256": "30d43d723394c0492422e079ecd74a592b25ca98dbd9edf795a4d75c62f0c708",
+      "final_visual_sha256": "731b64e378220a57f9b7515e3eff2c255827ff0b059b06b4b76478b33b0b5e61",
+      "width": 1904,
+      "height": 1890,
+      "alpha_source": "reference_crop"
+    }
+  ]
+}

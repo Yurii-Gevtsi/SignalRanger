@@ -166,6 +166,18 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void RopeWeapon_UsesDedicatedHookArt()
+        {
+            var ropeWeapon = Resources.Load<Texture2D>("UI/Weapons/rope");
+            var ropeHook = Resources.Load<Texture2D>("UI/Weapons/rope_shot");
+
+            Assert.IsNotNull(ropeWeapon);
+            Assert.IsNotNull(ropeHook);
+            Assert.AreNotSame(ropeWeapon, ropeHook);
+            Assert.AreEqual("rope_shot", ropeHook.name);
+        }
+
+        [Test]
         public void ElectroStatusOverlay_HasFourAnimationFrames()
         {
             for (var frame = 1; frame <= 4; frame++)
@@ -570,22 +582,77 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.AreEqual("Visuals/Arenas/Training/ship", theme.AdditionalDestructibleLayers[0].ResourcePath);
             Assert.AreEqual("Visuals/Arenas/Training/boxes", theme.AdditionalDestructibleLayers[1].ResourcePath);
             Assert.AreEqual("Visuals/Arenas/Training/rock", theme.AdditionalDestructibleLayers[2].ResourcePath);
-            Assert.AreEqual(1, theme.OverlayLayers.Count);
-            Assert.AreEqual("Visuals/Arenas/KillZones/LaserLine/laser_line", theme.OverlayLayers[0].ResourcePath);
-            Assert.IsFalse(theme.OverlayLayers[0].Solid);
+            Assert.AreEqual(0, theme.OverlayLayers.Count);
+            Assert.IsTrue(theme.CameraFrame.HasValue);
         }
 
         [Test]
-        public void DesertArenaTheme_UsesTheSharedLaserKillZone()
+        public void EveryArenaTheme_ProvidesAFrameForCameraAndKillZonePlacement()
         {
-            var arena = PrototypeArenaLibrary.CreateAll()[1];
-            var theme = BattleVisualThemeLibrary.ForArena(arena);
+            foreach (var arena in PrototypeArenaLibrary.CreateAll())
+            {
+                var theme = BattleVisualThemeLibrary.ForArena(arena);
 
-            Assert.IsNotNull(theme);
-            Assert.AreEqual(1, theme.OverlayLayers.Count);
-            Assert.AreEqual("Visuals/Arenas/KillZones/LaserLine/laser_line", theme.OverlayLayers[0].ResourcePath);
-            Assert.IsTrue(theme.KillZoneY.HasValue);
-            Assert.That(theme.KillZoneY.Value, Is.EqualTo(-10.2f).Within(0.001f));
+                Assert.IsNotNull(theme, arena.ArenaId);
+                Assert.IsTrue(theme.CameraFrame.HasValue, arena.ArenaId);
+                Assert.That(theme.CameraFrame.Value.width, Is.GreaterThan(0f), arena.ArenaId);
+                Assert.That(theme.CameraFrame.Value.height, Is.GreaterThan(0f), arena.ArenaId);
+                Assert.IsTrue(theme.CameraFrame.Value.Contains(arena.PlayerSpawn), arena.ArenaId);
+                Assert.IsTrue(theme.CameraFrame.Value.Contains(arena.OpponentSpawn), arena.ArenaId);
+            }
+        }
+
+        [Test]
+        public void DesertTheme_UsesSharedDownwardOffsetForTheCanyonWorld()
+        {
+            ArenaDefinition desert = null;
+            foreach (var arena in PrototypeArenaLibrary.CreateAll())
+            {
+                if (arena.ArenaId == "arena.desert-sci-fi")
+                {
+                    desert = arena;
+                    break;
+                }
+            }
+
+            Assert.IsNotNull(desert);
+            var theme = BattleVisualThemeLibrary.ForArena(desert);
+
+            Assert.That(theme.WorldOffset.x, Is.Zero.Within(0.001f));
+            Assert.That(theme.WorldOffset.y, Is.EqualTo(-1.225f).Within(0.001f));
+            Assert.That(theme.ArenaScale.x, Is.EqualTo(1.37f).Within(0.001f));
+            Assert.That(theme.ArenaScale.y, Is.EqualTo(1.37f).Within(0.001f));
+            Assert.That(theme.ArenaScalePivot.y, Is.EqualTo(theme.CameraFrame.Value.yMin).Within(0.001f));
+            Assert.That(theme.CameraTopPanAllowancePercent, Is.EqualTo(0.2f).Within(0.001f));
+            Assert.That(theme.KillZoneOffsetY, Is.EqualTo(1.225f).Within(0.001f));
+            Assert.That(
+                theme.CameraFrame.Value.center.y + 1f + theme.WorldOffset.y,
+                Is.EqualTo(2f).Within(0.001f));
+        }
+
+        [Test]
+        public void CameraFrameBottoms_AlignWithTheirArenaCanvasBottoms()
+        {
+            var expectedBottoms = new System.Collections.Generic.Dictionary<string, float>
+            {
+                ["arena.training-meadow"] = -5.05f,
+                ["arena.desert-sci-fi"] = -11.25f,
+                ["arena.forest"] = -7.61f,
+                ["arena.city"] = -8.1f,
+                ["arena.grib"] = -8.1f,
+                ["arena.laguna"] = -8.1f,
+                ["arena.monument"] = -8.1f,
+                ["arena.kraken"] = -8.1f,
+                ["arena.vines"] = -8.1f,
+                ["arena.robots"] = -8.1f
+            };
+
+            foreach (var arena in PrototypeArenaLibrary.CreateAll())
+            {
+                var frame = BattleVisualThemeLibrary.ForArena(arena).CameraFrame;
+                Assert.IsTrue(frame.HasValue, arena.ArenaId);
+                Assert.That(frame.Value.yMin, Is.EqualTo(expectedBottoms[arena.ArenaId]).Within(0.001f), arena.ArenaId);
+            }
         }
 
         [Test]
@@ -611,23 +678,53 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void CameraPanBounds_IncludeTheFullForegroundWidth()
+        public void CameraFrameZoomOutSize_ContainsTheWholeFrame()
         {
             var method = typeof(BattleSceneController).GetMethod(
-                "ExpandHorizontalCameraBounds",
+                "CalculateCameraSizeToContainBounds",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
             Assert.IsNotNull(method);
 
-            var result = (Rect)method.Invoke(null, new object[]
+            var result = (float)method.Invoke(null, new object[]
             {
-                Rect.MinMaxRect(-9.5f, -6f, 9.5f, 6.8f),
-                new Bounds(Vector3.zero, new Vector3(30f, 12f, 0f))
+                Rect.MinMaxRect(-21f, -8.1f, 21f, 15.525f),
+                16f / 9f
             });
 
-            Assert.That(result.xMin, Is.EqualTo(-15f).Within(0.001f));
-            Assert.That(result.xMax, Is.EqualTo(15f).Within(0.001f));
-            Assert.That(result.yMin, Is.EqualTo(-6f).Within(0.001f));
-            Assert.That(result.yMax, Is.EqualTo(6.8f).Within(0.001f));
+            Assert.That(result, Is.EqualTo(11.8125f).Within(0.001f));
+        }
+
+        [Test]
+        public void NarrowConfiguredFrame_ExpandsToTheActiveViewportAspect()
+        {
+            var method = typeof(BattleSceneController).GetMethod(
+                "ResolveCameraFrame",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            Assert.IsNotNull(method);
+
+            var frame = (Rect)method.Invoke(null, new object[]
+            {
+                Rect.MinMaxRect(-17.25f, -8.1f, 17.25f, 11.31f),
+                2.12f
+            });
+
+            Assert.That(frame.yMin, Is.EqualTo(-8.1f).Within(0.001f));
+            Assert.That(frame.width, Is.EqualTo(41.1492f).Within(0.001f));
+            Assert.That(frame.height, Is.EqualTo(19.41f).Within(0.001f));
+        }
+
+        [Test]
+        public void ArenaSpriteSeamOverdraw_ExpandsEachEdgeByTwoPixels()
+        {
+            var method = typeof(BattleSceneController).GetMethod(
+                "CalculateArenaSpriteSeamOverdraw",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            Assert.IsNotNull(method);
+
+            var scale = (Vector2)method.Invoke(null, new object[] { new Vector2(1000f, 500f) });
+
+            Assert.That(scale.x, Is.EqualTo(1.004f).Within(0.0001f));
+            Assert.That(scale.y, Is.EqualTo(1.008f).Within(0.0001f));
         }
 
         [Test]

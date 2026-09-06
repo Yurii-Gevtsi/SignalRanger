@@ -198,7 +198,8 @@
       "weapon.freeze": "Canhão Criogênico",
       "weapon.fire-gun": "Arma de Lava",
       "weapon.missle": "Foguete teleguiado",
-      "weapon.fpv-drone": "Drone FPV"
+      "weapon.fpv-drone": "Drone FPV",
+      "weapon.rope": "Corda"
     },
     "weaponDescription": {
       "weapon.impulse": "A carga padrão do reator do andróide — voa em arco e alcança o inimigo mesmo atrás de cobertura. Sem ponto fraco real, o que a torna a primeira arma que vale a pena levar para qualquer combate.",
@@ -217,7 +218,8 @@
       "weapon.freeze": "Causa dano e congela o alvo, primeiro bloqueando o movimento e depois desacelerando o andróide.",
       "weapon.fire-gun": "Dispara um jato de lava derretida — a primeira gota causa dano imediato, e o solo incandescente continua queimando por alguns segundos quem pisar nele.",
       "weapon.missle": "Você atira na direção do inimigo — a ogiva de busca cuida do resto da mira. Melhor em distâncias média e longa, onde a mira manual não é confiável.",
-      "weapon.fpv-drone": "Você assume o controle manual do drone e o pilota ao vivo, desviando de coberturas e armadilhas, direto para o casco do inimigo."
+      "weapon.fpv-drone": "Você assume o controle manual do drone e o pilota ao vivo, desviando de coberturas e armadilhas, direto para o casco do inimigo.",
+      "weapon.rope": "Dispare um gancho para o setor superior e fixe-o no terreno. Suba, desça e ganhe balanço antes de soltar a corda."
     },
     "weaponEvolutionName": {
       "double-impulse": "Impulso Duplo",

@@ -1,4 +1,5 @@
 using System.Linq;
+using Game.App;
 using Game.App.Content;
 using Game.Gameplay.Battle.Arenas;
 using NUnit.Framework;
@@ -15,9 +16,9 @@ namespace Game.Tests.EditMode.Progression
             var report = ContentValidationReport.Validate(content);
 
             Assert.That(report.Errors, Is.Empty, string.Join("\n", report.Errors));
-            Assert.That(content.Missions.Length, Is.EqualTo(14));
-            Assert.That(content.Arenas.Length, Is.GreaterThanOrEqualTo(6));
-            Assert.That(content.Chapters.Length, Is.EqualTo(5));
+            Assert.That(content.Missions.Length, Is.EqualTo(18));
+            Assert.That(content.Arenas.Length, Is.GreaterThanOrEqualTo(10));
+            Assert.That(content.Chapters.Length, Is.EqualTo(9));
             Assert.That(content.EnemyLoadouts.Length, Is.GreaterThanOrEqualTo(3));
             Assert.That(content.DifficultyProfiles.Select(profile => profile.ProfileId).Distinct().Count(),
                 Is.EqualTo(content.DifficultyProfiles.Length));
@@ -110,6 +111,46 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(forest.SpriteArenaVerticalScreenOffset, Is.EqualTo(0.15f));
             Assert.That(forest.LockCameraAtZoomOutLimit, Is.True);
             Assert.That(Resources.Load<Texture2D>("Visuals/Arenas/Backgrounds/Cosmos/cosmos"), Is.Not.Null);
+        }
+
+        [TestCase("chapter.monument", "mission.placeholder.monument", "arena.monument", 6)]
+        [TestCase("chapter.kraken", "mission.placeholder.kraken", "arena.kraken", 7)]
+        [TestCase("chapter.vines", "mission.placeholder.vines", "arena.vines", 8)]
+        [TestCase("chapter.robots", "mission.placeholder.robots", "arena.robots", 9)]
+        public void ImplementedPlanetPlaceholder_UsesThePlanetArena(string chapterId, string missionId, string arenaId, int arenaIndex)
+        {
+            var content = DefaultGameContentCatalog.Create();
+
+            Assert.That(content.TryGetChapter(chapterId, out var chapter), Is.True);
+            Assert.That(chapter.MissionIds, Is.EquivalentTo(new[] { missionId }));
+            Assert.That(content.TryGetMission(missionId, out var mission), Is.True);
+            Assert.That(mission.ArenaId, Is.EqualTo(arenaId));
+            Assert.That(content.ResolveArenaIndex(mission), Is.EqualTo(arenaIndex));
+        }
+
+        [Test]
+        public void EveryImplementedCampaignPlanet_OwnsOnlyMissionsForItsArena()
+        {
+            var content = DefaultGameContentCatalog.Create();
+
+            foreach (var sector in CampaignPlanetCatalog.Sectors)
+            {
+                foreach (var planet in sector.Planets)
+                {
+                    if (string.IsNullOrWhiteSpace(planet.ArenaId))
+                    {
+                        continue;
+                    }
+
+                    Assert.That(content.TryGetChapter(planet.ChapterId, out var chapter), Is.True, planet.ChapterId);
+                    Assert.That(chapter.MissionIds, Is.Not.Empty, planet.ChapterId);
+                    foreach (var missionId in chapter.MissionIds)
+                    {
+                        Assert.That(content.TryGetMission(missionId, out var mission), Is.True, missionId);
+                        Assert.That(mission.ArenaId, Is.EqualTo(planet.ArenaId), missionId);
+                    }
+                }
+            }
         }
     }
 }
