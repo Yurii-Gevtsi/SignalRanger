@@ -50,7 +50,6 @@ namespace Game.Gameplay.Battle.Weapons
         public bool IsValid => !string.IsNullOrWhiteSpace(_weaponId)
             && !string.IsNullOrWhiteSpace(_displayKey)
             && !string.IsNullOrWhiteSpace(_descriptionKey)
-            && !string.IsNullOrWhiteSpace(_iconId)
             && !string.IsNullOrWhiteSpace(_vfxId)
             && !string.IsNullOrWhiteSpace(_sfxId)
             && MaxPower > 0f

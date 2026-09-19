@@ -97,6 +97,7 @@ namespace Game.App
         private TMP_Text _cardEmptyLabel;
         private Button _battleButton;
         private TMP_Text _battleLockedLabel;
+        private ResourceInfoPopupController _resourceInfoPopup;
         private int _openPlanetIndex = -1;
         private string _focusMissionId = string.Empty;
 
@@ -139,6 +140,8 @@ namespace Game.App
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
+            MenuScreenInputShield.Create(root, "Campaign Input Shield");
+            _resourceInfoPopup = ResourceInfoPopupController.Create(root);
             CreateImage("Campaign Background", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, MenuResourceRoot + "campaign_menu", false, Color.white);
 
@@ -152,7 +155,6 @@ namespace Game.App
             EnlargeForPhone(titlePanel);
             CreateText("Campaign Title", titlePanel, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 new Vector2(-60f, -12f), new Vector2(-70f, 0f), 38, TextAlignmentOptions.Center, GameText.CampaignMapTitle());
-
             var settingsButton = CreateImageButton("Campaign Settings", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 SettingsButtonSize, SettingsButtonPosition, ShopResourceRoot + "settings_btn", () => SettingsScreenController.Open(null));
             EnlargeForPhone(settingsButton);
@@ -501,7 +503,8 @@ namespace Game.App
 
                 var missionIndex = missions[i];
                 var completed = IsMissionCompleted(missionIndex);
-                row.Title.text = $"{i + 1}. {ResolveMissionText(AppServices.Campaign?.GetMission(missionIndex))}";
+                var mission = AppServices.Campaign?.GetMission(missionIndex);
+                row.Title.text = GameText.CampaignMissionListRow(i + 1, ResolveMissionText(mission));
                 // Cleared missions read green, the one the player is on reads gold, and
                 // anything beyond it stays neutral.
                 row.Title.color = completed
@@ -526,9 +529,9 @@ namespace Game.App
         }
 
         /// <summary>
-        /// What the mission actually asks of the player. The short title reads as a bare
-        /// codename in a list, so the briefing text is shown instead, with the title kept
-        /// only as a fallback for missions that carry no description.
+        /// The localized requirement shown for a campaign mission. Each planet uses the
+        /// same three requirements, selected by difficulty, so no bespoke HP or terrain
+        /// condition is appended to the mission row.
         /// </summary>
         private static string ResolveMissionText(MissionDefinition mission)
         {
@@ -539,12 +542,12 @@ namespace Game.App
 
             if (!string.IsNullOrWhiteSpace(mission.Description))
             {
-                return GameText.MissionDescription(mission.MissionId, mission.Description);
+                return GameText.Localized(mission.DescriptionKey, mission.Description);
             }
 
             return string.IsNullOrWhiteSpace(mission.Title)
                 ? GameText.DefaultMissionDetails()
-                : GameText.MissionTitle(mission.MissionId, mission.Title);
+                : GameText.Localized(mission.DisplayNameKey, mission.Title);
         }
 
         private void CloseMissionCard()

@@ -6,9 +6,9 @@ using Game.Data.Save;
 namespace Game.Gameplay.Battle.Weapons
 {
     /// <summary>
-    /// How developed one side's weapons are in this battle: the rank/branch each one
-    /// fights at, plus the evolution mechanics and flat stat bonuses that follow from
-    /// it.
+    /// How developed one side's weapons are in this battle: the rank and selected
+    /// TTH choices each one fights at, plus legacy evolution mechanics when a saved
+    /// branch is present.
     /// <para>
     /// This exists so weapon development is a property of the combatant rather than a
     /// lookup into the player's save. The battle used to read

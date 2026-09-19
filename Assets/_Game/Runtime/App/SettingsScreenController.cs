@@ -40,6 +40,7 @@ namespace Game.App
         private GameObject _resetConfirmationRoot;
         private GameObject _languageOptionsRoot;
         private GameObject _canvasObject;
+        private ResourceInfoPopupController _resourceInfoPopup;
         private bool _isLanguagePickerOnly;
 
         private float _music;
@@ -148,6 +149,7 @@ namespace Game.App
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
+            _resourceInfoPopup = ResourceInfoPopupController.Create(root);
             var overlay = CreatePanel("Overlay", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, OverlayColor);
             var overlayButton = overlay.gameObject.AddComponent<Button>();
@@ -555,9 +557,17 @@ namespace Game.App
                 return;
             }
 
+            ReturnToMainMenuAfterLanguageChange();
+        }
+
+        private void ReturnToMainMenuAfterLanguageChange()
+        {
             HideResetConfirmation();
-            Destroy(_canvasObject);
-            Build();
+            _onClosed = null;
+            _onRestart = null;
+            _onMenu = null;
+            Destroy(gameObject);
+            AppServices.SceneLoader.Load(GameSceneNames.Menu);
         }
 
         private void HideLanguageOptions()
@@ -687,7 +697,7 @@ namespace Game.App
         {
             var rect = CreateRect("Close Language Picker", parent, Vector2.zero, Vector2.one,
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
-            rect.offsetMin = new Vector2(450f, 620f);
+            rect.offsetMin = new Vector2(900f, 600f);
             rect.offsetMax = new Vector2(0f, 0f);
             var hitArea = rect.gameObject.AddComponent<Image>();
             hitArea.sprite = _whiteSprite;

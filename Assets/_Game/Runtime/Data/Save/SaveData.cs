@@ -358,13 +358,23 @@ namespace Game.Data.Save
         public int rank;
         public int branch;
         public int blueprints;
+        /// <summary>
+        /// One player-selected TTH for each purchased rank. Older saves may leave
+        /// this empty; the progression resolver then derives a compatible legacy
+        /// view from the old catalog nodes until the next purchase is made.
+        /// </summary>
+        public List<SaveWeaponUpgradeChoiceData> upgradeChoices;
+        /// <summary>Paid evolution selected independently at ranks 5 and 10.</summary>
+        public List<SaveWeaponEvolutionChoiceData> evolutionChoices;
+        /// <summary>How many paid steps each selected evolution has received.</summary>
+        public List<SaveWeaponSpecialUpgradeData> specialUpgrades;
         /// <summary>Increments on reset so a repurchased rank gets a new ledger id.</summary>
         public int resetCycle;
 
         public void EnsureDefaults()
         {
             weaponId ??= string.Empty;
-            rank = rank < 1 ? 1 : rank > 10 ? 10 : rank;
+            rank = rank < 1 ? 1 : rank > 60 ? 60 : rank;
             branch = branch < 0 ? 0 : branch > 2 ? 2 : branch;
             if (rank < 5)
             {
@@ -376,11 +386,53 @@ namespace Game.Data.Save
                 blueprints = 0;
             }
 
+            upgradeChoices ??= new List<SaveWeaponUpgradeChoiceData>();
+            upgradeChoices.RemoveAll(choice => choice == null
+                || choice.rank < 2
+                || choice.rank > 60
+                || choice.path < 1
+                || choice.path > 4);
+
+            evolutionChoices ??= new List<SaveWeaponEvolutionChoiceData>();
+            evolutionChoices.RemoveAll(choice => choice == null
+                || (choice.rank != 5 && choice.rank != 10)
+                || string.IsNullOrWhiteSpace(choice.optionId));
+
+            specialUpgrades ??= new List<SaveWeaponSpecialUpgradeData>();
+            specialUpgrades.RemoveAll(upgrade => upgrade == null
+                || (upgrade.rank != 5 && upgrade.rank != 10)
+                || upgrade.purchaseCount < 1);
+            for (var index = 0; index < specialUpgrades.Count; index++)
+            {
+                specialUpgrades[index].purchaseCount = Math.Min(4, specialUpgrades[index].purchaseCount);
+            }
+
             if (resetCycle < 0)
             {
                 resetCycle = 0;
             }
         }
+    }
+
+    [Serializable]
+    public sealed class SaveWeaponUpgradeChoiceData
+    {
+        public int rank;
+        public int path;
+    }
+
+    [Serializable]
+    public sealed class SaveWeaponEvolutionChoiceData
+    {
+        public int rank;
+        public string optionId;
+    }
+
+    [Serializable]
+    public sealed class SaveWeaponSpecialUpgradeData
+    {
+        public int rank;
+        public int purchaseCount;
     }
 
     [Serializable]

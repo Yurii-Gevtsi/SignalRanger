@@ -33,9 +33,7 @@ namespace Game.App.Content
                     {
                         "mission.training.01",
                         "mission.training.02",
-                        "mission.training.03",
-                        "mission.training.04",
-                        "mission.training.05"
+                        "mission.training.03"
                     },
                     new[]
                     {
@@ -59,9 +57,7 @@ namespace Game.App.Content
                     GameText.Localized("campaignText.chapter.tactical-tools.summary", string.Empty),
                     new[]
                     {
-                        "mission.training.06",
-                        "mission.training.07",
-                        "mission.training.08"
+                        "mission.training.06", "mission.training.07", "mission.training.08"
                     },
                     new[]
                     {
@@ -82,37 +78,38 @@ namespace Game.App.Content
                     "chapter.city",
                     GameText.Localized("campaign.defaultTitle", string.Empty),
                     GameText.Localized("campaign.defaultSummary", string.Empty),
-                    new[] { "mission.training.09", "mission.training.10" },
+                    new[] { "mission.training.09", "mission.training.10", "mission.training.15" },
                     new[] { "tutorial.review" },
                     new[] { "weapon.blaster-caset", "weapon.granata", "weapon.bur", "weapon.c4" }),
                 CampaignChapterDefinition.CreateRuntime(
                     "chapter.grib",
                     GameText.Localized("campaign.defaultTitle", string.Empty),
                     GameText.Localized("campaign.defaultSummary", string.Empty),
-                    new[] { "mission.training.11", "mission.training.12" },
+                    new[] { "mission.training.11", "mission.training.12", "mission.training.16" },
                     new[] { "tutorial.review" },
                     new[] { "weapon.granata", "weapon.bur", "weapon.mine", "weapon.heal", "weapon.teleport" }),
                 CampaignChapterDefinition.CreateRuntime(
                     "chapter.laguna",
                     GameText.Localized("campaign.defaultTitle", string.Empty),
                     GameText.Localized("campaign.defaultSummary", string.Empty),
-                    new[] { "mission.training.13", "mission.training.14" },
+                    new[] { "mission.training.13", "mission.training.14", "mission.training.17" },
                     new[] { "tutorial.review" },
                     new[] { "weapon.granata", "weapon.bur", "weapon.c4", "weapon.heal", "weapon.teleport" }),
-                CreatePlaceholderChapter("chapter.monument", "mission.placeholder.monument"),
-                CreatePlaceholderChapter("chapter.kraken", "mission.placeholder.kraken"),
-                CreatePlaceholderChapter("chapter.vines", "mission.placeholder.vines"),
-                CreatePlaceholderChapter("chapter.robots", "mission.placeholder.robots")
+                CreatePlaceholderChapter("chapter.monument", "mission.placeholder.monument", "mission.placeholder.monument.02", "mission.placeholder.monument.03"),
+                CreatePlaceholderChapter("chapter.kraken", "mission.placeholder.kraken", "mission.placeholder.kraken.02", "mission.placeholder.kraken.03"),
+                CreatePlaceholderChapter("chapter.vines", "mission.placeholder.vines", "mission.placeholder.vines.02", "mission.placeholder.vines.03"),
+                CreatePlaceholderChapter("chapter.robots", "mission.placeholder.robots", "mission.placeholder.robots.02", "mission.placeholder.robots.03")
             };
         }
 
-        private static CampaignChapterDefinition CreatePlaceholderChapter(string chapterId, string missionId)
+        private static CampaignChapterDefinition CreatePlaceholderChapter(string chapterId, string firstMissionId,
+            string secondMissionId, string thirdMissionId)
         {
             return CampaignChapterDefinition.CreateRuntime(
                 chapterId,
                 GameText.Localized("campaign.defaultTitle", string.Empty),
                 GameText.Localized("campaign.defaultSummary", string.Empty),
-                new[] { missionId },
+                new[] { firstMissionId, secondMissionId, thirdMissionId },
                 System.Array.Empty<string>(),
                 new[] { "weapon.impulse" });
         }

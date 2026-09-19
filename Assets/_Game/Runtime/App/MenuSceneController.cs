@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Core;
+using Game.Core.Modes;
 using Game.Core.Localization;
 using Game.Data.Progression;
 using Game.Data.Save;
@@ -76,6 +77,7 @@ namespace Game.App
         private GameObject _canvasObject;
         private GameObject _campaignCardOverlay;
         private GameObject _campaignSectorProgressDialog;
+        private ResourceInfoPopupController _resourceInfoPopup;
         private RectTransform _campaignModeContent;
         private readonly List<(Image Image, TMP_Text Label)> _campaignModeTabs = new();
         private CampaignModeTab _selectedCampaignMode;
@@ -105,6 +107,7 @@ namespace Game.App
 
         public static void EnsureCreated()
         {
+            ClearStaleShopScreen();
             if (FindAnyObjectByType<MenuSceneController>() != null)
             {
                 return;
@@ -112,6 +115,19 @@ namespace Game.App
 
             var root = new GameObject("Menu Scene Controller");
             root.AddComponent<MenuSceneController>();
+        }
+
+        private static void ClearStaleShopScreen()
+        {
+            var staleScreens = FindObjectsByType<ShopScreenController>(
+                FindObjectsInactive.Include, FindObjectsSortMode.None);
+            for (var i = 0; i < staleScreens.Length; i++)
+            {
+                if (staleScreens[i] != null)
+                {
+                    Destroy(staleScreens[i].gameObject);
+                }
+            }
         }
 
         private void Awake()
@@ -138,14 +154,22 @@ namespace Game.App
 
         private void Start()
         {
-            // Arriving from a finished battle via "continue": go straight back to the
-            // campaign map with that mission's planet open. Runs here rather than in
-            // Awake so the bootstrapper has already banked the mission completion and
-            // the card shows the freshly cleared mission as done.
+            // Arriving from a finished story battle: go straight back to the campaign
+            // map with that mission's planet open. Runs here rather than in Awake so
+            // the bootstrapper has already banked the mission completion and the card
+            // shows the freshly cleared mission as done.
             var focusMissionId = GameSessionContext.ConsumePendingCampaignMissionView();
             if (!string.IsNullOrWhiteSpace(focusMissionId))
             {
                 OpenCampaignCardForMission(focusMissionId);
+                return;
+            }
+
+            if (GameSessionContext.TryConsumePendingBattleModeView(out var battleMode))
+            {
+                ShowCampaignCard(
+                    restoreLastPlayedPlanet: false,
+                    initialMode: ResolveCampaignModeTab(battleMode));
                 return;
             }
 
@@ -208,6 +232,7 @@ namespace Game.App
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
+            _resourceInfoPopup = ResourceInfoPopupController.Create(root);
             CreateImage("Main Background", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, "main_scr_albom", false, null);
             CreateImage("Menu Character", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
@@ -245,24 +270,21 @@ namespace Game.App
                 46, TextAlignmentOptions.Center, ResolvePlayerName(saveData), GameTextRole.DisplayTitle);
             playerName.rectTransform.sizeDelta = new Vector2(310f, 90f);
             playerName.rectTransform.anchoredPosition = new Vector2(-145f, 0f);
-            var commanderLevel = CommanderProgressionTable.GetLevel(saveData?.profile?.commanderExperience ?? 0);
-            var levelLabel = CreateLabel("Player Level", profile.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                24, TextAlignmentOptions.Center, GameText.PlayerLevel(commanderLevel), GameTextRole.Caption);
-            levelLabel.color = SciFiTextStyle.CyanText;
-            levelLabel.rectTransform.sizeDelta = new Vector2(130f, 60f);
-            levelLabel.rectTransform.anchoredPosition = new Vector2(90f, 0f);
+            MenuPlayerLevelPanel.Create(root, "Player Level Panel", new Vector2(0f, -10f), new Vector2(520f, 172f));
 
             CreateImageButton("Settings Button", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 SettingsSize, SettingsPosition, "settings_btn", OpenSettings);
 
             var coins = CreateImage("Coins Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(372f, 155f), new Vector2(-486f, -20f), "Coin_panel", true, null);
+            _resourceInfoPopup.BindResourceIcon(coins.GetComponent<Image>(), ResourceInfoKind.Coins);
             var coinsValue = CreateLabel("Coins Value", coins.transform, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 35, TextAlignmentOptions.Center, softCurrency.ToString(), GameTextRole.CurrencyGold);
             CurrencyBalanceText.Bind(coinsValue, false);
 
             var premium = CreateImage("Premium Panel", root, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(372f, 155f), new Vector2(-166f, -20f), "vip_coins_panel", true, null);
+            _resourceInfoPopup.BindResourceIcon(premium.GetComponent<Image>(), ResourceInfoKind.Crystals);
             var premiumValue = CreateLabel("Premium Value", premium.transform, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 35, TextAlignmentOptions.Center, premiumCurrency.ToString(), GameTextRole.CurrencyCrystal);
             CurrencyBalanceText.Bind(premiumValue, true);
@@ -344,7 +366,9 @@ namespace Game.App
             ShowCampaignCard(restoreLastPlayedPlanet: false);
         }
 
-        private void ShowCampaignCard(bool restoreLastPlayedPlanet = true)
+        private void ShowCampaignCard(
+            bool restoreLastPlayedPlanet = true,
+            CampaignModeTab initialMode = CampaignModeTab.Map)
         {
             if (_campaignCardOverlay != null || _canvasObject == null)
             {
@@ -373,7 +397,17 @@ namespace Game.App
             _campaignModeContent = CreateRect("Campaign Mode Content", card, new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), CampaignModeContentSize, Vector2.zero);
             CreateCampaignCardCloseButton(card);
-            SelectCampaignMode(CampaignModeTab.Map);
+            SelectCampaignMode(initialMode);
+        }
+
+        private static CampaignModeTab ResolveCampaignModeTab(BattleMode mode)
+        {
+            return mode switch
+            {
+                BattleMode.Raid => CampaignModeTab.Raid,
+                BattleMode.Pvp => CampaignModeTab.Arena,
+                _ => CampaignModeTab.Map
+            };
         }
 
         private void BuildCampaignModeTabs(Component parent)
@@ -620,7 +654,7 @@ namespace Game.App
             number.fontWeight = FontWeight.Bold;
 
             CreateModeText(card, $"Campaign Mission {missionIndex + 1} Description",
-                GameText.MissionDescription(mission.MissionId, string.Empty), new Vector2(-20f, -5f), 20,
+                GameText.Localized(mission.DescriptionKey, mission.Description), new Vector2(-20f, -5f), 20,
                 TextAlignmentOptions.TopLeft, darkCardText, 470f);
 
             if (completed)

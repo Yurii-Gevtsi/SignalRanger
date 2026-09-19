@@ -174,8 +174,8 @@ namespace Game.App
                 mission == null || mission.SupportDropsEnabled,
                 mission != null
                     ? (string.IsNullOrWhiteSpace(mission.Description)
-                        ? GameText.MissionTitle(mission.MissionId, mission.Title)
-                        : GameText.MissionDescription(mission.MissionId, mission.Description))
+                        ? GameText.Localized(mission.DisplayNameKey, mission.Title)
+                        : GameText.Localized(mission.DescriptionKey, mission.Description))
                     : string.Empty);
             GameSessionContext.SelectLoadout(_saveData?.inventory?.selectedLoadoutWeaponIds?.ToArray());
         }

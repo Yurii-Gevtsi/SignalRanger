@@ -1,4 +1,5 @@
 using Game.Data.Progression;
+using Game.Data.Save;
 using UnityEngine;
 
 namespace Game.Gameplay.Battle.Weapons
@@ -19,6 +20,12 @@ namespace Game.Gameplay.Battle.Weapons
             }
 
             var branchCode = branch == WeaponUpgradeBranch.A ? "A" : "B";
+            var canonicalSkin = ResolveCanonicalFirstSpecialSkin(iconId, branch);
+            if (!string.IsNullOrWhiteSpace(canonicalSkin)
+                && Resources.Load<Texture2D>($"UI/Weapons/{canonicalSkin}") != null)
+            {
+                return $"UI/Weapons/{canonicalSkin}";
+            }
             var candidates = new[]
             {
                 $"UI/Weapons/{iconId}_{rank}{branchCode}",
@@ -58,9 +65,49 @@ namespace Game.Gameplay.Battle.Weapons
                 return baseResource;
             }
 
-            var evolvedRank = rank >= 10 ? 10 : 5;
-            var evolved = ResolveEvolutionIconResource(iconId, evolvedRank, branch);
+            var evolved = ResolveEvolutionIconResource(iconId, 5, branch);
             return string.IsNullOrWhiteSpace(evolved) ? baseResource : evolved;
+        }
+
+        public static string ResolveCurrentIconResource(
+            string iconId,
+            WeaponProgressionDefinition definition,
+            SaveWeaponProgressData progress)
+        {
+            if (string.IsNullOrWhiteSpace(iconId))
+            {
+                return string.Empty;
+            }
+
+            // The visual identity is locked by the first selected special. A later
+            // rank-10 special adds its effect but must not replace the established skin.
+            if (WeaponEvolutionSelectionResolver.TryGetChoice(definition, progress, 5, out var option))
+            {
+                var evolved = ResolveEvolutionIconResource(iconId, 5, option.LegacyBranch);
+                if (!string.IsNullOrWhiteSpace(evolved))
+                {
+                    return evolved;
+                }
+            }
+
+            return $"UI/Weapons/{iconId}";
+        }
+
+        private static string ResolveCanonicalFirstSpecialSkin(string iconId, WeaponUpgradeBranch branch)
+        {
+            return iconId switch
+            {
+                "impulse" => "impulse_5_10_B",
+                "granata" => "granata_5_10_B",
+                "mine_off" => "mine_off_5_10_A",
+                "heal" => branch == WeaponUpgradeBranch.B ? "heal_5_10_B" : "heal_5_10_A",
+                "mortira" => branch == WeaponUpgradeBranch.B ? "mortira_5_10_B" : "mortira_5_10_A",
+                "emp" => "emp_5_10_B",
+                "freeze" => "freeze_5_10_B",
+                "fire_gun" => "fire_gun_5_10_A",
+                "toxic" => "toxic_5_10_A",
+                _ => string.Empty
+            };
         }
     }
 }

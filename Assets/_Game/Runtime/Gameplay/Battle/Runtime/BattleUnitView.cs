@@ -43,7 +43,7 @@ namespace Game.Gameplay.Battle.Runtime
         private Vector3 _baseScale;
         private int _artFacingDirectionX = 1;
         private Transform _visualRoot;
-        private float _weaponScaleMultiplier = 1f;
+        private Vector2 _weaponScaleMultiplier = Vector2.one;
         private Vector3 _weaponMountPosition = WeaponMountPosition;
         private float _weaponAimAngleOffset;
         private Vector3 _visualRootBaseScale = Vector3.one;
@@ -332,14 +332,18 @@ namespace Game.Gameplay.Battle.Runtime
             UpdateWeaponMountPosition();
         }
 
-        public void SetWeaponPresentation(float scaleMultiplier, Vector2 localPosition, float aimAngleOffset)
+        public void SetWeaponPresentation(Vector2 scaleMultiplier, Vector2 localPosition, float aimAngleOffset)
         {
             EnsureWeaponMount();
-            _weaponScaleMultiplier = Mathf.Max(0.1f, scaleMultiplier);
+            _weaponScaleMultiplier = new Vector2(
+                Mathf.Max(0.1f, scaleMultiplier.x),
+                Mathf.Max(0.1f, scaleMultiplier.y));
             _weaponMountPosition = new Vector3(localPosition.x, localPosition.y, 0f);
             _weaponAimAngleOffset = aimAngleOffset;
-            var scale = WeaponVisualScale * _weaponScaleMultiplier;
-            _weaponMount.localScale = new Vector3(scale, scale, 1f);
+            _weaponMount.localScale = new Vector3(
+                WeaponVisualScale * _weaponScaleMultiplier.x,
+                WeaponVisualScale * _weaponScaleMultiplier.y,
+                1f);
             UpdateWeaponMountPosition();
         }
 
@@ -497,8 +501,10 @@ namespace Game.Gameplay.Battle.Runtime
             var mountObject = new GameObject("Weapon Mount");
             _weaponMount = mountObject.transform;
             _weaponMount.SetParent(transform, false);
-            var scale = WeaponVisualScale * _weaponScaleMultiplier;
-            _weaponMount.localScale = new Vector3(scale, scale, 1f);
+            _weaponMount.localScale = new Vector3(
+                WeaponVisualScale * _weaponScaleMultiplier.x,
+                WeaponVisualScale * _weaponScaleMultiplier.y,
+                1f);
             _weaponRenderer = mountObject.AddComponent<SpriteRenderer>();
             _weaponRenderer.sortingOrder = 24;
             _weaponRenderer.color = Color.white;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Data.Save;
 
 namespace Game.Data.Progression
 {
@@ -31,6 +32,20 @@ namespace Game.Data.Progression
         Charge
     }
 
+    /// <summary>
+    /// The four player-facing upgrade choices. A choice is recorded for every
+    /// purchased weapon rank, so the player can select a different parameter on
+    /// every level-up instead of following a fixed branch.
+    /// </summary>
+    public enum WeaponUpgradePath
+    {
+        None = 0,
+        Core = 1,
+        Aim = 2,
+        Loadout = 3,
+        Radius = 4
+    }
+
     public readonly struct WeaponUpgradeNodeDefinition
     {
         public WeaponUpgradeNodeDefinition(
@@ -41,7 +56,7 @@ namespace Game.Data.Progression
             string mechanicId = "",
             string evolutionName = "")
         {
-            Rank = rank < 1 ? 1 : rank > 10 ? 10 : rank;
+            Rank = rank < 1 ? 1 : rank > 60 ? 60 : rank;
             Branch = branch;
             Stat = stat;
             Amount = amount;
@@ -55,7 +70,27 @@ namespace Game.Data.Progression
         public int Amount { get; }
         public string MechanicId { get; }
         public string EvolutionName { get; }
-        public bool IsEvolution => Rank == 5 || Rank == 10;
+        public bool IsEvolution => (Rank == 5 || Rank == 10) && !string.IsNullOrWhiteSpace(MechanicId);
+    }
+
+    /// <summary>
+    /// A paid, rank-specific weapon evolution. Unlike the legacy A/B branch this
+    /// is an independent choice at each milestone, so rank 10 may replace rank 5.
+    /// </summary>
+    public readonly struct WeaponEvolutionOptionDefinition
+    {
+        public WeaponEvolutionOptionDefinition(WeaponUpgradeNodeDefinition node)
+        {
+            Rank = node.Rank;
+            Id = node.MechanicId ?? string.Empty;
+            LegacyBranch = node.Branch;
+            EvolutionName = node.EvolutionName ?? string.Empty;
+        }
+
+        public int Rank { get; }
+        public string Id { get; }
+        public WeaponUpgradeBranch LegacyBranch { get; }
+        public string EvolutionName { get; }
     }
 
     public sealed class WeaponProgressionDefinition
@@ -70,7 +105,13 @@ namespace Game.Data.Progression
             bool grantedAtStart,
             string branchAId,
             string branchBId,
-            WeaponUpgradeNodeDefinition[] nodes)
+            WeaponUpgradeNodeDefinition[] nodes,
+            int coreUpgradeLimit = 4,
+            int aimUpgradeLimit = 4,
+            int loadoutUpgradeLimit = 4,
+            int radiusUpgradeLimit = 4,
+            int special5PurchaseCount = 0,
+            int special10PurchaseCount = 0)
         {
             WeaponId = weaponId ?? string.Empty;
             RequiredCommanderLevel = requiredCommanderLevel < 1 ? 1 : requiredCommanderLevel;
@@ -80,6 +121,12 @@ namespace Game.Data.Progression
             BranchAId = branchAId ?? string.Empty;
             BranchBId = branchBId ?? string.Empty;
             _nodes = nodes ?? Array.Empty<WeaponUpgradeNodeDefinition>();
+            CoreUpgradeLimit = Math.Max(0, coreUpgradeLimit);
+            AimUpgradeLimit = Math.Max(0, aimUpgradeLimit);
+            LoadoutUpgradeLimit = Math.Max(0, loadoutUpgradeLimit);
+            RadiusUpgradeLimit = Math.Max(0, radiusUpgradeLimit);
+            Special5PurchaseCount = Math.Max(0, special5PurchaseCount);
+            Special10PurchaseCount = Math.Max(0, special10PurchaseCount);
         }
 
         public string WeaponId { get; }
@@ -89,8 +136,170 @@ namespace Game.Data.Progression
         public bool GrantedAtStart { get; }
         public string BranchAId { get; }
         public string BranchBId { get; }
+        public int CoreUpgradeLimit { get; }
+        public int AimUpgradeLimit { get; }
+        public int LoadoutUpgradeLimit { get; }
+        public int RadiusUpgradeLimit { get; }
+        public int Special5PurchaseCount { get; }
+        public int Special10PurchaseCount { get; }
+        public int TotalBaseUpgradeLimit => CoreUpgradeLimit + AimUpgradeLimit + LoadoutUpgradeLimit + RadiusUpgradeLimit;
+        public int MaxRank => 1 + TotalBaseUpgradeLimit + Special5PurchaseCount + Special10PurchaseCount;
         public IReadOnlyList<WeaponUpgradeNodeDefinition> Nodes => _nodes;
-        public bool HasDevelopment => _nodes.Length > 0;
+        public bool HasDevelopment => TotalBaseUpgradeLimit > 0 || Special5PurchaseCount > 0 || Special10PurchaseCount > 0;
+
+        public int GetSpecialPurchaseLimit(int milestoneRank)
+        {
+            return milestoneRank switch
+            {
+                5 => Special5PurchaseCount,
+                10 => Special10PurchaseCount,
+                _ => 0
+            };
+        }
+
+        public int GetSpecialPurchaseCount(SaveWeaponProgressData progress, int milestoneRank)
+        {
+            if (progress == null || GetSpecialPurchaseLimit(milestoneRank) <= 0)
+            {
+                return 0;
+            }
+
+            if (progress.specialUpgrades != null)
+            {
+                for (var index = 0; index < progress.specialUpgrades.Count; index++)
+                {
+                    var upgrade = progress.specialUpgrades[index];
+                    if (upgrade != null && upgrade.rank == milestoneRank)
+                    {
+                        return Math.Clamp(upgrade.purchaseCount, 0, GetSpecialPurchaseLimit(milestoneRank));
+                    }
+                }
+            }
+
+            // Saves created before repeatable special steps existed already retain the
+            // selected option. Treat that one-time choice as the first paid step.
+            return WeaponEvolutionSelectionResolver.TryGetChoice(this, progress, milestoneRank, out _)
+                ? 1
+                : 0;
+        }
+
+        public int GetBaseUpgradeLimit(WeaponUpgradePath path)
+        {
+            return path switch
+            {
+                WeaponUpgradePath.Core => CoreUpgradeLimit,
+                WeaponUpgradePath.Aim => AimUpgradeLimit,
+                WeaponUpgradePath.Loadout => LoadoutUpgradeLimit,
+                WeaponUpgradePath.Radius => RadiusUpgradeLimit,
+                _ => 0
+            };
+        }
+
+        public int CountBaseUpgrades(SaveWeaponProgressData progress, WeaponUpgradePath path)
+        {
+            if (progress == null || !WeaponUpgradeEconomy.IsValidPath(path))
+            {
+                return 0;
+            }
+
+            var count = 0;
+            for (var rank = 2; rank <= progress.rank; rank++)
+            {
+                if (TryGetRecordedPath(progress, rank, out var recordedPath))
+                {
+                    count += recordedPath == path ? 1 : 0;
+                    continue;
+                }
+
+                if (TryGetNode(rank, (WeaponUpgradeBranch)progress.branch, out var node)
+                    && !node.IsEvolution && ResolveBasePath(node.Stat) == path)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private static bool TryGetRecordedPath(SaveWeaponProgressData progress, int rank,
+            out WeaponUpgradePath path)
+        {
+            if (progress.upgradeChoices != null)
+            {
+                for (var index = 0; index < progress.upgradeChoices.Count; index++)
+                {
+                    var choice = progress.upgradeChoices[index];
+                    if (choice != null && choice.rank == rank
+                        && Enum.IsDefined(typeof(WeaponUpgradePath), choice.path)
+                        && choice.path != (int)WeaponUpgradePath.None)
+                    {
+                        path = (WeaponUpgradePath)choice.path;
+                        return true;
+                    }
+                }
+            }
+
+            path = WeaponUpgradePath.None;
+            return false;
+        }
+
+        private static WeaponUpgradePath ResolveBasePath(WeaponUpgradeStat stat)
+        {
+            return stat switch
+            {
+                WeaponUpgradeStat.Damage => WeaponUpgradePath.Core,
+                WeaponUpgradeStat.Accuracy => WeaponUpgradePath.Aim,
+                WeaponUpgradeStat.Range => WeaponUpgradePath.Aim,
+                WeaponUpgradeStat.Ammo => WeaponUpgradePath.Loadout,
+                WeaponUpgradeStat.ProjectileCount => WeaponUpgradePath.Loadout,
+                WeaponUpgradeStat.ImpactRadius => WeaponUpgradePath.Radius,
+                _ => WeaponUpgradePath.None
+            };
+        }
+
+        public bool HasEvolutionOptions
+        {
+            get
+            {
+                for (var index = 0; index < _nodes.Length; index++)
+                {
+                    if (_nodes[index].IsEvolution && !string.IsNullOrWhiteSpace(_nodes[index].MechanicId))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public IReadOnlyList<WeaponEvolutionOptionDefinition> GetEvolutionOptions(int rank)
+        {
+            var options = new List<WeaponEvolutionOptionDefinition>();
+            for (var index = 0; index < _nodes.Length; index++)
+            {
+                var node = _nodes[index];
+                if (node.Rank == rank && node.IsEvolution && !string.IsNullOrWhiteSpace(node.MechanicId))
+                {
+                    options.Add(new WeaponEvolutionOptionDefinition(node));
+                }
+            }
+            return options;
+        }
+
+        public bool TryGetEvolutionOption(int rank, string optionId, out WeaponEvolutionOptionDefinition option)
+        {
+            var options = GetEvolutionOptions(rank);
+            for (var index = 0; index < options.Count; index++)
+            {
+                if (string.Equals(options[index].Id, optionId, StringComparison.Ordinal))
+                {
+                    option = options[index];
+                    return true;
+                }
+            }
+            option = default;
+            return false;
+        }
 
         public bool HasBranch(WeaponUpgradeBranch branch)
         {
@@ -126,50 +335,50 @@ namespace Game.Data.Progression
 
     public readonly struct WeaponUpgradeCost
     {
-        public WeaponUpgradeCost(int rank, int credits, int blueprints)
+        public WeaponUpgradeCost(int rank, int credits, int blueprints, int crystals = 0)
         {
             Rank = rank;
             Credits = credits < 0 ? 0 : credits;
             Blueprints = blueprints < 0 ? 0 : blueprints;
+            Crystals = crystals < 0 ? 0 : crystals;
         }
 
         public int Rank { get; }
         public int Credits { get; }
         public int Blueprints { get; }
+        public int Crystals { get; }
     }
 
     public static class WeaponUpgradeEconomy
     {
         private static readonly int[] CommanderLevelOffsets =
         {
-            0,  // Rank 2: learn the weapon's first refinement at its unlock level.
-            1,  // Rank 3
-            2,  // Rank 4
-            3,  // Rank 5: choose an evolution.
-            5,  // Rank 6
-            7,  // Rank 7
-            9,  // Rank 8
-            12, // Rank 9
-            15  // Rank 10: capstone evolution.
+            0, 1, 2, 3, 5, 7, 9, 12, 15
         };
 
         private static readonly WeaponUpgradeCost[] Costs =
         {
-            new(2, 300, 10),
-            new(3, 500, 15),
-            new(4, 800, 25),
-            new(5, 1200, 40),
-            new(6, 1800, 60),
-            new(7, 2500, 80),
-            new(8, 3500, 110),
-            new(9, 5000, 150),
-            new(10, 7000, 220)
+            new(2, 300, 10, 3),
+            new(3, 500, 15, 5),
+            new(4, 800, 25, 8),
+            new(5, 1200, 40, 12),
+            new(6, 1800, 60, 18),
+            new(7, 2500, 80, 25),
+            new(8, 3500, 110, 35),
+            new(9, 5000, 150, 50),
+            new(10, 7000, 220, 70)
         };
 
         public static IReadOnlyList<WeaponUpgradeCost> All => Costs;
 
         public static bool TryGetCost(int targetRank, out WeaponUpgradeCost cost)
         {
+            if (targetRank < 2)
+            {
+                cost = default;
+                return false;
+            }
+
             for (var index = 0; index < Costs.Length; index++)
             {
                 if (Costs[index].Rank == targetRank)
@@ -179,8 +388,50 @@ namespace Game.Data.Progression
                 }
             }
 
-            cost = default;
-            return false;
+            var plateau = Costs[Costs.Length - 1];
+            cost = new WeaponUpgradeCost(targetRank, plateau.Credits, plateau.Blueprints, plateau.Crystals);
+            return true;
+        }
+
+        /// <summary>
+        /// Returns the cost for a specific TTH choice. Core and Loadout are the
+        /// premium upgrade paths, Aim is the baseline, and Radius is the cheaper
+        /// path. The base rank curve remains the single source of truth for pacing.
+        /// </summary>
+        public static bool TryGetCost(int targetRank, WeaponUpgradePath path, out WeaponUpgradeCost cost)
+        {
+            if (!TryGetCost(targetRank, out var baseCost) || !IsValidPath(path))
+            {
+                cost = default;
+                return false;
+            }
+
+            cost = baseCost;
+            return true;
+        }
+
+        public static bool TryGetSpecialCost(int targetRank, int milestoneRank, bool isInitialChoice,
+            out WeaponUpgradeCost cost)
+        {
+            if (!TryGetCost(targetRank, out var baseCost))
+            {
+                cost = default;
+                return false;
+            }
+
+            var multiplier = isInitialChoice
+                ? milestoneRank == 10 ? 2.5f : 1.8f
+                : 1f;
+            cost = new WeaponUpgradeCost(targetRank,
+                (int)Math.Ceiling(baseCost.Credits * multiplier),
+                (int)Math.Ceiling(baseCost.Blueprints * multiplier),
+                (int)Math.Ceiling(baseCost.Crystals * multiplier));
+            return true;
+        }
+
+        public static bool IsValidPath(WeaponUpgradePath path)
+        {
+            return path >= WeaponUpgradePath.Core && path <= WeaponUpgradePath.Radius;
         }
 
         /// <summary>
@@ -191,12 +442,12 @@ namespace Game.Data.Progression
         {
             var credits = 0;
             var blueprints = 0;
-            for (var index = 0; index < Costs.Length; index++)
+            for (var targetRank = 2; targetRank <= currentRank; targetRank++)
             {
-                if (Costs[index].Rank <= currentRank)
+                if (TryGetCost(targetRank, out var cost))
                 {
-                    credits += Costs[index].Credits;
-                    blueprints += Costs[index].Blueprints;
+                    credits += cost.Credits;
+                    blueprints += cost.Blueprints;
                 }
             }
 
@@ -218,93 +469,85 @@ namespace Game.Data.Progression
 
             return definition.RequiredCommanderLevel + CommanderLevelOffsets[offsetIndex];
         }
+
+        public static int GetFreeChoiceRequiredCommanderLevel(
+            WeaponProgressionDefinition definition,
+            int targetRank)
+        {
+            if (definition == null)
+            {
+                return 1;
+            }
+
+            return definition.RequiredCommanderLevel + Math.Max(0, targetRank - 1);
+        }
+
+        /// <summary>
+        /// A weapon starts at rank one when it is unlocked. Every later commander
+        /// level banks one more rank for that weapon, so a player may catch up a
+        /// weapon that was left untouched without losing the earned opportunity.
+        /// </summary>
+        public static int GetMaxRankForCommanderLevel(WeaponProgressionDefinition definition, int commanderLevel)
+        {
+            if (definition == null || commanderLevel < definition.RequiredCommanderLevel)
+            {
+                return 1;
+            }
+
+            return Math.Min(definition.MaxRank, Math.Max(1, commanderLevel - definition.RequiredCommanderLevel + 1));
+        }
+
+        private static int Scale(int value, int numerator, int denominator)
+        {
+            return (value * numerator + denominator / 2) / denominator;
+        }
     }
 
     public static class WeaponProgressionCatalog
     {
         private static readonly WeaponProgressionDefinition[] Definitions =
         {
-            SingleTrack("weapon.rope", WeaponUpgradeStat.Range, WeaponUpgradeStat.Accuracy, WeaponUpgradeStat.Mobility),
-            Track("weapon.impulse", 1, 0, 0, true, "double-impulse", "impact-impulse",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.ImpactRadius, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Knockback, "triple-impulse", "assault-impulse",
-                "Здвоєний Імпульс", "Ударний Резонанс",
-                "Потрійний Розряд", "Штормовий Розряд"),
-            Track("weapon.blaster-caset", 1, 0, 0, true, "quad-blaster", "ricochet-blaster",
-                WeaponUpgradeStat.Accuracy, WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.ProjectileCount, "five-shot-blaster", "double-ricochet-blaster",
-                "Квадро-Залп", "Рикошет",
-                "Шквальний Вогонь", "Подвійний Рикошет"),
-            Track("weapon.bur", 2, 800, 16, false, "long-range-drill", "universal-drill",
-                WeaponUpgradeStat.Duration, WeaponUpgradeStat.TerrainDamage, WeaponUpgradeStat.Damage,
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range, "deep-range-drill", "pioneer-drill",
-                "Глибинний Промінь", "Універсальний Різак",
-                "Термо-Свердло", "Прохідник"),
-            Track("weapon.granata", 3, 1000, 20, false, "sticky-grenade", "gravity-grenade",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Fuse, WeaponUpgradeStat.ImpactRadius,
-                WeaponUpgradeStat.Homing, WeaponUpgradeStat.Range, "magnetic-sticky-grenade", "collapse-grenade",
-                "Липучка", "Гравітаційна Пастка",
-                "Магнітна Хватка", "Колапсар"),
-            Track("weapon.mine", 4, 1500, 24, false, "four-mines", "recognition-mine",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Control, WeaponUpgradeStat.ImpactRadius,
-                WeaponUpgradeStat.ProjectileCount, WeaponUpgradeStat.Control, "five-mines", "friendly-mine",
-                "Мінне Поле", "Вартовий",
-                "Загороджувач", "Союзний Протокол"),
-            Track("weapon.c4", 5, 1800, 28, false, "enhanced-explosive-charge", "impulse-explosive-charge",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Fuse, WeaponUpgradeStat.ImpactRadius,
-                WeaponUpgradeStat.TerrainDamage, WeaponUpgradeStat.Knockback, "breaching-explosive-charge", "shockwave-charge",
-                "Посилений Детонатор", "Ударна Хвиля",
-                "Проломник", "Сейсмозаряд"),
-            Track("weapon.heal", 6, 2000, 32, false, "protective-repair", "regenerative-repair",
-                WeaponUpgradeStat.Healing, WeaponUpgradeStat.Range, WeaponUpgradeStat.Charge,
-                WeaponUpgradeStat.Duration, WeaponUpgradeStat.Duration, "enhanced-protective-repair", "long-regenerative-repair",
-                "Захисний Модуль", "Нанорегенерація",
-                "Броньований Ремонт", "Автономна Регенерація"),
-            Track("weapon.teleport", 7, 3000, 36, false, "exchange-teleport", "impulse-teleport",
-                WeaponUpgradeStat.Control, WeaponUpgradeStat.ImpactRadius, WeaponUpgradeStat.Charge,
-                WeaponUpgradeStat.Control, WeaponUpgradeStat.ImpactRadius, "tactical-exchange", "spatial-shift",
-                "Обмінний Стрибок", "Імпульсний Портал",
-                "Тактичний Обмін", "Просторовий Розлом"),
-            Track("weapon.bur-rocket", 8, 3500, 40, false, "long-range-drill-rocket", "universal-drill-rocket",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Penetration, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Penetration, WeaponUpgradeStat.TerrainDamage, "deep-range-drill-rocket", "all-terrain-drill-rocket",
-                "Пенетратор", "Всепробивний Наконечник",
-                "Глибинний Пробій", "Сейсмічний Вихід"),
-            Track("weapon.mortira", 9, 4000, 44, false, "fragment-mortar", "cascade-mortar",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range, WeaponUpgradeStat.ImpactRadius,
-                WeaponUpgradeStat.ProjectileCount, WeaponUpgradeStat.Penetration, "assault-mortar", "multi-cascade-mortar",
-                "Шрапнельний Розлом", "Кратерний Пробій",
-                "Уламковий Шторм", "Глибинний Розрив"),
-            Track("weapon.emp", 10, 4000, 48, false, "overload", "disruption",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range, WeaponUpgradeStat.Control,
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Duration, "shield-break", "system-noise",
-                "Перевантаження", "Збій Систем",
-                "Злам Щита", "Системний Колапс"),
-            Track("weapon.freeze", 11, 4000, 52, false, "cryo", "slick",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.ImpactRadius, WeaponUpgradeStat.Duration,
-                WeaponUpgradeStat.Control, WeaponUpgradeStat.ImpactRadius, "hard-freeze", "ice-patch",
-                "Кріоімпульс", "Крижана Пастка",
-                "Абсолютний Нуль", "Крижаний Розлом"),
-            Track("weapon.fire-gun", 12, 4500, 56, false, "stream", "ignite",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Duration, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Duration, WeaponUpgradeStat.Damage, "long-stream", "wildfire",
-                "Вогняний Шторм", "Термітний Опік",
-                "Інферно", "Неконтрольоване Горіння"),
-            Track("weapon.toxic", 13, 4500, 60, false, "corrosion", "cloud",
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.Duration, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Damage, WeaponUpgradeStat.ImpactRadius, "armor-corrosion", "lingering-cloud",
-                "Корозійний Спалах", "Токсична Імла",
-                "Кислотний Розпад", "Отруйний Серпанок"),
-            Track("weapon.missle", 14, 5000, 64, false, "ballistic-missile", "maneuvering-missile",
-                WeaponUpgradeStat.Homing, WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Homing, WeaponUpgradeStat.Knockback, "cluster-ballistic-missile", "tactical-homing-missile",
-                "Балістичний Удар", "Маневрений Перехоплювач",
-                "Касетний Дощ", "Тактичний Мисливець"),
-            Track("weapon.fpv-drone", 15, 7000, 68, false, "endurance", "agility",
-                WeaponUpgradeStat.Control, WeaponUpgradeStat.Damage, WeaponUpgradeStat.Range,
-                WeaponUpgradeStat.Duration, WeaponUpgradeStat.Mobility, "long-link", "snap-turn",
-                "Розширений Канал", "Ударний Модуль",
-                "Далекий Зв’язок", "Різкий Маневр")
+            Catalog("weapon.bur", 1, 0, true, 0, 0, 0, 4),
+            Catalog("weapon.impulse", 1, 0, true, 4, 4, 0, 4, 3, 0, "double-impulse"),
+            Catalog("weapon.granata", 1, 0, true, 4, 4, 4, 4, 1, 1, "target-pull", string.Empty, "gravity-pull"),
+            Catalog("weapon.rope", 2, 600, false, 0, 4, 0, 4),
+            Catalog("weapon.plasma-sword", 3, 900, false, 4, 0, 0, 0),
+            Catalog("weapon.ion-shotgun", 3, 900, false, 4, 0, 4, 4),
+            Catalog("weapon.c4", 6, 1800, false, 4, 0, 2, 4),
+            Catalog("weapon.mine", 6, 1800, false, 4, 0, 4, 4, 1, 1, "ally-safe", string.Empty, "ally-immune"),
+            Catalog("weapon.heal", 6, 1800, false, 4, 0, 2, 0, 3, 0, "protective-repair", "regenerative-repair"),
+            Catalog("weapon.titanium-disc", 9, 3000, false, 4, 4, 4, 4),
+            Catalog("weapon.bur-rocket", 9, 3000, false, 4, 4, 4, 4),
+            Catalog("weapon.titanium-barrier", 9, 3000, false, 0, 0, 4, 4),
+            Catalog("weapon.mortira", 12, 5000, false, 4, 4, 2, 4, 4, 0, "fragment-mortar", "cascade-mortar"),
+            Catalog("weapon.sticky-grenade", 12, 5000, false, 4, 4, 2, 4, 4, 0, "toxic-release"),
+            Catalog("weapon.teleport", 12, 5000, false, 0, 4, 4, 0, 1, 1, "instant-touch", string.Empty, "early-trigger"),
+            Catalog("weapon.rail-rifle", 15, 7500, false, 4, 0, 4, 0, 4, 0, "terrain-pierce"),
+            Catalog("weapon.cryo-grenade", 15, 7500, false, 4, 4, 2, 4),
+            Catalog("weapon.hopping-grenade", 20, 11000, false, 4, 4, 4, 4),
+            Catalog("weapon.incendiary-grenade", 20, 11000, false, 4, 4, 2, 4),
+            Catalog("weapon.repair-jammer", 25, 16000, false, 0, 0, 2, 4),
+            Catalog("weapon.missle", 30, 22000, false, 4, 4, 2, 4),
+            Catalog("weapon.orbital-rocket", 36, 30000, false, 4, 0, 2, 4),
+            Catalog("weapon.guardian-drone", 6, 0, false, 4, 0, 2, 4, 1, 0, "stealth"),
+            Catalog("weapon.emp", 15, 0, false, 4, 4, 2, 4, 2, 2, "aim-jam", string.Empty, "movement-lock"),
+            Catalog("weapon.turn-transfer", 15, 0, false, 0, 0, 1, 0),
+            Catalog("weapon.electric-harpoon", 20, 0, false, 4, 0, 2, 4, 1, 1, "impact-pull", string.Empty, "double-grab"),
+            Catalog("weapon.swap-jump", 25, 0, false, 0, 4, 0, 4),
+            Catalog("weapon.grounder", 30, 0, false, 0, 0, 0, 4),
+            Catalog("weapon.force-field", 42, 0, false, 0, 0, 0, 4),
+            Catalog("weapon.boost", 6, 0, false, 0, 0, 4, 4),
+            Catalog("weapon.sky-hook", 9, 0, false, 4, 0, 0, 0),
+            Catalog("weapon.spider-mine", 12, 0, false, 4, 0, 2, 4, 4, 0, "element-choice"),
+            Catalog("weapon.virus", 25, 0, false, 4, 0, 0, 0),
+            Catalog("weapon.bomber", 30, 0, false, 4, 0, 0, 4),
+            Catalog("weapon.ufo-carrier", 30, 0, false, 0, 0, 0, 4),
+            Catalog("weapon.self-destruct", 36, 0, false, 4, 0, 0, 4),
+            Catalog("weapon.nuclear-charge", 42, 0, false, 4, 0, 0, 4),
+            Catalog("weapon.laser-fence", 12, 0, false, 4, 4, 4, 4),
+            Catalog("weapon.freeze", 15, 0, false, 4, 4, 2, 4, 2, 3, "full-freeze", string.Empty, "cold-bonus"),
+            Catalog("weapon.fire-gun", 20, 0, false, 4, 4, 2, 4, 2, 3, "movement-lock-burn", string.Empty, "burn-bonus"),
+            Catalog("weapon.toxic", 25, 0, false, 4, 4, 2, 4, 2, 3, "movement-poison", string.Empty, "poison-bonus")
         };
 
         private static readonly Dictionary<string, WeaponProgressionDefinition> ById = BuildIndex();
@@ -328,6 +571,58 @@ namespace Game.Data.Progression
             return index;
         }
 
+        private static WeaponProgressionDefinition Catalog(
+            string weaponId,
+            int requiredLevel,
+            int creditPrice,
+            bool grantedAtStart,
+            int core,
+            int aim,
+            int loadout,
+            int radius,
+            int special5Steps = 0,
+            int special10Steps = 0,
+            string special5A = "",
+            string special5B = "",
+            string special10A = "",
+            string special10B = "")
+        {
+            var nodes = new List<WeaponUpgradeNodeDefinition>();
+            if (special5Steps > 0)
+            {
+                nodes.Add(Node(5, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0, special5A));
+                if (!string.IsNullOrWhiteSpace(special5B))
+                {
+                    nodes.Add(Node(5, WeaponUpgradeBranch.B, WeaponUpgradeStat.None, 0, special5B));
+                }
+            }
+
+            if (special10Steps > 0)
+            {
+                nodes.Add(Node(10, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0, special10A));
+                if (!string.IsNullOrWhiteSpace(special10B))
+                {
+                    nodes.Add(Node(10, WeaponUpgradeBranch.B, WeaponUpgradeStat.None, 0, special10B));
+                }
+            }
+
+            return new WeaponProgressionDefinition(
+                weaponId,
+                requiredLevel,
+                creditPrice,
+                0,
+                grantedAtStart,
+                special5A,
+                special5B,
+                nodes.ToArray(),
+                core,
+                aim,
+                loadout,
+                radius,
+                special5Steps,
+                special10Steps);
+        }
+
         private static WeaponProgressionDefinition Track(
             string weaponId,
             int requiredLevel,
@@ -346,7 +641,11 @@ namespace Game.Data.Progression
             string branchAEvolutionName = "",
             string branchBEvolutionName = "",
             string branchACapstoneName = "",
-            string branchBCapstoneName = "")
+            string branchBCapstoneName = "",
+            int coreUpgradeLimit = 4,
+            int aimUpgradeLimit = 4,
+            int loadoutUpgradeLimit = 4,
+            int radiusUpgradeLimit = 4)
         {
             return new WeaponProgressionDefinition(
                 weaponId,
@@ -373,7 +672,11 @@ namespace Game.Data.Progression
                     Node(8, WeaponUpgradeBranch.B, CompensationFor(branchBPrimary), 4),
                     Node(9, WeaponUpgradeBranch.B, branchBPrimary, 3),
                     Node(10, WeaponUpgradeBranch.B, WeaponUpgradeStat.None, 0, branchBCapstone, branchBCapstoneName)
-                });
+                },
+                coreUpgradeLimit,
+                aimUpgradeLimit,
+                loadoutUpgradeLimit,
+                radiusUpgradeLimit);
         }
 
         private static WeaponProgressionDefinition SingleTrack(
@@ -388,20 +691,24 @@ namespace Game.Data.Progression
                 0,
                 0,
                 true,
-                "rope-utility",
+                string.Empty,
                 string.Empty,
                 new[]
                 {
                     Node(2, WeaponUpgradeBranch.None, rank2, 1),
                     Node(3, WeaponUpgradeBranch.None, rank3, 1),
                     Node(4, WeaponUpgradeBranch.None, rank4, 1),
-                    Node(5, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0, "rope-utility"),
+                    Node(5, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0),
                     Node(6, WeaponUpgradeBranch.A, rank2, 1),
                     Node(7, WeaponUpgradeBranch.A, rank3, 1),
                     Node(8, WeaponUpgradeBranch.A, rank4, 1),
                     Node(9, WeaponUpgradeBranch.A, rank2, 1),
-                    Node(10, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0, "rope-mastery")
-                });
+                    Node(10, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0)
+                },
+                coreUpgradeLimit: 0,
+                aimUpgradeLimit: 4,
+                loadoutUpgradeLimit: 0,
+                radiusUpgradeLimit: 4);
         }
 
         private static WeaponUpgradeNodeDefinition Node(

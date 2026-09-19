@@ -15,7 +15,6 @@ namespace Game.App
     {
         private const string LoaderResourceRoot = "UI/Loaders/";
         private const int BackgroundCount = 5;
-        private const float LoaderRotationDegreesPerSecond = -220f;
         private const float ProgressFillSpeed = 1.35f;
         private const float MinimumDisplaySeconds = 0.85f;
 
@@ -84,11 +83,6 @@ namespace Game.App
 
         private void Update()
         {
-            if (_loaderRing != null)
-            {
-                _loaderRing.Rotate(0f, 0f, LoaderRotationDegreesPerSecond * Time.unscaledDeltaTime);
-            }
-
             _displayProgress = Mathf.MoveTowards(_displayProgress, _targetProgress, ProgressFillSpeed * Time.unscaledDeltaTime);
             UpdatePercentText();
         }
@@ -136,7 +130,6 @@ namespace Game.App
 
             _loaderRing = CreateImage("Loading Ring", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), LoaderSize, LoaderPosition, "loader3", true);
-            _loaderRing.localScale = new Vector3(-1f, 1f, 1f);
             _percentText = CreateText("Loading Percent", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), PercentSize, LoaderPosition, 40,
                 TextAlignmentOptions.Center, "0%", GameTextRole.DisplayTitle);
@@ -201,7 +194,7 @@ namespace Game.App
                 var mission = AppServices.Session?.SelectedMission;
                 if (mission != null)
                 {
-                    return GameText.MissionDescription(mission.MissionId, string.Empty);
+                    return GameText.Localized(mission.DescriptionKey, mission.Description);
                 }
             }
 

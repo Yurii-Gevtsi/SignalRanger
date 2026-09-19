@@ -13,7 +13,13 @@ namespace Game.Core.Battle
             string ammoLabel,
             bool hasLimitedAmmo,
             int ammoRemaining,
-            bool isUsable)
+            bool isUsable,
+            int level = 1,
+            string description = null,
+            float damageValue = 0f,
+            float accuracyValue = 0f,
+            float ammoValue = -1f,
+            float radiusValue = 0f)
         {
             Index = index;
             Label = label ?? string.Empty;
@@ -22,6 +28,12 @@ namespace Game.Core.Battle
             HasLimitedAmmo = hasLimitedAmmo;
             AmmoRemaining = ammoRemaining;
             IsUsable = isUsable;
+            Level = level;
+            Description = description ?? string.Empty;
+            DamageValue = damageValue;
+            AccuracyValue = accuracyValue;
+            AmmoValue = ammoValue;
+            RadiusValue = radiusValue;
         }
 
         public int Index { get; }
@@ -31,6 +43,12 @@ namespace Game.Core.Battle
         public bool HasLimitedAmmo { get; }
         public int AmmoRemaining { get; }
         public bool IsUsable { get; }
+        public int Level { get; }
+        public string Description { get; }
+        public float DamageValue { get; }
+        public float AccuracyValue { get; }
+        public float AmmoValue { get; }
+        public float RadiusValue { get; }
     }
 
     /// <summary>

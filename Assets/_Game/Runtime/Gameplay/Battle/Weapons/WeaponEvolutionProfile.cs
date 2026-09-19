@@ -192,6 +192,13 @@ namespace Game.Gameplay.Battle.Weapons
             }
 
             var branch = (WeaponUpgradeBranch)progress.branch;
+            var selectedEvolutionRank = progress.rank;
+            if (WeaponProgressionCatalog.TryGet(weapon.WeaponId, out var progression)
+                && WeaponEvolutionSelectionResolver.TryGetSelected(progression, progress, out var selected))
+            {
+                branch = selected.LegacyBranch;
+                selectedEvolutionRank = selected.Rank;
+            }
             if (weapon.WeaponId == BlasterWeaponId)
             {
                 if (branch == WeaponUpgradeBranch.A)
@@ -200,7 +207,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        progress.rank >= 10 ? 5 : 4);
+                        selectedEvolutionRank >= 10 ? 5 : 4);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
@@ -210,7 +217,7 @@ namespace Game.Gameplay.Battle.Weapons
                         0f,
                         1f,
                         3,
-                        progress.rank >= 10 ? 2 : 1);
+                        selectedEvolutionRank >= 10 ? 2 : 1);
                 }
             }
 
@@ -222,7 +229,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        drillRange: progress.rank >= 10 ? 5.65f : 4.45f);
+                        drillRange: selectedEvolutionRank >= 10 ? 5.65f : 4.45f);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
@@ -231,8 +238,8 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        drillRange: progress.rank >= 10 ? 4.1f : 3.6f,
-                        drillPenetration: progress.rank >= 10
+                        drillRange: selectedEvolutionRank >= 10 ? 4.1f : 3.6f,
+                        drillPenetration: selectedEvolutionRank >= 10
                             ? TerrainMaterial.Titanium
                             : TerrainMaterial.LightMetal);
                 }
@@ -246,7 +253,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        rocketDrillDurationSeconds: progress.rank >= 10 ? 2.25f : 1.5f,
+                        rocketDrillDurationSeconds: selectedEvolutionRank >= 10 ? 2.25f : 1.5f,
                         rocketDrillPenetration: TerrainMaterial.LightMetal);
                 }
 
@@ -257,7 +264,7 @@ namespace Game.Gameplay.Battle.Weapons
                         0f,
                         1f,
                         rocketDrillDurationSeconds: 1f,
-                        rocketDrillPenetration: progress.rank >= 10
+                        rocketDrillPenetration: selectedEvolutionRank >= 10
                             ? TerrainMaterial.Titanium
                             : TerrainMaterial.LightMetal);
                 }
@@ -271,8 +278,8 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        c4DamageMultiplier: progress.rank >= 10 ? 1.3f : 1.15f,
-                        c4ImpactRadiusMultiplier: progress.rank >= 10 ? 1.55f : 1.3f);
+                        c4DamageMultiplier: selectedEvolutionRank >= 10 ? 1.3f : 1.15f,
+                        c4ImpactRadiusMultiplier: selectedEvolutionRank >= 10 ? 1.55f : 1.3f);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
@@ -280,8 +287,8 @@ namespace Game.Gameplay.Battle.Weapons
                     return new WeaponEvolutionProfile(
                         1,
                         0f,
-                        progress.rank >= 10 ? 3f : 2.15f,
-                        c4ImpactRadiusMultiplier: progress.rank >= 10 ? 0.85f : 0.93f);
+                        selectedEvolutionRank >= 10 ? 3f : 2.15f,
+                        c4ImpactRadiusMultiplier: selectedEvolutionRank >= 10 ? 0.85f : 0.93f);
                 }
             }
 
@@ -294,7 +301,7 @@ namespace Game.Gameplay.Battle.Weapons
                         0f,
                         1f,
                         grenadeSticks: true,
-                        grenadeMagneticSeekRadius: progress.rank >= 10 ? 2.4f : 0f);
+                        grenadeMagneticSeekRadius: selectedEvolutionRank >= 10 ? 2.4f : 0f);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
@@ -303,7 +310,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        grenadeGravityPullRadius: progress.rank >= 10 ? 5f : 3.5f,
+                        grenadeGravityPullRadius: selectedEvolutionRank >= 10 ? 5f : 3.5f,
                         grenadePullAcceleration: 8f);
                 }
             }
@@ -316,7 +323,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        mineDeployLimitPerTurn: progress.rank >= 10 ? 5 : 4);
+                        mineDeployLimitPerTurn: selectedEvolutionRank >= 10 ? 5 : 4);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
@@ -326,7 +333,7 @@ namespace Game.Gameplay.Battle.Weapons
                         0f,
                         1f,
                         mineTriggersEnemiesOnly: true,
-                        mineAlliesImmuneToExplosion: progress.rank >= 10);
+                        mineAlliesImmuneToExplosion: selectedEvolutionRank >= 10);
                 }
             }
 
@@ -338,7 +345,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        repairProtectionTurns: progress.rank >= 10 ? 2 : 1);
+                        repairProtectionTurns: selectedEvolutionRank >= 10 ? 2 : 1);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
@@ -347,7 +354,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        repairRegenerationTurns: progress.rank >= 10 ? 2 : 1);
+                        repairRegenerationTurns: selectedEvolutionRank >= 10 ? 2 : 1);
                 }
             }
 
@@ -360,7 +367,7 @@ namespace Game.Gameplay.Battle.Weapons
                         0f,
                         1f,
                         teleportExchangesEnemy: true,
-                        teleportExchangesAlliesAndObjects: progress.rank >= 10,
+                        teleportExchangesAlliesAndObjects: selectedEvolutionRank >= 10,
                         teleportDisorientationTurns: 1);
                 }
 
@@ -370,8 +377,8 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        teleportImpulseRadius: progress.rank >= 10 ? 4.2f : 2.7f,
-                        teleportImpulseStrength: progress.rank >= 10 ? 7.5f : 4.5f);
+                        teleportImpulseRadius: selectedEvolutionRank >= 10 ? 4.2f : 2.7f,
+                        teleportImpulseStrength: selectedEvolutionRank >= 10 ? 7.5f : 4.5f);
                 }
             }
 
@@ -383,7 +390,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        mortarFragmentCount: progress.rank >= 10 ? 5 : 4);
+                        mortarFragmentCount: selectedEvolutionRank >= 10 ? 5 : 4);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
@@ -392,7 +399,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        mortarCascadeCount: progress.rank >= 10 ? 2 : 1);
+                        mortarCascadeCount: selectedEvolutionRank >= 10 ? 2 : 1);
                 }
             }
 
@@ -404,7 +411,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        missileSplitChargeCount: progress.rank >= 10 ? 3 : 2);
+                        missileSplitChargeCount: selectedEvolutionRank >= 10 ? 3 : 2);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
@@ -413,7 +420,7 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        missileObstacleBypassCount: progress.rank >= 10 ? 2 : 1);
+                        missileObstacleBypassCount: selectedEvolutionRank >= 10 ? 2 : 1);
                 }
             }
 
@@ -425,8 +432,8 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        toxicArmorWeakenPercent: progress.rank >= 10 ? 35 : 20,
-                        toxicArmorWeakenTurns: progress.rank >= 10 ? 3 : 2);
+                        toxicArmorWeakenPercent: selectedEvolutionRank >= 10 ? 35 : 20,
+                        toxicArmorWeakenTurns: selectedEvolutionRank >= 10 ? 3 : 2);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
@@ -435,8 +442,8 @@ namespace Game.Gameplay.Battle.Weapons
                         1,
                         0f,
                         1f,
-                        toxicMovementDamagePerSecond: progress.rank >= 10 ? 10f : 6f,
-                        toxicDurationBonusTurns: progress.rank >= 10 ? 1 : 0);
+                        toxicMovementDamagePerSecond: selectedEvolutionRank >= 10 ? 10f : 6f,
+                        toxicDurationBonusTurns: selectedEvolutionRank >= 10 ? 1 : 0);
                 }
             }
 
@@ -446,15 +453,15 @@ namespace Game.Gameplay.Battle.Weapons
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
                         fireGunStreamDurationMultiplier: 1.4f,
-                        fireGunBurnDurationMultiplier: progress.rank >= 10 ? 1.5f : 1f);
+                        fireGunBurnDurationMultiplier: selectedEvolutionRank >= 10 ? 1.5f : 1f);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
-                        fireGunIgniteTurns: progress.rank >= 10 ? 3 : 2,
-                        fireGunIgniteDamagePerTurn: progress.rank >= 10 ? 9 : 6,
-                        fireGunChainDamagePercent: progress.rank >= 10 ? 60 : 35);
+                        fireGunIgniteTurns: selectedEvolutionRank >= 10 ? 3 : 2,
+                        fireGunIgniteDamagePerTurn: selectedEvolutionRank >= 10 ? 9 : 6,
+                        fireGunChainDamagePercent: selectedEvolutionRank >= 10 ? 60 : 35);
                 }
             }
 
@@ -464,14 +471,14 @@ namespace Game.Gameplay.Battle.Weapons
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
                         empStunTurns: 1,
-                        empStunBlocksMovement: progress.rank >= 10);
+                        empStunBlocksMovement: selectedEvolutionRank >= 10);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
-                        empWeakenDamagePercent: progress.rank >= 10 ? 35 : 20,
-                        empWeakenTurns: progress.rank >= 10 ? 3 : 2);
+                        empWeakenDamagePercent: selectedEvolutionRank >= 10 ? 35 : 20,
+                        empWeakenTurns: selectedEvolutionRank >= 10 ? 3 : 2);
                 }
             }
 
@@ -480,14 +487,14 @@ namespace Game.Gameplay.Battle.Weapons
                 if (branch == WeaponUpgradeBranch.A)
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
-                        cryoFreezeTurns: progress.rank >= 10 ? 3f : 2f);
+                        cryoFreezeTurns: selectedEvolutionRank >= 10 ? 3f : 2f);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
                         cryoFreezeTurns: 1f,
-                        cryoChainDamagePercent: progress.rank >= 10 ? 60 : 35);
+                        cryoChainDamagePercent: selectedEvolutionRank >= 10 ? 60 : 35);
                 }
             }
 
@@ -496,14 +503,14 @@ namespace Game.Gameplay.Battle.Weapons
                 if (branch == WeaponUpgradeBranch.A)
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
-                        fpvControlBonusSeconds: progress.rank >= 10 ? 4f : 2f);
+                        fpvControlBonusSeconds: selectedEvolutionRank >= 10 ? 4f : 2f);
                 }
 
                 if (branch == WeaponUpgradeBranch.B)
                 {
                     return new WeaponEvolutionProfile(1, 0f, 1f,
-                        fpvDamageMultiplier: progress.rank >= 10 ? 1.35f : 1.2f,
-                        fpvImpactRadiusMultiplier: progress.rank >= 10 ? 1.3f : 1.15f);
+                        fpvDamageMultiplier: selectedEvolutionRank >= 10 ? 1.35f : 1.2f,
+                        fpvImpactRadiusMultiplier: selectedEvolutionRank >= 10 ? 1.3f : 1.15f);
                 }
             }
 
@@ -514,13 +521,13 @@ namespace Game.Gameplay.Battle.Weapons
 
             if (branch == WeaponUpgradeBranch.A)
             {
-                return new WeaponEvolutionProfile(progress.rank >= 10 ? 3 : 2, SalvoIntervalSeconds, 1f);
+                return new WeaponEvolutionProfile(selectedEvolutionRank >= 10 ? 3 : 2, SalvoIntervalSeconds, 1f);
             }
 
             if (branch == WeaponUpgradeBranch.B)
             {
                 return new WeaponEvolutionProfile(1, 0f,
-                    progress.rank >= 10 ? AssaultKnockbackMultiplier : ImpactKnockbackMultiplier);
+                    selectedEvolutionRank >= 10 ? AssaultKnockbackMultiplier : ImpactKnockbackMultiplier);
             }
 
             return WeaponEvolutionProfile.Base;

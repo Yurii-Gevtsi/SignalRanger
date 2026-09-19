@@ -32,6 +32,7 @@ namespace Game.App
         private TMP_Text _statusText;
         private TMP_Text _opponentText;
         private Button _startButton;
+        private ResourceInfoPopupController _resourceInfoPopup;
 
         public static void Open(Action onClosed = null)
         {
@@ -94,6 +95,7 @@ namespace Game.App
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
+            _resourceInfoPopup = ResourceInfoPopupController.Create(root);
             var overlay = CreatePanel("Overlay", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 Vector2.zero, Vector2.zero, OverlayColor);
             overlay.raycastTarget = true;
@@ -103,7 +105,6 @@ namespace Game.App
             CreateText("Title", panel.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(700f, 90f), new Vector2(0f, -120f), 52, TextAlignmentOptions.Center,
                 GameText.DuelTitle(), GameTextRole.DisplayTitle);
-
             _statusText = CreateText("Status", panel.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
                 new Vector2(700f, 120f), new Vector2(0f, -240f), 28, TextAlignmentOptions.Center, string.Empty);
 

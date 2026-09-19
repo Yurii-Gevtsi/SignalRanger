@@ -40,6 +40,7 @@ namespace Game.App
         private Sprite _whiteSprite;
         private TMP_Text _statusText;
         private Action _onClosed;
+        private ResourceInfoPopupController _resourceInfoPopup;
 
         public static void Open(Action onClosed)
         {
@@ -81,6 +82,7 @@ namespace Game.App
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
+            _resourceInfoPopup = ResourceInfoPopupController.Create(root);
             CreatePanel("Overlay", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, OverlayColor);
 
             var panel = CreatePanel("Loadout Panel", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),

@@ -211,6 +211,33 @@ namespace Game.Core
             return missionId;
         }
 
+        private static bool _hasPendingBattleModeView;
+        private static BattleMode _pendingBattleModeView;
+
+        /// <summary>
+        /// Requests that the mode-selection card opens on the section that owns the
+        /// battle the player has just left. This is consumed once by the menu scene.
+        /// </summary>
+        public static void RequestBattleModeView(BattleMode mode)
+        {
+            _pendingBattleModeView = mode;
+            _hasPendingBattleModeView = true;
+        }
+
+        public static bool TryConsumePendingBattleModeView(out BattleMode mode)
+        {
+            if (!_hasPendingBattleModeView)
+            {
+                mode = BattleMode.Story;
+                return false;
+            }
+
+            mode = _pendingBattleModeView;
+            _pendingBattleModeView = BattleMode.Story;
+            _hasPendingBattleModeView = false;
+            return true;
+        }
+
         /// <summary>
         /// How the last battle actually ended, for judging the mission's objective once
         /// the menu scene banks it. Kept as plain values rather than a progression type

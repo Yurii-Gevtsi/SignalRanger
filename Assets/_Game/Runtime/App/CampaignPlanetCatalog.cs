@@ -51,10 +51,10 @@ namespace Game.App
 
         public static readonly Planet[] Planets =
         {
-            new("campaign_planet_03", new Vector2(-390f, 60f), "chapter.basics", "campaign.planet.kerion", "arena.desert-sci-fi"),
-            new("campaign_planet_02", new Vector2(-130f, -70f), "chapter.tactical-tools", "campaign.planet.valtara", "arena.forest"),
-            new("campaign_planet_01", new Vector2(150f, 50f), "chapter.city", "campaign.planet.gale-foundry", "arena.city"),
-            new("campaign_planet_04", new Vector2(410f, -70f), "chapter.grib", "campaign.planet.cryo-relay", "arena.grib"),
+            new("campaign_planet_12", new Vector2(-390f, 60f), "chapter.basics", "campaign.planet.kerion", "arena.training-meadow"),
+            new("campaign_planet_10", new Vector2(-130f, -70f), "chapter.tactical-tools", "campaign.planet.valtara", "arena.bones"),
+            new("campaign_planet_03", new Vector2(150f, 50f), "chapter.city", "campaign.planet.gale-foundry", "arena.monument"),
+            new("campaign_planet_01", new Vector2(410f, -70f), "chapter.grib", "campaign.planet.cryo-relay", "arena.forest"),
             new("campaign_planet_05", new Vector2(-390f, 60f), "chapter.laguna", "campaign.planet.hailis", "arena.laguna"),
             new("campaign_planet_06", new Vector2(-130f, -70f), "chapter.monument", "campaign.planet.ferrum", "arena.monument"),
             new("campaign_planet_07", new Vector2(150f, 50f), "chapter.kraken", "campaign.planet.pyra", "arena.kraken"),
@@ -66,10 +66,10 @@ namespace Game.App
         {
             new("campaign_sector_01_background", "campaign.sector.1", new[]
             {
-                new Planet("campaign_planet_03", new Vector2(-390f, 60f), "chapter.basics", "campaign.planet.kerion", "arena.desert-sci-fi"),
-                new Planet("campaign_planet_02", new Vector2(-130f, -70f), "chapter.tactical-tools", "campaign.planet.valtara", "arena.forest"),
-                new Planet("campaign_planet_01", new Vector2(150f, 50f), "chapter.city", "campaign.planet.gale-foundry", "arena.city"),
-                new Planet("campaign_planet_04", new Vector2(410f, -70f), "chapter.grib", "campaign.planet.cryo-relay", "arena.grib")
+                new Planet("campaign_planet_12", new Vector2(-390f, 60f), "chapter.basics", "campaign.planet.kerion", "arena.training-meadow"),
+                new Planet("campaign_planet_10", new Vector2(-130f, -70f), "chapter.tactical-tools", "campaign.planet.valtara", "arena.bones"),
+                new Planet("campaign_planet_03", new Vector2(150f, 50f), "chapter.city", "campaign.planet.gale-foundry", "arena.monument"),
+                new Planet("campaign_planet_01", new Vector2(410f, -70f), "chapter.grib", "campaign.planet.cryo-relay", "arena.forest")
             }),
             new("campaign_sector_02_background", "campaign.sector.2", new[]
             {

@@ -100,6 +100,7 @@ namespace Game.App
         private int _currentStreakDay = 1;
         private TMP_Text _coinsValueText;
         private TMP_Text _crystalsValueText;
+        private ResourceInfoPopupController _resourceInfoPopup;
         private (RewardKind Kind, int Amount) _dailyLoginCurrentReward;
 
         public static void Open(Action onClosed)
@@ -138,6 +139,8 @@ namespace Game.App
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var root = canvasObject.transform;
+            MenuScreenInputShield.Create(root, "Rewards Input Shield");
+            _resourceInfoPopup = ResourceInfoPopupController.Create(root);
             CreateImage("Rewards Background", root, Vector2.zero, Vector2.one,
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, MenuResourceRoot + "rewards_menu", false);
 
@@ -162,6 +165,7 @@ namespace Game.App
             CreateText("Rewards Title", titlePanel, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
                 new Vector2(-60f, -12f), new Vector2(-70f, 0f), 38, TextAlignmentOptions.Center,
                 GameText.RewardsTitle(), GameTextRole.DisplayTitle);
+            MenuPlayerLevelPanel.Create(root, "Rewards Player Level Panel", new Vector2(0f, 10f), new Vector2(520f, 172f));
 
             var saveData = AppServices.SaveService.Current;
             var credits = Mathf.Max(0, saveData?.economy.softCurrency ?? 0);
@@ -170,6 +174,7 @@ namespace Game.App
             var coins = CreateImage("Rewards Coins", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(1f, 1f), new Vector2(372f, 155f), new Vector2(-486f, 0f),
                 ShopResourceRoot + "Coin_panel", true);
+            _resourceInfoPopup.BindResourceIcon(coins.GetComponent<Image>(), ResourceInfoKind.Coins);
             _coinsValueText = CreateText("Rewards Coins Value", coins, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 credits.ToString(), GameTextRole.CurrencyGold);
@@ -178,6 +183,7 @@ namespace Game.App
             var premium = CreateImage("Rewards Crystals", root, new Vector2(1f, 1f), new Vector2(1f, 1f),
                 new Vector2(1f, 1f), new Vector2(372f, 155f), new Vector2(-166f, 0f),
                 ShopResourceRoot + "vip_coins_panel", true);
+            _resourceInfoPopup.BindResourceIcon(premium.GetComponent<Image>(), ResourceInfoKind.Crystals);
             _crystalsValueText = CreateText("Rewards Crystals Value", premium, new Vector2(0.40f, 0.24f), new Vector2(0.80f, 0.80f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 35, TextAlignmentOptions.Center,
                 crystals.ToString(), GameTextRole.CurrencyCrystal);
@@ -296,6 +302,7 @@ namespace Game.App
             view.RewardIcon = CreateImage("Reward Icon", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), new Vector2(72f, 72f), new Vector2(295f, 0f),
                 ShopResourceRoot + "coin", true).GetComponent<Image>();
+            _resourceInfoPopup.BindRewardIcon(view.RewardIcon, ResourceInfoKind.TaskReward);
             view.RewardAmount = CreateText("Reward Amount", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), new Vector2(110f, 64f), new Vector2(376f, 0f), 32,
                 TextAlignmentOptions.Center, string.Empty, GameTextRole.Numeric);
@@ -390,6 +397,7 @@ namespace Game.App
             var rewardIcon = CreateImage("Day Reward Icon", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f), iconSize, iconPosition,
                 isFinalReward ? RewardIconRoot + "super_chest_clean" : RewardSpritePath(reward.Kind), true).GetComponent<Image>();
+            _resourceInfoPopup.BindRewardIcon(rewardIcon, ResolveResourceInfoKind(reward.Kind));
             if (isPast)
             {
                 rewardIcon.color = new Color(1f, 1f, 1f, 0.45f);
@@ -788,6 +796,17 @@ namespace Game.App
                 RewardKind.Chest => "UI/Weapons/bonus_box",
                 RewardKind.SuperChest => RewardIconRoot + "super_chest",
                 _ => ShopResourceRoot + "coin"
+            };
+        }
+
+        private static ResourceInfoKind ResolveResourceInfoKind(RewardKind kind)
+        {
+            return kind switch
+            {
+                RewardKind.Credits => ResourceInfoKind.Coins,
+                RewardKind.Crystals => ResourceInfoKind.Crystals,
+                RewardKind.Chip => ResourceInfoKind.Chips,
+                _ => ResourceInfoKind.TaskReward
             };
         }
 

@@ -100,6 +100,8 @@ namespace Game.Core.Localization
             T("campaign.sectorProgressHint", string.Empty, Arg("sector", sector), Arg("total", total));
         public static string CampaignMissionsForPlanet(string planet) =>
             T("campaign.missionsForPlanet", string.Empty, Arg("planet", planet));
+        public static string CampaignMissionListRow(int number, string mission) =>
+            T("campaign.missionListRow", string.Empty, Arg("number", number), Arg("mission", mission));
         public static string ChapterLabel() => T("campaign.chapter", string.Empty);
         public static string NextMissionLabel() => T("campaign.nextMission", string.Empty);
         public static string MissionProgress(int missionNumber, int missionCount) => missionCount > 0
@@ -148,6 +150,22 @@ namespace Game.Core.Localization
         public static string RewardDay(int day) => T("rewardsScreen.day", string.Empty, Arg("day", day));
         public static string RewardDayLabel() => T("rewardsScreen.dayLabel", string.Empty);
         public static string RewardQuest(string questId, string fallback) => T("rewardsScreen.quest." + questId, fallback);
+        public static string ResourceChipsTitle() => T("resourceInfo.chipsTitle", string.Empty);
+        public static string ResourceChipsDescription() => T("resourceInfo.chipsDescription", string.Empty);
+        public static string ResourceCoinsTitle() => T("resourceInfo.coinsTitle", string.Empty);
+        public static string ResourceCoinsDescription() => T("resourceInfo.coinsDescription", string.Empty);
+        public static string ResourceCrystalsTitle() => T("resourceInfo.crystalsTitle", string.Empty);
+        public static string ResourceCrystalsDescription() => T("resourceInfo.crystalsDescription", string.Empty);
+        public static string ResourceTaskRewardTitle() => T("resourceInfo.taskRewardTitle", string.Empty);
+        public static string ResourceTaskRewardDescription() => T("resourceInfo.taskRewardDescription", string.Empty);
+        public static string ResourceRequirementsTitle() => T("resourceInfo.requirementsTitle", string.Empty);
+        public static string ResourceInsufficientBalance() => T("resourceInfo.insufficientBalance", string.Empty);
+        public static string ResourceInsufficientLevel(int level) => T("resourceInfo.insufficientLevel", string.Empty, Arg("level", level));
+        public static string ResourceInsufficientChips() => T("resourceInfo.insufficientChips", string.Empty);
+        public static string ResourceUnavailable() => T("resourceInfo.unavailable", string.Empty);
+        public static string WorkshopChipProgress(int owned, int required) =>
+            T("architect.chipProgress", string.Empty, Arg("owned", owned), Arg("required", required));
+        public static string CloseGlyph() => T("ui.closeGlyph", string.Empty);
         public static string Music() => T("ui.music", string.Empty);
         public static string Sounds() => T("ui.sounds", string.Empty);
         public static string LanguageLabel() => T("ui.language", string.Empty, Arg("language", T("meta.uk", string.Empty)));
@@ -195,6 +213,12 @@ namespace Game.Core.Localization
         public static string RaidDifficultyEasy() => T("raid.difficultyEasy", string.Empty);
         public static string RaidDifficultyNormal() => T("raid.difficultyNormal", string.Empty);
         public static string RaidDifficultyHard() => T("raid.difficultyHard", string.Empty);
+        public static string MissionDifficulty(int difficulty) => difficulty switch
+        {
+            0 => RaidDifficultyEasy(),
+            2 => RaidDifficultyHard(),
+            _ => RaidDifficultyNormal()
+        };
         public static string RaidOpponentLabel() => T("raid.opponent", string.Empty);
         public static string RaidLocked() =>
             T("raid.locked", string.Empty);
@@ -232,6 +256,7 @@ namespace Game.Core.Localization
         public static string ArenaName(string arenaId, string fallback) => T("content.arena." + arenaId, fallback);
         public static string ShopTitle() => T("shop.title", string.Empty);
         public static string ArsenalTitle() => T("ui.arsenal", string.Empty);
+        public static string ScreenInfo(string screenId) => T("screenInfo." + screenId, string.Empty);
         public static string Damage() => T("shop.damage", string.Empty);
         public static string UsesPerBattle() => T("shop.uses", string.Empty);
         public static string RequiredLevel(int level) => T("shop.requiredLevel", string.Empty, Arg("level", level));

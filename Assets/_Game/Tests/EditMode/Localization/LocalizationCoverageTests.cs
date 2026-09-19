@@ -165,8 +165,8 @@ namespace Game.Tests.EditMode.Localization
                     continue;
                 }
 
-                expected.Add("missionText." + mission.MissionId + ".title");
-                expected.Add("missionText." + mission.MissionId + ".description");
+                expected.Add(mission.DisplayNameKey);
+                expected.Add(mission.DescriptionKey);
             }
 
             var failures = new List<string>();
