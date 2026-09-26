@@ -6,6 +6,7 @@ using Game.Gameplay.Battle.Assembly;
 using Game.Gameplay.Battle.Arenas;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Runtime;
+using Game.Gameplay.Battle.Simulation;
 using Game.Gameplay.Battle.Visuals;
 using Game.UI.Battle;
 using UnityEditor;
@@ -201,6 +202,63 @@ namespace Game.Tests.EditMode.Gameplay
             AssertMagentaBackgroundIsTransparent(Resources.Load<Texture2D>("UI/Common/architect_btn"));
 
             Assert.IsNotNull(Resources.Load<Texture2D>("UI/Startup/startup_02"));
+        }
+
+        [Test]
+        public void SwapJump_UsesTeleportProjectileSprite()
+        {
+            var root = new GameObject("Swap Jump Presentation Test");
+            try
+            {
+                var controller = root.AddComponent<BattleSceneController>();
+                var weapon = WeaponDefinition.CreateRuntime(
+                    "weapon.swap-jump",
+                    "weapon.swap-jump.name",
+                    WeaponRole.MovementTool,
+                    0,
+                    1.4f,
+                    0.12f,
+                    1f,
+                    3f,
+                    0f,
+                    0f,
+                    1,
+                    null,
+                    new[] { "movement", "teleport" },
+                    iconId: "teleport_5_10_A");
+                var projectile = new SimProjectile(
+                    1,
+                    weapon.CreateProjectileDefinition(),
+                    "player.test.01",
+                    Vector2.zero,
+                    Vector2.right,
+                    2f);
+                var resolver = typeof(BattleSceneController).GetMethod(
+                    "ResolveProjectileSprite",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+                Assert.IsNotNull(resolver);
+                var sprite = resolver.Invoke(controller, new object[] { projectile, weapon }) as Sprite;
+
+                Assert.IsNotNull(sprite, "swap-jump requires an in-flight teleport skin");
+                Assert.That(sprite.texture.name, Is.EqualTo("teleport_5_10_A"));
+                var ordinaryTeleport = WeaponDefinition.CreateRuntime(
+                    "weapon.teleport", "weapon.teleport.name", WeaponRole.MovementTool,
+                    0, 1.4f, 0.12f, 1f, 3f, 0f, 0f, 1, null,
+                    new[] { "movement", "teleport" }, iconId: "teleport_5_10_A");
+                var scaleResolver = typeof(BattleSceneController).GetMethod(
+                    "ResolveProjectileVisualScale",
+                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+                Assert.IsNotNull(scaleResolver);
+                var swapScale = (Vector3)scaleResolver.Invoke(null, new object[] { weapon, 0.24f });
+                var teleportScale = (Vector3)scaleResolver.Invoke(null, new object[] { ordinaryTeleport, 0.24f });
+                Assert.That(swapScale, Is.EqualTo(teleportScale),
+                    "the two teleport spheres must have the same in-flight size");
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
         }
 
         [Test]

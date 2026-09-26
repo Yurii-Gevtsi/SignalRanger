@@ -11,7 +11,8 @@ namespace Game.Gameplay.Battle.Projectiles
             Vector2 velocity,
             int damage,
             float impactRadius,
-            float knockbackMultiplier = 1f)
+            float knockbackMultiplier = 1f,
+            Vector2? sourceOrigin = null)
         {
             ProjectileId = projectileId;
             OwnerUnitId = ownerUnitId;
@@ -20,6 +21,7 @@ namespace Game.Gameplay.Battle.Projectiles
             Damage = damage;
             ImpactRadius = impactRadius;
             KnockbackMultiplier = Mathf.Max(0f, knockbackMultiplier);
+            SourceOrigin = sourceOrigin;
         }
 
         public string ProjectileId { get; }
@@ -29,5 +31,6 @@ namespace Game.Gameplay.Battle.Projectiles
         public int Damage { get; }
         public float ImpactRadius { get; }
         public float KnockbackMultiplier { get; }
+        public Vector2? SourceOrigin { get; }
     }
 }

@@ -13,7 +13,8 @@ namespace Game.Gameplay.Battle.Simulation
             string ownerUnitId,
             Vector2 position,
             Vector2 velocity,
-            float remainingLifetime)
+            float remainingLifetime,
+            Vector2? sourceOrigin = null)
         {
             Id = id;
             Definition = definition;
@@ -21,6 +22,7 @@ namespace Game.Gameplay.Battle.Simulation
             Position = position;
             Velocity = velocity;
             RemainingLifetime = remainingLifetime;
+            SourceOrigin = sourceOrigin;
         }
 
         public int Id { get; }
@@ -29,6 +31,8 @@ namespace Game.Gameplay.Battle.Simulation
         public Vector2 Position { get; private set; }
         public Vector2 Velocity { get; private set; }
         public float RemainingLifetime { get; private set; }
+        /// <summary>Throw-time origin for swap-jump's enemy destination.</summary>
+        public Vector2? SourceOrigin { get; }
         public int BounceCount { get; private set; }
         public float TerrainDrillTimeRemaining { get; private set; }
         public float TerrainDrillSpeed { get; private set; }

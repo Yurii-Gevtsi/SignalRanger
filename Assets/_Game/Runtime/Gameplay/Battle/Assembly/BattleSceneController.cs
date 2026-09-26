@@ -2218,6 +2218,7 @@ namespace Game.Gameplay.Battle.Assembly
                 "weapon.mortira" => Vector3.one * (diameter * 0.36f),
                 "weapon.granata" => Vector3.one * (diameter * 0.35f),
                 "weapon.teleport" => Vector3.one * (diameter * 0.72f),
+                "weapon.swap-jump" => Vector3.one * (diameter * 0.72f),
                 "weapon.toxic" => Vector3.one * (diameter * 1.05f),
                 "weapon.emp" => new Vector3(diameter * 0.46f, diameter * 0.33f, 1f),
                 "weapon.mine" => Vector3.one * (diameter * 0.55f),
@@ -2267,6 +2268,7 @@ namespace Game.Gameplay.Battle.Assembly
                 "weapon.c4" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
                 "weapon.heal" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
                 "weapon.teleport" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
+                "weapon.swap-jump" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
                 "weapon.bonus-box" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
                 "weapon.fpv-drone" => ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId),
                 _ => null

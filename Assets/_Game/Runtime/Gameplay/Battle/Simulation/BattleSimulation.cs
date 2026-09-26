@@ -43,6 +43,7 @@ namespace Game.Gameplay.Battle.Simulation
         private const string MineWeaponId = "weapon.mine";
         private const string MissileWeaponId = "weapon.missle";
         private const string TeleportWeaponId = "weapon.teleport";
+        private const string SwapJumpWeaponId = "weapon.swap-jump";
         private const string GrenadeWeaponId = "weapon.granata";
         private const string FpvWeaponId = "weapon.fpv-drone";
         private const string FreezeWeaponId = "weapon.freeze";
@@ -2108,7 +2109,11 @@ namespace Game.Gameplay.Battle.Simulation
             HealthRestored?.Invoke(new HealthRestoredEvent(impactPoint, restoredHealth, owner.TeamId));
         }
 
-        private void RepositionOwner(Vector2 impactPoint, string ownerUnitId, WeaponDefinition impactWeapon)
+        private void RepositionOwner(
+            Vector2 impactPoint,
+            string ownerUnitId,
+            WeaponDefinition impactWeapon,
+            Vector2? sourceOrigin = null)
         {
             if (string.IsNullOrWhiteSpace(ownerUnitId))
             {
@@ -2129,20 +2134,22 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
+            if (impactWeapon.WeaponId == SwapJumpWeaponId
+                && TryFindSwapJumpExchangeTarget(owner, impactPoint, out var swapTarget))
+            {
+                ExchangeTeleportPositions(
+                    owner,
+                    swapTarget,
+                    disorientationTurns: 0,
+                    ownerOriginOverride: sourceOrigin,
+                    ownerDestinationOverride: ResolveTeleportLanding(impactPoint, owner.TeamId));
+                return;
+            }
+
             var target = ResolveUnitLandingPosition(impactPoint, owner.TeamId);
             if (impactWeapon.Role == WeaponRole.MovementTool)
             {
-                var bodyHalf = ArchetypeFor(owner.TeamId).BodyHeight * 0.5f;
-                var desiredCenter = impactPoint + Vector2.up * bodyHalf;
-                if (target.y > desiredCenter.y + 0.35f)
-                {
-                    // The landing spot is too tight for the body (the surface
-                    // snap pushed the unit on top of an obstacle). Teleport into
-                    // the exact spot anyway: arrival blasts a pocket in the
-                    // terrain, as if the unit displaces the ground to fit.
-                    CarveArrivalPocket(desiredCenter, bodyHalf, owner.TeamId);
-                    target = desiredCenter;
-                }
+                target = ResolveTeleportLanding(impactPoint, owner.TeamId);
 
                 owner.MoveTo(target);
                 GetMotor(owner.UnitId)?.Teleport(target);
@@ -2162,6 +2169,21 @@ namespace Game.Gameplay.Battle.Simulation
             owner.MoveTo(ResolveUnitLandingPosition(new Vector2(owner.Position.x + deltaX, target.y), owner.TeamId));
             GetMotor(owner.UnitId)?.Teleport(owner.Position);
             OwnerRepositioned?.Invoke(owner.UnitId);
+        }
+
+        private Vector2 ResolveTeleportLanding(Vector2 impactPoint, BattleTeamId teamId)
+        {
+            var target = ResolveUnitLandingPosition(impactPoint, teamId);
+            var bodyHalf = ArchetypeFor(teamId).BodyHeight * 0.5f;
+            var desiredCenter = impactPoint + Vector2.up * bodyHalf;
+            if (target.y > desiredCenter.y + 0.35f)
+            {
+                // The arrival displaces terrain when a surface snap would put the unit above the impact.
+                CarveArrivalPocket(desiredCenter, bodyHalf, teamId);
+                target = desiredCenter;
+            }
+
+            return target;
         }
 
         private bool TryFindTeleportExchangeTarget(
@@ -2244,13 +2266,60 @@ namespace Game.Gameplay.Battle.Simulation
             bestDistanceSquared = distanceSquared;
         }
 
+        private bool TryFindSwapJumpExchangeTarget(
+            BattleUnitState owner,
+            Vector2 impactPoint,
+            out TeleportExchangeTarget target)
+        {
+            target = null;
+            var bestDistanceSquared = TeleportExchangeTargetRadius * TeleportExchangeTargetRadius;
+            var bestUnitId = string.Empty;
+            foreach (var team in _state.Teams)
+            {
+                if (team.TeamId == owner.TeamId)
+                {
+                    continue;
+                }
+                foreach (var unit in team.Units)
+                {
+                    if (unit == null || unit.IsDefeated)
+                    {
+                        continue;
+                    }
+
+                    var distanceSquared = (unit.Position - impactPoint).sqrMagnitude;
+                    if (distanceSquared > TeleportExchangeTargetRadius * TeleportExchangeTargetRadius)
+                    {
+                        continue;
+                    }
+
+                    var isCloser = distanceSquared < bestDistanceSquared - 0.0001f;
+                    var isStableTie = Mathf.Abs(distanceSquared - bestDistanceSquared) <= 0.0001f
+                        && (string.IsNullOrEmpty(bestUnitId)
+                            || string.CompareOrdinal(unit.UnitId, bestUnitId) < 0);
+                    if (!isCloser && !isStableTie)
+                    {
+                        continue;
+                    }
+
+                    target = new TeleportExchangeTarget(unit);
+                    bestDistanceSquared = distanceSquared;
+                    bestUnitId = unit.UnitId;
+                }
+            }
+
+            return target != null;
+        }
+
         private void ExchangeTeleportPositions(
             BattleUnitState owner,
             TeleportExchangeTarget target,
-            int disorientationTurns)
+            int disorientationTurns,
+            Vector2? ownerOriginOverride = null,
+            Vector2? ownerDestinationOverride = null)
         {
-            var ownerPosition = owner.Position;
-            owner.MoveTo(target.Position);
+            var ownerPosition = ownerOriginOverride ?? owner.Position;
+            owner.MoveTo(ownerDestinationOverride ?? target.Position);
             GetMotor(owner.UnitId)?.Teleport(owner.Position);
             MoveTeleportExchangeTarget(target, ownerPosition);
 
@@ -2397,7 +2466,7 @@ namespace Game.Gameplay.Battle.Simulation
                     RestoreFriendlyHealth(impact.Point, impact.OwnerUnitId, impactWeapon);
                     return false;
                 case WeaponRole.MovementTool:
-                    RepositionOwner(impact.Point, impact.OwnerUnitId, impactWeapon);
+                    RepositionOwner(impact.Point, impact.OwnerUnitId, impactWeapon, impact.SourceOrigin);
                     return false;
                 default:
                     return ResolveDamageImpact(impact, impactWeapon);
@@ -3440,14 +3509,18 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
+            var spawnedWeapon = ResolveWeaponFromProjectileId(request.Definition.ProjectileId);
+            var sourceOrigin = spawnedWeapon?.WeaponId == SwapJumpWeaponId
+                ? _state.GetUnit(request.OwnerUnitId)?.Position
+                : (Vector2?)null;
             var projectile = new SimProjectile(
                 ++_nextProjectileId,
                 request.Definition,
                 request.OwnerUnitId,
                 request.Position,
                 request.Velocity,
-                request.Definition.TimeoutSeconds);
-            var spawnedWeapon = ResolveWeaponFromProjectileId(request.Definition.ProjectileId);
+                request.Definition.TimeoutSeconds,
+                sourceOrigin: sourceOrigin);
             if (spawnedWeapon?.WeaponId == BurRocketWeaponId)
             {
                 var evolution = ResolveEvolutionFor(ResolveTeamForOwner(request.OwnerUnitId), spawnedWeapon);
@@ -3710,6 +3783,7 @@ namespace Game.Gameplay.Battle.Simulation
 
                     var ignoresUnitsInFlight = projectileWeapon?.WeaponId == GrenadeWeaponId
                         || projectileWeapon?.WeaponId == TeleportWeaponId
+                        || projectileWeapon?.WeaponId == SwapJumpWeaponId
                         || projectile.Definition.ProjectileId == MineDeployProjectileId;
                     if (!isDrillRocket
                         && !ignoresUnitsInFlight
@@ -3770,7 +3844,8 @@ namespace Game.Gameplay.Battle.Simulation
                 projectile.Velocity,
                 projectile.Definition.Damage,
                 projectile.Definition.ImpactRadius,
-                projectile.Definition.KnockbackMultiplier);
+                projectile.Definition.KnockbackMultiplier,
+                projectile.SourceOrigin);
 
             ProjectileExploded?.Invoke(projectile.Id, impact);
             if (projectile.Id == _controlledProjectileId)

@@ -45,7 +45,8 @@ namespace Game.Tests.EditMode.Gameplay
         private static Harness CreateHarness(
             WeaponDefinition playerWeapon,
             WeaponDefinition opponentWeapon = null,
-            IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null)
+            IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null,
+            Vector2? secondOpponentPosition = null)
         {
             var bounds = new Rect(-10f, -8f, 20f, 16f);
             var terrain = BattleTerrain.CreateProcedural(bounds);
@@ -57,7 +58,16 @@ namespace Game.Tests.EditMode.Gameplay
             var playerUnit = new BattleUnitState("player.test.01", BattleTeamId.Player, new Vector2(-3f, 0f), playerArchetype.MaxHealth, 1);
             var opponentUnit = new BattleUnitState("opponent.test.01", BattleTeamId.Opponent, new Vector2(3f, 0f), opponentArchetype.MaxHealth, -1);
             var playerTeam = new BattleTeamState(BattleTeamId.Player, new[] { playerUnit });
-            var opponentTeam = new BattleTeamState(BattleTeamId.Opponent, new[] { opponentUnit });
+            var secondOpponent = secondOpponentPosition.HasValue
+                ? new BattleUnitState("opponent.test.02", BattleTeamId.Opponent,
+                    secondOpponentPosition.Value, opponentArchetype.MaxHealth, -1)
+                : null;
+            var opponentUnits = new List<BattleUnitState> { opponentUnit };
+            if (secondOpponent != null)
+            {
+                opponentUnits.Add(secondOpponent);
+            }
+            var opponentTeam = new BattleTeamState(BattleTeamId.Opponent, opponentUnits);
             var state = new BattleState(new[] { playerTeam, opponentTeam }, new TurnState(BattleTeamId.None, string.Empty, 0, false));
 
             var profile = new UnitMotionProfile(0.34f, 0.5f, 0.3f, 0.42f, 1.6f);
@@ -66,6 +76,11 @@ namespace Game.Tests.EditMode.Gameplay
                 [playerUnit.UnitId] = new UnitMotor(terrain.Grid, profile, playerUnit.Position, -6f),
                 [opponentUnit.UnitId] = new UnitMotor(terrain.Grid, profile, opponentUnit.Position, -6f)
             };
+            if (secondOpponent != null)
+            {
+                motors[secondOpponent.UnitId] = new UnitMotor(
+                    terrain.Grid, profile, secondOpponent.Position, -6f);
+            }
 
             var resolvedOpponentWeapon = opponentWeapon ?? playerWeapon;
             var playerInventory = new WeaponInventoryRuntime(new[] { playerWeapon });
@@ -937,6 +952,75 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsFalse(
                 harness.Terrain.Grid.IsSolidWorld(player.Position + Vector2.up * 0.6f),
                 "arrival blasts a pocket so the body fits");
+        }
+
+        [Test]
+        public void SwapJump_WithoutNearbyEnemy_RepositionsOwnerOnly()
+        {
+            var swapJump = CreateWeapon(
+                "weapon.swap-jump",
+                WeaponRole.MovementTool,
+                damage: 0,
+                gravityScale: 0f,
+                timeoutSeconds: 0.15f);
+            var harness = CreateHarness(swapJump);
+            var player = harness.State.GetUnit("player.test.01");
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            var origin = player.Position;
+            var opponentOrigin = opponent.Position;
+
+            Assert.That(harness.Simulation.TryFire(new AimState(
+                origin, Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 120, 1f / 120f);
+
+            Assert.That(player.Position.x, Is.GreaterThan(origin.x + 0.4f));
+            Assert.That(opponent.Position, Is.EqualTo(opponentOrigin));
+        }
+
+        [Test]
+        public void SwapJump_ExchangesClosestEnemyUsingThrowOrigin()
+        {
+            var swapJump = CreateWeapon(
+                "weapon.swap-jump",
+                WeaponRole.MovementTool,
+                damage: 0,
+                gravityScale: 0f,
+                timeoutSeconds: 0.15f);
+            var harness = CreateHarness(swapJump, secondOpponentPosition: new Vector2(-0.3f, 0f));
+            var player = harness.State.GetUnit("player.test.01");
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            var fartherOpponent = harness.State.GetUnit("opponent.test.02");
+            var fartherOrigin = fartherOpponent.Position;
+            var origin = player.Position;
+            var opponentNearLanding = new Vector2(-1.5f, 0f);
+            opponent.MoveTo(opponentNearLanding);
+            harness.Motors[opponent.UnitId].Teleport(opponentNearLanding);
+            var sphereLanding = default(Vector2?);
+            harness.Simulation.ProjectileExploded += (id, impact) =>
+            {
+                if (impact.OwnerUnitId == player.UnitId)
+                {
+                    sphereLanding = impact.Point;
+                }
+            };
+
+            Assert.That(harness.Simulation.TryFire(new AimState(
+                origin, Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            var ownerPositionAfterThrow = new Vector2(-4f, 0f);
+            player.MoveTo(ownerPositionAfterThrow);
+            harness.Motors[player.UnitId].Teleport(ownerPositionAfterThrow);
+            TickMany(harness.Simulation, 120, 1f / 120f);
+
+            Assert.That(sphereLanding.HasValue, Is.True);
+            Assert.That(player.Position.x, Is.EqualTo(sphereLanding.Value.x).Within(0.05f),
+                "the owner must arrive at the sphere, not at the enemy's old position");
+            Assert.That(player.Position.x, Is.GreaterThan(origin.x + 0.4f));
+            Assert.That(opponent.Position.x, Is.EqualTo(origin.x).Within(0.05f));
+            Assert.That(opponent.Position.y, Is.EqualTo(origin.y).Within(0.05f));
+            Assert.That(fartherOpponent.Position, Is.EqualTo(fartherOrigin),
+                "the farther enemy inside the exchange radius must stay in place");
         }
 
         [Test]
