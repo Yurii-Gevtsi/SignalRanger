@@ -8,6 +8,7 @@ using Game.Data.Save;
 using Game.Data.Progression;
 using Game.Gameplay.Battle.Assembly;
 using Game.Gameplay.Battle.Domain;
+using Game.Gameplay.Battle.Motion;
 using Game.Gameplay.Battle.Runtime;
 using Game.Gameplay.Battle.Simulation;
 using Game.Gameplay.Battle.Weapons;
@@ -358,6 +359,47 @@ namespace Game.Tests.PlayMode
                 yield return null;
             }
             Assert.That(simulation.ProjectilesInFlight, Is.Zero);
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator RepairJammer_ProductionSceneShowsTheNoRepairIconOnTheAffectedDroid()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.repair-jammer" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var state = Get<BattleState>(controller, "_battleState");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.repair-jammer") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var motors = Get<Dictionary<string, UnitMotor>>(controller, "_unitMotors");
+            var player = state.GetTeam(BattleTeamId.Player).Units[0];
+            var enemy = state.GetTeam(BattleTeamId.Opponent).Units[0];
+            var next = player.Position + new Vector2(1.4f, 0f);
+            enemy.MoveTo(next);
+            motors[enemy.UnitId].Teleport(next);
+            Assert.That(simulation.IsUnitRepairJammed(enemy.UnitId), Is.False);
+
+            Invoke(controller, "Fire");
+            for (var frame = 0; frame < 30 && !simulation.IsUnitRepairJammed(enemy.UnitId); frame++)
+            {
+                for (var tick = 0; tick < 30; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(simulation.IsUnitRepairJammed(enemy.UnitId), Is.True);
+            Invoke(controller, "RefreshUnitViews");
+            var icons = UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Include);
+            var visible = 0;
+            foreach (var renderer in icons)
+                if (renderer.name == "Repair Jammer Status Icon" && renderer.enabled
+                    && renderer.sprite != null && renderer.sprite.texture.name == "no-repair-2") visible++;
+            Assert.That(visible, Is.EqualTo(1), "exactly one no-repair icon, on the jammed droid");
             LogAssert.NoUnexpectedReceived();
         }
 

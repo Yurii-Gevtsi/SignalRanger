@@ -3711,6 +3711,76 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void RepairJammer_WithoutAnEnemyNearbyIsUnavailableAndSpendsNothing()
+        {
+            var jammer = CreateWeapon("weapon.repair-jammer", WeaponRole.DirectProjectile,
+                damage: 0, impactRadius: 1.2f, ammo: 2, gravityScale: 0f);
+            var harness = CreateHarness(jammer); // the opponent stands six units away
+            var before = harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo();
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Blocked));
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+            Assert.That(harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo(), Is.EqualTo(before));
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            Assert.That(harness.Simulation.IsAttackCommitted, Is.False, "the attack right is kept");
+        }
+
+        [Test]
+        public void RepairJammer_StatusAppearsAfterOnePointFiveSecondsAndTheDeviceLeavesNoBlastOrCrater()
+        {
+            var jammer = CreateWeapon("weapon.repair-jammer", WeaponRole.DirectProjectile,
+                damage: 42, impactRadius: 1.2f, ammo: 1, gravityScale: 0f);
+            var harness = CreateHarness(jammer);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            var nearbyPosition = new Vector2(-1.4f, 0f);
+            opponent.MoveTo(nearbyPosition);
+            harness.Motors[opponent.UnitId].Teleport(nearbyPosition);
+            SettleUnits(harness);
+            var craters = 0;
+            harness.Simulation.TerrainCraterApplied += (_, _, _) => craters++;
+            var healthBefore = opponent.Health;
+
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 90, 1f / 120f);   // 0.75 s: the body is still attached
+            Assert.That(harness.Simulation.IsUnitRepairJammed(opponent.UnitId), Is.False);
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.EqualTo(1));
+            TickMany(harness.Simulation, 150, 1f / 120f);  // 2.0 s in total
+            Assert.That(harness.Simulation.IsUnitRepairJammed(opponent.UnitId), Is.True);
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero, "the body vanishes");
+            Assert.That(opponent.Health, Is.EqualTo(healthBefore), "no damage");
+            Assert.That(craters, Is.Zero, "no crater and no blast");
+        }
+
+        [Test]
+        public void RepairJammer_HasTwoLoadoutAndTwoDurationPurchasesAndNothingElse()
+        {
+            const string id = "weapon.repair-jammer";
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(900000, 900000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            var progress = save.inventory.GetOrCreateWeaponProgress(id);
+            progress.blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.False);
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.True);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.False);
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False, "two duration steps only");
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(definition.HasEvolutionOptions, Is.False);
+
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, restored.inventory.GetOrCreateWeaponProgress(id))
+                .RepairJammerDurationBonusTurns, Is.EqualTo(2), "2 -> 3 -> 4 turns");
+        }
+
+        [Test]
         public void RepairJammer_BlocksTheAffectedEnemyHealingForTwoOwnTurns()
         {
             var jammer = CreateWeapon("weapon.repair-jammer", WeaponRole.DirectProjectile,
