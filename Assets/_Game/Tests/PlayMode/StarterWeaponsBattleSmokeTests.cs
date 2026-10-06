@@ -326,6 +326,45 @@ namespace Game.Tests.PlayMode
             LogAssert.NoUnexpectedReceived();
         }
 
+        [UnityTest]
+        public IEnumerator RailRifle_ProductionSceneFiresASmallBoltAlongTheShotAndItLeavesTheArena()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.rail-rifle" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.rail-rifle") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var visuals = Get<Dictionary<int, GameObject>>(controller, "_projectileVisuals");
+            SpriteRenderer shown = null;
+            simulation.ProjectileSpawned += projectile =>
+                shown = visuals[projectile.Id].GetComponentInChildren<SpriteRenderer>();
+            var terrain = Get<BattleTerrain>(controller, "_battleTerrain");
+            var direction = new Vector2(1f, 0.25f).normalized;
+            Set(controller, "_aimState", new AimState(new Vector2(0f, terrain.Grid.WorldMaxY - 2f), direction, 1f, true));
+            Invoke(controller, "Fire");
+            Assert.That(simulation.ProjectilesInFlight, Is.EqualTo(1));
+            Assert.That(shown.sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/blaster_shot")));
+            Assert.That(simulation.Projectiles[0].Velocity.magnitude,
+                Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed).Within(0.001f));
+            Assert.That(shown.transform.localScale.x, Is.LessThan(0.03f), "a small bolt, not a grenade-sized sprite");
+            Assert.That(Mathf.DeltaAngle(shown.transform.eulerAngles.z,
+                Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg), Is.EqualTo(0f).Within(1f));
+            for (var frame = 0; frame < 60 && simulation.HasProjectilesInFlight; frame++)
+            {
+                for (var tick = 0; tick < 60; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(simulation.ProjectilesInFlight, Is.Zero, "the bolt leaves the arena or spends its budget");
+            LogAssert.NoUnexpectedReceived();
+        }
+
         private static readonly int[] BarrierModes = { -1, 0, 4 };
 
         [UnityTest]

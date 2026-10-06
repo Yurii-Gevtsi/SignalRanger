@@ -151,6 +151,15 @@ namespace Game.Gameplay.Battle.Simulation
             _attachedUnitOffset = Vector2.zero;
         }
 
+        private System.Collections.Generic.HashSet<string> _piercedUnitIds;
+
+        /// <summary>True the first time this projectile passes through the given unit.</summary>
+        internal bool TryMarkPierced(string unitId)
+        {
+            _piercedUnitIds ??= new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+            return _piercedUnitIds.Add(unitId);
+        }
+
         internal void ConfigureTerrainDrill(float durationSeconds, TerrainMaterial penetration)
         {
             TerrainDrillTimeRemaining = Mathf.Max(0f, durationSeconds);

@@ -2040,6 +2040,121 @@ namespace Game.Tests.EditMode.Gameplay
                 "arrival blasts a pocket so the body fits");
         }
 
+        private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
+            Vector2? secondOpponent = null)
+        {
+            var rail = CreateWeapon("weapon.rail-rifle", WeaponRole.DirectProjectile, damage: 52, impactRadius: 0.35f,
+                ammo: 2, gravityScale: 0f, timeoutSeconds: 5f);
+            return CreateHarness(rail, playerWeaponProgress: progress, secondOpponentPosition: secondOpponent);
+        }
+
+        private static SaveWeaponProgressData CreateRailProgress(int pierceSteps)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.rail-rifle", rank = 5 + pierceSteps };
+            progress.EnsureDefaults();
+            for (var rank = 2; rank <= 5; rank++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                    { rank = rank, path = (int)(rank % 2 == 0 ? WeaponUpgradePath.Core : WeaponUpgradePath.Loadout) });
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "terrain-pierce" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = pierceSteps });
+            return progress;
+        }
+
+        [Test]
+        public void RailRifle_PassesThroughEveryDroidOnTheLineAndHurtsEachOnce()
+        {
+            var harness = CreateRailHarness(secondOpponent: new Vector2(5f, 0f));
+            var first = harness.State.GetUnit("opponent.test.01");
+            var second = harness.State.GetUnit("opponent.test.02");
+            var firstStart = first.Health;
+            var secondStart = second.Health;
+            var hits = new Dictionary<string, int>();
+            harness.Simulation.DamageApplied += (_, evt) =>
+                hits[evt.TargetUnitId] = hits.TryGetValue(evt.TargetUnitId, out var n) ? n + 1 : 1;
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-2.4f, 0.1f), Vector2.right, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 360, 1f / 120f);
+            Assert.That(firstStart - first.Health, Is.EqualTo(52));
+            Assert.That(secondStart - second.Health, Is.EqualTo(52), "the bullet kept flying after the first droid");
+            Assert.That(hits["opponent.test.01"], Is.EqualTo(1));
+            Assert.That(hits["opponent.test.02"], Is.EqualTo(1));
+            Assert.That(harness.State.GetUnit("player.test.01").Health, Is.EqualTo(100), "the shooter is untouched");
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+            TickMany(harness.Simulation, 3600, 1f / 120f); // the retreat window ends
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+        }
+
+        [Test]
+        public void RailRifle_TunnelsANarrowChannelThroughGroundAndHitsTheDroidBehind()
+        {
+            var harness = CreateRailHarness();
+            harness.Terrain.StampSolidRect(new Vector2(1f, 1f), new Vector2(1f, 4f)); // x 0.5..1.5, y -1..3
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            var start = opponent.Health;
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(new Vector2(1f, 0.1f)), Is.True);
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-2.4f, 0.1f), Vector2.right, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 360, 1f / 120f);
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(new Vector2(1f, 0.1f)), Is.False, "channel carved");
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(new Vector2(1f, 1.6f)), Is.True, "the channel is narrow");
+            Assert.That(start - opponent.Health, Is.EqualTo(52), "reached the droid behind the wall");
+        }
+
+        [Test]
+        public void RailRifle_StopsWhenThePenetrationBudgetIsSpentAndEachPierceStepAddsTenPercent()
+        {
+            float TunnelEnd(SaveWeaponProgressData progress)
+            {
+                var harness = CreateRailHarness(progress);
+                // A long slab above the droids so only the ground budget matters (speed 6 u/s, budget 1 s).
+                harness.Terrain.StampSolidRect(new Vector2(4.5f, 2f), new Vector2(11f, 1f)); // x -1..10, y 1.5..2.5
+                Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-1.4f, 2f), Vector2.right, 6f, true)).Outcome,
+                    Is.EqualTo(BattleFireOutcome.Fired));
+                TickMany(harness.Simulation, 600, 1f / 120f);
+                Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+                var x = -1f;
+                while (x < 10f && !harness.Terrain.Grid.IsSolidWorld(new Vector2(x, 2f))) x += 0.05f;
+                return x;
+            }
+
+            var baseEnd = TunnelEnd(null);
+            var steppedEnd = TunnelEnd(CreateRailProgress(4));
+            Assert.That(baseEnd, Is.EqualTo(5f).Within(0.3f), "6 units of ground at 6 u/s for one second");
+            Assert.That(steppedEnd - baseEnd, Is.EqualTo(2.4f).Within(0.3f), "four steps add 40% of the budget");
+        }
+
+        [Test]
+        public void RailRifle_FeatureIsFourPaidStepsAndSurvivesJson()
+        {
+            const string id = "weapon.rail-rifle";
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(900000, 900000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            var progress = save.inventory.GetOrCreateWeaponProgress(id);
+            progress.blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.False, "no Aim steps");
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False, "no Radius steps");
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.True);
+            for (var i = 0; i < 4; i++)
+                Assert.That(service.TryPurchaseEvolution(id, 5, "terrain-pierce").Applied, Is.True, $"step {i + 1}");
+            Assert.That(service.TryPurchaseEvolution(id, 5, "terrain-pierce").Applied, Is.False, "only four steps");
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.True);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False, "core limit is four");
+
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, restored.inventory.GetOrCreateWeaponProgress(id))
+                .RailPierceSteps, Is.EqualTo(4));
+            Assert.That(weapon.MinPower, Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed), "shared base speed");
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/blaster_shot"), Is.Not.Null);
+        }
+
         private static SaveWeaponProgressData CreateTeleportProgress(bool earlyTrigger)
         {
             var progress = new SaveWeaponProgressData { weaponId = "weapon.teleport", rank = earlyTrigger ? 11 : 6 };

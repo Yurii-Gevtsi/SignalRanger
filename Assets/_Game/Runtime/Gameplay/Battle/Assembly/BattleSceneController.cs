@@ -2657,6 +2657,8 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 "weapon.blaster-caset" => Vector3.one * (diameter * 0.42f),
                 "weapon.ion-shotgun" => Vector3.one * 0.02f,
+                // blaster_shot is 1254 px wide (opaque bolt 781x241 px): this scale gives a bolt about 0.035 world units thick, close to a shotgun pellet.
+                "weapon.rail-rifle" => Vector3.one * 0.0145f,
                 "weapon.impulse" => Vector3.one * (diameter * 0.40572f),
                 "weapon.freeze" => Vector3.one * (diameter * 0.315f),
                 "weapon.mortira" => Vector3.one * (diameter * 0.36f),
@@ -2709,6 +2711,7 @@ namespace Game.Gameplay.Battle.Assembly
                 // weapon/evolution icon here: it makes the gun itself look as though
                 // it was fired from the character.
                 "weapon.blaster-caset" => "blaster_shot",
+                "weapon.rail-rifle" => "blaster_shot",
                 "weapon.impulse" => "impulse_shot",
                 "weapon.mortira" => "mortira_shot",
                 "weapon.guardian-drone" => "mortira_shot",

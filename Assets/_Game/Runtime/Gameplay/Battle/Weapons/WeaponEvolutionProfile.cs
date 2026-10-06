@@ -62,8 +62,10 @@ namespace Game.Gameplay.Battle.Weapons
             float fpvImpactRadiusMultiplier = 1f,
             bool stickyToxicRelease = false,
             bool teleportInstantTouch = false,
-            bool teleportEarlyTrigger = false)
+            bool teleportEarlyTrigger = false,
+            int railPierceSteps = 0)
         {
+            RailPierceSteps = Mathf.Clamp(railPierceSteps, 0, 4);
             StickyToxicRelease = stickyToxicRelease;
             TeleportInstantTouch = teleportInstantTouch;
             TeleportEarlyTrigger = teleportEarlyTrigger;
@@ -168,6 +170,7 @@ namespace Game.Gameplay.Battle.Weapons
         public bool StickyToxicRelease { get; }
         public bool TeleportInstantTouch { get; }
         public bool TeleportEarlyTrigger { get; }
+        public int RailPierceSteps { get; }
 
         public static WeaponEvolutionProfile Base => new(1, 0f, 1f, 3, 0);
     }
@@ -185,6 +188,7 @@ namespace Game.Gameplay.Battle.Weapons
         private const string TeleportWeaponId = "weapon.teleport";
         private const string MortarWeaponId = "weapon.mortira";
         private const string StickyGrenadeWeaponId = "weapon.sticky-grenade";
+        private const string RailRifleWeaponId = "weapon.rail-rifle";
         private const string MissileWeaponId = "weapon.missle";
         private const string ToxicWeaponId = "weapon.toxic";
         private const string FireGunWeaponId = "weapon.fire-gun";
@@ -243,6 +247,8 @@ namespace Game.Gameplay.Battle.Weapons
                             mortarCascadeCount: 2 + Mathf.Clamp(firstSteps - 1, 0, 4));
                     case StickyGrenadeWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, stickyToxicRelease: true);
+                    case RailRifleWeaponId:
+                        return new WeaponEvolutionProfile(1, 0f, 1f, railPierceSteps: firstSteps);
                     case TeleportWeaponId:
                         // early_trigger (rank 10) is added on top of instant_touch (rank 5).
                         return new WeaponEvolutionProfile(1, 0f, 1f,

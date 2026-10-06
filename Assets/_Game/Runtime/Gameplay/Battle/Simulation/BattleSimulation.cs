@@ -35,6 +35,10 @@ namespace Game.Gameplay.Battle.Simulation
         private const string BlasterWeaponId = "weapon.blaster-caset";
         private const string BurWeaponId = "weapon.bur";
         private const string BurRocketWeaponId = "weapon.bur-rocket";
+        private const string RailRifleWeaponId = "weapon.rail-rifle";
+        private const float RailBasePierceSeconds = 1f;
+        private const float RailPierceStepPercent = 0.10f;
+        private const float RailTunnelRadius = 0.12f;
         private const string C4WeaponId = "weapon.c4";
         private const string FireGunWeaponId = "weapon.fire-gun";
         private const string ToxicWeaponId = "weapon.toxic";
@@ -4709,6 +4713,14 @@ namespace Game.Gameplay.Battle.Simulation
                     WeaponUpgradeChoiceResolver.ResolveDrillRocketTerrainSeconds(radiusPurchases),
                     TerrainMaterial.Titanium);
             }
+            else if (spawnedWeapon?.WeaponId == RailRifleWeaponId)
+            {
+                // The shared penetration budget P0 is one second of travel inside obstacles; the
+                // purchased terrain_pierce steps add 10% of it each.
+                var railSteps = ResolveEvolutionFor(ResolveTeamForOwner(request.OwnerUnitId), spawnedWeapon).RailPierceSteps;
+                projectile.ConfigureTerrainDrill(
+                    RailBasePierceSeconds * (1f + railSteps * RailPierceStepPercent), TerrainMaterial.Titanium);
+            }
             else if (spawnedWeapon?.WeaponId == MissileWeaponId
                 && !IsMissileCluster(request.Definition.ProjectileId))
             {
@@ -4762,6 +4774,11 @@ namespace Game.Gameplay.Battle.Simulation
                 if (_mortarSequences.TryGetValue(projectile.Id, out var mortarSequence))
                 {
                     StepMortarFragment(i, projectile, mortarSequence, deltaTime);
+                    continue;
+                }
+                if (ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId)?.WeaponId == RailRifleWeaponId)
+                {
+                    StepRailBullet(i, projectile, deltaTime);
                     continue;
                 }
                 if (!string.IsNullOrEmpty(projectile.GuaranteedTargetUnitId))
@@ -5058,6 +5075,144 @@ namespace Game.Gameplay.Battle.Simulation
                     if (stepIndex == stepCount - 1)
                     {
                         projectile.MoveTo(position);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Straight bullet that tunnels through ground and droids. Time spent inside an obstacle or a
+        /// body spends the same penetration budget; each droid is hurt once per pass.
+        /// </summary>
+        private void StepRailBullet(int projectileIndex, SimProjectile projectile, float deltaTime)
+        {
+            projectile.ReduceLifetime(deltaTime);
+            if (projectile.RemainingLifetime <= 0f)
+            {
+                EndRailBullet(projectileIndex, projectile);
+                return;
+            }
+
+            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
+            var sourceTeam = ResolveTeamForOwner(projectile.OwnerUnitId);
+            var radius = Mathf.Max(0.05f, projectile.Definition.Radius);
+            var position = projectile.Position;
+            var displacement = projectile.Velocity * deltaTime;
+            var stepCount = Mathf.Max(1, Mathf.CeilToInt(displacement.magnitude / ProjectileSubStepLength));
+            var step = displacement / stepCount;
+            var stepSeconds = deltaTime / stepCount;
+            var carved = false;
+            for (var stepIndex = 0; stepIndex < stepCount; stepIndex++)
+            {
+                position += step;
+                if (position.y < _settings.FallDeathY - 2f
+                    || (_terrain != null && (position.x < _terrain.Grid.WorldMinX - 2f || position.x > _terrain.Grid.WorldMaxX + 2f
+                        || position.y > _terrain.Grid.WorldMaxY + 4f)))
+                {
+                    projectile.MoveTo(position);
+                    EndRailBullet(projectileIndex, projectile);
+                    return;
+                }
+
+                if (!projectile.HasClearedOwner && !IsTouchingUnit(position, radius, projectile.OwnerUnitId))
+                {
+                    projectile.MarkClearedOwner();
+                }
+
+                if (TryFindGrounderForProjectile(projectile, weapon, position, out var grounder)
+                    && Vector2.Distance(position, grounder.Position) <= Mathf.Max(0.35f, radius + 0.18f))
+                {
+                    projectile.MoveTo(position);
+                    DamageGrounder(grounder, 1);
+                    EndRailBullet(projectileIndex, projectile);
+                    return;
+                }
+
+                var insideBody = false;
+                foreach (var team in _state.Teams)
+                {
+                    foreach (var unit in team.Units)
+                    {
+                        if (unit.IsDefeated
+                            || (unit.UnitId == projectile.OwnerUnitId && !projectile.HasClearedOwner)
+                            || !IsTouchingUnitHitbox(position, radius, unit))
+                        {
+                            continue;
+                        }
+
+                        insideBody = true;
+                        if (projectile.TryMarkPierced(unit.UnitId))
+                        {
+                            ApplyDamage(unit, ResolveOutgoingDamage(projectile.OwnerUnitId, projectile.Definition.Damage),
+                                projectile.Definition.ProjectileId, sourceTeam);
+                        }
+                    }
+                }
+
+                // The look-ahead keeps the bullet counted as inside ground while it moves along the
+                // channel it has just carved.
+                var heading = projectile.Velocity.sqrMagnitude > 0.0001f ? projectile.Velocity.normalized : Vector2.right;
+                var insideGround = _terrain != null
+                    && (_terrain.Grid.IsSolidWorld(position)
+                        || _terrain.Grid.IsSolidWorld(position + heading * (RailTunnelRadius * 1.3f)));
+                if (insideGround && projectile.ShouldCarveTunnelAt(position, DrillCarveSpacing))
+                {
+                    carved |= ApplyTerrainCrater(position, RailTunnelRadius, sourceTeam, TerrainMaterial.Titanium);
+                }
+
+                if (insideGround || insideBody)
+                {
+                    projectile.ConsumeTerrainDrillTime(stepSeconds);
+                    if (projectile.TerrainDrillTimeRemaining <= 0f)
+                    {
+                        projectile.MoveTo(position);
+                        if (carved)
+                        {
+                            WakeUnitsWithoutSupport();
+                        }
+
+                        EndRailBullet(projectileIndex, projectile);
+                        return;
+                    }
+                }
+            }
+
+            projectile.MoveTo(position);
+            if (carved)
+            {
+                WakeUnitsWithoutSupport();
+            }
+        }
+
+        /// <summary>A bullet that simply runs out has no impact to end the shot, so it concludes it itself.</summary>
+        private void EndRailBullet(int projectileIndex, SimProjectile projectile)
+        {
+            DiscardProjectile(projectileIndex, projectile);
+            if (HasProjectilesInFlight || HasActiveWeaponEffect || !_activeShotEndsTurn)
+            {
+                return;
+            }
+
+            Result = BattleResultEvaluator.Evaluate(_state);
+            if (Result.IsFinished)
+            {
+                UnitDefeated?.Invoke(new UnitDefeatedEvent(string.Empty, "battle-finished"));
+                BattleFinished?.Invoke(Result, BattleFinishReason.ProjectileImpactResolved);
+                return;
+            }
+
+            AdvanceTurnOrStartRetreat(TurnAdvanceReason.ProjectileImpactResolved);
+        }
+
+        private void WakeUnitsWithoutSupport()
+        {
+            foreach (var team in _state.Teams)
+            {
+                foreach (var unit in team.Units)
+                {
+                    if (!unit.IsDefeated)
+                    {
+                        GetMotor(unit.UnitId)?.WakeIfUnsupported();
                     }
                 }
             }
