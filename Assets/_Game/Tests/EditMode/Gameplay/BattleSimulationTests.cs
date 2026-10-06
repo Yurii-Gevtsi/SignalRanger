@@ -2204,6 +2204,92 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(Resources.Load<Texture2D>("UI/Weapons/hopping_grenade"), Is.Not.Null);
         }
 
+        private static Harness CreateFireHarness(Vector2? ally = null, int damage = 40, Vector2? secondOpponent = null)
+        {
+            var fire = CreateWeapon("weapon.incendiary-grenade", WeaponRole.ArcingExplosive, damage: damage,
+                impactRadius: 2.5f, gravityScale: 0f, timeoutSeconds: 8f);
+            var harness = CreateHarness(fire, secondPlayerPosition: ally, secondOpponentPosition: secondOpponent);
+            return harness;
+        }
+
+        [Test]
+        public void IncendiaryGrenade_AppliesTheSharedTwoTurnFireCycleToEveryDroidInTheBlast()
+        {
+            var harness = CreateFireHarness(ally: new Vector2(4f, 0f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var friend = harness.State.GetUnit("player.test.02");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var direct = start - enemy.Health;
+            Assert.That(direct, Is.GreaterThan(0));
+            Assert.That(harness.Simulation.IsUnitLavaBurning(enemy.UnitId), Is.True);
+            Assert.That(harness.Simulation.IsUnitLavaBurning(friend.UnitId), Is.True, "allies in the primary radius burn too");
+
+            var tick = Mathf.Max(1, Mathf.RoundToInt(direct * 0.2f));
+            var afterBlast = enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // victim turn ends: tick
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // second tick and removal
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick * 2));
+            Assert.That(harness.Simulation.IsUnitLavaBurning(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void IncendiaryGrenade_GroundFlamesArePresentationOnlyAndNeverIgniteLateComers()
+        {
+            var harness = CreateFireHarness(secondOpponent: new Vector2(9f, 0f));
+            var puddles = 0;
+            harness.Simulation.FireBlobSpawned += _ => puddles++;
+            var lateComer = harness.State.GetUnit("opponent.test.02");
+            var start = lateComer.Health;
+            ThrowAtOpponent(harness);
+            Assert.That(puddles, Is.EqualTo(4), "the flames are still shown");
+            // Walk a droid into the burning ground after the blast.
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            lateComer.MoveTo(enemy.Position);
+            harness.Motors[lateComer.UnitId].Teleport(lateComer.Position);
+            TickMany(harness.Simulation, 360, 1f / 120f);
+            Assert.That(lateComer.Health, Is.EqualTo(start), "ground fire deals no damage");
+            Assert.That(harness.Simulation.IsUnitLavaBurning(lateComer.UnitId), Is.False);
+        }
+
+        [Test]
+        public void IncendiaryGrenade_RepeatHitRefreshesWithoutStackingAndBoostsOnlyTheDirectDamage()
+        {
+            var harness = CreateFireHarness(damage: 20);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var first = start - enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // tick one
+            enemy.MoveTo(new Vector2(3f, 0f));
+            harness.Motors[enemy.UnitId].Teleport(enemy.Position);
+            var beforeSecond = enemy.Health;
+            ThrowAtOpponent(harness);
+            var second = beforeSecond - enemy.Health;
+            Assert.That(second, Is.EqualTo(Mathf.CeilToInt(first * 1.25f)).Within(1));
+            var tick = Mathf.Max(1, Mathf.RoundToInt(second * 0.2f));
+            var afterSecond = enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(enemy.Health, Is.EqualTo(afterSecond - tick * 2), "two ticks in total after the refresh");
+            Assert.That(harness.Simulation.IsUnitLavaBurning(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void IncendiaryGrenade_UsesFourTthPathsHasNoFeatureAndKeepsItsOwnBody()
+        {
+            Assert.That(WeaponProgressionCatalog.TryGet("weapon.incendiary-grenade", out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+            Assert.That(definition.HasEvolutionOptions, Is.False);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/incendiary_grenade"), Is.Not.Null);
+            for (var frame = 1; frame <= 4; frame++)
+                Assert.That(Resources.Load<Texture2D>("UI/Weapons/fire_shot_" + frame), Is.Not.Null, $"fire_shot_{frame}");
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {

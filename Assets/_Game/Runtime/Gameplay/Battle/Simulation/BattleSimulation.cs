@@ -212,6 +212,7 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly Dictionary<string, ActivePoisonEffect> _poisonEffects = new(StringComparer.Ordinal);
         // Shared two-turn elemental cycle: cold uses it now, fire and the others reuse the same rules.
         private readonly Dictionary<string, ElementalStatus> _chillEffects = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, ElementalStatus> _fireEffects = new(StringComparer.Ordinal);
         private const int ElementalBaseDurationTurns = 2;
         private const int ElementalRepeatBonusPercent = 25;
         private readonly Dictionary<string, ActiveDisorientation> _freezes = new(StringComparer.Ordinal);
@@ -1089,6 +1090,7 @@ namespace Game.Gameplay.Battle.Simulation
         {
             ProcessPoisonForEndingActiveTurn();
             ProcessElementalForEndingActiveTurn(_chillEffects);
+            ProcessElementalForEndingActiveTurn(_fireEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
@@ -1359,6 +1361,7 @@ namespace Game.Gameplay.Battle.Simulation
         {
             ProcessPoisonForEndingActiveTurn();
             ProcessElementalForEndingActiveTurn(_chillEffects);
+            ProcessElementalForEndingActiveTurn(_fireEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
@@ -2737,7 +2740,9 @@ namespace Game.Gameplay.Battle.Simulation
         private void SpawnIncendiaryPuddles(ProjectileImpact impact, WeaponDefinition weapon)
         {
             var ownerTeam = ResolveTeamForOwner(impact.OwnerUnitId);
-            var totalDamage = Mathf.Max(1, Mathf.RoundToInt(weapon.Damage * 0.25f));
+            // The ground flames are presentation only: the blast and the shared fire status carry the
+            // damage, so the puddles neither hurt nor ignite anyone who walks in later.
+            var totalDamage = 0;
             var baseDamage = totalDamage / IncendiaryPuddleCount;
             var remainder = totalDamage % IncendiaryPuddleCount;
 
@@ -3567,6 +3572,7 @@ namespace Game.Gameplay.Battle.Simulation
             var appliesEmpStun = impactWeapon.WeaponId == EmpWeaponId;
             var empEvolution = appliesEmpStun ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
             var appliesChill = impactWeapon.WeaponId == CryoGrenadeWeaponId;
+            var appliesFire = impactWeapon.WeaponId == IncendiaryGrenadeWeaponId;
             var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId;
             var freezeEvolution = appliesFreeze ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
 
@@ -3579,8 +3585,10 @@ namespace Game.Gameplay.Battle.Simulation
                 impact.ProjectileId,
                 settings,
                 (unit, amount) => ResolveElementalRepeatBonus(
-                    _chillEffects, appliesChill, unit,
-                    ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution)));
+                    _fireEffects, appliesFire, unit,
+                    ResolveElementalRepeatBonus(
+                        _chillEffects, appliesChill, unit,
+                        ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution))));
             foreach (var damageEvent in damageEvents)
             {
                 DamageApplied?.Invoke(sourceTeam, damageEvent);
@@ -3593,6 +3601,11 @@ namespace Game.Gameplay.Battle.Simulation
                 if (appliesChill)
                 {
                     ApplyElementalStatus(_chillEffects, target, sourceTeam, damageEvent.Damage);
+                }
+
+                if (appliesFire)
+                {
+                    ApplyElementalStatus(_fireEffects, target, sourceTeam, damageEvent.Damage);
                 }
 
                 if (appliesEmpStun)
@@ -4052,6 +4065,7 @@ namespace Game.Gameplay.Battle.Simulation
 
             return (_lavaOverlayRemainingSeconds.TryGetValue(unitId, out var secondsRemaining)
                     && secondsRemaining > 0f)
+                || _fireEffects.ContainsKey(unitId)
                 || (_burnEffects.TryGetValue(unitId, out var burn)
                     && burn.TurnsRemaining > 0);
         }
@@ -4587,6 +4601,7 @@ namespace Game.Gameplay.Battle.Simulation
             _orbitalTargetMarker = null;
             ProcessPoisonForEndingActiveTurn();
             ProcessElementalForEndingActiveTurn(_chillEffects);
+            ProcessElementalForEndingActiveTurn(_fireEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
