@@ -1,0 +1,1192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="178" result="Passed" total="178" passed="178" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:06Z" duration="3,6060805">
+  <test-suite type="TestSuite" id="1000" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="707" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:06Z" duration="3.606081" total="178" passed="178" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1825" name="Game.Tests.EditMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.EditMode.dll" runstate="Runnable" testcasecount="707" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:06Z" duration="3.569679" total="178" passed="178" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1826" name="Game" fullname="Game" runstate="Runnable" testcasecount="707" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:06Z" duration="3.564632" total="178" passed="178" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1827" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="707" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:06Z" duration="3.559652" total="178" passed="178" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1828" name="EditMode" fullname="Game.Tests.EditMode" runstate="Runnable" testcasecount="707" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:06Z" duration="3.556062" total="178" passed="178" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1835" name="Gameplay" fullname="Game.Tests.EditMode.Gameplay" runstate="Runnable" testcasecount="431" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:05Z" duration="3.412353" total="168" passed="168" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1257" name="BattleSimulationTests" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="168" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:05Z" duration="3.369444" total="168" passed="168" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-suite type="ParameterizedMethod" id="1369" name="Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:02Z" duration="0.213382" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1367" name="Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount(6)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount(6)" methodname="Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="318892549" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:02Z" duration="0.170857" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1368" name="Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount(9)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount(9)" methodname="Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="2047612274" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:02Z" duration="0.021664" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1365" name="Blaster_KeepsBurstAvailableUntilThirdResolvedShot" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_KeepsBurstAvailableUntilThirdResolvedShot" methodname="Blaster_KeepsBurstAvailableUntilThirdResolvedShot" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1676485274" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:02Z" duration="0.016757" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1366" name="Blaster_OutOfAmmoMidBurst_EndsTurnAfterImpact" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_OutOfAmmoMidBurst_EndsTurnAfterImpact" methodname="Blaster_OutOfAmmoMidBurst_EndsTurnAfterImpact" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="40571013" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:02Z" duration="0.023117" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1370" name="Blaster_RicochetEvolutionSetsProjectileBounceLimit" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_RicochetEvolutionSetsProjectileBounceLimit" methodname="Blaster_RicochetEvolutionSetsProjectileBounceLimit" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1388695339" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:02Z" duration="0.011121" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1359" name="C4_DropsWithoutAim_AllowsEscape_ThenExplodesAndEndsTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4_DropsWithoutAim_AllowsEscape_ThenExplodesAndEndsTurn" methodname="C4_DropsWithoutAim_AllowsEscape_ThenExplodesAndEndsTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1170337216" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:02Z" duration="0.064991" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1364" name="C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:03Z" duration="0.243964" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1361" name="C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(0,65,1.9375f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(0,65,1.9375f)" methodname="C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1331897650" result="Passed" start-time="2026-10-06 15:18:02Z" end-time="2026-10-06 15:18:03Z" duration="0.132093" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1362" name="C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(1,98,2.13125f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(1,98,2.13125f)" methodname="C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1160768525" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.051243" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1363" name="C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(4,650,2.7125f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(4,650,2.7125f)" methodname="C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="209225985" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.042045" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1360" name="C4Evolutions_ApplyConfiguredDamageRadiusAndKnockback" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4Evolutions_ApplyConfiguredDamageRadiusAndKnockback" methodname="C4Evolutions_ApplyConfiguredDamageRadiusAndKnockback" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1968648346" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.120089" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1332" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.368470" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1328" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)" methodname="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="56714122" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.130539" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1329" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)" methodname="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="265523058" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.072189" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1330" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)" methodname="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="2009534235" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.078443" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1331" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)" methodname="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1392022834" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.077962" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1318" name="CanonicalBarrier_FireUsesThePreviewCenter" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.124304" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1316" name="CanonicalBarrier_FireUsesThePreviewCenter(0.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(0.0f)" methodname="CanonicalBarrier_FireUsesThePreviewCenter" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1913674724" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.047931" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1317" name="CanonicalBarrier_FireUsesThePreviewCenter(90.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(90.0f)" methodname="CanonicalBarrier_FireUsesThePreviewCenter" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1126858255" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.067703" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1319" name="CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive" methodname="CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="561590334" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.002769" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1333" name="CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction" methodname="CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="121102810" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:03Z" duration="0.156750" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1327" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:04Z" duration="0.436702" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1320" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="73248241" result="Passed" start-time="2026-10-06 15:18:03Z" end-time="2026-10-06 15:18:04Z" duration="0.069646" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1321" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1424027617" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.058543" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1322" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="342813252" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.061790" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1323" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1328773517" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.058701" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1324" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1586879802" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.059042" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1325" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1916321990" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.059728" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1326" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1168531282" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.058725" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1337" name="CanonicalDisc_HasSharedExplosionRadius" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDisc_HasSharedExplosionRadius" methodname="CanonicalDisc_HasSharedExplosionRadius" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1186859104" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.002726" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1358" name="CanonicalDisc_TwoRealRicochetsAddLinearDamage" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDisc_TwoRealRicochetsAddLinearDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.033700" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1356" name="CanonicalDisc_TwoRealRicochetsAddLinearDamage(0,52)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDisc_TwoRealRicochetsAddLinearDamage(0,52)" methodname="CanonicalDisc_TwoRealRicochetsAddLinearDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1838171663" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.014782" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1357" name="CanonicalDisc_TwoRealRicochetsAddLinearDamage(4,525)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDisc_TwoRealRicochetsAddLinearDamage(4,525)" methodname="CanonicalDisc_TwoRealRicochetsAddLinearDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="2047093644" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.011692" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1421" name="CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.035698" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1418" name="CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(0,1.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(0,1.0f)" methodname="CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1507427188" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.010737" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1419" name="CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(1,1.1f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(1,1.1f)" methodname="CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="567654191" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.007988" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1420" name="CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(4,1.4f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(4,1.4f)" methodname="CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1340787728" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.007615" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1417" name="CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.032939" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1414" name="CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(Soil)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(Soil)" methodname="CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="716158327" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.010679" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1415" name="CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(LightMetal)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(LightMetal)" methodname="CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="152736690" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.006949" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1416" name="CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(Titanium)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(Titanium)" methodname="CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="111038480" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.007923" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1347" name="CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.050294" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1344" name="CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(False,False)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(False,False)" methodname="CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1726988719" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.022714" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1345" name="CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(True,False)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(True,False)" methodname="CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1868210203" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.008073" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1346" name="CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(False,True)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(False,True)" methodname="CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1442201250" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.011409" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1348" name="CanonicalMine_AllFourPlacementsLeaveARegularAttackAvailable" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_AllFourPlacementsLeaveARegularAttackAvailable" methodname="CanonicalMine_AllFourPlacementsLeaveARegularAttackAvailable" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="966047469" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.013446" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1335" name="CanonicalMine_HasFourChargesAndNoLoadoutPurchases" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_HasFourChargesAndNoLoadoutPurchases" methodname="CanonicalMine_HasFourChargesAndNoLoadoutPurchases" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="207964186" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.003467" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1351" name="CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.024631" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1349" name="CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe(False)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe(False)" methodname="CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1737651811" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.008512" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1350" name="CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe(True)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe(True)" methodname="CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="948377515" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.009775" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1355" name="CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.029575" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1352" name="CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(0,54,1.55f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(0,54,1.55f)" methodname="CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1232038477" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.009083" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1353" name="CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(1,81,1.705f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(1,81,1.705f)" methodname="CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="733487879" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.007364" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1354" name="CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(4,540,2.17f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(4,540,2.17f)" methodname="CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1424879601" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.007114" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1373" name="CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade" methodname="CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1880618923" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.010513" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1385" name="CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin" methodname="CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1994992949" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.018521" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1383" name="CanonicalMortar_HostileSequentialShardsAreInterceptedByTheMagnetAndTheQueueClears" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_HostileSequentialShardsAreInterceptedByTheMagnetAndTheQueueClears" methodname="CanonicalMortar_HostileSequentialShardsAreInterceptedByTheMagnetAndTheQueueClears" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="481940583" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.032333" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1379" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.122375" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1374" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(1,2)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(1,2)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1619037845" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.026383" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1375" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(2,3)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(2,3)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1438664075" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.019963" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1376" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(3,4)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(3,4)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="213937009" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.022921" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1377" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(4,5)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(4,5)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="2045261488" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.019481" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1378" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(5,6)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(5,6)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="115125413" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.025398" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1384" name="CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep" methodname="CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="895906996" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.001125" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1343" name="CanonicalRepair_CapsHealingAndStillGrantsProtectionAtFullHp" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CapsHealingAndStillGrantsProtectionAtFullHp" methodname="CanonicalRepair_CapsHealingAndStillGrantsProtectionAtFullHp" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1055918637" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.009167" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1342" name="CanonicalRepair_CoreScalesHealingFromOwnerMaxHp" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CoreScalesHealingFromOwnerMaxHp" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.026602" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1338" name="CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(100,0,25)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(100,0,25)" methodname="CanonicalRepair_CoreScalesHealingFromOwnerMaxHp" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="495683019" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.005714" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1339" name="CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,0,250)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,0,250)" methodname="CanonicalRepair_CoreScalesHealingFromOwnerMaxHp" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="348800706" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.005629" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1340" name="CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,1,275)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,1,275)" methodname="CanonicalRepair_CoreScalesHealingFromOwnerMaxHp" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="2008315252" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.004514" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1341" name="CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,4,350)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,4,350)" methodname="CanonicalRepair_CoreScalesHealingFromOwnerMaxHp" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="52404699" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.003571" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1336" name="CanonicalRepair_HealsOnlyOwnerFromMaxHealth" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_HealsOnlyOwnerFromMaxHealth" methodname="CanonicalRepair_HealsOnlyOwnerFromMaxHealth" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1872828119" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.005075" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1440" name="CommandScript_ReplaysWithMatchingHashes" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CommandScript_ReplaysWithMatchingHashes" methodname="CommandScript_ReplaysWithMatchingHashes" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1983419456" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.013979" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1315" name="CoverWeapon_Fired_StampsTerrainMask" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CoverWeapon_Fired_StampsTerrainMask" methodname="CoverWeapon_Fired_StampsTerrainMask" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1892139939" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.007816" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1292" name="CryoGrenade_FreezesUnitsInsideItsBlastForOneTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CryoGrenade_FreezesUnitsInsideItsBlastForOneTurn" methodname="CryoGrenade_FreezesUnitsInsideItsBlastForOneTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="345108228" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.004895" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1438" name="DrillLaser_CarvesEveryDestructibleMaterial" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_CarvesEveryDestructibleMaterial" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.022424" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1435" name="DrillLaser_CarvesEveryDestructibleMaterial(Soil)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_CarvesEveryDestructibleMaterial(Soil)" methodname="DrillLaser_CarvesEveryDestructibleMaterial" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1940320148" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.008550" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1436" name="DrillLaser_CarvesEveryDestructibleMaterial(LightMetal)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_CarvesEveryDestructibleMaterial(LightMetal)" methodname="DrillLaser_CarvesEveryDestructibleMaterial" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="792204552" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.003406" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1437" name="DrillLaser_CarvesEveryDestructibleMaterial(Titanium)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_CarvesEveryDestructibleMaterial(Titanium)" methodname="DrillLaser_CarvesEveryDestructibleMaterial" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1293259825" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.002848" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1430" name="DrillLaser_DoesNotDamageOwner" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_DoesNotDamageOwner" methodname="DrillLaser_DoesNotDamageOwner" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="2116348936" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.005032" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1434" name="DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.018010" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1431" name="DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(0,3.25f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(0,3.25f)" methodname="DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="784624877" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.003634" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1432" name="DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(1,3.575f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(1,3.575f)" methodname="DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="577944873" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.001740" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1433" name="DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(4,4.55f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(4,4.55f)" methodname="DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="364567267" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.006639" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1439" name="DrillLaser_StarterDefinitionHasUnlimitedAmmo" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_StarterDefinitionHasUnlimitedAmmo" methodname="DrillLaser_StarterDefinitionHasUnlimitedAmmo" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1312703150" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.003780" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1413" name="DrillRocket_CarriesRemainingDrillTimeBetweenTerrainSections" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillRocket_CarriesRemainingDrillTimeBetweenTerrainSections" methodname="DrillRocket_CarriesRemainingDrillTimeBetweenTerrainSections" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1865975202" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.007432" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1422" name="DrillRocket_PassesThroughLightMetalWithoutEvolution" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillRocket_PassesThroughLightMetalWithoutEvolution" methodname="DrillRocket_PassesThroughLightMetalWithoutEvolution" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1465792645" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.004044" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1429" name="ExplosionNearOwner_DamagesOwnerAtNormalStrength" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.ExplosionNearOwner_DamagesOwnerAtNormalStrength" methodname="ExplosionNearOwner_DamagesOwnerAtNormalStrength" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1863985352" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.005022" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1294" name="FallOutOfBounds_DefeatsUnit_AndFinishesBattle" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.FallOutOfBounds_DefeatsUnit_AndFinishesBattle" methodname="FallOutOfBounds_DefeatsUnit_AndFinishesBattle" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="997866514" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.003932" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1258" name="Fire_TicksProjectile_DamagesAndKnocksBackTarget_AndAdvancesTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Fire_TicksProjectile_DamagesAndKnocksBackTarget_AndAdvancesTurn" methodname="Fire_TicksProjectile_DamagesAndKnocksBackTarget_AndAdvancesTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="589796586" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.005715" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1412" name="Fpv_HoversWithoutInput_AndMovesOnlyWhileDirected" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Fpv_HoversWithoutInput_AndMovesOnlyWhileDirected" methodname="Fpv_HoversWithoutInput_AndMovesOnlyWhileDirected" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1342508830" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.005392" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1402" name="Grenade_FuseCountsFromThrow_AndExplodesWhileResting" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_FuseCountsFromThrow_AndExplodesWhileResting" methodname="Grenade_FuseCountsFromThrow_AndExplodesWhileResting" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1196880489" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:04Z" duration="0.007348" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1408" name="Grenade_GravityPullAtRestAttractsAFreeProjectileBeforeDetonation" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_GravityPullAtRestAttractsAFreeProjectileBeforeDetonation" methodname="Grenade_GravityPullAtRestAttractsAFreeProjectileBeforeDetonation" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="261911039" result="Passed" start-time="2026-10-06 15:18:04Z" end-time="2026-10-06 15:18:05Z" duration="0.022200" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1406" name="Grenade_RadiusPurchasesAffectTheActualBlast" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_RadiusPurchasesAffectTheActualBlast" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.022409" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1403" name="Grenade_RadiusPurchasesAffectTheActualBlast(0,1.55f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_RadiusPurchasesAffectTheActualBlast(0,1.55f)" methodname="Grenade_RadiusPurchasesAffectTheActualBlast" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="496869467" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.007950" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1404" name="Grenade_RadiusPurchasesAffectTheActualBlast(1,1.705f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_RadiusPurchasesAffectTheActualBlast(1,1.705f)" methodname="Grenade_RadiusPurchasesAffectTheActualBlast" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1747215982" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003125" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1405" name="Grenade_RadiusPurchasesAffectTheActualBlast(4,2.17f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_RadiusPurchasesAffectTheActualBlast(4,2.17f)" methodname="Grenade_RadiusPurchasesAffectTheActualBlast" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="2085125569" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004807" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1407" name="Grenade_TargetPullSteersTowardEnemyWithoutSelectingACloserAlly" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_TargetPullSteersTowardEnemyWithoutSelectingACloserAlly" methodname="Grenade_TargetPullSteersTowardEnemyWithoutSelectingACloserAlly" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1465499528" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004262" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1291" name="Grounder_DestroysInterceptedNonExplosiveDeployable" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_DestroysInterceptedNonExplosiveDeployable" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.011941" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1289" name="Grounder_DestroysInterceptedNonExplosiveDeployable(&quot;weapon.guardian-drone&quot;,&quot;projectile.weapon.guardian-drone.deploy&quot;)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_DestroysInterceptedNonExplosiveDeployable(&quot;weapon.guardian-drone&quot;,&quot;projectile.weapon.guardian-drone.deploy&quot;)" methodname="Grounder_DestroysInterceptedNonExplosiveDeployable" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1292247294" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004756" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1290" name="Grounder_DestroysInterceptedNonExplosiveDeployable(&quot;weapon.laser-fence&quot;,&quot;projectile.weapon.laser-fence.deploy&quot;)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_DestroysInterceptedNonExplosiveDeployable(&quot;weapon.laser-fence&quot;,&quot;projectile.weapon.laser-fence.deploy&quot;)" methodname="Grounder_DestroysInterceptedNonExplosiveDeployable" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="893631080" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001523" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1285" name="Grounder_DetonatesInterceptedMineInsteadOfDeployingIt" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_DetonatesInterceptedMineInsteadOfDeployingIt" methodname="Grounder_DetonatesInterceptedMineInsteadOfDeployingIt" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1814808195" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004634" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1275" name="Grounder_ExpiresAfterTwoOpposingTurns" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_ExpiresAfterTwoOpposingTurns" methodname="Grounder_ExpiresAfterTwoOpposingTurns" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1112791305" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002572" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1276" name="Grounder_FourCorePurchasesExtendLifetimeToSixOpposingTurns" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_FourCorePurchasesExtendLifetimeToSixOpposingTurns" methodname="Grounder_FourCorePurchasesExtendLifetimeToSixOpposingTurns" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="26049881" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003034" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1281" name="Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.013593" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1279" name="Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots(&quot;weapon.blaster-caset&quot;,True)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots(&quot;weapon.blaster-caset&quot;,True)" methodname="Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1802673391" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004924" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1280" name="Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots(&quot;weapon.impulse&quot;,False)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots(&quot;weapon.impulse&quot;,False)" methodname="Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="17577010" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002411" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1284" name="Grounder_InterceptsHostilePhysicalHookBeforeItAttaches" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_InterceptsHostilePhysicalHookBeforeItAttaches" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.018182" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1282" name="Grounder_InterceptsHostilePhysicalHookBeforeItAttaches(&quot;weapon.rope&quot;)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_InterceptsHostilePhysicalHookBeforeItAttaches(&quot;weapon.rope&quot;)" methodname="Grounder_InterceptsHostilePhysicalHookBeforeItAttaches" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="671214199" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.007138" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1283" name="Grounder_InterceptsHostilePhysicalHookBeforeItAttaches(&quot;weapon.electric-harpoon&quot;)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_InterceptsHostilePhysicalHookBeforeItAttaches(&quot;weapon.electric-harpoon&quot;)" methodname="Grounder_InterceptsHostilePhysicalHookBeforeItAttaches" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1857215394" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003827" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1288" name="Grounder_NeutralizesInterceptedTeleportSphere" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_NeutralizesInterceptedTeleportSphere" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.013966" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1286" name="Grounder_NeutralizesInterceptedTeleportSphere(&quot;weapon.teleport&quot;)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_NeutralizesInterceptedTeleportSphere(&quot;weapon.teleport&quot;)" methodname="Grounder_NeutralizesInterceptedTeleportSphere" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="711053072" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004047" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1287" name="Grounder_NeutralizesInterceptedTeleportSphere(&quot;weapon.swap-jump&quot;)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_NeutralizesInterceptedTeleportSphere(&quot;weapon.swap-jump&quot;)" methodname="Grounder_NeutralizesInterceptedTeleportSphere" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1661477619" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002731" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1273" name="Grounder_PlacesWithoutAimAndDoesNotHealOwner" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PlacesWithoutAimAndDoesNotHealOwner" methodname="Grounder_PlacesWithoutAimAndDoesNotHealOwner" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1930834279" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.007968" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1274" name="Grounder_PullsHostilePhysicalShotIntoDevice" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PullsHostilePhysicalShotIntoDevice" methodname="Grounder_PullsHostilePhysicalShotIntoDevice" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="863552606" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.007363" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1277" name="Grounder_RadiusPurchasesCapturePhysicalShotOutsideBaseRange" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_RadiusPurchasesCapturePhysicalShotOutsideBaseRange" methodname="Grounder_RadiusPurchasesCapturePhysicalShotOutsideBaseRange" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1592011600" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.007236" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1278" name="Grounder_TwoPhysicalImpactsDestroyDeviceAndBothExplode" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_TwoPhysicalImpactsDestroyDeviceAndBothExplode" methodname="Grounder_TwoPhysicalImpactsDestroyDeviceAndBothExplode" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1290769839" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.006786" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1448" name="GuardianDrone_DeploysAndGuaranteedShotEndsTriggeredTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_DeploysAndGuaranteedShotEndsTriggeredTurn" methodname="GuardianDrone_DeploysAndGuaranteedShotEndsTriggeredTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1648100544" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.010970" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1425" name="HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.031836" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1423" name="HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges(2)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges(2)" methodname="HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="38382586" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.015547" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1424" name="HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges(3)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges(3)" methodname="HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="918684920" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.009759" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1426" name="HomingMissile_ManeuverEvolution_CreatesDetourAroundTerrainObstacle" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_ManeuverEvolution_CreatesDetourAroundTerrainObstacle" methodname="HomingMissile_ManeuverEvolution_CreatesDetourAroundTerrainObstacle" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="240921438" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.008273" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1409" name="HoppingGrenade_CanJumpAgainAfterLandingWithoutConsumingAnotherItem" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.HoppingGrenade_CanJumpAgainAfterLandingWithoutConsumingAnotherItem" methodname="HoppingGrenade_CanJumpAgainAfterLandingWithoutConsumingAnotherItem" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1525249668" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.006491" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1410" name="IncendiaryGrenade_ImpactSpawnsFourLocalFirePuddles" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IncendiaryGrenade_ImpactSpawnsFourLocalFirePuddles" methodname="IncendiaryGrenade_ImpactSpawnsFourLocalFirePuddles" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="948378793" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.013546" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1398" name="IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.018042" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1396" name="IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage(0,38)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage(0,38)" methodname="IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1639639195" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.006920" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1397" name="IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage(4,380)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage(4,380)" methodname="IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1289002329" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.005123" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1392" name="IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.022655" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1390" name="IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion(-1.2f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion(-1.2f)" methodname="IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="120186648" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.009402" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1391" name="IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion(1.5f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion(1.5f)" methodname="IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="264771997" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.006489" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1395" name="IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.017303" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1393" name="IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount(0,0.1f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount(0,0.1f)" methodname="IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="387112274" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.006518" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1394" name="IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount(4,0.132f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount(4,0.132f)" methodname="IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="167990131" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004740" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1401" name="IonShotgun_TerrainContactCarvesCraterTwicePelletRadius" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_TerrainContactCarvesCraterTwicePelletRadius" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.022328" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1399" name="IonShotgun_TerrainContactCarvesCraterTwicePelletRadius(0,0.2f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_TerrainContactCarvesCraterTwicePelletRadius(0,0.2f)" methodname="IonShotgun_TerrainContactCarvesCraterTwicePelletRadius" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1257533783" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.008293" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1400" name="IonShotgun_TerrainContactCarvesCraterTwicePelletRadius(4,0.264f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_TerrainContactCarvesCraterTwicePelletRadius(4,0.264f)" methodname="IonShotgun_TerrainContactCarvesCraterTwicePelletRadius" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="2102352625" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.008044" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1308" name="JumpAgainstWall_SettlesAndUnblocksInput" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.246369" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1300" name="JumpAgainstWall_SettlesAndUnblocksInput(0.0f,-1)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.0f,-1)" methodname="JumpAgainstWall_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1859359852" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.018935" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1301" name="JumpAgainstWall_SettlesAndUnblocksInput(0.0f,1)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.0f,1)" methodname="JumpAgainstWall_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="343843310" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.022792" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1302" name="JumpAgainstWall_SettlesAndUnblocksInput(0.04f,-1)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.04f,-1)" methodname="JumpAgainstWall_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1398687905" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.069344" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1303" name="JumpAgainstWall_SettlesAndUnblocksInput(0.04f,1)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.04f,1)" methodname="JumpAgainstWall_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="881128908" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.104910" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1304" name="JumpAgainstWall_SettlesAndUnblocksInput(0.08f,-1)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.08f,-1)" methodname="JumpAgainstWall_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="956217691" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004997" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1305" name="JumpAgainstWall_SettlesAndUnblocksInput(0.08f,1)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.08f,1)" methodname="JumpAgainstWall_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="889662537" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.005066" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1306" name="JumpAgainstWall_SettlesAndUnblocksInput(0.12f,-1)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.12f,-1)" methodname="JumpAgainstWall_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="592491470" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.005049" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1307" name="JumpAgainstWall_SettlesAndUnblocksInput(0.12f,1)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.12f,1)" methodname="JumpAgainstWall_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="360473673" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.006246" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1309" name="JumpUnderOverhang_SettlesAndUnblocksInput" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpUnderOverhang_SettlesAndUnblocksInput" methodname="JumpUnderOverhang_SettlesAndUnblocksInput" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1232943231" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.009408" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1446" name="LaserFence_DeploysTwoGroundNodesFromRealCombatShots" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_DeploysTwoGroundNodesFromRealCombatShots" methodname="LaserFence_DeploysTwoGroundNodesFromRealCombatShots" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1889392565" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.010908" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1449" name="LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn" methodname="LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1635945532" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.008370" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1371" name="Mine_IsAvailableOnFirstTurn_AndKeepsTurnOpenAfterPlacement" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Mine_IsAvailableOnFirstTurn_AndKeepsTurnOpenAfterPlacement" methodname="Mine_IsAvailableOnFirstTurn_AndKeepsTurnOpenAfterPlacement" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="897690176" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003402" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1411" name="Mine_IsThrownBeforeItBecomesDeployed" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Mine_IsThrownBeforeItBecomesDeployed" methodname="Mine_IsThrownBeforeItBecomesDeployed" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1547251914" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002016" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1372" name="MineEvolution_AllowsFourSequentialPlacementsInOneTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.MineEvolution_AllowsFourSequentialPlacementsInOneTurn" methodname="MineEvolution_AllowsFourSequentialPlacementsInOneTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1921312229" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003945" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1447" name="OrbitalRocket_DefersImpactUntilOpponentTurnEnds" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds" methodname="OrbitalRocket_DefersImpactUntilOpponentTurnEnds" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1106170776" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.005471" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1259" name="PlasmaSword_HitsOneNearbyEnemyForConfiguredFixedDamage" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlasmaSword_HitsOneNearbyEnemyForConfiguredFixedDamage" methodname="PlasmaSword_HitsOneNearbyEnemyForConfiguredFixedDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="521713814" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.010804" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1260" name="PlasmaSword_PurchasedCoreChangesTheActualMeleeDamage" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlasmaSword_PurchasedCoreChangesTheActualMeleeDamage" methodname="PlasmaSword_PurchasedCoreChangesTheActualMeleeDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1842447512" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001720" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1314" name="PlayerTurnTimer_ContinuesWhileJumping" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlayerTurnTimer_ContinuesWhileJumping" methodname="PlayerTurnTimer_ContinuesWhileJumping" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="870752040" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001270" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1295" name="PlayerTurnTimer_Expiring_AdvancesTurnToOpponent" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlayerTurnTimer_Expiring_AdvancesTurnToOpponent" methodname="PlayerTurnTimer_Expiring_AdvancesTurnToOpponent" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1118319594" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.010727" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1293" name="Projectile_GrazingDroidUpperBody_DetonatesBeforePassingThrough" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Projectile_GrazingDroidUpperBody_DetonatesBeforePassingThrough" methodname="Projectile_GrazingDroidUpperBody_DetonatesBeforePassingThrough" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="304512700" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001869" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1428" name="ProjectileIgnoresOwnerDuringLaunch" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.ProjectileIgnoresOwnerDuringLaunch" methodname="ProjectileIgnoresOwnerDuringLaunch" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1137251522" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001325" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1427" name="ProjectileTimeout_ExplodesAndAdvancesTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.ProjectileTimeout_ExplodesAndAdvancesTurn" methodname="ProjectileTimeout_ExplodesAndAdvancesTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="35595654" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002406" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1451" name="RepairJammer_BlocksTheAffectedEnemyHealingForTwoOwnTurns" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_BlocksTheAffectedEnemyHealingForTwoOwnTurns" methodname="RepairJammer_BlocksTheAffectedEnemyHealingForTwoOwnTurns" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1604157915" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.005918" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1452" name="RepairJammer_BlocksTimedRegenerationUntilItsBaseDurationExpires" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_BlocksTimedRegenerationUntilItsBaseDurationExpires" methodname="RepairJammer_BlocksTimedRegenerationUntilItsBaseDurationExpires" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1315402176" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.005558" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1450" name="RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage" methodname="RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="573321771" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.007516" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1453" name="RepairJammer_TwoDurationUpgradesKeepTheTargetJammedForFourOwnTurns" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_TwoDurationUpgradesKeepTheTargetJammedForFourOwnTurns" methodname="RepairJammer_TwoDurationUpgradesKeepTheTargetJammedForFourOwnTurns" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1225564411" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004730" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1334" name="RepairKit_UsesWithoutAimAndKeepsPlayerTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairKit_UsesWithoutAimAndKeepsPlayerTurn" methodname="RepairKit_UsesWithoutAimAndKeepsPlayerTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1172808365" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001262" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1271" name="Rope_LengthFollowsPurchasedRadiusNotRank" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Rope_LengthFollowsPurchasedRadiusNotRank" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.014402" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1268" name="Rope_LengthFollowsPurchasedRadiusNotRank(0,8.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Rope_LengthFollowsPurchasedRadiusNotRank(0,8.0f)" methodname="Rope_LengthFollowsPurchasedRadiusNotRank" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="403716104" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003860" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1269" name="Rope_LengthFollowsPurchasedRadiusNotRank(1,8.8f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Rope_LengthFollowsPurchasedRadiusNotRank(1,8.8f)" methodname="Rope_LengthFollowsPurchasedRadiusNotRank" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1778818299" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002196" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1270" name="Rope_LengthFollowsPurchasedRadiusNotRank(4,11.2f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Rope_LengthFollowsPurchasedRadiusNotRank(4,11.2f)" methodname="Rope_LengthFollowsPurchasedRadiusNotRank" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="292176738" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002700" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1441" name="SameTotalTickTime_WithDifferentChunks_ProducesSameFinalState" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.SameTotalTickTime_WithDifferentChunks_ProducesSameFinalState" methodname="SameTotalTickTime_WithDifferentChunks_ProducesSameFinalState" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="186167908" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003958" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1313" name="StandardJump_HorizontalLaunchSpeedStaysBelowRunningSpeed" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_HorizontalLaunchSpeedStaysBelowRunningSpeed" methodname="StandardJump_HorizontalLaunchSpeedStaysBelowRunningSpeed" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="983106052" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001356" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1310" name="StandardJump_LeftMirrorsRight" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_LeftMirrorsRight" methodname="StandardJump_LeftMirrorsRight" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1374660963" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004354" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1299" name="StandardJump_OpponentJumps_DuringOpponentTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_OpponentJumps_DuringOpponentTurn" methodname="StandardJump_OpponentJumps_DuringOpponentTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1750348815" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003860" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1311" name="StandardJump_TurnsUnitTowardsJumpDirection" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_TurnsUnitTowardsJumpDirection" methodname="StandardJump_TurnsUnitTowardsJumpDirection" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1233297518" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001165" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1312" name="StandardJump_WhileAirborne_IsRejected" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_WhileAirborne_IsRejected" methodname="StandardJump_WhileAirborne_IsRejected" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="752506762" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001143" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1267" name="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.027280" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1261" name="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.impulse&quot;,1.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.impulse&quot;,1.0f)" methodname="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1365596975" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004379" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1262" name="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.impulse&quot;,30.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.impulse&quot;,30.0f)" methodname="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1550557652" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.007502" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1263" name="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.granata&quot;,1.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.granata&quot;,1.0f)" methodname="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="403861936" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002359" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1264" name="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.granata&quot;,30.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.granata&quot;,30.0f)" methodname="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="774093371" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002236" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1265" name="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.ion-shotgun&quot;,1.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.ion-shotgun&quot;,1.0f)" methodname="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1410029200" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002567" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1266" name="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.ion-shotgun&quot;,30.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(&quot;weapon.ion-shotgun&quot;,30.0f)" methodname="StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1463360010" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002464" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1380" name="StickyGrenade_BaseSticksToTheTargetAndExplodesAfterTheFuseWithoutPoison" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StickyGrenade_BaseSticksToTheTargetAndExplodesAfterTheFuseWithoutPoison" methodname="StickyGrenade_BaseSticksToTheTargetAndExplodesAfterTheFuseWithoutPoison" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1553809236" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.035751" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1381" name="StickyGrenade_ToxicReleaseAppliesTheSharedTwoTurnPoisonCycleToEveryDroidInTheBlast" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StickyGrenade_ToxicReleaseAppliesTheSharedTwoTurnPoisonCycleToEveryDroidInTheBlast" methodname="StickyGrenade_ToxicReleaseAppliesTheSharedTwoTurnPoisonCycleToEveryDroidInTheBlast" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1868142260" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.005901" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1382" name="StickyGrenade_ToxicReleaseIsOneFeatureStoredThroughThePaidServiceAndSurvivesJson" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.StickyGrenade_ToxicReleaseIsOneFeatureStoredThroughThePaidServiceAndSurvivesJson" methodname="StickyGrenade_ToxicReleaseIsOneFeatureStoredThroughThePaidServiceAndSurvivesJson" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1318888380" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.153770" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1389" name="SwapJump_ExchangesClosestEnemyUsingThrowOrigin" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_ExchangesClosestEnemyUsingThrowOrigin" methodname="SwapJump_ExchangesClosestEnemyUsingThrowOrigin" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1357930111" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.013874" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1388" name="SwapJump_WithoutNearbyEnemy_RepositionsOwnerOnly" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_WithoutNearbyEnemy_RepositionsOwnerOnly" methodname="SwapJump_WithoutNearbyEnemy_RepositionsOwnerOnly" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="780133894" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004261" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1387" name="Teleport_IntoTightSpot_CarvesArrivalPocketInsteadOfClimbingOnTop" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Teleport_IntoTightSpot_CarvesArrivalPocketInsteadOfClimbingOnTop" methodname="Teleport_IntoTightSpot_CarvesArrivalPocketInsteadOfClimbingOnTop" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="122189132" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.004709" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1386" name="Teleport_RepositionsWhenProjectileStopsWithoutExtraDelay" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.Teleport_RepositionsWhenProjectileStopsWithoutExtraDelay" methodname="Teleport_RepositionsWhenProjectileStopsWithoutExtraDelay" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="2046282135" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003464" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1442" name="ToxicEvolutionResolver_ReturnsConfiguredArmorWeakenAndMovementDamageValues" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicEvolutionResolver_ReturnsConfiguredArmorWeakenAndMovementDamageValues" methodname="ToxicEvolutionResolver_ReturnsConfiguredArmorWeakenAndMovementDamageValues" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1254067651" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001786" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1443" name="ToxicWeapon_AppliesTwoEndOfVictimTurnTicksEqualToTwentyPercentOfImpactDamage" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeapon_AppliesTwoEndOfVictimTurnTicksEqualToTwentyPercentOfImpactDamage" methodname="ToxicWeapon_AppliesTwoEndOfVictimTurnTicksEqualToTwentyPercentOfImpactDamage" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="605205896" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.009848" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1444" name="ToxicWeapon_StatusDurationStaysAtTwoVictimTurnsDespiteLegacyDurationEvolution" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeapon_StatusDurationStaysAtTwoVictimTurnsDespiteLegacyDurationEvolution" methodname="ToxicWeapon_StatusDurationStaysAtTwoVictimTurnsDespiteLegacyDurationEvolution" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1531468642" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.002044" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1445" name="ToxicWeaponBranchB_DealsExtraDamage_WhilePoisonedTargetMoves" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeaponBranchB_DealsExtraDamage_WhilePoisonedTargetMoves" methodname="ToxicWeaponBranchB_DealsExtraDamage_WhilePoisonedTargetMoves" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1531708273" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.009837" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1272" name="UnimplementedUtility_CannotHealOrTeleportThroughGenericFallback" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.UnimplementedUtility_CannotHealOrTeleportThroughGenericFallback" methodname="UnimplementedUtility_CannotHealOrTeleportThroughGenericFallback" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1249656374" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003037" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1297" name="WalkIntent_AccumulatesAcrossFramesShorterThanOneTick" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_AccumulatesAcrossFramesShorterThanOneTick" methodname="WalkIntent_AccumulatesAcrossFramesShorterThanOneTick" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1563056419" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003464" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1298" name="WalkIntent_MovesOpponentUnit_DuringOpponentTurn" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesOpponentUnit_DuringOpponentTurn" methodname="WalkIntent_MovesOpponentUnit_DuringOpponentTurn" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1327482881" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.003562" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1296" name="WalkIntent_MovesPlayerUnit_AndUpdatesFacing" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing" methodname="WalkIntent_MovesPlayerUnit_AndUpdatesFacing" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1987775647" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001875" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="1830" name="Progression" fullname="Game.Tests.EditMode.Progression" runstate="Runnable" testcasecount="50" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:06Z" duration="0.102611" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1055" name="WeaponProgressionCatalogTests" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:06Z" duration="0.090604" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1062" name="BaseTthCannotBePurchasedBeyondItsCanonicalLimit" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.BaseTthCannotBePurchasedBeyondItsCanonicalLimit" methodname="BaseTthCannotBePurchasedBeyondItsCanonicalLimit" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="815640916" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:05Z" duration="0.001452" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1057" name="CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" methodname="CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1415600613" result="Passed" start-time="2026-10-06 15:18:05Z" end-time="2026-10-06 15:18:06Z" duration="0.017025" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1059" name="Grounder_AllowsFourCoreAndFourRadiusUpgrades" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_AllowsFourCoreAndFourRadiusUpgrades" methodname="Grounder_AllowsFourCoreAndFourRadiusUpgrades" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1091661653" result="Passed" start-time="2026-10-06 15:18:06Z" end-time="2026-10-06 15:18:06Z" duration="0.000428" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1060" name="Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" methodname="Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="11189363" result="Passed" start-time="2026-10-06 15:18:06Z" end-time="2026-10-06 15:18:06Z" duration="0.000986" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1056" name="Mortar_FivePaidFeatureStepsSurviveSaveAndDoNotInventTthPurchases" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Mortar_FivePaidFeatureStepsSurviveSaveAndDoNotInventTthPurchases" methodname="Mortar_FivePaidFeatureStepsSurviveSaveAndDoNotInventTthPurchases" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="255939748" result="Passed" start-time="2026-10-06 15:18:06Z" end-time="2026-10-06 15:18:06Z" duration="0.028814" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1058" name="RepairJammer_AllowsExactlyTwoDurationUpgrades" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades" methodname="RepairJammer_AllowsExactlyTwoDurationUpgrades" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="524150569" result="Passed" start-time="2026-10-06 15:18:06Z" end-time="2026-10-06 15:18:06Z" duration="0.000363" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1064" name="ResetClearsBothBaseAndSpecialPurchaseHistory" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.ResetClearsBothBaseAndSpecialPurchaseHistory" methodname="ResetClearsBothBaseAndSpecialPurchaseHistory" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1062316806" result="Passed" start-time="2026-10-06 15:18:06Z" end-time="2026-10-06 15:18:06Z" duration="0.001612" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1063" name="SelectedMortarSpecialCanBePurchasedFiveTimesAndThenStops" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.SelectedMortarSpecialCanBePurchasedFiveTimesAndThenStops" methodname="SelectedMortarSpecialCanBePurchasedFiveTimesAndThenStops" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="451440005" result="Passed" start-time="2026-10-06 15:18:06Z" end-time="2026-10-06 15:18:06Z" duration="0.000826" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1065" name="TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService" methodname="TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1081238175" result="Passed" start-time="2026-10-06 15:18:06Z" end-time="2026-10-06 15:18:06Z" duration="0.032559" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1061" name="UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" methodname="UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1499158644" result="Passed" start-time="2026-10-06 15:18:06Z" end-time="2026-10-06 15:18:06Z" duration="0.000820" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

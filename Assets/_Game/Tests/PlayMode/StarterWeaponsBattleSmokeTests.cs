@@ -227,6 +227,52 @@ namespace Game.Tests.PlayMode
             LogAssert.NoUnexpectedReceived();
         }
 
+        [UnityTest]
+        public IEnumerator StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin(
+            [Values(false, true)] bool purchased)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.sticky-grenade", rank = purchased ? 6 : 1 };
+            progress.EnsureDefaults();
+            if (purchased)
+            {
+                for (var i = 2; i <= 5; i++) progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                    { rank = i, path = (int)(i <= 3 ? WeaponUpgradePath.Loadout : WeaponUpgradePath.Aim) });
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "toxic-release" });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            }
+            WeaponProgressionBridge.Resolver = id => id == "weapon.sticky-grenade" ? progress : null;
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.sticky-grenade" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.sticky-grenade") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var visuals = Get<Dictionary<int, GameObject>>(controller, "_projectileVisuals");
+            var expected = Resources.Load<Texture2D>(purchased ? "UI/Weapons/sticky_grenade_5A" : "UI/Weapons/sticky_grenade");
+            Assert.That(expected, Is.Not.Null);
+            Texture shown = null;
+            simulation.ProjectileSpawned += projectile =>
+                shown = visuals[projectile.Id].GetComponentInChildren<SpriteRenderer>().sprite.texture;
+            var terrain = Get<BattleTerrain>(controller, "_battleTerrain");
+            Set(controller, "_aimState", new AimState(new Vector2(0f, terrain.Grid.WorldMaxY - 2f), Vector2.down, 1f, true));
+            Invoke(controller, "Fire");
+            Assert.That(simulation.ProjectilesInFlight, Is.EqualTo(1));
+            Assert.That(shown, Is.EqualTo(expected));
+            for (var frame = 0; frame < 120 && (simulation.HasProjectilesInFlight); frame++)
+            {
+                for (var tick = 0; tick < 60; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(simulation.ProjectilesInFlight, Is.Zero, "the thrown grenade must detonate");
+            LogAssert.NoUnexpectedReceived();
+        }
+
         private static readonly int[] BarrierModes = { -1, 0, 4 };
 
         [UnityTest]

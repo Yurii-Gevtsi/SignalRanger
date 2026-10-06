@@ -3425,6 +3425,11 @@ namespace Game.Gameplay.Battle.Simulation
 
             var appliesPoison = impactWeapon.WeaponId == ToxicWeaponId;
             var poisonEvolution = appliesPoison ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
+            if (impactWeapon.WeaponId == StickyGrenadeWeaponId)
+            {
+                // The purchased toxic release turns the blast into the shared poison cycle.
+                appliesPoison = ResolveEvolutionFor(sourceTeam, impactWeapon).StickyToxicRelease;
+            }
             var appliesEmpStun = impactWeapon.WeaponId == EmpWeaponId;
             var empEvolution = appliesEmpStun ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
             var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId

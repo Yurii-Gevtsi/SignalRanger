@@ -1818,6 +1818,112 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
         }
 
+        private static SaveWeaponProgressData CreateStickyToxicProgress(int steps)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.sticky-grenade", rank = 5 + steps };
+            progress.EnsureDefaults();
+            for (var i = 2; i <= 5; i++) progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                { rank = i, path = (int)(i <= 3 ? WeaponUpgradePath.Loadout : WeaponUpgradePath.Aim) });
+            if (steps > 0)
+            {
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "toxic-release" });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = steps });
+            }
+            return progress;
+        }
+
+        private static Harness FireStickyAtOpponent(SaveWeaponProgressData progress, out int startHealth,
+            Vector2? allyPosition = null)
+        {
+            var sticky = CreateWeapon("weapon.sticky-grenade", damage: 40, impactRadius: 2.5f, gravityScale: 0f,
+                timeoutSeconds: 8f);
+            var harness = CreateHarness(sticky, playerWeaponProgress: progress, secondPlayerPosition: allyPosition);
+            startHealth = harness.State.GetUnit("opponent.test.01").Health;
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0.4f), Vector2.right, 6f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            return harness;
+        }
+
+        [Test]
+        public void StickyGrenade_BaseSticksToTheTargetAndExplodesAfterTheFuseWithoutPoison()
+        {
+            var harness = FireStickyAtOpponent(null, out var startHealth);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            Assert.That(opponent.Health, Is.EqualTo(startHealth), "the fuse is still running");
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.EqualTo(1));
+            TickMany(harness.Simulation, 600, 1f / 120f);
+            Assert.That(opponent.Health, Is.LessThan(startHealth));
+            Assert.That(harness.Simulation.IsUnitPoisoned(opponent.UnitId), Is.False);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+        }
+
+        [Test]
+        public void StickyGrenade_ToxicReleaseAppliesTheSharedTwoTurnPoisonCycleToEveryDroidInTheBlast()
+        {
+            var ally = new Vector2(4f, 0f);
+            var harness = FireStickyAtOpponent(CreateStickyToxicProgress(1), out var startHealth, ally);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            var friend = harness.State.GetUnit("player.test.02");
+            var friendStart = friend.Health;
+            TickMany(harness.Simulation, 720, 1f / 120f);
+
+            var direct = startHealth - opponent.Health;
+            Assert.That(direct, Is.GreaterThan(0));
+            Assert.That(harness.Simulation.IsUnitPoisoned(opponent.UnitId), Is.True);
+            Assert.That(harness.Simulation.IsUnitPoisoned(friend.UnitId), Is.True,
+                "an ally inside the primary radius is poisoned too");
+            Assert.That(friend.Health, Is.LessThan(friendStart));
+
+            var tick = Mathf.Max(1, Mathf.RoundToInt((startHealth - opponent.Health) * 0.2f));
+            var afterBlast = opponent.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // opponent turn ends: first tick
+            Assert.That(opponent.Health, Is.EqualTo(afterBlast - tick));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // player turn ends: no opponent tick
+            Assert.That(opponent.Health, Is.EqualTo(afterBlast - tick));
+            Assert.That(harness.Simulation.IsUnitPoisoned(opponent.UnitId), Is.True);
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // opponent turn ends: second tick, status removed
+            Assert.That(opponent.Health, Is.EqualTo(afterBlast - tick * 2));
+            Assert.That(harness.Simulation.IsUnitPoisoned(opponent.UnitId), Is.False);
+        }
+
+        [Test]
+        public void StickyGrenade_ToxicReleaseIsOneFeatureStoredThroughThePaidServiceAndSurvivesJson()
+        {
+            const string id = "weapon.sticky-grenade";
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test", string.Empty,
+                System.Guid.NewGuid().ToString());
+            var progress = save.inventory.GetOrCreateWeaponProgress(id);
+            progress.blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            Assert.That(service.TryPurchaseEvolution(id, 5, "toxic-release").Applied, Is.False, "needs rank five");
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.True);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.False);
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.True);
+            Assert.That(service.TryPurchaseEvolution(id, 5, "toxic-release").Applied, Is.True);
+            Assert.That(service.TryPurchaseEvolution(id, 5, "invented-second-option").Applied, Is.False);
+
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            var restoredProgress = restored.inventory.GetOrCreateWeaponProgress(id);
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, restoredProgress).StickyToxicRelease, Is.True);
+            Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, new SaveWeaponProgressData
+                { weaponId = id, rank = 5 }).StickyToxicRelease, Is.False);
+
+            WeaponProgressionCatalog.TryGet(id, out var definition);
+            Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "toxic-release" }));
+            Assert.That(WeaponEvolutionIconResolver.ResolveCurrentIconResource(weapon.IconId, definition, restoredProgress),
+                Is.EqualTo("UI/Weapons/sticky_grenade_5A"));
+            Assert.That(WeaponEvolutionIconResolver.ResolveCurrentIconResource(weapon.IconId, definition, new SaveWeaponProgressData
+                { weaponId = id, rank = 1 }), Is.EqualTo("UI/Weapons/sticky_grenade"));
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/sticky_grenade"), Is.Not.Null);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/sticky_grenade_5A"), Is.Not.Null);
+        }
+
         [Test]
         public void CanonicalMortar_HostileSequentialShardsAreInterceptedByTheMagnetAndTheQueueClears()
         {

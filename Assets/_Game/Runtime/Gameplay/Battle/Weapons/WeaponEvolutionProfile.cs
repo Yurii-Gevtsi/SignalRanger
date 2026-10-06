@@ -59,8 +59,10 @@ namespace Game.Gameplay.Battle.Weapons
             int cryoChainDamagePercent = 0,
             float fpvControlBonusSeconds = 0f,
             float fpvDamageMultiplier = 1f,
-            float fpvImpactRadiusMultiplier = 1f)
+            float fpvImpactRadiusMultiplier = 1f,
+            bool stickyToxicRelease = false)
         {
+            StickyToxicRelease = stickyToxicRelease;
             SalvoCount = Mathf.Max(1, salvoCount);
             SalvoIntervalSeconds = Mathf.Max(0f, salvoIntervalSeconds);
             KnockbackMultiplier = Mathf.Max(0f, knockbackMultiplier);
@@ -159,6 +161,7 @@ namespace Game.Gameplay.Battle.Weapons
         public float FpvControlBonusSeconds { get; }
         public float FpvDamageMultiplier { get; }
         public float FpvImpactRadiusMultiplier { get; }
+        public bool StickyToxicRelease { get; }
 
         public static WeaponEvolutionProfile Base => new(1, 0f, 1f, 3, 0);
     }
@@ -175,6 +178,7 @@ namespace Game.Gameplay.Battle.Weapons
         private const string RepairJammerWeaponId = "weapon.repair-jammer";
         private const string TeleportWeaponId = "weapon.teleport";
         private const string MortarWeaponId = "weapon.mortira";
+        private const string StickyGrenadeWeaponId = "weapon.sticky-grenade";
         private const string MissileWeaponId = "weapon.missle";
         private const string ToxicWeaponId = "weapon.toxic";
         private const string FireGunWeaponId = "weapon.fire-gun";
@@ -231,6 +235,8 @@ namespace Game.Gameplay.Battle.Weapons
                     case MortarWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f,
                             mortarCascadeCount: 2 + Mathf.Clamp(firstSteps - 1, 0, 4));
+                    case StickyGrenadeWeaponId:
+                        return new WeaponEvolutionProfile(1, 0f, 1f, stickyToxicRelease: true);
                 }
             }
 
