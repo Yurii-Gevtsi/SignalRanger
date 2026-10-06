@@ -3685,6 +3685,54 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void OrbitalRocket_WithoutAMarkerNeedsATargetAndSpendsNothing()
+        {
+            var rocket = CreateWeapon("weapon.orbital-rocket", WeaponRole.ArcingExplosive, damage: 65, impactRadius: 2.1f,
+                ammo: 2);
+            var harness = CreateHarness(rocket);
+            var before = harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo();
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.AimRequired));
+            Assert.That(harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo(), Is.EqualTo(before));
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            Assert.That(harness.Simulation.HasOrbitalTargetMarker, Is.False);
+        }
+
+        [Test]
+        public void OrbitalRocket_DoesNotFallOnceTheBattleHasAlreadyEnded()
+        {
+            var rocket = CreateWeapon("weapon.orbital-rocket", WeaponRole.ArcingExplosive, damage: 65, impactRadius: 2.1f);
+            var harness = CreateHarness(rocket);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            Assert.That(harness.Simulation.TrySetOrbitalTarget(opponent.Position), Is.True);
+            Assert.That(harness.Simulation.TryFire(new AimState(opponent.Position, Vector2.up, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            opponent.ApplyDamage(opponent.MaxHealth, "test"); // the last enemy dies during its own turn
+            harness.Simulation.Tick(1f / 120f);
+            Assert.That(harness.Simulation.Result.IsFinished, Is.True);
+            var advance = typeof(BattleSimulation).GetMethod("AdvanceTurnNow",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            advance.Invoke(harness.Simulation, new object[] { TurnAdvanceReason.InstantActionCompleted });
+            Assert.That(harness.Simulation.HasProjectilesInFlight, Is.False, "nothing falls on the result screen");
+        }
+
+        [Test]
+        public void OrbitalRocket_IsStrongerThanTheHomingRocketAndUsesTheMissileBody()
+        {
+            var weapons = PrototypeWeaponLibrary.CreateAll();
+            var homing = weapons.Single(w => w.WeaponId == "weapon.missle");
+            var orbital = weapons.Single(w => w.WeaponId == "weapon.orbital-rocket");
+            Assert.That(orbital.Damage, Is.GreaterThan(homing.Damage));
+            Assert.That(orbital.ImpactRadius, Is.GreaterThan(homing.ImpactRadius));
+            Assert.That(WeaponProgressionCatalog.TryGet(orbital.WeaponId, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 2, 4 }));
+            Assert.That(definition.HasEvolutionOptions, Is.False);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/missle_fly"), Is.Not.Null);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/missle_5_10_A"), Is.Not.Null);
+        }
+
+        [Test]
         public void GuardianDrone_DeploysAndGuaranteedShotEndsTriggeredTurn()
         {
             var guardian = CreateWeapon("weapon.guardian-drone", WeaponRole.DefensiveTool,

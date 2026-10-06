@@ -1383,6 +1383,13 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void LaunchPendingOrbitalStrikeIfDue()
         {
+            if (Result.IsFinished)
+            {
+                // The battle ended first: nothing may fall on the result screen.
+                _pendingOrbitalStrike = null;
+                return;
+            }
+
             if (_pendingOrbitalStrike == null
                 || _state.Turn.ActiveTeam != _pendingOrbitalStrike.OwnerTeam)
             {

@@ -114,6 +114,7 @@ namespace Game.Gameplay.Battle.Assembly
         private const float RocketTrailAttachFraction = 0.32f;
         private const string MissileInFlightSpriteId = "missle_fly";
         private const float OrbitalTargetDoubleTapSeconds = 0.35f;
+        private static readonly Color OrbitalMarkerColor = new Color(1f, 0.18f, 0.16f, 1f);
         private const float OrbitalTargetDoubleTapDistancePixels = 48f;
 
         private readonly Color _playerColor = new(0.18f, 0.56f, 0.96f);
@@ -1865,7 +1866,8 @@ namespace Game.Gameplay.Battle.Assembly
             _orbitalTargetMarkerVisual = new GameObject("Orbital Strike Marker");
             _arenaObjects.Add(_orbitalTargetMarkerVisual);
             _orbitalTargetMarkerVisual.transform.position = point;
-            foreach (var rotation in new[] { 0f, 90f })
+            // The same red "×" glyph the modal close buttons use, not a plus sign.
+            foreach (var rotation in new[] { 45f, -45f })
             {
                 var arm = new GameObject("Cross Arm");
                 arm.transform.SetParent(_orbitalTargetMarkerVisual.transform, false);
@@ -1873,7 +1875,7 @@ namespace Game.Gameplay.Battle.Assembly
                 arm.transform.localRotation = Quaternion.Euler(0f, 0f, rotation);
                 var renderer = arm.AddComponent<SpriteRenderer>();
                 renderer.sprite = _circleSprite;
-                renderer.color = new Color(1f, 0.15f, 0.15f, 0.95f);
+                renderer.color = OrbitalMarkerColor;
                 renderer.sortingOrder = 34;
             }
         }

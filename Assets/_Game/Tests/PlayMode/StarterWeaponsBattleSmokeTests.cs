@@ -369,6 +369,70 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator OrbitalRocket_ProductionSceneMarkerDraftConfirmAndDelayedStrike()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.orbital-rocket" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var state = Get<BattleState>(controller, "_battleState");
+            var orbital = 0;
+            while (inventory.Weapons[orbital].WeaponId != "weapon.orbital-rocket") orbital++;
+            var other = 0;
+            while (inventory.Weapons[other].WeaponId == "weapon.orbital-rocket") other++;
+            var enemy = state.GetTeam(BattleTeamId.Opponent).Units[0];
+
+            Invoke(controller, "OnHudWeaponSelected", orbital);
+            Assert.That(simulation.TrySetOrbitalTarget(enemy.Position), Is.True);
+            Invoke(controller, "ShowOrbitalTargetMarker", enemy.Position);
+            var marker = GameObject.Find("Orbital Strike Marker");
+            Assert.That(marker, Is.Not.Null);
+            var arms = marker.GetComponentsInChildren<SpriteRenderer>();
+            Assert.That(arms.Length, Is.EqualTo(2));
+            foreach (var arm in arms)
+            {
+                Assert.That(Mathf.Abs(Mathf.DeltaAngle(arm.transform.eulerAngles.z, 45f)) < 1f
+                    || Mathf.Abs(Mathf.DeltaAngle(arm.transform.eulerAngles.z, -45f)) < 1f,
+                    "an X like the modal close glyph, not a plus");
+                Assert.That(arm.color.r, Is.EqualTo(1f).Within(0.01f));
+                Assert.That(arm.color.g, Is.LessThan(0.3f));
+            }
+
+            // A draft is dropped when another weapon is chosen.
+            Invoke(controller, "OnHudWeaponSelected", other);
+            Assert.That(simulation.HasOrbitalTargetMarker, Is.False);
+            yield return null; // Destroy takes effect at the end of the frame
+            Assert.That(GameObject.Find("Orbital Strike Marker"), Is.Null);
+
+            // Confirming fixes the call and ends the turn; the rocket falls after the opponent's turn.
+            Invoke(controller, "OnHudWeaponSelected", orbital);
+            Assert.That(simulation.TrySetOrbitalTarget(enemy.Position), Is.True);
+            Invoke(controller, "ShowOrbitalTargetMarker", enemy.Position);
+            var healthBefore = enemy.Health;
+            Invoke(controller, "Fire");
+            yield return null;
+            Assert.That(GameObject.Find("Orbital Strike Marker"), Is.Null, "the marker is consumed by the call");
+            Assert.That(state.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+            Assert.That(simulation.ProjectilesInFlight, Is.Zero, "nothing falls yet");
+            var advance = typeof(BattleSimulation).GetMethod("AdvanceTurnNow",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            advance.Invoke(simulation, new object[] { TurnAdvanceReason.InstantActionCompleted });
+            Assert.That(simulation.HasProjectilesInFlight, Is.True, "the rocket falls at the end of the opponent's turn");
+            for (var frame = 0; frame < 120 && simulation.HasProjectilesInFlight; frame++)
+            {
+                for (var tick = 0; tick < 60; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(enemy.Health, Is.LessThan(healthBefore), "the strike hit the marked place");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator RepairJammer_ProductionSceneShowsTheNoRepairIconOnTheAffectedDroid()
         {
             WeaponProgressionBridge.UnlockedResolver = id =>
