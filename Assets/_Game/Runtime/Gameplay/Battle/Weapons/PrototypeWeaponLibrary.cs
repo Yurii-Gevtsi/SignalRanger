@@ -46,7 +46,8 @@ namespace Game.Gameplay.Battle.Weapons
                     2f * SharedProjectileSpeed, 2f * SharedProjectileSpeed, 1, "sky_hook", "straight-long", "hook"),
                 Weapon("weapon.spider-mine", WeaponRole.ArcingExplosive, 45, 1.45f, 0.13f, 1.05f, 7f, 3f, 10f, 2, "spider_mine", "ground", "mine"),
                 Weapon("weapon.virus", WeaponRole.DirectProjectile, 42, 0.75f, 0.09f, 0f, 4f, 12f, 12f, 1, "virus", "straight-long", "virus"),
-                Weapon("weapon.bomber", WeaponRole.ArcingExplosive, 58, 1.6f, 0.14f, 0.9f, 7f, 4f, 12f, 1, "bomber", "controlled", "bomber"),
+                // Each bomb is an ordinary mine blast (54, the shared R0); 10 s of flight at 4 u/s, four bombs per flight.
+                Weapon("weapon.bomber", WeaponRole.ArcingExplosive, 54, SharedExplosionRadius, 0.14f, 0f, 10f, 4f, 4f, 1, "bomber", "controlled", "bomber"),
                 Weapon("weapon.ufo-carrier", WeaponRole.MovementTool, 0, 1.0f, 0.1f, 0f, 7f, 4f, 12f, 1, "ufo_carrier", "controlled", "carrier"),
                 Weapon("weapon.self-destruct", WeaponRole.ShortRangeBurst, 72, 2.1f, 0.16f, 0f, 3f, 1f, 1f, 1, "self_destruct", "ground", "self-destruct"),
                 Weapon("weapon.nuclear-charge", WeaponRole.ShortRangeBurst, 95, 3.2f, 0.2f, 0f, 5f, 1f, 1f, 1, "nuclear_charge", "ground", "nuclear"),

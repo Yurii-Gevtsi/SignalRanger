@@ -75,6 +75,8 @@ namespace Game.Gameplay.Battle.Weapons
                     ResolveRopeLength(count),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.boost" =>
                     ResolveBoostSeconds(count),
+                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.bomber" =>
+                    ResolveBomberSeconds(count),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.ion-shotgun" =>
                     weapon.ProjectileRadius * (1f + count * RadiusPercentPerUpgrade),
                 WeaponUpgradePath.Radius => weapon.ImpactRadius *
@@ -109,6 +111,12 @@ namespace Game.Gameplay.Battle.Weapons
         public static float ResolveBoostSeconds(int radiusUpgrades)
         {
             return 5f + Math.Clamp(radiusUpgrades, 0, 4);
+        }
+
+        /// <summary>The copter's ten-second window grows by one second per Radius purchase.</summary>
+        public static float ResolveBomberSeconds(int radiusUpgrades)
+        {
+            return 10f + Math.Clamp(radiusUpgrades, 0, 4);
         }
 
         public static float ResolveRopeLength(int radiusUpgrades)
@@ -163,7 +171,7 @@ namespace Game.Gameplay.Battle.Weapons
             WeaponProgressionDefinition definition = null)
         {
             if (weapon?.WeaponId is "weapon.bur" or "weapon.bur-rocket" or "weapon.titanium-barrier"
-                or "weapon.hopping-grenade" or "weapon.boost")
+                or "weapon.hopping-grenade" or "weapon.boost" or "weapon.bomber" or "weapon.ufo-carrier")
             {
                 return 0;
             }

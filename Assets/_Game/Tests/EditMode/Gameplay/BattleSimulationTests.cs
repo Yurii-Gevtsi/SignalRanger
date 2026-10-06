@@ -321,7 +321,7 @@ namespace Game.Tests.EditMode.Gameplay
             foreach (var (id, role) in new[]
             {
                 ("weapon.turn-transfer", WeaponRole.DefensiveTool),
-                ("weapon.bomber", WeaponRole.MovementTool)
+                ("weapon.ufo-carrier", WeaponRole.MovementTool)
             })
             {
                 var weapon = CreateWeapon(id, role, ammo: 1);
@@ -3653,6 +3653,208 @@ namespace Game.Tests.EditMode.Gameplay
             restored.EnsureDefaults();
             Assert.That(WeaponUpgradeChoiceResolver.Count(restored.inventory.GetOrCreateWeaponProgress(id), WeaponUpgradePath.Core),
                 Is.EqualTo(4));
+        }
+
+        private static SaveWeaponProgressData CreateBomberProgress(int radiusSteps)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.bomber", rank = 1 + radiusSteps };
+            progress.EnsureDefaults();
+            for (var i = 0; i < radiusSteps; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = 2 + i, path = (int)WeaponUpgradePath.Radius });
+            return progress;
+        }
+
+        private static Harness CreateBomberHarness(SaveWeaponProgressData progress = null, Vector2? enemy = null,
+            Vector2? ally = null, WeaponDefinition opponentWeapon = null)
+        {
+            var bomber = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.bomber");
+            var harness = CreateHarness(bomber, opponentWeapon: opponentWeapon, playerWeaponProgress: progress,
+                secondPlayerPosition: ally);
+            if (enemy.HasValue)
+            {
+                var opponent = harness.State.GetUnit("opponent.test.01");
+                opponent.MoveTo(enemy.Value);
+                harness.Motors[opponent.UnitId].Teleport(enemy.Value);
+            }
+
+            return harness;
+        }
+
+        [Test]
+        public void Bomber_LaunchesTheCopterWithoutAimSpendsTheChargeAndTheActionAndSteersInFourDirections()
+        {
+            var harness = CreateBomberHarness();
+            var owner = harness.State.GetUnit("player.test.01");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(harness.Simulation.HasPlayerBomber, Is.True);
+            Assert.That(harness.State.Turn.ActionSpent, Is.True, "the flight is the attack");
+            Assert.That(harness.Simulation.BomberBombsRemaining, Is.EqualTo(4));
+            var copter = harness.Simulation.Projectiles[0];
+            Assert.That(copter.Position.y, Is.GreaterThan(owner.Position.y + 0.8f), "it lifts off above the droid");
+            Assert.That(harness.Simulation.HasActiveControlledProjectile, Is.True);
+
+            var start = copter.Position;
+            foreach (var (input, axis, sign) in new[] { (new Vector2(1, 0), 'x', 1f), (new Vector2(-1, 0), 'x', -1f),
+                (new Vector2(0, 1), 'y', 1f), (new Vector2(0, -1), 'y', -1f) })
+            {
+                var before = copter.Position;
+                harness.Simulation.SetControlledProjectileInput(input);
+                TickMany(harness.Simulation, 60, 1f / 120f);                  // half a second
+                var moved = copter.Position - before;
+                Assert.That((axis == 'x' ? moved.x : moved.y) * sign, Is.EqualTo(2f).Within(0.1f), $"{input} at 4 u/s");
+            }
+            Assert.That(Vector2.Distance(copter.Position, start), Is.LessThan(0.2f));
+        }
+
+        [Test]
+        public void Bomber_GroundCeilingWallsAndTheMapBorderStopTheCopterWithoutExploding()
+        {
+            var harness = CreateBomberHarness(CreateBomberProgress(4));                      // 14 s of fuel for this long scenario
+            harness.Terrain.StampSolidRect(new Vector2(-3f, 3.3f), new Vector2(6f, 1f));   // a ceiling, underside at 2.8
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            var copter = harness.Simulation.Projectiles[0];
+            harness.Simulation.SetControlledProjectileInput(Vector2.up);
+            TickMany(harness.Simulation, 360, 1f / 120f);
+            Assert.That(copter.Position.y, Is.LessThan(2.8f), "stopped under the ceiling");
+            harness.Simulation.SetControlledProjectileInput(Vector2.down);
+            TickMany(harness.Simulation, 480, 1f / 120f);
+            Assert.That(copter.Position.y, Is.GreaterThan(-1f), "stopped by the ground");
+            harness.Simulation.SetControlledProjectileInput(Vector2.left);
+            TickMany(harness.Simulation, 480, 1f / 120f);
+            Assert.That(copter.Position.x, Is.GreaterThan(-10f), "stopped by the map border");
+            Assert.That(harness.Simulation.HasPlayerBomber, Is.True, "it never explodes by itself");
+        }
+
+        [Test]
+        public void Bomber_TheFlightWindowIsTenSecondsPlusOnePerRadiusPurchaseAndTheTurnPassesAfterIt()
+        {
+            foreach (var (radius, seconds) in new[] { (0, 10f), (4, 14f) })
+            {
+                var harness = CreateBomberHarness(CreateBomberProgress(radius));
+                Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+                TickMany(harness.Simulation, Mathf.RoundToInt((seconds - 0.3f) * 120f), 1f / 120f);
+                Assert.That(harness.Simulation.HasPlayerBomber, Is.True, $"still flying before {seconds}");
+                TickMany(harness.Simulation, 60, 1f / 120f);
+                Assert.That(harness.Simulation.HasPlayerBomber, Is.False, $"landed after {seconds}");
+                Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+                TickMany(harness.Simulation, 3600, 1f / 120f);
+                Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent), "the turn passes");
+            }
+        }
+
+        [Test]
+        public void Bomber_EachPressDropsOneBombStraightDownFourInARowAndTheFifthIsRefused()
+        {
+            var harness = CreateBomberHarness();
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            var copterPosition = harness.Simulation.Projectiles[0].Position;
+            for (var i = 0; i < 4; i++)
+                Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), $"bomb {i + 1}");
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.EqualTo(5), "the copter and four bombs, with no delay between presses");
+            Assert.That(harness.Simulation.BomberBombsRemaining, Is.Zero);
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Blocked), "no attack after the fourth");
+            Assert.That(harness.Simulation.HasPlayerBomber, Is.True, "the copter stays in the air");
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            foreach (var bomb in harness.Simulation.Projectiles.Where(p => p.Definition.ProjectileId.EndsWith(".bomb")))
+            {
+                Assert.That(bomb.Position.x, Is.EqualTo(copterPosition.x).Within(0.01f), "straight down");
+                Assert.That(bomb.Velocity.y, Is.LessThan(0f));
+            }
+        }
+
+        [Test]
+        public void Bomber_ABombBlastsOnTheGroundWithMineDamageAndOnAHostileDroidButFallsPastAnAlly()
+        {
+            // Ground: the opponent is right under the copter's start point.
+            var harness = CreateBomberHarness(enemy: new Vector2(-3f, -0.46f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var mine = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.mine");
+            var craters = 0;
+            harness.Simulation.TerrainCraterApplied += (_, _, _) => craters++;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 240, 1f / 120f);
+            Assert.That(enemy.MaxHealth - enemy.Health, Is.InRange(35, mine.Damage), "an ordinary mine blast: its damage with the usual falloff");
+            Assert.That(craters, Is.GreaterThan(0), "it digs like a mine");
+
+            // An ally under the copter: the bomb falls on past it and blasts on the ground (the ally is inside the radius).
+            var allyHarness = CreateBomberHarness(ally: new Vector2(-3f, -0.46f));
+            var ally = allyHarness.State.GetUnit("player.test.02");
+            var impactY = float.NaN;
+            allyHarness.Simulation.ProjectileExploded += (_, impact) => { if (impact.Damage > 0) impactY = impact.Point.y; };
+            Assert.That(allyHarness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(allyHarness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(allyHarness.Simulation, 240, 1f / 120f);
+            Assert.That(impactY, Is.LessThan(-0.9f), "the bomb passed the ally and blasted on the ground");
+        }
+
+        [Test]
+        public void Bomber_AHostileMagnetDestroysTheCopterAndCatchesABombThatBlastsAtTheMagnet()
+        {
+            var grounder = CreateWeapon("weapon.grounder", WeaponRole.DefensiveTool, damage: 0, impactRadius: 1.4f, ammo: 1);
+            var harness = CreateBomberHarness(enemy: new Vector2(-1.2f, -0.46f), opponentWeapon: grounder);
+            var removed = 0;
+            harness.Simulation.GrounderRemoved += _ => removed++;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                                // the opponent acts
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));  // magnet near x = -1.66
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            var copter = harness.Simulation.Projectiles[0];
+            harness.Simulation.SetControlledProjectileInput(Vector2.right);
+            TickMany(harness.Simulation, 40, 1f / 120f);                                        // above the magnet
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "a bomb");
+            TickMany(harness.Simulation, 120, 1f / 120f);
+            Assert.That(removed, Is.EqualTo(1), "the bomb was caught and blasted at the magnet, which it destroys");
+
+            var second = CreateBomberHarness(enemy: new Vector2(-1.2f, -0.46f), opponentWeapon: grounder);
+            second.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            second.Simulation.TryFire(NoAim);
+            Assert.That(second.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            second.Simulation.SetControlledProjectileInput(Vector2.right);
+            TickMany(second.Simulation, 40, 1f / 120f);
+            second.Simulation.SetControlledProjectileInput(Vector2.down);
+            TickMany(second.Simulation, 240, 1f / 120f);
+            Assert.That(second.Simulation.HasPlayerBomber, Is.False, "the copter was destroyed at the magnet");
+        }
+
+        [Test]
+        public void Bomber_RegistryOnePerFlightMineBlastRadiusSecondsAndArtMatchTheCard()
+        {
+            const string id = "weapon.bomber";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 0, 4 }));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            var mine = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.mine");
+            Assert.That(weapon.AmmoCount, Is.EqualTo(1));
+            Assert.That(weapon.Damage, Is.EqualTo(mine.Damage));
+            Assert.That(weapon.ImpactRadius, Is.EqualTo(mine.ImpactRadius));
+            Assert.That(BattleSimulation.RequiresAim(weapon), Is.False);
+            Assert.That(BattleSimulation.IsBattleMechanicAvailable(weapon), Is.True);
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveBomberSeconds(0), Is.EqualTo(10f));
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveBomberSeconds(4), Is.EqualTo(14f));
+            var progress = CreateBomberProgress(4);
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveImpactRadiusPercent(weapon, progress), Is.Zero, "Radius is flight time, not blast size");
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(weapon, definition, progress, WeaponUpgradePath.Radius), Is.EqualTo(14f));
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/bomber"), Is.Not.Null);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/blaster_shot"), Is.Not.Null);
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            foreach (var path in new[] { WeaponUpgradePath.Aim, WeaponUpgradePath.Loadout })
+                Assert.That(service.TryUpgrade(id, path).Applied, Is.False, path.ToString());
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
+            }
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
         }
 
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,

@@ -55,6 +55,10 @@ namespace Game.Gameplay.Battle.Simulation
         private const string TeleportWeaponId = "weapon.teleport";
         private const string SwapJumpWeaponId = "weapon.swap-jump";
         private const string GrounderWeaponId = "weapon.grounder";
+        private const string BomberCopterProjectileId = "projectile.weapon.bomber";
+        private const string BomberBombProjectileId = "projectile.weapon.bomber.bomb";
+        private const int BomberBombCount = 4;
+        private const float BomberBodyHalfSize = 0.32f;
         private const string SkyHookWeaponId = "weapon.sky-hook";
         // The rocket carves a channel a little wider than the rail bullet's.
         private const float SkyHookTunnelRadius = 0.18f;
@@ -268,6 +272,7 @@ namespace Game.Gameplay.Battle.Simulation
         private int _turnSequence;
         private RopeTraversal _ropeTraversal;
         private BoostSession _boost;
+        private BomberSession _bomber;
         private ElectricHarpoonTraversal _electricHarpoonTraversal;
         private Vector2? _orbitalTargetMarker;
         private PendingOrbitalStrike _pendingOrbitalStrike;
@@ -399,6 +404,9 @@ namespace Game.Gameplay.Battle.Simulation
             || _ropeTraversal != null && !_ropeTraversal.IsAttached
             || _electricHarpoonTraversal != null;
         /// <summary>True while the active droid is on rocket fuel (hovering).</summary>
+        /// <summary>True while the active droid's copter is in the air.</summary>
+        public bool HasPlayerBomber => _bomber != null && _bomber.OwnerUnitId == _state.Turn.ActiveUnitId;
+        public int BomberBombsRemaining => _bomber?.BombsLeft ?? 0;
         public bool HasPlayerBoost => _boost != null && _boost.OwnerUnitId == _state.Turn.ActiveUnitId;
         public float BoostSecondsRemaining => _boost?.Remaining ?? 0f;
         public bool HasPlayerRopeTraversal => _ropeTraversal != null
@@ -514,7 +522,7 @@ namespace Game.Gameplay.Battle.Simulation
             return weapon.WeaponId switch
             {
                 "weapon.turn-transfer"
-                    or "weapon.bomber" or "weapon.ufo-carrier" or "weapon.self-destruct"
+                    or "weapon.ufo-carrier" or "weapon.self-destruct"
                     or "weapon.nuclear-charge" => false,
                 _ => true
             };
@@ -534,6 +542,7 @@ namespace Game.Gameplay.Battle.Simulation
                 && weapon.WeaponId != RepairJammerWeaponId
                 && weapon.WeaponId != OrbitalRocketWeaponId
                 && weapon.WeaponId != BoostWeaponId
+                && weapon.WeaponId != BomberWeaponId
                 && weapon.WeaponId != VirusWeaponId
                 && weapon.WeaponId != SkyHookWeaponId
                 && weapon.WeaponId != FpvWeaponId;
@@ -663,6 +672,11 @@ namespace Game.Gameplay.Battle.Simulation
 
         public BattleFireResult TryFire(AimState aim)
         {
+            if (_bomber != null && _bomber.OwnerUnitId == _state.Turn.ActiveUnitId)
+            {
+                return DropBomberBomb();
+            }
+
             if (_boost != null && _boost.OwnerUnitId == _state.Turn.ActiveUnitId)
             {
                 // A second press cuts the fuel; the droid falls unless it is supported.
@@ -819,6 +833,11 @@ namespace Game.Gameplay.Battle.Simulation
             if (weapon.WeaponId == C4WeaponId)
             {
                 return DeployC4(unit, activeInventory, weapon);
+            }
+
+            if (weapon.WeaponId == BomberWeaponId)
+            {
+                return LaunchBomber(unit, activeInventory, weapon);
             }
 
             if (IsControlledDroneWeapon(weapon))
@@ -2199,6 +2218,141 @@ namespace Game.Gameplay.Battle.Simulation
             _activeShotEndsTurn = false;
             ShotFired?.Invoke(unit.TeamId, weapon, false);
             return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, mine.Position);
+        }
+
+        private BattleFireResult LaunchBomber(
+            BattleUnitState unit,
+            WeaponInventoryRuntime inventory,
+            WeaponDefinition weapon)
+        {
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            var radiusPurchases = ProgressionFor(unit.TeamId).ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Radius);
+            var seconds = WeaponUpgradeChoiceResolver.ResolveBomberSeconds(radiusPurchases);
+            var spawnPoint = unit.Position + Vector2.up * 1.05f;
+            Spawn(new ProjectileSpawnRequest(
+                weapon.CreateProjectileDefinition(0, 1f, 0, seconds),
+                unit.UnitId,
+                spawnPoint,
+                Vector2.zero,
+                weapon.ProjectileRadius * 2f,
+                ProjectileWeaponEffect.GetProjectileColor(weapon.Role)));
+            var copter = _projectiles[_projectiles.Count - 1];
+            _controlledProjectileId = copter.Id;
+            _controlledProjectileInput = Vector2.zero;
+            var bombDamage = Mathf.RoundToInt(weapon.Damage * ResolveModifiersFor(unit.TeamId, weapon).DamageMultiplier);
+            _bomber = new BomberSession(unit.UnitId, copter.Id, weapon, bombDamage, BomberBombCount);
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = true;
+            _turnService.SpendAction(_state);
+            ShotFired?.Invoke(unit.TeamId, weapon, true);
+            return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, spawnPoint);
+        }
+
+        /// <summary>Every fire press lets one bomb fall from the copter; there is no delay between bombs.</summary>
+        private BattleFireResult DropBomberBomb()
+        {
+            var session = _bomber;
+            var copter = _projectiles.Find(value => value.Id == session.CopterProjectileId);
+            if (copter == null || session.BombsLeft <= 0)
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, _state.Turn.ActiveTeam, session.Weapon);
+            }
+
+            session.BombsLeft--;
+            var weapon = session.Weapon;
+            var bomb = ProjectileDefinition.CreateRuntime(
+                BomberBombProjectileId, 0.1f, 1f, 6f, session.BombDamage, weapon.ImpactRadius, 1f, 0);
+            Spawn(new ProjectileSpawnRequest(
+                bomb,
+                session.OwnerUnitId,
+                copter.Position + Vector2.down * 0.35f,
+                Vector2.zero,
+                0.2f,
+                ProjectileWeaponEffect.GetProjectileColor(weapon.Role)));
+            return new BattleFireResult(BattleFireOutcome.Fired, _state.Turn.ActiveTeam, weapon, copter.Position);
+        }
+
+        private bool IsBomberBlocked(Vector2 center)
+        {
+            if (_terrain == null)
+            {
+                return false;
+            }
+
+            var grid = _terrain.Grid;
+            const float half = BomberBodyHalfSize;
+            return center.x - half < grid.WorldMinX || center.x + half > grid.WorldMaxX
+                || center.y + half > grid.WorldMaxY
+                || grid.IsSolidWorld(center)
+                || grid.IsSolidWorld(center + new Vector2(half, 0f)) || grid.IsSolidWorld(center + new Vector2(-half, 0f))
+                || grid.IsSolidWorld(center + new Vector2(0f, half)) || grid.IsSolidWorld(center + new Vector2(0f, -half));
+        }
+
+        /// <summary>
+        /// The controlled copter: steered with the four direction buttons at its own speed, stopped by ground and
+        /// walls, never exploding. It ends with the flight window or when the owner dies.
+        /// </summary>
+        private void StepBomberCopter(int projectileIndex, SimProjectile projectile, float deltaTime)
+        {
+            projectile.ReduceLifetime(deltaTime);
+            var owner = FindUnit(projectile.OwnerUnitId);
+            if (projectile.RemainingLifetime <= 0f || owner == null || owner.IsDefeated)
+            {
+                EndBomberCopter(projectileIndex, projectile);
+                return;
+            }
+
+            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
+            var velocity = projectile.Id == _controlledProjectileId
+                ? _controlledProjectileInput * Mathf.Max(0.1f, weapon?.MaxPower ?? 1f)
+                : Vector2.zero;
+            if (TryFindGrounderForProjectile(projectile, weapon, projectile.Position, out var attractor))
+            {
+                var toGrounder = attractor.Position - projectile.Position;
+                if (toGrounder.sqrMagnitude > 0.0001f)
+                {
+                    velocity = toGrounder.normalized * Mathf.Max(4f, velocity.magnitude);
+                }
+
+                if (toGrounder.magnitude <= 0.45f)
+                {
+                    // Without an explosive payload the copter is simply destroyed at the magnet.
+                    DamageGrounder(attractor, 1);
+                    EndBomberCopter(projectileIndex, projectile);
+                    return;
+                }
+            }
+
+            projectile.SetVelocity(velocity);
+            var step = velocity * deltaTime;
+            var position = projectile.Position;
+            if (!Mathf.Approximately(step.x, 0f) && !IsBomberBlocked(position + new Vector2(step.x, 0f)))
+            {
+                position.x += step.x;
+            }
+
+            if (!Mathf.Approximately(step.y, 0f) && !IsBomberBlocked(position + new Vector2(0f, step.y)))
+            {
+                position.y += step.y;
+            }
+
+            projectile.MoveTo(position);
+        }
+
+        private void EndBomberCopter(int projectileIndex, SimProjectile projectile)
+        {
+            _bomber = null;
+            if (_controlledProjectileId == projectile.Id)
+            {
+                _controlledProjectileId = -1;
+                _controlledProjectileInput = Vector2.zero;
+            }
+
+            ConcludeProjectileShot(projectileIndex, projectile);
         }
 
         private BattleFireResult LaunchControlledDrone(
@@ -5342,6 +5496,11 @@ namespace Game.Gameplay.Battle.Simulation
                     StepSkyHook(i, projectile, deltaTime);
                     continue;
                 }
+                if (projectile.Definition.ProjectileId == BomberCopterProjectileId)
+                {
+                    StepBomberCopter(i, projectile, deltaTime);
+                    continue;
+                }
                 if (!string.IsNullOrEmpty(projectile.GuaranteedTargetUnitId))
                 {
                     StepGuaranteedTargetProjectile(i, projectile, deltaTime);
@@ -5649,7 +5808,10 @@ namespace Game.Gameplay.Battle.Simulation
                     if (!isDrillRocket
                         && !ignoresUnitsInFlight
                         && TryFindHitUnit(position, projectile.Definition.Radius, ignoredUnitId,
-                            out var directHit, out var hitPoint))
+                            out var directHit, out var hitPoint,
+                            // A bomb explodes on hostile droids only; it falls past its own side.
+                            projectile.Definition.ProjectileId == BomberBombProjectileId
+                                ? ResolveTeamForOwner(projectile.OwnerUnitId) : BattleTeamId.None))
                     {
                         ResolveProjectileAt(i, hitPoint, directHit: directHit);
                         break;
@@ -5672,7 +5834,7 @@ namespace Game.Gameplay.Battle.Simulation
             projectile.ReduceLifetime(deltaTime);
             if (projectile.RemainingLifetime <= 0f)
             {
-                EndRailBullet(projectileIndex, projectile);
+                ConcludeProjectileShot(projectileIndex, projectile);
                 return;
             }
 
@@ -5693,7 +5855,7 @@ namespace Game.Gameplay.Battle.Simulation
                         || position.y > _terrain.Grid.WorldMaxY + 4f)))
                 {
                     projectile.MoveTo(position);
-                    EndRailBullet(projectileIndex, projectile);
+                    ConcludeProjectileShot(projectileIndex, projectile);
                     return;
                 }
 
@@ -5707,7 +5869,7 @@ namespace Game.Gameplay.Battle.Simulation
                 {
                     projectile.MoveTo(position);
                     DamageGrounder(grounder, 1);
-                    EndRailBullet(projectileIndex, projectile);
+                    ConcludeProjectileShot(projectileIndex, projectile);
                     return;
                 }
 
@@ -5754,7 +5916,7 @@ namespace Game.Gameplay.Battle.Simulation
                             WakeUnitsWithoutSupport();
                         }
 
-                        EndRailBullet(projectileIndex, projectile);
+                        ConcludeProjectileShot(projectileIndex, projectile);
                         return;
                     }
                 }
@@ -5931,7 +6093,7 @@ namespace Game.Gameplay.Battle.Simulation
         }
 
         /// <summary>A bullet that simply runs out has no impact to end the shot, so it concludes it itself.</summary>
-        private void EndRailBullet(int projectileIndex, SimProjectile projectile)
+        private void ConcludeProjectileShot(int projectileIndex, SimProjectile projectile)
         {
             DiscardProjectile(projectileIndex, projectile);
             if (HasProjectilesInFlight || HasActiveWeaponEffect || !_activeShotEndsTurn)
@@ -7192,7 +7354,8 @@ namespace Game.Gameplay.Battle.Simulation
             float radius,
             string ignoredUnitId,
             out BattleUnitState hitUnit,
-            out Vector2 hitPoint)
+            out Vector2 hitPoint,
+            BattleTeamId ignoredTeam = BattleTeamId.None)
         {
             hitUnit = null;
             hitPoint = point;
@@ -7200,7 +7363,8 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 foreach (var unit in team.Units)
                 {
-                    if (unit.IsDefeated || unit.UnitId == ignoredUnitId)
+                    if (unit.IsDefeated || unit.UnitId == ignoredUnitId
+                        || (ignoredTeam != BattleTeamId.None && unit.TeamId == ignoredTeam))
                     {
                         continue;
                     }
@@ -7340,6 +7504,11 @@ namespace Game.Gameplay.Battle.Simulation
                 return _weaponsById.TryGetValue(MineWeaponId, out var mine) ? mine : null;
             }
 
+            if (projectileId == BomberBombProjectileId)
+            {
+                return _weaponsById.TryGetValue(BomberWeaponId, out var bomber) ? bomber : null;
+            }
+
             if (projectileId == LaserFenceDeployProjectileId)
             {
                 return _weaponsById.TryGetValue(LaserFenceWeaponId, out var laserFence) ? laserFence : null;
@@ -7389,6 +7558,24 @@ namespace Game.Gameplay.Battle.Simulation
             public string OwnerUnitId { get; }
             public WeaponDefinition Weapon { get; }
             public Vector2 Target { get; }
+        }
+
+        private sealed class BomberSession
+        {
+            public BomberSession(string ownerUnitId, int copterProjectileId, WeaponDefinition weapon, int bombDamage, int bombs)
+            {
+                OwnerUnitId = ownerUnitId;
+                CopterProjectileId = copterProjectileId;
+                Weapon = weapon;
+                BombDamage = bombDamage;
+                BombsLeft = bombs;
+            }
+
+            public string OwnerUnitId { get; }
+            public int CopterProjectileId { get; }
+            public WeaponDefinition Weapon { get; }
+            public int BombDamage { get; }
+            public int BombsLeft { get; set; }
         }
 
         private sealed class BoostSession

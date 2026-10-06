@@ -2756,6 +2756,22 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            if (projectile.Definition.ProjectileId == "projectile.weapon.bomber")
+            {
+                // The copter art is about 10 units across at 100 px/unit; it faces right and never rotates.
+                projectileTransform.localScale = Vector3.one * 0.085f;
+                projectileTransform.rotation = Quaternion.identity;
+                return;
+            }
+
+            if (projectile.Definition.ProjectileId == "projectile.weapon.bomber.bomb")
+            {
+                // An enlarged blaster bolt standing vertically along the fall (about 0.35 long and 0.11 thick).
+                projectileTransform.localScale = Vector3.one * 0.045f;
+                projectileTransform.rotation = Quaternion.Euler(0f, 0f, -90f);
+                return;
+            }
+
             projectileTransform.localScale = ResolveProjectileVisualScale(weapon, diameter);
             if (weapon.WeaponId != "weapon.fpv-drone")
             {
@@ -2826,6 +2842,11 @@ namespace Game.Gameplay.Battle.Assembly
             if (weapon == null)
             {
                 return null;
+            }
+
+            if (projectile?.Definition != null && projectile.Definition.ProjectileId == "projectile.weapon.bomber.bomb")
+            {
+                return LoadWeaponIconSprite("blaster_shot");
             }
 
             var spriteId = weapon.WeaponId switch
@@ -2917,6 +2938,11 @@ namespace Game.Gameplay.Battle.Assembly
                 return _weaponsById.TryGetValue("weapon.laser-fence", out var laserFence) ? laserFence : null;
             }
 
+            if (projectileId == "projectile.weapon.bomber.bomb")
+            {
+                return _weaponsById.TryGetValue("weapon.bomber", out var bomber) ? bomber : null;
+            }
+
             if (projectileId != null
                 && (projectileId.StartsWith("projectile.weapon.mortira.fragment", System.StringComparison.Ordinal)
                     || projectileId.StartsWith("projectile.weapon.mortira.cascade.", System.StringComparison.Ordinal)))
@@ -2963,8 +2989,9 @@ namespace Game.Gameplay.Battle.Assembly
                 var keepsHoppingControl = weapon?.WeaponId == "weapon.hopping-grenade" && !setsShotStatus;
                 // The purchased early trigger needs the same weapon and aim for the second press.
                 var keepsSphereControl = weapon?.WeaponId == "weapon.teleport" && _simulation.CanTriggerTeleportEarly();
-                _hideHeldWeaponForReusableThrow = keepsHoppingControl || keepsSphereControl;
-                _playerWeaponSelected = keepsHoppingControl || keepsSphereControl;
+                var keepsBomberControl = weapon?.WeaponId == "weapon.bomber" && _simulation.HasPlayerBomber;
+                _hideHeldWeaponForReusableThrow = keepsHoppingControl || keepsSphereControl || keepsBomberControl;
+                _playerWeaponSelected = keepsHoppingControl || keepsSphereControl || keepsBomberControl;
                 RefreshPlayerWeaponVisual();
             }
 
@@ -2982,7 +3009,9 @@ namespace Game.Gameplay.Battle.Assembly
             if (weapon == null
                 || !weapon.HasLimitedAmmo
                 || _inventory?.Selected?.WeaponId != weapon.WeaponId
-                || _inventory.GetSelectedRemainingAmmo() > 0)
+                || _inventory.GetSelectedRemainingAmmo() > 0
+                // The copter's one charge is spent on launch, but its fire button drops the bombs.
+                || (weapon.WeaponId == "weapon.bomber" && _simulation.HasPlayerBomber))
             {
                 return;
             }
@@ -3896,7 +3925,19 @@ namespace Game.Gameplay.Battle.Assembly
                 if (_projectileVisuals.TryGetValue(projectile.Id, out var projectileObject) && projectileObject != null)
                 {
                     projectileObject.transform.position = projectile.Position;
-                    if (projectileObject.transform.childCount > 0
+                    if (projectile.Definition.ProjectileId == "projectile.weapon.bomber"
+                        && projectileObject.transform.childCount > 0)
+                    {
+                        // The copter art faces right: it mirrors with the direction of travel.
+                        var body = projectileObject.transform.GetChild(0);
+                        var facing = projectile.Velocity.x < -0.05f ? -1f : projectile.Velocity.x > 0.05f ? 1f : Mathf.Sign(body.localScale.x);
+                        body.localScale = new Vector3(Mathf.Abs(body.localScale.x) * facing, body.localScale.y, body.localScale.z);
+                    }
+                    else if (projectile.Definition.ProjectileId == "projectile.weapon.bomber.bomb")
+                    {
+                        // Keeps its vertical pose; nothing to rotate.
+                    }
+                    else if (projectileObject.transform.childCount > 0
                         && projectile.Velocity.sqrMagnitude > 0.01f
                         && ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId)?.WeaponId is not
                             ("weapon.fpv-drone" or "weapon.titanium-disc"))
@@ -5654,15 +5695,17 @@ namespace Game.Gameplay.Battle.Assembly
             var ropeAttached = _simulation.IsPlayerRopeAttached || _simulation.HasPlayerBoost;
             var directDroneControlActive = _simulation.HasActiveControlledProjectile;
             var fireInputReady = ropeAttached || !BattleSimulation.RequiresAim(weapon) || _aimState.HasInput;
+            var bomberActive = _simulation.HasPlayerBomber;
             var canContinueMinePlacement = CanContinueMinePlacementInput();
             var canFire = !_simulation.Result.IsFinished
-                && (ropeAttached || (!HasActiveMotion && !HasActiveWeaponEffect
+                && (ropeAttached || bomberActive || (!HasActiveMotion && !HasActiveWeaponEffect
                     && (!HasProjectilesInFlight || canContinueMinePlacement)))
                 && !HasPendingGroundAction
                 && playerHasTime
                 && _playerWeaponSelected
                 && (_inventory.CanFireSelected || _simulation.CanContinueHoppingGrenade()
-                    || _simulation.CanTriggerTeleportEarly() || _simulation.HasPlayerBoost)
+                    || _simulation.CanTriggerTeleportEarly() || _simulation.HasPlayerBoost
+                    || _simulation.HasPlayerBomber)
                 && fireInputReady;
             var guideActive = _firstBattleGuide != null && _firstBattleGuide.IsActive;
             var isFirstTrainingBattle = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId);

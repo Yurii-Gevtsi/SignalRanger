@@ -593,6 +593,53 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Bomber_ProductionSceneShowsTheCopterAndVerticalBombsAndBlastsOnTheGround()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.bomber" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var visuals = Get<Dictionary<int, GameObject>>(controller, "_projectileVisuals");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.bomber") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var shown = new List<(string id, GameObject visual)>();
+            simulation.ProjectileSpawned += projectile => shown.Add((projectile.Definition.ProjectileId, visuals[projectile.Id]));
+            Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            Invoke(controller, "Fire");
+            Assert.That(simulation.HasPlayerBomber, Is.True);
+            var copter = shown[0].visual.transform.Find("Visual");
+            Assert.That(copter.GetComponent<SpriteRenderer>().sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/bomber")));
+            Assert.That(copter.localScale.x, Is.EqualTo(0.085f).Within(0.001f));
+
+            simulation.SetControlledProjectileInput(Vector2.left);
+            for (var tick = 0; tick < 30; tick++) simulation.Tick(1f / 120f);
+            Invoke(controller, "SyncProjectileVisuals");
+            Assert.That(copter.localScale.x, Is.LessThan(0f), "the copter mirrors when it flies left");
+
+            Invoke(controller, "Fire");
+            Assert.That(shown.Count, Is.EqualTo(2));
+            var bomb = shown[1].visual.transform.Find("Visual");
+            Assert.That(bomb.GetComponent<SpriteRenderer>().sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/blaster_shot")));
+            Assert.That(Vector2.Dot(bomb.right, Vector2.down), Is.GreaterThan(0.99f), "the bolt stands vertically along the fall");
+            for (var tick = 0; tick < 20; tick++) simulation.Tick(1f / 120f);
+            Invoke(controller, "SyncProjectileVisuals");
+            Assert.That(Vector2.Dot(bomb.right, Vector2.down), Is.GreaterThan(0.99f));
+            for (var frame = 0; frame < 25; frame++)
+            {
+                for (var tick = 0; tick < 20; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(simulation.ProjectilesInFlight, Is.EqualTo(1), "the bomb blasted, the copter still flies");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {
