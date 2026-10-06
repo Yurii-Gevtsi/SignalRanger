@@ -719,7 +719,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void CryoGrenade_FreezesUnitsInsideItsBlastForOneTurn()
+        public void CryoGrenade_ChillsUnitsInsideItsBlast()
         {
             var grenade = CreateWeapon("weapon.cryo-grenade", damage: 20,
                 impactRadius: 1.35f, gravityScale: 0f);
@@ -728,12 +728,12 @@ namespace Game.Tests.EditMode.Gameplay
             var aim = new AimState(new Vector2(-3f, 0.6f), Vector2.right, 20f, true);
 
             Assert.That(harness.Simulation.TryFire(aim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
-            for (var frame = 0; frame < 240 && !harness.Simulation.IsUnitFrozen(opponent.UnitId); frame++)
+            for (var frame = 0; frame < 240 && !harness.Simulation.IsUnitChilled(opponent.UnitId); frame++)
             {
                 harness.Simulation.Tick(1f / 60f);
             }
 
-            Assert.That(harness.Simulation.IsUnitFrozen(opponent.UnitId), Is.True);
+            Assert.That(harness.Simulation.IsUnitChilled(opponent.UnitId), Is.True);
             Assert.That(opponent.Health, Is.LessThan(opponent.MaxHealth));
         }
 
@@ -2038,6 +2038,87 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsFalse(
                 harness.Terrain.Grid.IsSolidWorld(player.Position + Vector2.up * 0.6f),
                 "arrival blasts a pocket so the body fits");
+        }
+
+        private static Harness CreateCryoHarness(Vector2? ally = null, int damage = 40)
+        {
+            var cryo = CreateWeapon("weapon.cryo-grenade", WeaponRole.ArcingExplosive, damage: damage, impactRadius: 2.5f,
+                gravityScale: 0f, timeoutSeconds: 8f);
+            return CreateHarness(cryo, secondPlayerPosition: ally);
+        }
+
+        private static void ThrowAtOpponent(Harness harness)
+        {
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-2.4f, 0.1f), Vector2.right, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 1200, 1f / 120f);
+        }
+
+        [Test]
+        public void CryoGrenade_AppliesTheSharedTwoTurnColdCycleToEveryDroidInTheBlast()
+        {
+            var harness = CreateCryoHarness(ally: new Vector2(4f, 0f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var friend = harness.State.GetUnit("player.test.02");
+            var enemyStart = enemy.Health;
+            ThrowAtOpponent(harness);
+            var direct = enemyStart - enemy.Health;
+            Assert.That(direct, Is.GreaterThan(0));
+            Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.True);
+            Assert.That(harness.Simulation.IsUnitChilled(friend.UnitId), Is.True, "allies in the primary radius are chilled");
+            Assert.That(harness.Simulation.IsUnitFrozen(enemy.UnitId), Is.False, "the base cold cycle adds no movement ban");
+
+            var tick = Mathf.Max(1, Mathf.RoundToInt(direct * 0.2f));
+            var afterBlast = enemy.Health;
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // victim's first turn ends: tick
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // other side
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // victim's second turn ends: tick and removal
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick * 2));
+            Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void CryoGrenade_RepeatHitRefreshesToTwoTurnsAndOnlyBoostsItsOwnDirectDamage()
+        {
+            var harness = CreateCryoHarness(damage: 20);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var first = start - enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // victim turn ends: tick one, one turn of cold left
+            var beforeSecond = enemy.Health;
+            // The first blast knocked the droid back; restore its spot so both hits have equal falloff.
+            enemy.MoveTo(new Vector2(3f, 0f));
+            harness.Motors[enemy.UnitId].Teleport(enemy.Position);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            ThrowAtOpponent(harness);
+            var second = beforeSecond - enemy.Health;
+            Assert.That(second, Is.EqualTo(Mathf.CeilToInt(first * 1.25f)).Within(1), "+25% to the direct damage only");
+
+            var tick = Mathf.Max(1, Mathf.RoundToInt(second * 0.2f));
+            var afterSecond = enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(enemy.Health, Is.EqualTo(afterSecond - tick), "one tick of the new hit");
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(enemy.Health, Is.EqualTo(afterSecond - tick * 2), "two ticks in total, not three");
+            Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void CryoGrenade_UsesFourTthPathsHasNoFeatureAndKeepsItsOwnBody()
+        {
+            Assert.That(WeaponProgressionCatalog.TryGet("weapon.cryo-grenade", out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+            Assert.That(definition.HasEvolutionOptions, Is.False);
+            Assert.That(WeaponEvolutionIconResolver.ResolveCurrentIconResource("cryo_grenade", definition,
+                new SaveWeaponProgressData { weaponId = "weapon.cryo-grenade", rank = 15 }),
+                Is.EqualTo("UI/Weapons/cryo_grenade"));
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/cryo_grenade"), Is.Not.Null);
         }
 
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,

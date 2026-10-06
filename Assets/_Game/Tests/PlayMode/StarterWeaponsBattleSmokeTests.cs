@@ -327,6 +327,41 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(
+            [Values("weapon.cryo-grenade:cryo_grenade", "weapon.hopping-grenade:hopping_grenade",
+                "weapon.incendiary-grenade:incendiary_grenade")] string pair)
+        {
+            var weaponId = pair.Split(':')[0];
+            var body = pair.Split(':')[1];
+            WeaponProgressionBridge.UnlockedResolver = id => id == weaponId || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != weaponId) index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var visuals = Get<Dictionary<int, GameObject>>(controller, "_projectileVisuals");
+            Texture shown = null;
+            simulation.ProjectileSpawned += projectile =>
+                shown = visuals[projectile.Id].GetComponentInChildren<SpriteRenderer>().sprite.texture;
+            var terrain = Get<BattleTerrain>(controller, "_battleTerrain");
+            Set(controller, "_aimState", new AimState(new Vector2(0f, terrain.Grid.WorldMaxY - 2f), Vector2.down, 12f, true));
+            Invoke(controller, "Fire");
+            Assert.That(shown, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/" + body)));
+            for (var frame = 0; frame < 120 && simulation.HasProjectilesInFlight; frame++)
+            {
+                for (var tick = 0; tick < 60; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(simulation.ProjectilesInFlight, Is.Zero);
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator RailRifle_ProductionSceneFiresASmallBoltAlongTheShotAndItLeavesTheArena()
         {
             WeaponProgressionBridge.UnlockedResolver = id =>

@@ -4189,7 +4189,8 @@ namespace Game.Gameplay.Battle.Assembly
                 var isJumping = _unitMotors.TryGetValue(presenter.State.UnitId, out var motor) && motor.IsJumping;
                 var jumpTrailScale = isJumping ? motor.JumpTrailScale : 0f;
                 presenter.Refresh(presenter.State.UnitId == _battleState.Turn.ActiveUnitId, isJumping, jumpTrailScale);
-                presenter.View.SetFreezeOverlay(freezeOverlay, _simulation.IsUnitFrozen(presenter.State.UnitId));
+                presenter.View.SetFreezeOverlay(freezeOverlay,
+                    _simulation.IsUnitFrozen(presenter.State.UnitId) || _simulation.IsUnitChilled(presenter.State.UnitId));
                 presenter.View.SetPoisonOverlay(poisonOverlay, _simulation.IsUnitPoisoned(presenter.State.UnitId));
                 presenter.View.SetLavaOverlay(lavaOverlay, _simulation.IsUnitLavaBurning(presenter.State.UnitId));
                 presenter.View.SetElectroOverlay(electroOverlayFrames, _simulation.IsUnitElectrified(presenter.State.UnitId));

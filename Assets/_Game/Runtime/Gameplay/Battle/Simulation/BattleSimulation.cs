@@ -209,6 +209,10 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly Dictionary<string, int> _repairJammerTurns = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActiveDisorientation> _disorientations = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActivePoisonEffect> _poisonEffects = new(StringComparer.Ordinal);
+        // Shared two-turn elemental cycle: cold uses it now, fire and the others reuse the same rules.
+        private readonly Dictionary<string, ElementalStatus> _chillEffects = new(StringComparer.Ordinal);
+        private const int ElementalBaseDurationTurns = 2;
+        private const int ElementalRepeatBonusPercent = 25;
         private readonly Dictionary<string, ActiveDisorientation> _freezes = new(StringComparer.Ordinal);
         private readonly Dictionary<string, int> _lastFreezeApplicationTurn = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActiveDisorientation> _empStuns = new(StringComparer.Ordinal);
@@ -1073,6 +1077,7 @@ namespace Game.Gameplay.Battle.Simulation
         public void AdvanceTurnDueToNoUsableWeapon()
         {
             ProcessPoisonForEndingActiveTurn();
+            ProcessElementalForEndingActiveTurn(_chillEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
@@ -1342,6 +1347,7 @@ namespace Game.Gameplay.Battle.Simulation
         private void AdvanceTurnNow(TurnAdvanceReason reason)
         {
             ProcessPoisonForEndingActiveTurn();
+            ProcessElementalForEndingActiveTurn(_chillEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
@@ -3549,8 +3555,8 @@ namespace Game.Gameplay.Battle.Simulation
             }
             var appliesEmpStun = impactWeapon.WeaponId == EmpWeaponId;
             var empEvolution = appliesEmpStun ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
-            var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId
-                || impactWeapon.WeaponId == CryoGrenadeWeaponId;
+            var appliesChill = impactWeapon.WeaponId == CryoGrenadeWeaponId;
+            var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId;
             var freezeEvolution = appliesFreeze ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
 
             const float selfDamageMultiplier = 1f;
@@ -3561,7 +3567,9 @@ namespace Game.Gameplay.Battle.Simulation
                 impact.OwnerUnitId,
                 impact.ProjectileId,
                 settings,
-                (unit, amount) => ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution));
+                (unit, amount) => ResolveElementalRepeatBonus(
+                    _chillEffects, appliesChill, unit,
+                    ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution)));
             foreach (var damageEvent in damageEvents)
             {
                 DamageApplied?.Invoke(sourceTeam, damageEvent);
@@ -3569,6 +3577,11 @@ namespace Game.Gameplay.Battle.Simulation
                 if (appliesPoison)
                 {
                     ApplyPoison(target, sourceTeam, damageEvent.Damage, poisonEvolution);
+                }
+
+                if (appliesChill)
+                {
+                    ApplyElementalStatus(_chillEffects, target, sourceTeam, damageEvent.Damage);
                 }
 
                 if (appliesEmpStun)
@@ -3591,9 +3604,7 @@ namespace Game.Gameplay.Battle.Simulation
 
                 if (appliesFreeze)
                 {
-                    var freezeTurns = impactWeapon.WeaponId == CryoGrenadeWeaponId
-                        ? 1
-                        : freezeEvolution.CryoFreezeTurns > 0f
+                    var freezeTurns = freezeEvolution.CryoFreezeTurns > 0f
                         ? Mathf.RoundToInt(freezeEvolution.CryoFreezeTurns)
                         : CryoBaseFreezeTurns;
                     ApplyFreeze(target?.UnitId, freezeTurns);
@@ -3717,6 +3728,93 @@ namespace Game.Gameplay.Battle.Simulation
                 evolution.ToxicArmorWeakenPercent,
                 evolution.ToxicArmorWeakenTurns,
                 evolution.ToxicMovementDamagePerSecond);
+        }
+
+        private int ResolveElementalRepeatBonus(
+            Dictionary<string, ElementalStatus> effects, bool applies, BattleUnitState unit, int amount)
+        {
+            if (!applies || unit == null || amount <= 0 || !effects.ContainsKey(unit.UnitId))
+            {
+                return amount;
+            }
+
+            // A second hit of the same element boosts only its own direct damage.
+            return Mathf.CeilToInt(amount * (1f + ElementalRepeatBonusPercent / 100f));
+        }
+
+        private void ApplyElementalStatus(
+            Dictionary<string, ElementalStatus> effects, BattleUnitState unit, BattleTeamId sourceTeam, int directDamage)
+        {
+            if (unit == null || unit.IsDefeated || directDamage <= 0)
+            {
+                return;
+            }
+
+            // The tick is 20% of the direct hit this unit took; a repeat hit replaces it and the
+            // remaining time with the full base duration instead of stacking.
+            var tick = Mathf.Max(1, Mathf.RoundToInt(directDamage * ElementalStatusDamageRatio));
+            effects[unit.UnitId] = new ElementalStatus(unit.UnitId, sourceTeam, tick, ElementalBaseDurationTurns);
+        }
+
+        private void ProcessElementalForEndingActiveTurn(Dictionary<string, ElementalStatus> effects)
+        {
+            if (effects.Count == 0)
+            {
+                return;
+            }
+
+            var activeTeam = _state.Turn.ActiveTeam;
+            var finished = new List<string>();
+            foreach (var pair in effects)
+            {
+                var effect = pair.Value;
+                var unit = FindUnit(effect.UnitId);
+                if (unit == null || unit.IsDefeated)
+                {
+                    finished.Add(pair.Key);
+                    continue;
+                }
+
+                if (unit.TeamId != activeTeam)
+                {
+                    continue;
+                }
+
+                ApplyDamage(unit, effect.DamagePerTurn, ElementalDamageSourceId, effect.SourceTeam);
+                effect.TurnsRemaining--;
+                if (effect.TurnsRemaining <= 0)
+                {
+                    finished.Add(pair.Key);
+                }
+            }
+
+            foreach (var unitId in finished)
+            {
+                effects.Remove(unitId);
+            }
+        }
+
+        public bool IsUnitChilled(string unitId)
+        {
+            return !string.IsNullOrWhiteSpace(unitId) && _chillEffects.ContainsKey(unitId);
+        }
+
+        private const string ElementalDamageSourceId = "status.elemental";
+
+        private sealed class ElementalStatus
+        {
+            public ElementalStatus(string unitId, BattleTeamId sourceTeam, int damagePerTurn, int turnsRemaining)
+            {
+                UnitId = unitId;
+                SourceTeam = sourceTeam;
+                DamagePerTurn = damagePerTurn;
+                TurnsRemaining = turnsRemaining;
+            }
+
+            public string UnitId { get; }
+            public BattleTeamId SourceTeam { get; }
+            public int DamagePerTurn { get; }
+            public int TurnsRemaining { get; set; }
         }
 
         private void ProcessPoisonForEndingActiveTurn()
@@ -4477,6 +4575,7 @@ namespace Game.Gameplay.Battle.Simulation
             _walkIntentDirection = 0;
             _orbitalTargetMarker = null;
             ProcessPoisonForEndingActiveTurn();
+            ProcessElementalForEndingActiveTurn(_chillEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
