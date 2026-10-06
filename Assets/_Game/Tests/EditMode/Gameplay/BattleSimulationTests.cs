@@ -2121,6 +2121,89 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(Resources.Load<Texture2D>("UI/Weapons/cryo_grenade"), Is.Not.Null);
         }
 
+        private static Harness CreateHopHarness(int radiusPurchases = 0)
+        {
+            var hop = CreateWeapon("weapon.hopping-grenade", WeaponRole.ArcingExplosive, damage: 37, impactRadius: 1.25f,
+                gravityScale: 1.05f, timeoutSeconds: 7f);
+            SaveWeaponProgressData progress = null;
+            if (radiusPurchases > 0)
+            {
+                progress = new SaveWeaponProgressData { weaponId = hop.WeaponId, rank = 1 + radiusPurchases };
+                progress.EnsureDefaults();
+                for (var i = 0; i < radiusPurchases; i++)
+                    progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                        { rank = i + 2, path = (int)WeaponUpgradePath.Radius });
+            }
+            return CreateHarness(hop, playerWeaponProgress: progress);
+        }
+
+        private static AimState HopAim => new AimState(new Vector2(-4f, 1.2f), Vector2.right, 5f, true);
+
+        [Test]
+        public void HoppingGrenade_BaseHasOneExtraJumpAllowedInFlightAndAtRest()
+        {
+            var harness = CreateHopHarness();
+            Assert.That(harness.Simulation.TryFire(HopAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            var grenade = harness.Simulation.Projectiles[0];
+            Assert.That(grenade.HopsRemaining, Is.EqualTo(1));
+            TickMany(harness.Simulation, 10, 1f / 120f);
+            Assert.That(grenade.IsRestingFuse, Is.False, "still flying");
+            Assert.That(harness.Simulation.CanContinueHoppingGrenade(), Is.True, "a jump is allowed in flight");
+            Assert.That(harness.Simulation.TryFire(HopAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(grenade.HopsRemaining, Is.Zero);
+            Assert.That(grenade.Velocity.y, Is.GreaterThan(3f), "launched upward in the air");
+            Assert.That(harness.Simulation.CanContinueHoppingGrenade(), Is.False);
+            Assert.That(harness.Simulation.TryFire(HopAim).Outcome, Is.EqualTo(BattleFireOutcome.Blocked),
+                "no jump left");
+        }
+
+        [Test]
+        public void HoppingGrenade_FuseStartsAtFirstContactRunsThreeSecondsThroughJumpsAndDetonatesAnyway()
+        {
+            var harness = CreateHopHarness(radiusPurchases: 4);
+            var impactTime = -1f;
+            var time = 0f;
+            harness.Simulation.ImpactResolved += _ => { if (impactTime < 0f) impactTime = time; };
+            Assert.That(harness.Simulation.TryFire(HopAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            var grenade = harness.Simulation.Projectiles[0];
+            Assert.That(grenade.HopsRemaining, Is.EqualTo(5), "one jump plus four Radius purchases");
+            var contactTime = -1f;
+            var hopped = false;
+            for (var i = 0; i < 1200 && impactTime < 0f; i++)
+            {
+                time += 1f / 120f;
+                harness.Simulation.Tick(1f / 120f);
+                if (contactTime < 0f && grenade.HasHopFuse) contactTime = time;
+                if (contactTime > 0f && !hopped && time > contactTime + 1f)
+                {
+                    hopped = true;
+                    Assert.That(harness.Simulation.TryFire(HopAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+                }
+            }
+            Assert.That(contactTime, Is.GreaterThan(0f));
+            Assert.That(impactTime - contactTime, Is.EqualTo(3f).Within(0.12f), "3 s from the first contact");
+            Assert.That(hopped, Is.True);
+            Assert.That(grenade.HopsRemaining, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void HoppingGrenade_RadiusPurchasesBuyJumpsNotBlastRadiusAndFeatureIsAbsent()
+        {
+            var hop = CreateWeapon("weapon.hopping-grenade", WeaponRole.ArcingExplosive, impactRadius: 1.25f);
+            var progress = new SaveWeaponProgressData { weaponId = hop.WeaponId, rank = 5 };
+            progress.EnsureDefaults();
+            for (var i = 2; i <= 5; i++) progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                { rank = i, path = (int)WeaponUpgradePath.Radius });
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveImpactRadiusPercent(hop, progress), Is.Zero);
+            Assert.That(WeaponProgressionCatalog.TryGet(hop.WeaponId, out var definition), Is.True);
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(hop, definition, progress, WeaponUpgradePath.Radius),
+                Is.EqualTo(5f), "five jumps in total");
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 4, 4 }));
+            Assert.That(definition.HasEvolutionOptions, Is.False);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/hopping_grenade"), Is.Not.Null);
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {
@@ -2775,7 +2858,7 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.AreEqual(
                 BattleFireOutcome.Fired,
                 harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.down, 6f, true)).Outcome);
-            for (var i = 0; i < 600 && !harness.Simulation.CanContinueHoppingGrenade(); i++)
+            for (var i = 0; i < 600 && !harness.Simulation.Projectiles[0].IsRestingFuse; i++)
             {
                 harness.Simulation.Tick(1f / 120f);
             }

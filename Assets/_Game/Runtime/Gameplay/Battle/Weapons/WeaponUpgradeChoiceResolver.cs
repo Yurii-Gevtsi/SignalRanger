@@ -60,6 +60,8 @@ namespace Game.Gameplay.Battle.Weapons
                 WeaponUpgradePath.Loadout => weapon.HasLimitedAmmo
                     ? weapon.AmmoCount + count * AmmoPerLoadoutUpgrade
                     : -1f,
+                // For the hopping grenade the Radius path buys extra jumps, not a bigger blast.
+                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.hopping-grenade" => 1f + Math.Clamp(count, 0, 4),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.bur" =>
                     ResolveDrillLaserRange(count),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.bur-rocket" =>
@@ -151,7 +153,8 @@ namespace Game.Gameplay.Battle.Weapons
             SaveWeaponProgressData progress,
             WeaponProgressionDefinition definition = null)
         {
-            if (weapon?.WeaponId is "weapon.bur" or "weapon.bur-rocket" or "weapon.titanium-barrier")
+            if (weapon?.WeaponId is "weapon.bur" or "weapon.bur-rocket" or "weapon.titanium-barrier"
+                or "weapon.hopping-grenade")
             {
                 return 0;
             }

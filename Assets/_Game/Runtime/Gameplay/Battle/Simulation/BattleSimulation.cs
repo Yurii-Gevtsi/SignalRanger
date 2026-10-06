@@ -156,6 +156,7 @@ namespace Game.Gameplay.Battle.Simulation
         private const float StickyGrenadeFuseSeconds = 1.5f;
         private const string HoppingGrenadeWeaponId = "weapon.hopping-grenade";
         private const float HoppingGrenadeLaunchSpeed = 5.5f;
+        private const float HoppingGrenadeFuseSeconds = 3f;
         private const float HoppingGrenadeVerticalSpeed = 3.8f;
         private const string IncendiaryGrenadeWeaponId = "weapon.incendiary-grenade";
         private const int IncendiaryPuddleCount = 4;
@@ -865,7 +866,7 @@ namespace Game.Gameplay.Battle.Simulation
         {
             return _hoppingGrenadeProjectileId >= 0
                 && _projectiles.Exists(projectile => projectile.Id == _hoppingGrenadeProjectileId
-                    && projectile.IsRestingFuse);
+                    && projectile.HopsRemaining > 0);
         }
 
         private bool TryHopRestingGrenade(
@@ -875,7 +876,7 @@ namespace Game.Gameplay.Battle.Simulation
             out BattleFireResult result)
         {
             var projectile = _projectiles.Find(value => value.Id == _hoppingGrenadeProjectileId);
-            if (projectile == null || !projectile.IsRestingFuse)
+            if (projectile == null || projectile.HopsRemaining <= 0)
             {
                 result = default;
                 return false;
@@ -885,9 +886,19 @@ namespace Game.Gameplay.Battle.Simulation
                 ? aim.Direction.normalized
                 : new Vector2(unit.FacingDirectionX >= 0 ? 1f : -1f, 0f);
             var horizontal = Mathf.Sign(direction.x == 0f ? unit.FacingDirectionX : direction.x);
-            projectile.ResumeFromRestingFuse(new Vector2(
-                horizontal * HoppingGrenadeLaunchSpeed,
-                HoppingGrenadeVerticalSpeed));
+            var hopVelocity = new Vector2(horizontal * HoppingGrenadeLaunchSpeed, HoppingGrenadeVerticalSpeed);
+            if (projectile.IsRestingFuse)
+            {
+                // The fuse keeps running through the jump: carry the remaining time into flight.
+                projectile.SetHopFuse(projectile.RestingFuseRemaining);
+                projectile.ResumeFromRestingFuse(hopVelocity);
+            }
+            else
+            {
+                projectile.SetVelocity(hopVelocity);
+            }
+
+            projectile.ConsumeHop();
             _activeShotWeapon = weapon;
             _activeShotEndsTurn = false;
             ShotFired?.Invoke(unit.TeamId, weapon, false);
@@ -4812,6 +4823,13 @@ namespace Game.Gameplay.Battle.Simulation
                     WeaponUpgradeChoiceResolver.ResolveDrillRocketTerrainSeconds(radiusPurchases),
                     TerrainMaterial.Titanium);
             }
+            else if (spawnedWeapon?.WeaponId == HoppingGrenadeWeaponId)
+            {
+                // One extra jump as standard; every Radius purchase adds another (at most five).
+                var jumpPurchases = ProgressionFor(ResolveTeamForOwner(request.OwnerUnitId))
+                    .ResolveUpgradeCount(spawnedWeapon.WeaponId, WeaponUpgradePath.Radius);
+                projectile.ConfigureHops(1 + Mathf.Clamp(jumpPurchases, 0, 4));
+            }
             else if (spawnedWeapon?.WeaponId == RailRifleWeaponId)
             {
                 // The shared penetration budget P0 is one second of travel inside obstacles; the
@@ -4922,9 +4940,19 @@ namespace Game.Gameplay.Battle.Simulation
                     continue;
                 }
 
+                if (isHoppingGrenade && projectile.HasHopFuse)
+                {
+                    projectile.ReduceHopFuse(deltaTime);
+                    if (projectile.HopFuseRemaining <= 0f)
+                    {
+                        ResolveProjectileAt(i, projectile.Position);
+                        continue;
+                    }
+                }
+
                 var isMissile = projectileWeapon?.WeaponId == MissileWeaponId
                     && !IsMissileCluster(projectile.Definition.ProjectileId);
-                if (!isMissile)
+                if (!isMissile && !(isHoppingGrenade && projectile.HasHopFuse))
                 {
                     projectile.ReduceLifetime(deltaTime);
                     if (projectile.RemainingLifetime <= 0f)
@@ -5121,7 +5149,9 @@ namespace Game.Gameplay.Battle.Simulation
 
                         if (isHoppingGrenade)
                         {
-                            projectile.StartRestingFuse(position - step, projectile.RemainingLifetime);
+                            // First contact starts the unstoppable fuse; later landings just rest.
+                            projectile.EnsureHopFuse(HoppingGrenadeFuseSeconds);
+                            projectile.StartRestingFuse(position - step, projectile.HopFuseRemaining);
                             break;
                         }
 
@@ -5158,6 +5188,7 @@ namespace Game.Gameplay.Battle.Simulation
                     }
 
                     var ignoresUnitsInFlight = projectileWeapon?.WeaponId == GrenadeWeaponId
+                        || isHoppingGrenade
                         || (projectileWeapon?.WeaponId == TeleportWeaponId && !isInstantTouchTeleport)
                         || projectileWeapon?.WeaponId == SwapJumpWeaponId
                         || projectile.Definition.ProjectileId == MineDeployProjectileId

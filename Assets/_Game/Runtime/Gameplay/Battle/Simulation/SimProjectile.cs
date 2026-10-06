@@ -151,6 +151,43 @@ namespace Game.Gameplay.Battle.Simulation
             _attachedUnitOffset = Vector2.zero;
         }
 
+        /// <summary>Extra jumps a hopping grenade may still launch (in flight or at rest).</summary>
+        public int HopsRemaining { get; private set; }
+        public bool HasHopFuse { get; private set; }
+        public float HopFuseRemaining { get; private set; }
+
+        internal void ConfigureHops(int hops)
+        {
+            HopsRemaining = Mathf.Max(0, hops);
+        }
+
+        internal void ConsumeHop()
+        {
+            HopsRemaining = Mathf.Max(0, HopsRemaining - 1);
+        }
+
+        /// <summary>The fuse starts once, at the first contact, and is never restarted by later jumps.</summary>
+        internal void EnsureHopFuse(float seconds)
+        {
+            if (HasHopFuse)
+            {
+                return;
+            }
+
+            HasHopFuse = true;
+            HopFuseRemaining = Mathf.Max(0f, seconds);
+        }
+
+        internal void SetHopFuse(float seconds)
+        {
+            HopFuseRemaining = Mathf.Max(0f, seconds);
+        }
+
+        internal void ReduceHopFuse(float deltaTime)
+        {
+            HopFuseRemaining = Mathf.Max(0f, HopFuseRemaining - deltaTime);
+        }
+
         private System.Collections.Generic.HashSet<string> _piercedUnitIds;
 
         /// <summary>True the first time this projectile passes through the given unit.</summary>
