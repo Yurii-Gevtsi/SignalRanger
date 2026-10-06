@@ -56,6 +56,10 @@ namespace Game.Gameplay.Battle.Simulation
         public bool IsAttachedToUnit => !string.IsNullOrEmpty(AttachedUnitId);
         public string AttachedUnitId { get; private set; }
         public Vector2 ExternalVelocity { get; private set; }
+        /// <summary>The droid a signal rocket is carrying up, or empty.</summary>
+        public string SkyHookCarriedUnitId { get; private set; } = string.Empty;
+        /// <summary>Facing of the owner when the signal rocket was launched: the throw direction on symmetry.</summary>
+        public int SkyHookLaunchFacing { get; private set; } = 1;
 
         private Vector2 _lastTunnelCarvePoint;
         private bool _hasCarvedTunnel;
@@ -67,6 +71,16 @@ namespace Game.Gameplay.Battle.Simulation
         /// yourself with a shot that comes back or clips you).
         /// </summary>
         public bool HasClearedOwner { get; private set; }
+
+        internal void SetSkyHookCarried(string unitId)
+        {
+            SkyHookCarriedUnitId = unitId ?? string.Empty;
+        }
+
+        internal void SetSkyHookLaunchFacing(int facing)
+        {
+            SkyHookLaunchFacing = facing < 0 ? -1 : 1;
+        }
 
         internal void MarkClearedOwner()
         {

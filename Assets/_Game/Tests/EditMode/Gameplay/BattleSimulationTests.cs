@@ -321,7 +321,7 @@ namespace Game.Tests.EditMode.Gameplay
             foreach (var (id, role) in new[]
             {
                 ("weapon.turn-transfer", WeaponRole.DefensiveTool),
-                ("weapon.sky-hook", WeaponRole.MovementTool)
+                ("weapon.virus", WeaponRole.MovementTool)
             })
             {
                 var weapon = CreateWeapon(id, role, ammo: 1);
@@ -3174,6 +3174,166 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         private const float MotorHoverSpeed = Game.Gameplay.Battle.Motion.UnitMotor.HoverMoveSpeed;
+
+        private static Harness CreateSkyHookHarness(Vector2? enemy = null, Vector2? ally = null, WeaponDefinition opponentWeapon = null)
+        {
+            var rocket = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.sky-hook");
+            var harness = CreateHarness(rocket, opponentWeapon: opponentWeapon, secondPlayerPosition: ally);
+            if (enemy.HasValue)
+            {
+                var opponent = harness.State.GetUnit("opponent.test.01");
+                opponent.MoveTo(enemy.Value);
+                harness.Motors[opponent.UnitId].Teleport(enemy.Value);
+            }
+
+            return harness;
+        }
+
+        private const float SkyHookRocketX = -3f + 0.46f;   // set up beside the droid, which faces right
+        private const float SkyHookApexY = 8f - 0.75f;      // the top of the test arena minus the margin
+
+        [Test]
+        public void SkyHook_IsSetUpBesideTheDroidFliesStraightUpAtTwiceTheSharedSpeedAndBlastsBelowTheArenaTop()
+        {
+            var harness = CreateSkyHookHarness();
+            var blast = default(Vector2?);
+            harness.Simulation.ProjectileExploded += (id, impact) => blast = impact.Point;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "no aim needed");
+            var rocket = harness.Simulation.Projectiles[0];
+            Assert.That(rocket.Velocity.x, Is.EqualTo(0f).Within(0.001f));
+            Assert.That(rocket.Velocity.y, Is.EqualTo(2f * PrototypeWeaponLibrary.SharedProjectileSpeed).Within(0.001f));
+            Assert.That(rocket.Position.x, Is.EqualTo(SkyHookRocketX).Within(0.1f), "beside the droid");
+            TickMany(harness.Simulation, 600, 1f / 120f);
+            Assert.That(blast.HasValue, Is.True);
+            Assert.That(blast.Value.y, Is.EqualTo(SkyHookApexY).Within(0.1f), "slightly below the top of the arena");
+            Assert.That(blast.Value.x, Is.EqualTo(SkyHookRocketX).Within(0.1f), "no drift");
+            TickMany(harness.Simulation, 3600, 1f / 120f);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent), "the shot ends the turn");
+        }
+
+        [Test]
+        public void SkyHook_ErasesGroundWithoutALimitOnTheWayUp()
+        {
+            var harness = CreateSkyHookHarness();
+            harness.Terrain.StampSolidRect(new Vector2(SkyHookRocketX, 4f), new Vector2(3f, 5f));   // a thick slab, y 1.5..6.5
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(new Vector2(SkyHookRocketX, 4f)), Is.True);
+            var blast = default(Vector2?);
+            harness.Simulation.ProjectileExploded += (id, impact) => blast = impact.Point;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 600, 1f / 120f);
+            Assert.That(blast.HasValue, Is.True);
+            Assert.That(blast.Value.y, Is.EqualTo(SkyHookApexY).Within(0.1f), "five units of ground did not stop it");
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(new Vector2(SkyHookRocketX, 4f)), Is.False, "the channel is open");
+        }
+
+        [Test]
+        public void SkyHook_CarriesTheFirstTouchedEnemyUpAndThrowsItSidewaysAtTheEnd()
+        {
+            var harness = CreateSkyHookHarness(enemy: new Vector2(SkyHookRocketX, 0f));       // touching the rocket at its start
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var health = enemy.Health;
+            var thrown = Vector2.zero;
+            harness.Simulation.ProjectileExploded += (id, impact) => thrown = harness.Motors[enemy.UnitId].Velocity;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 12, 1f / 120f);
+            Assert.That(enemy.Position.y, Is.GreaterThan(1f), "lifted along with the rocket");
+            Assert.That(enemy.Position.x, Is.EqualTo(SkyHookRocketX).Within(0.05f));
+            var speedSeen = enemy.Position.y;
+            TickMany(harness.Simulation, 12, 1f / 120f);
+            Assert.That((enemy.Position.y - speedSeen) / 0.1f, Is.EqualTo(2f * PrototypeWeaponLibrary.SharedProjectileSpeed).Within(1.5f),
+                "carried at the rocket's own speed");
+            TickMany(harness.Simulation, 330, 1f / 120f);
+            Assert.That(enemy.Health, Is.LessThan(health), "the final blast hurts it");
+            // The harpoon's final throw: 60 degrees up, about two rope lengths of range in free space.
+            var expected = Mathf.Sqrt(2f * WeaponUpgradeChoiceResolver.RopeBaseLength * 8.6f / Mathf.Sin(120f * Mathf.Deg2Rad));
+            Assert.That(thrown.magnitude, Is.EqualTo(expected).Within(0.3f));
+            Assert.That(Mathf.Atan2(thrown.y, thrown.x) * Mathf.Rad2Deg, Is.EqualTo(60f).Within(2f), "sideways towards the owner's facing");
+            TickMany(harness.Simulation, 1200, 1f / 120f);
+            Assert.That(enemy.Position.x, Is.GreaterThan(SkyHookRocketX + 4f), "it flew away and landed");
+            Assert.That(enemy.Position.y, Is.LessThan(2f), "and fell back down");
+        }
+
+        [Test]
+        public void SkyHook_PicksUpOnlyTheFirstEnemyOnThePathAndNeverAnAlly()
+        {
+            var harness = CreateSkyHookHarness(enemy: new Vector2(SkyHookRocketX, 3f), ally: new Vector2(SkyHookRocketX, 0.3f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var ally = harness.State.GetUnit("player.test.02");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            Assert.That(ally.Position.y, Is.EqualTo(0.3f).Within(0.5f), "an ally on the way is not carried (it may be pushed by gravity only)");
+            Assert.That(enemy.Position.y, Is.GreaterThan(3.5f), "the enemy further up was picked up on the vertical path");
+        }
+
+        [Test]
+        public void SkyHook_CarriedDroidWhoMeetsAGroundOrCeilingLetsGoAndFallsWhileTheRocketGoesOn()
+        {
+            var harness = CreateSkyHookHarness(enemy: new Vector2(SkyHookRocketX, 0.3f));
+            harness.Terrain.StampSolidRect(new Vector2(SkyHookRocketX, 3.5f), new Vector2(4f, 1.5f));   // a ceiling, y 2.75..4.25
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var blast = default(Vector2?);
+            harness.Simulation.ProjectileExploded += (id, impact) => blast = impact.Point;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            var highest = enemy.Position.y;
+            for (var i = 0; i < 480; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+                highest = Mathf.Max(highest, enemy.Position.y);
+            }
+
+            Assert.That(highest, Is.LessThan(2.75f), "the droid never went through the ceiling");
+            Assert.That(blast.HasValue && blast.Value.y > SkyHookApexY - 0.2f, Is.True, "the rocket went on through it");
+            Assert.That(harness.Motors[enemy.UnitId].Velocity.x, Is.LessThan(1f), "not thrown: it was let go earlier");
+        }
+
+        [Test]
+        public void SkyHook_AHostileMagnetStopsTheRocketAndTheCarriedDroidJustFalls()
+        {
+            var grounder = CreateWeapon("weapon.grounder", WeaponRole.DefensiveTool, damage: 0, impactRadius: 1.4f, ammo: 1);
+            var harness = CreateSkyHookHarness(enemy: new Vector2(-1.2f, 0f), opponentWeapon: grounder);
+            var blast = default(Vector2?);
+            harness.Simulation.ProjectileExploded += (id, impact) => blast = impact.Point;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                       // the opponent acts
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));   // magnet at x = -1.66
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 240, 1f / 120f);
+            Assert.That(blast.HasValue, Is.True);
+            Assert.That(blast.Value.y, Is.LessThan(3f), "it blasted at the magnet, not at the top");
+        }
+
+        [Test]
+        public void SkyHook_RegistryOnePerBattleCorePurchasesAndArtMatchTheCard()
+        {
+            const string id = "weapon.sky-hook";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 0, 0 }));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            Assert.That(weapon.AmmoCount, Is.EqualTo(1), "one per battle");
+            Assert.That(weapon.MinPower, Is.EqualTo(2f * PrototypeWeaponLibrary.SharedProjectileSpeed));
+            Assert.That(weapon.ImpactRadius, Is.EqualTo(PrototypeWeaponLibrary.SharedExplosionRadius), "the shared R0");
+            Assert.That(BattleSimulation.RequiresAim(weapon), Is.False);
+            Assert.That(BattleSimulation.IsBattleMechanicAvailable(weapon), Is.True);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/sky_hook"), Is.Not.Null);
+            Assert.That(Resources.Load<Texture2D>("UI/Generated/missle_tail_clean"), Is.Not.Null);
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            foreach (var path in new[] { WeaponUpgradePath.Aim, WeaponUpgradePath.Loadout, WeaponUpgradePath.Radius })
+                Assert.That(service.TryUpgrade(id, path).Applied, Is.False, path.ToString());
+            for (var i = 0; i < 4; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            Assert.That(WeaponUpgradeChoiceResolver.Count(restored.inventory.GetOrCreateWeaponProgress(id), WeaponUpgradePath.Core),
+                Is.EqualTo(4));
+        }
 
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)

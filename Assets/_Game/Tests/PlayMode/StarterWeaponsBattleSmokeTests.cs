@@ -501,6 +501,51 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator SkyHook_ProductionSceneShowsTheUprightRocketWithItsTailAndItBlastsAtTheTop()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.sky-hook" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var visuals = Get<Dictionary<int, GameObject>>(controller, "_projectileVisuals");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.sky-hook") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            Texture shown = null;
+            GameObject body = null;
+            simulation.ProjectileSpawned += projectile =>
+            {
+                body = visuals[projectile.Id];
+                shown = body.GetComponentInChildren<SpriteRenderer>().sprite.texture;
+            };
+            Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            Invoke(controller, "Fire");
+            Assert.That(simulation.ProjectilesInFlight, Is.EqualTo(1));
+            Assert.That(shown, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/sky_hook")));
+            var visual = body.transform.Find("Visual");
+            Assert.That(visual, Is.Not.Null);
+            Assert.That(visual.Find("Rocket Trail"), Is.Not.Null, "the shared exhaust tail is attached");
+            Assert.That(Vector2.Dot(visual.up, Vector2.up), Is.GreaterThan(0.99f), "the art points up, the way it flies");
+            Assert.That(visual.localScale.x, Is.EqualTo(0.049f).Within(0.001f));
+            for (var tick = 0; tick < 6; tick++) simulation.Tick(1f / 120f);
+            Invoke(controller, "SyncProjectileVisuals");
+            Assert.That(Vector2.Dot(visual.up, Vector2.up), Is.GreaterThan(0.99f),
+                "the per-frame sync keeps the nose pointing the way it flies");
+            for (var frame = 0; frame < 120 && simulation.HasProjectilesInFlight; frame++)
+            {
+                for (var tick = 0; tick < 30; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(simulation.ProjectilesInFlight, Is.Zero, "the rocket blasted");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {

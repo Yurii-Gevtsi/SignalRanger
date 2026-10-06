@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="41" result="Passed" total="41" passed="41" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 18:25:22Z" end-time="2026-10-06 18:27:57Z" duration="155,8160551">
+  <test-suite type="TestSuite" id="1060" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="44" result="Passed" start-time="2026-10-06 18:25:22Z" end-time="2026-10-06 18:27:57Z" duration="155.816055" total="41" passed="41" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1053" name="Game.Tests.PlayMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.PlayMode.dll" runstate="Runnable" testcasecount="44" result="Passed" start-time="2026-10-06 18:25:22Z" end-time="2026-10-06 18:27:57Z" duration="155.743776" total="41" passed="41" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1054" name="Game" fullname="Game" runstate="Runnable" testcasecount="44" result="Passed" start-time="2026-10-06 18:25:22Z" end-time="2026-10-06 18:27:57Z" duration="155.736295" total="41" passed="41" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1055" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="44" result="Passed" start-time="2026-10-06 18:25:22Z" end-time="2026-10-06 18:27:57Z" duration="155.732892" total="41" passed="41" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1056" name="PlayMode" fullname="Game.Tests.PlayMode" runstate="Runnable" testcasecount="44" result="Passed" start-time="2026-10-06 18:25:22Z" end-time="2026-10-06 18:27:57Z" duration="155.727210" total="41" passed="41" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1005" name="StarterWeaponsBattleSmokeTests" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="41" result="Passed" start-time="2026-10-06 18:25:22Z" end-time="2026-10-06 18:27:57Z" duration="155.716361" total="41" passed="41" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1040" name="Boost_ProductionSceneLiftsTheDroidSteersItAndASecondPressDropsIt" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Boost_ProductionSceneLiftsTheDroidSteersItAndASecondPressDropsIt" methodname="Boost_ProductionSceneLiftsTheDroidSteersItAndASecondPressDropsIt" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="486746590" result="Passed" start-time="2026-10-06 18:25:22Z" end-time="2026-10-06 18:25:31Z" duration="8.922024" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1044" name="ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 18:25:31Z" end-time="2026-10-06 18:25:38Z" duration="7.771588" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                </properties>
+                <test-case id="1042" name="ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(False)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(False)" methodname="ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1735735196" result="Passed" start-time="2026-10-06 18:25:31Z" end-time="2026-10-06 18:25:35Z" duration="3.900991" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1043" name="ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(True)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(True)" methodname="ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1375667932" result="Passed" start-time="2026-10-06 18:25:35Z" end-time="2026-10-06 18:25:38Z" duration="3.851093" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1039" name="ForceField_ProductionSceneShowsTheSphereAbsorbsAnEnemyChargeAndRemovesItAfterTwoEnemyTurns" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ForceField_ProductionSceneShowsTheSphereAbsorbsAnEnemyChargeAndRemovesItAfterTwoEnemyTurns" methodname="ForceField_ProductionSceneShowsTheSphereAbsorbsAnEnemyChargeAndRemovesItAfterTwoEnemyTurns" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="223580861" result="Passed" start-time="2026-10-06 18:25:38Z" end-time="2026-10-06 18:25:42Z" duration="4.044319" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1038" name="Grounder_ProductionScenePlacesTheMagnetSkinHandsTheTurnOverAndRemovesItAfterTwoEnemyTurns" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Grounder_ProductionScenePlacesTheMagnetSkinHandsTheTurnOverAndRemovesItAfterTwoEnemyTurns" methodname="Grounder_ProductionScenePlacesTheMagnetSkinHandsTheTurnOverAndRemovesItAfterTwoEnemyTurns" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1655452305" result="Passed" start-time="2026-10-06 18:25:42Z" end-time="2026-10-06 18:25:46Z" duration="3.869202" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1045" name="GuardianDrone_ProductionSceneHidesAStealthDroneOnlyFromTheEnemyObserver" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.GuardianDrone_ProductionSceneHidesAStealthDroneOnlyFromTheEnemyObserver" methodname="GuardianDrone_ProductionSceneHidesAStealthDroneOnlyFromTheEnemyObserver" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1546270899" result="Passed" start-time="2026-10-06 18:25:46Z" end-time="2026-10-06 18:25:48Z" duration="1.962250" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1026" name="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-06 18:25:48Z" end-time="2026-10-06 18:26:12Z" duration="23.677574" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                </properties>
+                <test-case id="1020" name="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(0)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(0)" methodname="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="115156523" result="Passed" start-time="2026-10-06 18:25:48Z" end-time="2026-10-06 18:25:52Z" duration="3.782516" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1021" name="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(1)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(1)" methodname="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="752271073" result="Passed" start-time="2026-10-06 18:25:52Z" end-time="2026-10-06 18:25:56Z" duration="3.917463" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1022" name="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(2)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(2)" methodname="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1221931968" result="Passed" start-time="2026-10-06 18:25:56Z" end-time="2026-10-06 18:26:00Z" duration="3.885571" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1023" name="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(3)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(3)" methodname="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1022247730" result="Passed" start-time="2026-10-06 18:26:00Z" end-time="2026-10-06 18:26:04Z" duration="3.976567" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1024" name="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(4)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(4)" methodname="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1828581888" result="Passed" start-time="2026-10-06 18:26:04Z" end-time="2026-10-06 18:26:08Z" duration="3.941011" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1025" name="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(5)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(5)" methodname="Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1739732762" result="Passed" start-time="2026-10-06 18:26:08Z" end-time="2026-10-06 18:26:12Z" duration="4.142589" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1046" name="OrbitalRocket_ProductionSceneMarkerDraftConfirmAndDelayedStrike" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.OrbitalRocket_ProductionSceneMarkerDraftConfirmAndDelayedStrike" methodname="OrbitalRocket_ProductionSceneMarkerDraftConfirmAndDelayedStrike" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="507578254" result="Passed" start-time="2026-10-06 18:26:12Z" end-time="2026-10-06 18:26:16Z" duration="3.718433" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1048" name="RailRifle_ProductionSceneFiresASmallBoltAlongTheShotAndItLeavesTheArena" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.RailRifle_ProductionSceneFiresASmallBoltAlongTheShotAndItLeavesTheArena" methodname="RailRifle_ProductionSceneFiresASmallBoltAlongTheShotAndItLeavesTheArena" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1504532130" result="Passed" start-time="2026-10-06 18:26:16Z" end-time="2026-10-06 18:26:19Z" duration="3.811328" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1047" name="RepairJammer_ProductionSceneShowsTheNoRepairIconOnTheAffectedDroid" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.RepairJammer_ProductionSceneShowsTheNoRepairIconOnTheAffectedDroid" methodname="RepairJammer_ProductionSceneShowsTheNoRepairIconOnTheAffectedDroid" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="2075629235" result="Passed" start-time="2026-10-06 18:26:19Z" end-time="2026-10-06 18:26:23Z" duration="3.753863" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1019" name="SelectionAndFire_CreateTheCorrectBattleEffect" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-10-06 18:26:23Z" end-time="2026-10-06 18:27:06Z" duration="43.034940" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                </properties>
+                <test-case id="1006" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.bur&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.bur&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1491787454" result="Passed" start-time="2026-10-06 18:26:23Z" end-time="2026-10-06 18:26:25Z" duration="2.200505" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1007" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.impulse&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.impulse&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1616265666" result="Passed" start-time="2026-10-06 18:26:25Z" end-time="2026-10-06 18:26:27Z" duration="1.966371" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1008" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.granata&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.granata&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="325080368" result="Passed" start-time="2026-10-06 18:26:27Z" end-time="2026-10-06 18:26:29Z" duration="1.985671" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1009" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.rope&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.rope&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1787063759" result="Passed" start-time="2026-10-06 18:26:29Z" end-time="2026-10-06 18:26:31Z" duration="1.969877" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1010" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.plasma-sword&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.plasma-sword&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1710970036" result="Passed" start-time="2026-10-06 18:26:31Z" end-time="2026-10-06 18:26:33Z" duration="1.895230" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1011" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.ion-shotgun&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.ion-shotgun&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="214186899" result="Passed" start-time="2026-10-06 18:26:33Z" end-time="2026-10-06 18:26:35Z" duration="2.165531" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1012" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.c4&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.c4&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="2120495802" result="Passed" start-time="2026-10-06 18:26:35Z" end-time="2026-10-06 18:26:38Z" duration="2.056008" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1013" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.mine&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.mine&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="758778974" result="Passed" start-time="2026-10-06 18:26:38Z" end-time="2026-10-06 18:26:40Z" duration="1.991978" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1014" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.heal&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.heal&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="702724322" result="Passed" start-time="2026-10-06 18:26:40Z" end-time="2026-10-06 18:26:41Z" duration="1.907610" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1015" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.titanium-disc&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.titanium-disc&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1571336108" result="Passed" start-time="2026-10-06 18:26:41Z" end-time="2026-10-06 18:26:43Z" duration="1.969391" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1016" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.bur-rocket&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.bur-rocket&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1842773184" result="Passed" start-time="2026-10-06 18:26:43Z" end-time="2026-10-06 18:26:58Z" duration="14.145057" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1017" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.titanium-barrier&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.titanium-barrier&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="389910114" result="Passed" start-time="2026-10-06 18:26:58Z" end-time="2026-10-06 18:27:04Z" duration="6.216891" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1018" name="SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.mortira&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(&quot;weapon.mortira&quot;)" methodname="SelectionAndFire_CreateTheCorrectBattleEffect" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="2109041190" result="Passed" start-time="2026-10-06 18:27:04Z" end-time="2026-10-06 18:27:06Z" duration="2.516584" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1041" name="SkyHook_ProductionSceneShowsTheUprightRocketWithItsTailAndItBlastsAtTheTop" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SkyHook_ProductionSceneShowsTheUprightRocketWithItsTailAndItBlastsAtTheTop" methodname="SkyHook_ProductionSceneShowsTheUprightRocketWithItsTailAndItBlastsAtTheTop" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1253601853" result="Passed" start-time="2026-10-06 18:27:06Z" end-time="2026-10-06 18:27:11Z" duration="4.420061" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1029" name="StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 18:27:11Z" end-time="2026-10-06 18:27:19Z" duration="8.712798" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                </properties>
+                <test-case id="1027" name="StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin(False)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin(False)" methodname="StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="250584975" result="Passed" start-time="2026-10-06 18:27:11Z" end-time="2026-10-06 18:27:15Z" duration="4.505194" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1028" name="StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin(True)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin(True)" methodname="StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="94580206" result="Passed" start-time="2026-10-06 18:27:15Z" end-time="2026-10-06 18:27:19Z" duration="4.191250" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1030" name="TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt" methodname="TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1902577775" result="Passed" start-time="2026-10-06 18:27:19Z" end-time="2026-10-06 18:27:24Z" duration="4.123578" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1037" name="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-06 18:27:24Z" end-time="2026-10-06 18:27:47Z" duration="23.533028" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                </properties>
+                <test-case id="1031" name="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.cryo-grenade:cryo_grenade&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.cryo-grenade:cryo_grenade&quot;)" methodname="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1839365158" result="Passed" start-time="2026-10-06 18:27:24Z" end-time="2026-10-06 18:27:28Z" duration="4.137011" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1032" name="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.hopping-grenade:hopping_grenade&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.hopping-grenade:hopping_grenade&quot;)" methodname="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="725058862" result="Passed" start-time="2026-10-06 18:27:28Z" end-time="2026-10-06 18:27:32Z" duration="3.974023" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1033" name="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.incendiary-grenade:incendiary_grenade&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.incendiary-grenade:incendiary_grenade&quot;)" methodname="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1504149856" result="Passed" start-time="2026-10-06 18:27:32Z" end-time="2026-10-06 18:27:36Z" duration="3.847298" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1034" name="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.missle:missle_fly&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.missle:missle_fly&quot;)" methodname="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="653373277" result="Passed" start-time="2026-10-06 18:27:36Z" end-time="2026-10-06 18:27:39Z" duration="3.832404" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1035" name="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.emp:emp_shot&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.emp:emp_shot&quot;)" methodname="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1128817872" result="Passed" start-time="2026-10-06 18:27:39Z" end-time="2026-10-06 18:27:43Z" duration="3.913811" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1036" name="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.swap-jump:teleport_5_10_A&quot;)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(&quot;weapon.swap-jump:teleport_5_10_A&quot;)" methodname="ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="662409726" result="Passed" start-time="2026-10-06 18:27:43Z" end-time="2026-10-06 18:27:47Z" duration="3.810781" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="ParameterizedMethod" id="1052" name="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 18:27:47Z" end-time="2026-10-06 18:27:57Z" duration="10.286830" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                </properties>
+                <test-case id="1049" name="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)" methodname="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1983192052" result="Passed" start-time="2026-10-06 18:27:47Z" end-time="2026-10-06 18:27:50Z" duration="2.404039" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1050" name="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)" methodname="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1997230733" result="Passed" start-time="2026-10-06 18:27:50Z" end-time="2026-10-06 18:27:53Z" duration="3.959781" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1051" name="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)" methodname="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="272040301" result="Passed" start-time="2026-10-06 18:27:53Z" end-time="2026-10-06 18:27:57Z" duration="3.891326" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

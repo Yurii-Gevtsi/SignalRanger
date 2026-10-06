@@ -2237,6 +2237,10 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 SpawnRocketTrail(visualObject.transform, renderer, true);
             }
+            else if (weapon?.WeaponId == "weapon.sky-hook")
+            {
+                SpawnSkyHookTail(visualObject.transform, renderer);
+            }
         }
 
         /// <summary>
@@ -2245,6 +2249,29 @@ namespace Game.Gameplay.Battle.Assembly
         /// second layer behind the body sprite. The homing missile uses its own
         /// baked missle_fly sprite and must not receive this overlay.
         /// </summary>
+        /// <summary>The shared exhaust is attached under the nose-up signal rocket body.</summary>
+        private void SpawnSkyHookTail(Transform visualTransform, SpriteRenderer bodyRenderer)
+        {
+            var trailSprite = LoadCenteredTextureSprite(RocketTrailResourcePath, "Rocket Exhaust Trail");
+            if (trailSprite == null || bodyRenderer.sprite == null)
+            {
+                return;
+            }
+
+            var trailObject = new GameObject("Rocket Trail");
+            trailObject.transform.SetParent(visualTransform, false);
+            // The exhaust art trails to the left; a quarter turn makes it trail downwards.
+            trailObject.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+            var baseY = -bodyRenderer.sprite.bounds.extents.y * 0.92f;
+            var trailLength = trailSprite.bounds.size.x;
+            trailObject.transform.localPosition = new Vector3(0f, baseY - trailLength * 0.35f, 0f);
+            var trailRenderer = trailObject.AddComponent<SpriteRenderer>();
+            trailRenderer.sprite = trailSprite;
+            trailRenderer.sortingOrder = 29;
+            // The body is scaled down about 20x; the exhaust must follow it.
+            trailObject.transform.localScale = Vector3.one * 1.0f;
+        }
+
         private void SpawnRocketTrail(Transform visualTransform, SpriteRenderer bodyRenderer, bool isDrillRocket)
         {
             var trailSprite = LoadCenteredTextureSprite(RocketTrailResourcePath, "Rocket Exhaust Trail");
@@ -2733,8 +2760,15 @@ namespace Game.Gameplay.Battle.Assembly
             if (weapon.WeaponId != "weapon.fpv-drone")
             {
                 projectileTransform.rotation = Quaternion.Euler(0f, 0f,
-                    Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg);
+                    Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg
+                    + ResolveProjectileArtRotationOffset(weapon));
             }
+        }
+
+        /// <summary>Most flight skins face +X; the signal rocket art points up.</summary>
+        private static float ResolveProjectileArtRotationOffset(WeaponDefinition weapon)
+        {
+            return weapon?.WeaponId == "weapon.sky-hook" ? -90f : 0f;
         }
 
         private static Vector3 ResolveProjectileVisualScale(WeaponDefinition weapon, float diameter)
@@ -2750,6 +2784,8 @@ namespace Game.Gameplay.Battle.Assembly
                 "weapon.freeze" => Vector3.one * (diameter * 0.315f),
                 "weapon.mortira" => Vector3.one * (diameter * 0.36f),
                 "weapon.guardian-drone" => Vector3.one * (diameter * 0.24f),
+                // sky_hook is 1024 x 1536 px (15.4 world units tall at 100 px/unit); this makes the rocket about 0.75 tall.
+                "weapon.sky-hook" => Vector3.one * 0.049f,
                 "weapon.granata" => Vector3.one * (diameter * 0.35f),
                 // The new grenade art has more empty canvas than the original
                 // grenade. Its flight scale compensates for that so it matches
@@ -3865,8 +3901,10 @@ namespace Game.Gameplay.Battle.Assembly
                         && ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId)?.WeaponId is not
                             ("weapon.fpv-drone" or "weapon.titanium-disc"))
                     {
+                        var artOffset = ResolveProjectileArtRotationOffset(
+                            ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId));
                         projectileObject.transform.GetChild(0).rotation = Quaternion.Euler(0f, 0f,
-                            Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg);
+                            Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg + artOffset);
                     }
                 }
             }

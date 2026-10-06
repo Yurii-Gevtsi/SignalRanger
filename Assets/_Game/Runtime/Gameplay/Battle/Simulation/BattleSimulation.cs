@@ -55,6 +55,11 @@ namespace Game.Gameplay.Battle.Simulation
         private const string TeleportWeaponId = "weapon.teleport";
         private const string SwapJumpWeaponId = "weapon.swap-jump";
         private const string GrounderWeaponId = "weapon.grounder";
+        private const string SkyHookWeaponId = "weapon.sky-hook";
+        // The rocket carves a channel a little wider than the rail bullet's.
+        private const float SkyHookTunnelRadius = 0.18f;
+        // The blast happens a little below the top of the arena so that it stays on the visible scene.
+        private const float SkyHookApexMargin = 0.75f;
         private const string BoostWeaponId = "weapon.boost";
         private const string ForceFieldWeaponId = "weapon.force-field";
         private const int GrounderBaseHealth = 45;
@@ -504,7 +509,7 @@ namespace Game.Gameplay.Battle.Simulation
             return weapon.WeaponId switch
             {
                 "weapon.turn-transfer"
-                    or "weapon.sky-hook" or "weapon.virus"
+                    or "weapon.virus"
                     or "weapon.bomber" or "weapon.ufo-carrier" or "weapon.self-destruct"
                     or "weapon.nuclear-charge" => false,
                 _ => true
@@ -525,6 +530,7 @@ namespace Game.Gameplay.Battle.Simulation
                 && weapon.WeaponId != RepairJammerWeaponId
                 && weapon.WeaponId != OrbitalRocketWeaponId
                 && weapon.WeaponId != BoostWeaponId
+                && weapon.WeaponId != SkyHookWeaponId
                 && weapon.WeaponId != FpvWeaponId;
         }
 
@@ -730,7 +736,9 @@ namespace Game.Gameplay.Battle.Simulation
                 return new BattleFireResult(BattleFireOutcome.AimRequired, unit.TeamId, weapon);
             }
 
-            var effectiveAim = aim.HasInput ? aim : CreateImmediateActionAim(unit);
+            var effectiveAim = weapon.WeaponId == SkyHookWeaponId
+                ? CreateSkyHookAim(unit)
+                : aim.HasInput ? aim : CreateImmediateActionAim(unit);
 
             if (weapon.WeaponId == HoppingGrenadeWeaponId
                 && TryHopRestingGrenade(unit, weapon, effectiveAim, out var hopResult))
@@ -1969,6 +1977,15 @@ namespace Game.Gameplay.Battle.Simulation
             _turnService.SpendAction(_state);
             AdvanceTurnNow(TurnAdvanceReason.InstantActionCompleted);
             return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, position);
+        }
+
+        /// <summary>The signal rocket is set up beside the droid and goes straight up at twice the shared speed.</summary>
+        private AimState CreateSkyHookAim(BattleUnitState unit)
+        {
+            var facing = unit.FacingDirectionX >= 0 ? 1f : -1f;
+            var ground = ResolveGroundDeployPoint(unit.Position + new Vector2(facing * 0.46f, 0.12f), unit.TeamId);
+            // The rocket's centre is half its length above the ground point.
+            return new AimState(ground + Vector2.up * 0.4f, Vector2.up, 2f * PrototypeWeaponLibrary.SharedProjectileSpeed, true);
         }
 
         private BattleFireResult StartBoost(
@@ -5116,11 +5133,7 @@ namespace Game.Gameplay.Battle.Simulation
                     if (!target.IsDefeated && motor != null)
                     {
                         var away = Mathf.Abs(delta.x) > 0.05f ? -Mathf.Sign(delta.x) : -owner.FacingDirectionX;
-                        var angle = ElectricHarpoonThrowAngleDegrees * Mathf.Deg2Rad;
-                        // Range of about two rope lengths in free space: v^2 sin(2a) / g.
-                        var range = _harpoonRopeLength * 2f;
-                        var speed = Mathf.Sqrt(range * motor.Gravity / Mathf.Sin(2f * angle));
-                        motor.AddImpulse(new Vector2(away * Mathf.Cos(angle), Mathf.Sin(angle)) * speed);
+                        motor.AddImpulse(ComputeHarpoonFinalThrowImpulse(motor, away, _harpoonRopeLength));
                     }
                 }
 
@@ -5210,6 +5223,11 @@ namespace Game.Gameplay.Battle.Simulation
                     WeaponUpgradeChoiceResolver.ResolveDrillRocketTerrainSeconds(radiusPurchases),
                     TerrainMaterial.Titanium);
             }
+            else if (spawnedWeapon?.WeaponId == SkyHookWeaponId)
+            {
+                var launcher = _state.GetUnit(request.OwnerUnitId);
+                projectile.SetSkyHookLaunchFacing(launcher != null && launcher.FacingDirectionX < 0 ? -1 : 1);
+            }
             else if (spawnedWeapon?.WeaponId == HoppingGrenadeWeaponId)
             {
                 // One extra jump as standard; every Radius purchase adds another (at most five).
@@ -5280,9 +5298,15 @@ namespace Game.Gameplay.Battle.Simulation
                     StepMortarFragment(i, projectile, mortarSequence, deltaTime);
                     continue;
                 }
-                if (ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId)?.WeaponId == RailRifleWeaponId)
+                var steppedWeaponId = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId)?.WeaponId;
+                if (steppedWeaponId == RailRifleWeaponId)
                 {
                     StepRailBullet(i, projectile, deltaTime);
+                    continue;
+                }
+                if (steppedWeaponId == SkyHookWeaponId)
+                {
+                    StepSkyHook(i, projectile, deltaTime);
                     continue;
                 }
                 if (!string.IsNullOrEmpty(projectile.GuaranteedTargetUnitId))
@@ -5708,6 +5732,169 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 WakeUnitsWithoutSupport();
             }
+        }
+
+        /// <summary>
+        /// Vertical flight of the signal rocket: it erases ground without limit, picks up the first hostile
+        /// droid its body touches and carries it at its own speed, and explodes slightly below the top of the
+        /// arena. A carried droid that meets ground or a ceiling lets go and falls.
+        /// </summary>
+        private void StepSkyHook(int projectileIndex, SimProjectile projectile, float deltaTime)
+        {
+            projectile.ReduceLifetime(deltaTime);
+            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
+            var sourceTeam = ResolveTeamForOwner(projectile.OwnerUnitId);
+            var radius = Mathf.Max(0.05f, projectile.Definition.Radius);
+            var apexY = _terrain != null ? _terrain.Grid.WorldMaxY - SkyHookApexMargin : projectile.Position.y + 12f;
+            var velocity = projectile.Velocity;
+            if (TryFindGrounderForProjectile(projectile, weapon, projectile.Position, out var attractor))
+            {
+                var toGrounder = attractor.Position - projectile.Position;
+                if (toGrounder.sqrMagnitude > 0.0001f)
+                {
+                    // At twice the shared speed the rocket crosses the magnet's range in a few ticks, so a
+                    // gradual pull cannot reach it: inside the range the magnet takes the heading over.
+                    velocity = toGrounder.normalized * Mathf.Max(5f, velocity.magnitude);
+                    projectile.SetVelocity(velocity);
+                }
+            }
+
+            var position = projectile.Position;
+            var displacement = velocity * deltaTime;
+            var stepCount = Mathf.Max(1, Mathf.CeilToInt(displacement.magnitude / ProjectileSubStepLength));
+            var step = displacement / stepCount;
+            var carved = false;
+            for (var stepIndex = 0; stepIndex < stepCount; stepIndex++)
+            {
+                position += step;
+                if (TryFindGrounderForProjectile(projectile, weapon, position, out var grounder)
+                    && Vector2.Distance(position, grounder.Position) <= Mathf.Max(0.35f, radius + 0.18f))
+                {
+                    // Intercepted: the carried droid is let go and simply falls; the rocket blasts at the magnet.
+                    ReleaseSkyHookCarried(projectile, throwAway: false, position);
+                    projectile.MoveTo(position);
+                    ResolveGrounderProjectileContact(projectileIndex, projectile, weapon, grounder, position);
+                    return;
+                }
+
+                var heading = velocity.sqrMagnitude > 0.0001f ? velocity.normalized : Vector2.up;
+                var insideGround = _terrain != null
+                    && (_terrain.Grid.IsSolidWorld(position)
+                        || _terrain.Grid.IsSolidWorld(position + heading * (SkyHookTunnelRadius * 1.3f)));
+                if (insideGround && projectile.ShouldCarveTunnelAt(position, DrillCarveSpacing))
+                {
+                    carved |= ApplyTerrainCrater(position, SkyHookTunnelRadius, sourceTeam, TerrainMaterial.Titanium);
+                }
+
+                if (string.IsNullOrEmpty(projectile.SkyHookCarriedUnitId))
+                {
+                    foreach (var team in _state.Teams)
+                    {
+                        if (team.TeamId == sourceTeam)
+                        {
+                            continue;
+                        }
+
+                        foreach (var unit in team.Units)
+                        {
+                            if (unit == null || unit.IsDefeated || !string.IsNullOrEmpty(projectile.SkyHookCarriedUnitId)
+                                || !IsTouchingUnitHitbox(position, radius, unit))
+                            {
+                                continue;
+                            }
+
+                            projectile.SetSkyHookCarried(unit.UnitId);
+                        }
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(projectile.SkyHookCarriedUnitId))
+                {
+                    CarrySkyHookTarget(projectile, step);
+                }
+
+                if (position.y >= apexY)
+                {
+                    position.y = apexY;
+                    projectile.MoveTo(position);
+                    ReleaseSkyHookCarried(projectile, throwAway: true, position);
+                    ResolveProjectileAt(projectileIndex, position);
+                    return;
+                }
+            }
+
+            projectile.MoveTo(position);
+            if (carved)
+            {
+                WakeUnitsWithoutSupport();
+            }
+
+            if (projectile.RemainingLifetime <= 0f)
+            {
+                ReleaseSkyHookCarried(projectile, throwAway: true, position);
+                ResolveProjectileAt(projectileIndex, position);
+            }
+        }
+
+        private void CarrySkyHookTarget(SimProjectile projectile, Vector2 step)
+        {
+            var unit = FindUnit(projectile.SkyHookCarriedUnitId);
+            var motor = unit != null ? GetMotor(unit.UnitId) : null;
+            if (unit == null || unit.IsDefeated || motor == null)
+            {
+                projectile.SetSkyHookCarried(string.Empty);
+                return;
+            }
+
+            var next = unit.Position + step;
+            if (BodyOverlapsTerrain(next, motor.Profile.HalfWidth, motor.Profile.HalfHeight))
+            {
+                // Pressed against ground or a ceiling: the droid comes off and falls on its own.
+                ReleaseSkyHookCarried(projectile, throwAway: false, projectile.Position);
+                return;
+            }
+
+            unit.MoveTo(next);
+            motor.Teleport(next);
+            UnitsMoved?.Invoke();
+        }
+
+        /// <summary>
+        /// Lets the carried droid go. At the final point it is thrown sideways with the electric harpoon's
+        /// final-throw force; otherwise it just falls.
+        /// </summary>
+        private void ReleaseSkyHookCarried(SimProjectile projectile, bool throwAway, Vector2 rocketPoint)
+        {
+            var unit = string.IsNullOrEmpty(projectile.SkyHookCarriedUnitId) ? null : FindUnit(projectile.SkyHookCarriedUnitId);
+            projectile.SetSkyHookCarried(string.Empty);
+            var motor = unit != null ? GetMotor(unit.UnitId) : null;
+            if (unit == null || unit.IsDefeated || motor == null)
+            {
+                return;
+            }
+
+            if (throwAway)
+            {
+                var side = unit.Position.x - rocketPoint.x;
+                var away = Mathf.Abs(side) > 0.05f ? Mathf.Sign(side) : projectile.SkyHookLaunchFacing;
+                motor.AddImpulse(ComputeHarpoonFinalThrowImpulse(motor, away, WeaponUpgradeChoiceResolver.RopeBaseLength));
+            }
+            else
+            {
+                motor.WakeIfUnsupported();
+                motor.AddImpulse(Vector2.zero);
+            }
+
+            UnitsMoved?.Invoke();
+        }
+
+        /// <summary>The fixed-angle throw of the electric harpoon's final blow, about two rope lengths in free space.</summary>
+        private static Vector2 ComputeHarpoonFinalThrowImpulse(UnitMotor motor, float awayDirection, float ropeLength)
+        {
+            var angle = ElectricHarpoonThrowAngleDegrees * Mathf.Deg2Rad;
+            var range = ropeLength * 2f;
+            var speed = Mathf.Sqrt(range * motor.Gravity / Mathf.Sin(2f * angle));
+            return new Vector2(awayDirection * Mathf.Cos(angle), Mathf.Sin(angle)) * speed;
         }
 
         /// <summary>A bullet that simply runs out has no impact to end the shot, so it concludes it itself.</summary>
