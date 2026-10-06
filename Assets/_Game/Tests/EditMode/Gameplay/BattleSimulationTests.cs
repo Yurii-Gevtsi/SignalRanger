@@ -2662,6 +2662,112 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, progress).TeleportExchangesEnemy, Is.False);
         }
 
+        private static Harness CreatePlacedGrounderHarness(string carrierWeaponId, out Vector2 devicePosition,
+            float damage = 24f, float impactRadius = 0.45f, bool moveOwnerAway = true)
+        {
+            var grounder = CreateWeapon("weapon.grounder", WeaponRole.DefensiveTool,
+                damage: 0, impactRadius: 1.4f, ammo: 1);
+            var carrier = CreateWeapon(carrierWeaponId, WeaponRole.DirectProjectile,
+                damage: (int)damage, impactRadius: impactRadius, gravityScale: 0f);
+            var harness = CreateHarness(grounder, opponentWeapon: carrier);
+            var placed = default(Vector2?);
+            harness.Simulation.GrounderDeployed += evt => placed = evt.Point;
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            Assert.That(placed.HasValue, Is.True);
+            devicePosition = placed.Value;
+            if (moveOwnerAway)
+            {
+                var player = harness.State.GetUnit("player.test.01");
+                player.MoveTo(new Vector2(-8f, 0f));
+                harness.Motors[player.UnitId].Teleport(player.Position);
+            }
+
+            return harness;
+        }
+
+        [TestCase("weapon.granata", "projectile.weapon.granata", true)]
+        [TestCase("weapon.ion-shotgun", "projectile.weapon.ion-shotgun", true)]
+        [TestCase("weapon.c4", "projectile.weapon.c4", true)]
+        [TestCase("weapon.titanium-disc", "projectile.weapon.titanium-disc", true)]
+        [TestCase("weapon.bur-rocket", "projectile.weapon.bur-rocket", true)]
+        [TestCase("weapon.mortira", "projectile.weapon.mortira", true)]
+        [TestCase("weapon.mortira", "projectile.weapon.mortira.fragment.1", true)]
+        [TestCase("weapon.sticky-grenade", "projectile.weapon.sticky-grenade", true)]
+        [TestCase("weapon.teleport", "projectile.weapon.teleport", true)]
+        [TestCase("weapon.swap-jump", "projectile.weapon.swap-jump", true)]
+        [TestCase("weapon.cryo-grenade", "projectile.weapon.cryo-grenade", true)]
+        [TestCase("weapon.hopping-grenade", "projectile.weapon.hopping-grenade", true)]
+        [TestCase("weapon.incendiary-grenade", "projectile.weapon.incendiary-grenade", true)]
+        [TestCase("weapon.repair-jammer", "projectile.weapon.repair-jammer", true)]
+        [TestCase("weapon.missle", "projectile.weapon.missle", true)]
+        [TestCase("weapon.orbital-rocket", "projectile.weapon.orbital-rocket", true)]
+        [TestCase("weapon.impulse", "projectile.weapon.impulse", false)]
+        [TestCase("weapon.emp", "projectile.weapon.emp", false)]
+        public void Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(
+            string weaponId, string projectileId, bool caught)
+        {
+            var harness = CreatePlacedGrounderHarness(weaponId, out var device);
+            var shot = ProjectileDefinition.CreateRuntime(projectileId, 0.1f, 0f, 3f, 24, 0.45f);
+            harness.Simulation.Spawn(new ProjectileSpawnRequest(
+                shot, "opponent.test.01", device + new Vector2(0.8f, 0.8f), Vector2.zero, 0.2f, Color.white));
+            TickMany(harness.Simulation, 150, 1f / 120f);
+            Assert.That(harness.Simulation.ProjectilesInFlight, caught ? Is.Zero : Is.EqualTo(1),
+                caught ? "the magnet pulled the carrier in and ended it" : "an energy carrier flies on");
+        }
+
+        [Test]
+        public void Grounder_InterceptedBlastHurtsTheOwnerOnlyIfTheOwnerStandsInsideThePhysicalRadius()
+        {
+            var far = CreatePlacedGrounderHarness("weapon.granata", out var farDevice, damage: 24, impactRadius: 1.1f);
+            far.Simulation.Spawn(new ProjectileSpawnRequest(
+                ProjectileDefinition.CreateRuntime("projectile.weapon.granata", 0.1f, 0f, 3f, 24, 1.1f),
+                "opponent.test.01", farDevice + new Vector2(0.8f, 0.8f), Vector2.zero, 0.2f, Color.white));
+            TickMany(far.Simulation, 150, 1f / 120f);
+            Assert.That(far.State.GetUnit("player.test.01").Health, Is.EqualTo(100), "the owner is out of reach");
+
+            var near = CreatePlacedGrounderHarness("weapon.granata", out var nearDevice, damage: 24, impactRadius: 1.1f,
+                moveOwnerAway: false);
+            near.Simulation.Spawn(new ProjectileSpawnRequest(
+                ProjectileDefinition.CreateRuntime("projectile.weapon.granata", 0.1f, 0f, 3f, 24, 1.1f),
+                "opponent.test.01", nearDevice + new Vector2(0.8f, 0.8f), Vector2.zero, 0.2f, Color.white));
+            TickMany(near.Simulation, 150, 1f / 120f);
+            Assert.That(near.State.GetUnit("player.test.01").Health, Is.LessThan(100), "an adjacent owner takes the blast");
+        }
+
+        [Test]
+        public void Grounder_RegistryLimitsPaidCoreAndRadiusStepsAndAHealthPointBudgetOfFortyFive()
+        {
+            const string id = "weapon.grounder";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 0, 4 }));
+            Assert.That(PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id).AmmoCount, Is.EqualTo(1));
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/grounder"), Is.Not.Null);
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.False, "no Aim steps");
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.False, "one per battle: no Loadout steps");
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
+            }
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            var progress = restored.inventory.GetOrCreateWeaponProgress(id);
+            Assert.That(WeaponUpgradeChoiceResolver.Count(progress, WeaponUpgradePath.Core), Is.EqualTo(4));
+            Assert.That(WeaponUpgradeChoiceResolver.Count(progress, WeaponUpgradePath.Radius), Is.EqualTo(4));
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {

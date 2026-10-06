@@ -371,6 +371,38 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Grounder_ProductionScenePlacesTheMagnetSkinHandsTheTurnOverAndRemovesItAfterTwoEnemyTurns()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.grounder" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.grounder") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            Invoke(controller, "Fire");
+            var placed = GameObject.Find("Grounder Placed");
+            Assert.That(placed, Is.Not.Null, "the magnet is shown where it was placed");
+            Assert.That(placed.GetComponent<SpriteRenderer>().sprite.texture,
+                Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/grounder")));
+            Assert.That(inventory.GetSelectedRemainingAmmo(), Is.Zero, "one per battle");
+            for (var turnEnd = 0; turnEnd < 4 && GameObject.Find("Grounder Placed") != null; turnEnd++)
+            {
+                simulation.AdvanceTurnDueToNoUsableWeapon();
+                yield return null;
+            }
+            Assert.That(GameObject.Find("Grounder Placed"), Is.Null,
+                "the magnet and its skin are gone after its two enemy turns");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {
