@@ -45,7 +45,7 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.sky-hook", WeaponRole.DirectProjectile, 46, SharedExplosionRadius, 0.1f, 0f, 5f,
                     2f * SharedProjectileSpeed, 2f * SharedProjectileSpeed, 1, "sky_hook", "straight-long", "hook"),
                 Weapon("weapon.spider-mine", WeaponRole.ArcingExplosive, 45, 1.45f, 0.13f, 1.05f, 7f, 3f, 10f, 2, "spider_mine", "ground", "mine"),
-                Weapon("weapon.virus", WeaponRole.DirectProjectile, 48, 0.75f, 0.09f, 0f, 4f, 12f, 12f, 1, "virus", "straight-long", "virus"),
+                Weapon("weapon.virus", WeaponRole.DirectProjectile, 42, 0.75f, 0.09f, 0f, 4f, 12f, 12f, 1, "virus", "straight-long", "virus"),
                 Weapon("weapon.bomber", WeaponRole.ArcingExplosive, 58, 1.6f, 0.14f, 0.9f, 7f, 4f, 12f, 1, "bomber", "controlled", "bomber"),
                 Weapon("weapon.ufo-carrier", WeaponRole.MovementTool, 0, 1.0f, 0.1f, 0f, 7f, 4f, 12f, 1, "ufo_carrier", "controlled", "carrier"),
                 Weapon("weapon.self-destruct", WeaponRole.ShortRangeBurst, 72, 2.1f, 0.16f, 0f, 3f, 1f, 1f, 1, "self_destruct", "ground", "self-destruct"),

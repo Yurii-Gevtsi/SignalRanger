@@ -321,7 +321,7 @@ namespace Game.Tests.EditMode.Gameplay
             foreach (var (id, role) in new[]
             {
                 ("weapon.turn-transfer", WeaponRole.DefensiveTool),
-                ("weapon.virus", WeaponRole.MovementTool)
+                ("weapon.bomber", WeaponRole.MovementTool)
             })
             {
                 var weapon = CreateWeapon(id, role, ammo: 1);
@@ -3482,6 +3482,177 @@ namespace Game.Tests.EditMode.Gameplay
             }
             Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, CreateSpiderProgress("spider-freeze", 4)).SpiderElement,
                 Is.EqualTo(SpiderElement.Cold), "the old extra steps keep the element");
+        }
+
+        private static Harness CreateVirusHarness(int carrierDamage = 0, int ownerDamage = 0)
+        {
+            var virus = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.virus");
+            var harness = CreateHarness(virus);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            var nearby = new Vector2(-1.4f, 0f);
+            opponent.MoveTo(nearby);
+            harness.Motors[opponent.UnitId].Teleport(nearby);
+            if (carrierDamage > 0) opponent.ApplyDamage(carrierDamage, "test");
+            if (ownerDamage > 0) harness.State.GetUnit("player.test.01").ApplyDamage(ownerDamage, "test");
+            SettleUnits(harness);
+            return harness;
+        }
+
+        private static void InfectWithVirus(Harness harness)
+        {
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 360, 1f / 120f);        // 3 s: attached, 1.5 s later the status is on
+        }
+
+        /// <summary>Ends turns until the carrier's team has finished the given number of turns.</summary>
+        private static void EndCarrierTurns(Harness harness, int carrierTurns)
+        {
+            var done = 0;
+            for (var i = 0; i < 20 && done < carrierTurns; i++)
+            {
+                var carrierTurn = harness.State.Turn.ActiveTeam == BattleTeamId.Opponent;
+                harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+                if (carrierTurn) done++;
+            }
+        }
+
+        [Test]
+        public void Virus_AttachesLikeTheJammerAndTheStatusAppearsAfterOnePointFiveSecondsWithoutDamage()
+        {
+            var harness = CreateVirusHarness();
+            var carrier = harness.State.GetUnit("opponent.test.01");
+            var craters = 0;
+            harness.Simulation.TerrainCraterApplied += (_, _, _) => craters++;
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 90, 1f / 120f);
+            Assert.That(harness.Simulation.IsUnitInfected(carrier.UnitId), Is.False, "the body is still attached");
+            TickMany(harness.Simulation, 150, 1f / 120f);
+            Assert.That(harness.Simulation.IsUnitInfected(carrier.UnitId), Is.True);
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero, "the body vanishes");
+            Assert.That(carrier.Health, Is.EqualTo(carrier.MaxHealth), "no damage on attaching");
+            Assert.That(craters, Is.Zero, "no blast and no crater");
+
+            var far = CreateHarness(PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.virus"));
+            Assert.That(far.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Blocked), "without an enemy nearby nothing is spent");
+        }
+
+        [Test]
+        public void Virus_AddsNoTicksInTheFirstTwoCarrierTurnsAndHurtsAtTheEndOfTheThird()
+        {
+            var harness = CreateVirusHarness();
+            var carrier = harness.State.GetUnit("opponent.test.01");
+            InfectWithVirus(harness);
+            var start = carrier.Health;
+            EndCarrierTurns(harness, 1);
+            Assert.That(carrier.Health, Is.EqualTo(start), "no periodic tick");
+            Assert.That(harness.Simulation.IsUnitInfected(carrier.UnitId), Is.True);
+            EndCarrierTurns(harness, 1);
+            Assert.That(carrier.Health, Is.EqualTo(start), "still no tick after the second turn");
+            Assert.That(harness.Simulation.IsUnitInfected(carrier.UnitId), Is.True);
+            EndCarrierTurns(harness, 1);
+            Assert.That(start - carrier.Health, Is.EqualTo(42), "the base grenade damage at the end of the third turn");
+            Assert.That(harness.Simulation.IsUnitInfected(carrier.UnitId), Is.False, "the status ends");
+        }
+
+        [Test]
+        public void Virus_ACarrierWhoDiesEarlyPaysTheDeficitSavedWhenItWasInfectedNotTheLaterDamage()
+        {
+            var harness = CreateVirusHarness(carrierDamage: 40, ownerDamage: 70);       // carrier 60/100, owner 30/100
+            var carrier = harness.State.GetUnit("opponent.test.01");
+            var owner = harness.State.GetUnit("player.test.01");
+            InfectWithVirus(harness);
+            carrier.ApplyDamage(30, "later");                                            // later damage is not part of the reserve
+            EndCarrierTurns(harness, 1);
+            carrier.ApplyDamage(carrier.Health, "kill");
+            TickMany(harness.Simulation, 4, 1f / 120f);
+            Assert.That(carrier.IsDefeated, Is.True);
+            Assert.That(owner.Health, Is.EqualTo(30 + 40), "exactly the 40 missing at the time of infection");
+            Assert.That(harness.Simulation.IsUnitInfected(carrier.UnitId), Is.False);
+        }
+
+        [Test]
+        public void Virus_TheHealingIsCappedByTheOwnersMaximumAndAFullyHealthyCarrierGivesNothing()
+        {
+            var capped = CreateVirusHarness(carrierDamage: 60, ownerDamage: 20);        // reserve 60, owner misses 20
+            var cappedOwner = capped.State.GetUnit("player.test.01");
+            InfectWithVirus(capped);
+            capped.State.GetUnit("opponent.test.01").ApplyDamage(100, "kill");
+            TickMany(capped.Simulation, 4, 1f / 120f);
+            Assert.That(cappedOwner.Health, Is.EqualTo(cappedOwner.MaxHealth));
+
+            var healthy = CreateVirusHarness(ownerDamage: 50);
+            var healthyOwner = healthy.State.GetUnit("player.test.01");
+            InfectWithVirus(healthy);
+            healthy.State.GetUnit("opponent.test.01").ApplyDamage(100, "kill");
+            TickMany(healthy.Simulation, 4, 1f / 120f);
+            Assert.That(healthyOwner.Health, Is.EqualTo(50), "a carrier at full health gives a reserve of zero");
+        }
+
+        [Test]
+        public void Virus_DeathFromTheFinalDamageAlsoPaysAndADeadOwnerOrAJammedOwnerReceivesNothing()
+        {
+            var fatal = CreateVirusHarness(carrierDamage: 70, ownerDamage: 60);         // carrier 30/100, reserve 70
+            var carrier = fatal.State.GetUnit("opponent.test.01");
+            var owner = fatal.State.GetUnit("player.test.01");
+            InfectWithVirus(fatal);
+            EndCarrierTurns(fatal, 3);                                                   // the final 42 kills the 30 HP carrier
+            TickMany(fatal.Simulation, 4, 1f / 120f);
+            Assert.That(carrier.IsDefeated, Is.True);
+            Assert.That(owner.Health, Is.EqualTo(40 + 60), "the saved 70 is capped by the owner's 60 missing");
+
+            var deadOwner = CreateVirusHarness(carrierDamage: 50);
+            InfectWithVirus(deadOwner);
+            var dead = deadOwner.State.GetUnit("player.test.01");
+            dead.ApplyDamage(dead.Health, "kill");
+            deadOwner.State.GetUnit("opponent.test.01").ApplyDamage(100, "kill");
+            TickMany(deadOwner.Simulation, 4, 1f / 120f);
+            Assert.That(dead.IsDefeated, Is.True, "the dead owner is not revived");
+
+            var jammed = CreateVirusHarness(carrierDamage: 50, ownerDamage: 50);
+            var jammedOwner = jammed.State.GetUnit("player.test.01");
+            InfectWithVirus(jammed);
+            var turns = (System.Collections.Generic.Dictionary<string, int>)typeof(BattleSimulation)
+                .GetField("_repairJammerTurns", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .GetValue(jammed.Simulation);
+            turns[jammedOwner.UnitId] = 2;
+            jammed.State.GetUnit("opponent.test.01").ApplyDamage(100, "kill");
+            TickMany(jammed.Simulation, 4, 1f / 120f);
+            Assert.That(jammedOwner.Health, Is.EqualTo(50), "a repair jammer blocks the virus healing too");
+        }
+
+        [Test]
+        public void Virus_RegistryOnePerBattleGrenadeDamageCoreStepsAndArtMatchTheCard()
+        {
+            const string id = "weapon.virus";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 0, 0 }));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            var grenade = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.granata");
+            Assert.That(weapon.AmmoCount, Is.EqualTo(1));
+            Assert.That(weapon.Damage, Is.EqualTo(grenade.Damage), "the final damage is that of the base grenade");
+            Assert.That(BattleSimulation.RequiresAim(weapon), Is.False);
+            Assert.That(BattleSimulation.IsBattleMechanicAvailable(weapon), Is.True);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/virus"), Is.Not.Null);
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            foreach (var path in new[] { WeaponUpgradePath.Aim, WeaponUpgradePath.Loadout, WeaponUpgradePath.Radius })
+                Assert.That(service.TryUpgrade(id, path).Applied, Is.False, path.ToString());
+            for (var i = 0; i < 4; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            Assert.That(WeaponUpgradeChoiceResolver.Count(restored.inventory.GetOrCreateWeaponProgress(id), WeaponUpgradePath.Core),
+                Is.EqualTo(4));
         }
 
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,

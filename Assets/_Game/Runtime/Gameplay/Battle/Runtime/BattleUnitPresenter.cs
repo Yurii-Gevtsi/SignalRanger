@@ -44,6 +44,11 @@ namespace Game.Gameplay.Battle.Runtime
             _view.ClearEquippedWeapon();
         }
 
+        public void SetVirusActive(bool isActive)
+        {
+            _view.SetVirusActive(isActive);
+        }
+
         public void SetRepairJammerActive(bool isActive)
         {
             _view.SetRepairJammerActive(isActive);

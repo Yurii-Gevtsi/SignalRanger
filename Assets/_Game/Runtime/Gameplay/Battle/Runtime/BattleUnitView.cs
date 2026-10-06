@@ -23,6 +23,7 @@ namespace Game.Gameplay.Battle.Runtime
         private const string HeadingFontResourcePath = "Fonts/Orbitron";
         private const string JetTrailResourcePath = "UI/Common/jet_trail_light";
         private const string RepairJammerStatusIconResourcePath = "UI/Common/no-repair-2";
+        private const string VirusStatusIconResourcePath = "UI/Weapons/virus";
         private const string DeadWreckageResourcePath = "Visuals/Characters/dead";
         private static readonly Vector3 DeadWreckageScale = new(0.15f, 0.15f, 1f);
         private static readonly Vector3 WeaponMountPosition = new(-0.68f, 0.42f, 0f);
@@ -30,6 +31,9 @@ namespace Game.Gameplay.Battle.Runtime
         private static readonly Vector3 HealthLabelScale = new(0.15f, 0.15f, 1f);
         private static readonly Vector3 RepairJammerStatusIconPosition = new(0.56f, 1.3f, 0f);
         private static readonly Vector3 RepairJammerStatusIconScale = new(0.12f, 0.12f, 1f);
+        // The virus art is 1254 px wide (12.5 world units at 100 px/unit): this makes it about as wide as the jammer icon.
+        private static readonly Vector3 VirusStatusIconPosition = new(-0.56f, 1.3f, 0f);
+        private static readonly Vector3 VirusStatusIconScale = new(0.044f, 0.044f, 1f);
         private static Sprite _solidWhiteSprite;
         private static Font _headingFont;
         private static Sprite _repairJammerStatusIconSprite;
@@ -56,6 +60,7 @@ namespace Game.Gameplay.Battle.Runtime
         private SpriteRenderer _weaponRenderer;
         private SpriteRenderer _jetTrailRenderer;
         private SpriteRenderer _repairJammerStatusIconRenderer;
+        private SpriteRenderer _virusStatusIconRenderer;
         private SpriteRenderer _deadWreckageRenderer;
         private bool _deadWreckageLoadAttempted;
         private SpriteRenderer _freezeOverlayRenderer;
@@ -180,6 +185,31 @@ namespace Game.Gameplay.Battle.Runtime
             var scale = Mathf.Clamp01(scaleMultiplier) * JetTrailVisualScale;
             _jetTrailRenderer.transform.localScale = new Vector3(scale, scale, 1f);
             _jetTrailRenderer.enabled = isActive && scale > 0.001f && _jetTrailRenderer.sprite != null;
+        }
+
+        public void SetVirusActive(bool isActive)
+        {
+            EnsureReferences();
+            if (_virusStatusIconRenderer == null)
+            {
+                var texture = Resources.Load<Texture2D>(VirusStatusIconResourcePath);
+                if (texture == null)
+                {
+                    return;
+                }
+
+                var iconObject = new GameObject("Virus Status Icon");
+                iconObject.transform.SetParent(transform, false);
+                iconObject.transform.localPosition = VirusStatusIconPosition;
+                iconObject.transform.localScale = VirusStatusIconScale;
+                _virusStatusIconRenderer = iconObject.AddComponent<SpriteRenderer>();
+                _virusStatusIconRenderer.sprite = Sprite.Create(
+                    texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+                _virusStatusIconRenderer.sortingOrder = 34;
+                _virusStatusIconRenderer.enabled = false;
+            }
+
+            _virusStatusIconRenderer.enabled = isActive;
         }
 
         public void SetRepairJammerActive(bool isActive)

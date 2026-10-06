@@ -760,6 +760,46 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Virus_ProductionSceneShowsTheVirusIconOnTheInfectedDroidOnly()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.virus" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var state = Get<BattleState>(controller, "_battleState");
+            var motors = Get<Dictionary<string, UnitMotor>>(controller, "_unitMotors");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.virus") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var player = state.GetTeam(BattleTeamId.Player).Units[0];
+            var enemy = state.GetTeam(BattleTeamId.Opponent).Units[0];
+            var next = player.Position + new Vector2(1.4f, 0f);
+            enemy.MoveTo(next);
+            motors[enemy.UnitId].Teleport(next);
+            Assert.That(simulation.IsUnitInfected(enemy.UnitId), Is.False);
+
+            Invoke(controller, "Fire");
+            for (var frame = 0; frame < 40 && !simulation.IsUnitInfected(enemy.UnitId); frame++)
+            {
+                for (var tick = 0; tick < 30; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(simulation.IsUnitInfected(enemy.UnitId), Is.True);
+            Invoke(controller, "RefreshUnitViews");
+            var visible = 0;
+            foreach (var renderer in UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Include))
+                if (renderer.name == "Virus Status Icon" && renderer.enabled
+                    && renderer.sprite != null && renderer.sprite.texture.name == "virus") visible++;
+            Assert.That(visible, Is.EqualTo(1), "exactly one virus icon, on the infected droid");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator RailRifle_ProductionSceneFiresASmallBoltAlongTheShotAndItLeavesTheArena()
         {
             WeaponProgressionBridge.UnlockedResolver = id =>

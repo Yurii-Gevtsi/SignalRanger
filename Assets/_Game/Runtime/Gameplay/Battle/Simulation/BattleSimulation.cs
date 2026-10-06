@@ -232,6 +232,8 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly Dictionary<string, float> _electrifiedOverlayRemainingSeconds = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActiveRepairEffect> _repairEffects = new(StringComparer.Ordinal);
         private readonly Dictionary<string, int> _repairJammerTurns = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, VirusInfection> _virusInfections = new(StringComparer.Ordinal);
+        private const int VirusDurationTurns = 3;
         private readonly Dictionary<string, ActiveDisorientation> _disorientations = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActivePoisonEffect> _poisonEffects = new(StringComparer.Ordinal);
         // Shared two-turn elemental cycle: cold uses it now, fire and the others reuse the same rules.
@@ -512,7 +514,6 @@ namespace Game.Gameplay.Battle.Simulation
             return weapon.WeaponId switch
             {
                 "weapon.turn-transfer"
-                    or "weapon.virus"
                     or "weapon.bomber" or "weapon.ufo-carrier" or "weapon.self-destruct"
                     or "weapon.nuclear-charge" => false,
                 _ => true
@@ -533,6 +534,7 @@ namespace Game.Gameplay.Battle.Simulation
                 && weapon.WeaponId != RepairJammerWeaponId
                 && weapon.WeaponId != OrbitalRocketWeaponId
                 && weapon.WeaponId != BoostWeaponId
+                && weapon.WeaponId != VirusWeaponId
                 && weapon.WeaponId != SkyHookWeaponId
                 && weapon.WeaponId != FpvWeaponId;
         }
@@ -1184,6 +1186,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessElementalForEndingActiveTurn(_fireEffects);
             ProcessElementalForEndingActiveTurn(_electricEffects);
             ProcessRepairJammerForEndingActiveTurn();
+            ProcessVirusForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
             ConsumeEmpStunForActiveTurn();
@@ -1217,6 +1220,7 @@ namespace Game.Gameplay.Battle.Simulation
                 StepFirePuddles(_settings.SimulationTickSeconds);
                 StepLavaOverlayStates(_settings.SimulationTickSeconds);
                 StepElectrifiedOverlayStates(_settings.SimulationTickSeconds);
+                StepVirusCarriers();
                 StepMines(_settings.SimulationTickSeconds);
                 StepCharges(_settings.SimulationTickSeconds);
                 StepUnits();
@@ -1457,6 +1461,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessElementalForEndingActiveTurn(_fireEffects);
             ProcessElementalForEndingActiveTurn(_electricEffects);
             ProcessRepairJammerForEndingActiveTurn();
+            ProcessVirusForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
             ConsumeEmpStunForActiveTurn();
@@ -2248,7 +2253,8 @@ namespace Game.Gameplay.Battle.Simulation
 
             var origin = unit.Position + Vector2.up * 0.38f;
             var direction = (target.Position - origin).normalized;
-            var impactDamage = weapon.WeaponId == RepairJammerWeaponId ? 0 : weapon.Damage;
+            // The attached devices deal no damage themselves; the virus' final damage comes from its status.
+            var impactDamage = weapon.WeaponId == RepairJammerWeaponId || weapon.WeaponId == VirusWeaponId ? 0 : weapon.Damage;
             var definition = weapon.CreateProjectileDefinition(impactDamage, 0f, 0, StickyGrenadeFuseSeconds);
             Spawn(new ProjectileSpawnRequest(
                 definition,
@@ -4897,6 +4903,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessElementalForEndingActiveTurn(_fireEffects);
             ProcessElementalForEndingActiveTurn(_electricEffects);
             ProcessRepairJammerForEndingActiveTurn();
+            ProcessVirusForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
             ConsumeEmpStunForActiveTurn();
@@ -6122,6 +6129,19 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
+            if (impactWeapon?.WeaponId == VirusWeaponId)
+            {
+                if (!string.IsNullOrWhiteSpace(projectile.AttachedUnitId))
+                {
+                    InfectWithVirus(projectile.AttachedUnitId, projectile.OwnerUnitId, impactWeapon);
+                }
+
+                ImpactResolved?.Invoke(new ImpactResolvedEvent(point, impactWeapon, false));
+                UnitsMoved?.Invoke();
+                AdvanceTurnOrStartRetreat(TurnAdvanceReason.ProjectileImpactResolved);
+                return;
+            }
+
             if (impactWeapon?.WeaponId == RepairJammerWeaponId)
             {
                 if (!string.IsNullOrWhiteSpace(projectile.AttachedUnitId))
@@ -6140,6 +6160,147 @@ namespace Game.Gameplay.Battle.Simulation
 
             ResolveProjectileImpact(impact, projectile.SuppressesTurnAdvanceOnImpact, directHit,
                 hitTerrain ? projectile.Definition.Radius * 2f : 0f);
+        }
+
+        public bool IsUnitInfected(string unitId)
+        {
+            return !string.IsNullOrWhiteSpace(unitId) && _virusInfections.ContainsKey(unitId);
+        }
+
+        /// <summary>
+        /// The virus appears 1.5 s after the device attaches. It remembers how much health the carrier was
+        /// missing at that moment: if the carrier dies before the status ends, the owner gets exactly that back.
+        /// </summary>
+        private void InfectWithVirus(string carrierUnitId, string ownerUnitId, WeaponDefinition weapon)
+        {
+            var carrier = FindUnit(carrierUnitId);
+            if (carrier == null || carrier.IsDefeated || _virusInfections.ContainsKey(carrierUnitId))
+            {
+                return;
+            }
+
+            var ownerTeam = ResolveTeamForOwner(ownerUnitId);
+            var finalDamage = Mathf.RoundToInt(weapon.Damage * ResolveModifiersFor(ownerTeam, weapon).DamageMultiplier);
+            _virusInfections[carrierUnitId] = new VirusInfection(
+                ownerUnitId, ownerTeam, VirusDurationTurns,
+                Mathf.Max(0, carrier.MaxHealth - carrier.Health), finalDamage);
+        }
+
+        /// <summary>
+        /// Counts the carrier's own turn ends. The first two add nothing; at the third the carrier takes the
+        /// final damage if it is alive, and the status ends.
+        /// </summary>
+        private void ProcessVirusForEndingActiveTurn()
+        {
+            if (_virusInfections.Count == 0)
+            {
+                return;
+            }
+
+            var activeTeam = _state.Turn.ActiveTeam;
+            List<string> finished = null;
+            foreach (var pair in _virusInfections)
+            {
+                var carrier = FindUnit(pair.Key);
+                if (carrier == null || carrier.IsDefeated || carrier.TeamId != activeTeam)
+                {
+                    continue;
+                }
+
+                var infection = pair.Value;
+                infection.TurnsRemaining--;
+                if (infection.TurnsRemaining > 0)
+                {
+                    continue;
+                }
+
+                ApplyDamage(carrier, ResolveOutgoingDamage(infection.OwnerUnitId, infection.FinalDamage),
+                    VirusWeaponId, infection.OwnerTeam);
+                (finished ??= new List<string>()).Add(pair.Key);
+            }
+
+            if (finished == null)
+            {
+                return;
+            }
+
+            foreach (var carrierId in finished)
+            {
+                var infection = _virusInfections[carrierId];
+                _virusInfections.Remove(carrierId);
+                RestoreVirusOwner(infection, FindUnit(carrierId));
+            }
+        }
+
+        /// <summary>A carrier that died at any moment of the status (by any damage) pays the saved deficit to the owner.</summary>
+        private void StepVirusCarriers()
+        {
+            if (_virusInfections.Count == 0)
+            {
+                return;
+            }
+
+            List<string> dead = null;
+            foreach (var pair in _virusInfections)
+            {
+                var carrier = FindUnit(pair.Key);
+                if (carrier == null || carrier.IsDefeated)
+                {
+                    (dead ??= new List<string>()).Add(pair.Key);
+                }
+            }
+
+            if (dead == null)
+            {
+                return;
+            }
+
+            foreach (var carrierId in dead)
+            {
+                var infection = _virusInfections[carrierId];
+                _virusInfections.Remove(carrierId);
+                RestoreVirusOwner(infection, FindUnit(carrierId));
+            }
+        }
+
+        private void RestoreVirusOwner(VirusInfection infection, BattleUnitState carrier)
+        {
+            if (carrier == null || !carrier.IsDefeated || infection.HealReserve <= 0)
+            {
+                return;
+            }
+
+            // A dead owner is not revived and the health is not given to someone else; a repair jammer on the
+            // owner blocks this source of healing too.
+            var owner = FindUnit(infection.OwnerUnitId);
+            if (owner == null || owner.IsDefeated || IsUnitRepairJammed(owner.UnitId))
+            {
+                return;
+            }
+
+            var restored = owner.RestoreHealth(infection.HealReserve);
+            if (restored > 0)
+            {
+                HealthRestored?.Invoke(new HealthRestoredEvent(owner.Position, restored, owner.TeamId));
+            }
+        }
+
+        private sealed class VirusInfection
+        {
+            public VirusInfection(string ownerUnitId, BattleTeamId ownerTeam, int turns, int healReserve, int finalDamage)
+            {
+                OwnerUnitId = ownerUnitId;
+                OwnerTeam = ownerTeam;
+                TurnsRemaining = turns;
+                HealReserve = healReserve;
+                FinalDamage = finalDamage;
+            }
+
+            public string OwnerUnitId { get; }
+            public BattleTeamId OwnerTeam { get; }
+            public int TurnsRemaining { get; set; }
+            public int HealReserve { get; }
+            public int FinalDamage { get; }
         }
 
         public bool IsUnitRepairJammed(string unitId)
