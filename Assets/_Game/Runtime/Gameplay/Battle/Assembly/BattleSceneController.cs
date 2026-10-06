@@ -2338,10 +2338,10 @@ namespace Game.Gameplay.Battle.Assembly
             }
             else if (mine.Weapon != null && mine.Weapon.WeaponId == "weapon.guardian-drone")
             {
-                renderer.sprite = LoadWeaponIconSprite(mine.Weapon.IconId);
-                // The local player sees their own placed drone. An opponent's
-                // armed drone becomes visible only for its brief firing sequence.
-                renderer.enabled = mine.Team == BattleTeamId.Player;
+                renderer.sprite = LoadWeaponIconSprite(ResolveMineSpriteId(mine.Weapon.IconId, mine.Weapon, mine.Team));
+                // The drone is visible to everyone until the purchased stealth hides it from the
+                // enemy; the owner always sees it, and it is revealed again when it fires.
+                renderer.enabled = !(mine.ConcealedFromEnemy && mine.Team != BattleTeamId.Player);
             }
             else
             {

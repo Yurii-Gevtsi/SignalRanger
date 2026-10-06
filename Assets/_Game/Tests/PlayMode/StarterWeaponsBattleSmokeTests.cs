@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Game.App;
 using Game.Core;
@@ -365,6 +366,28 @@ namespace Game.Tests.PlayMode
                 yield return null;
             }
             Assert.That(simulation.ProjectilesInFlight, Is.Zero);
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator GuardianDrone_ProductionSceneHidesAStealthDroneOnlyFromTheEnemyObserver()
+        {
+            yield return null;
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.guardian-drone");
+            bool Shown(BattleTeamId team, bool concealed, int id)
+            {
+                typeof(BattleSceneController).GetMethod("OnSimulationMineDeployed", PrivateInstance)
+                    .Invoke(controller, new object[] { new MineDeployedEvent(id, Vector2.zero, weapon, team, concealed) });
+                var visuals = Get<Dictionary<int, GameObject>>(controller, "_mineVisuals");
+                return visuals[id].GetComponent<SpriteRenderer>().enabled;
+            }
+
+            Assert.That(Shown(BattleTeamId.Opponent, concealed: false, id: 9001), Is.True, "an ordinary enemy drone is visible");
+            Assert.That(Shown(BattleTeamId.Opponent, concealed: true, id: 9002), Is.False, "stealth hides it from the player");
+            Assert.That(Shown(BattleTeamId.Player, concealed: true, id: 9003), Is.True, "the owner always sees it");
             LogAssert.NoUnexpectedReceived();
         }
 

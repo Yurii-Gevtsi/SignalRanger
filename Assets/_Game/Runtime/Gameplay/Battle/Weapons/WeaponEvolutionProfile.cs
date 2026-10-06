@@ -63,8 +63,10 @@ namespace Game.Gameplay.Battle.Weapons
             bool stickyToxicRelease = false,
             bool teleportInstantTouch = false,
             bool teleportEarlyTrigger = false,
-            int railPierceSteps = 0)
+            int railPierceSteps = 0,
+            bool guardianStealth = false)
         {
+            GuardianStealth = guardianStealth;
             RailPierceSteps = Mathf.Clamp(railPierceSteps, 0, 4);
             StickyToxicRelease = stickyToxicRelease;
             TeleportInstantTouch = teleportInstantTouch;
@@ -171,6 +173,7 @@ namespace Game.Gameplay.Battle.Weapons
         public bool TeleportInstantTouch { get; }
         public bool TeleportEarlyTrigger { get; }
         public int RailPierceSteps { get; }
+        public bool GuardianStealth { get; }
 
         public static WeaponEvolutionProfile Base => new(1, 0f, 1f, 3, 0);
     }
@@ -189,6 +192,7 @@ namespace Game.Gameplay.Battle.Weapons
         private const string MortarWeaponId = "weapon.mortira";
         private const string StickyGrenadeWeaponId = "weapon.sticky-grenade";
         private const string RailRifleWeaponId = "weapon.rail-rifle";
+        private const string GuardianDroneWeaponId = "weapon.guardian-drone";
         private const string MissileWeaponId = "weapon.missle";
         private const string ToxicWeaponId = "weapon.toxic";
         private const string FireGunWeaponId = "weapon.fire-gun";
@@ -247,6 +251,8 @@ namespace Game.Gameplay.Battle.Weapons
                             mortarCascadeCount: 2 + Mathf.Clamp(firstSteps - 1, 0, 4));
                     case StickyGrenadeWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, stickyToxicRelease: true);
+                    case GuardianDroneWeaponId:
+                        return new WeaponEvolutionProfile(1, 0f, 1f, guardianStealth: true);
                     case RailRifleWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, railPierceSteps: firstSteps);
                     case TeleportWeaponId:

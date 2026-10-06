@@ -5373,8 +5373,24 @@ namespace Game.Gameplay.Battle.Simulation
             }
         }
 
+        /// <summary>True when the enemy team cannot see this placed guardian drone (it is not removed from the simulation).</summary>
+        public bool IsGuardianConcealedFrom(int guardianId, BattleTeamId observer)
+        {
+            var guardian = _activeMines.Find(mine => mine.Id == guardianId && mine.IsGuardian);
+            return guardian != null && guardian.IsConcealed && guardian.TeamId != observer;
+        }
+
         private void StepGuaranteedTargetProjectile(int projectileIndex, SimProjectile projectile, float deltaTime)
         {
+            // A dedicated magnet wins over the guaranteed hit: the bullet is a physical carrier.
+            if (TryFindGrounderForProjectile(projectile,
+                    ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId), projectile.Position, out var shield))
+            {
+                DamageGrounder(shield, 1);
+                DiscardProjectile(projectileIndex, projectile);
+                return;
+            }
+
             var target = _state.GetUnit(projectile.GuaranteedTargetUnitId);
             if (target == null || target.IsDefeated)
             {
@@ -5613,8 +5629,10 @@ namespace Game.Gameplay.Battle.Simulation
                 triggersEnemiesOnly: true,
                 alliesImmuneToExplosion: true,
                 isGuardian: true);
+            guardian.IsConcealed = ResolveEvolutionFor(teamId, weapon).GuardianStealth;
             _activeMines.Add(guardian);
-            MineDeployed?.Invoke(new MineDeployedEvent(guardian.Id, guardian.Position, weapon, teamId));
+            MineDeployed?.Invoke(new MineDeployedEvent(guardian.Id, guardian.Position, weapon, teamId,
+                guardian.IsConcealed));
             ImpactResolved?.Invoke(new ImpactResolvedEvent(point, weapon, false));
             UnitsMoved?.Invoke();
 
@@ -6679,6 +6697,7 @@ namespace Game.Gameplay.Battle.Simulation
             public bool Triggered { get; set; }
             public float TriggerTimeRemaining { get; set; }
             public string TriggerTargetUnitId { get; set; }
+            public bool IsConcealed { get; set; }
 
             public void MoveTo(Vector2 position)
             {

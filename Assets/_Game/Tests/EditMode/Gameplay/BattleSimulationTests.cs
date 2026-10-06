@@ -3758,6 +3758,143 @@ namespace Game.Tests.EditMode.Gameplay
                 "guardian fire ends the triggered enemy turn");
         }
 
+        private static Harness CreateGuardianHarness(bool stealth, WeaponDefinition opponentWeapon = null,
+            Vector2? secondOpponent = null)
+        {
+            var guardian = CreateWeapon("weapon.guardian-drone", WeaponRole.DefensiveTool,
+                damage: 42, impactRadius: 1.6f, gravityScale: 0f);
+            SaveWeaponProgressData progress = null;
+            if (stealth)
+            {
+                progress = new SaveWeaponProgressData { weaponId = guardian.WeaponId, rank = 5 };
+                progress.EnsureDefaults();
+                for (var rank = 2; rank <= 5; rank++) progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                    { rank = rank, path = (int)(rank <= 3 ? WeaponUpgradePath.Core : WeaponUpgradePath.Loadout) });
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "stealth" });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+                progress.rank = 6;
+            }
+            return CreateHarness(guardian, opponentWeapon, playerWeaponProgress: progress,
+                secondOpponentPosition: secondOpponent);
+        }
+
+        [Test]
+        public void GuardianDrone_TargetCannotEscapeAfterActivationAndADeadTargetShiftsTheShotToNobody()
+        {
+            var harness = CreateGuardianHarness(false, secondOpponent: new Vector2(3.5f, 0f));
+            var first = harness.State.GetUnit("opponent.test.01");
+            var other = harness.State.GetUnit("opponent.test.02");
+            var triggered = false;
+            harness.Simulation.MineTriggered += _ => triggered = true;
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired), "placed without aiming");
+            harness.Simulation.EndActiveTurn();
+            var near = new Vector2(-1.8f, 0f);
+            first.MoveTo(near);
+            harness.Motors[first.UnitId].Teleport(near);
+            var otherBefore = other.Health;
+            for (var i = 0; i < 240 && !triggered; i++) harness.Simulation.Tick(1f / 120f);
+            Assert.That(triggered, Is.True);
+            // The triggered droid runs away; the guaranteed shot still finds it.
+            var escape = new Vector2(-8f, 0f);
+            first.MoveTo(escape);
+            harness.Motors[first.UnitId].Teleport(escape);
+            var firstBefore = first.Health;
+            TickMany(harness.Simulation, 600, 1f / 120f);
+            Assert.That(first.Health, Is.LessThan(firstBefore), "the guaranteed shot still found its target");
+            Assert.That(other.Health, Is.EqualTo(otherBefore), "no transfer to another droid");
+        }
+
+        [Test]
+        public void GuardianDrone_DeadTargetBeforeTheShotLandsHurtsNobodyElse()
+        {
+            var harness = CreateGuardianHarness(false, secondOpponent: new Vector2(3.5f, 0f));
+            var first = harness.State.GetUnit("opponent.test.01");
+            var other = harness.State.GetUnit("opponent.test.02");
+            var triggered = false;
+            harness.Simulation.MineTriggered += _ => triggered = true;
+            harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            harness.Simulation.EndActiveTurn();
+            var near = new Vector2(-1.8f, 0f);
+            first.MoveTo(near);
+            harness.Motors[first.UnitId].Teleport(near);
+            var otherBefore = other.Health;
+            for (var i = 0; i < 240 && !triggered; i++) harness.Simulation.Tick(1f / 120f);
+            Assert.That(triggered, Is.True);
+            first.ApplyDamage(first.MaxHealth, "test");
+            TickMany(harness.Simulation, 600, 1f / 120f);
+            Assert.That(other.Health, Is.EqualTo(otherBefore), "the guaranteed hit is not moved to a random droid");
+        }
+
+        [Test]
+        public void GuardianDrone_StealthIsAnObserverPropertyAndTheDeviceStillWorks()
+        {
+            foreach (var stealth in new[] { false, true })
+            {
+                var harness = CreateGuardianHarness(stealth);
+                var deployed = default(MineDeployedEvent);
+                harness.Simulation.MineDeployed += evt => deployed = evt;
+                Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                    Is.EqualTo(BattleFireOutcome.Fired));
+                TickMany(harness.Simulation, 240, 1f / 120f);
+                Assert.That(deployed.Weapon, Is.Not.Null);
+                Assert.That(deployed.ConcealedFromEnemy, Is.EqualTo(stealth));
+                Assert.That(harness.Simulation.IsGuardianConcealedFrom(deployed.MineId, BattleTeamId.Opponent), Is.EqualTo(stealth));
+                Assert.That(harness.Simulation.IsGuardianConcealedFrom(deployed.MineId, BattleTeamId.Player), Is.False,
+                    "the owner always sees it");
+                harness.Simulation.EndActiveTurn();
+                var opponent = harness.State.GetUnit("opponent.test.01");
+                var near = new Vector2(-1.8f, 0f);
+                opponent.MoveTo(near);
+                harness.Motors[opponent.UnitId].Teleport(near);
+                var before = opponent.Health;
+                TickMany(harness.Simulation, 360, 1f / 120f);
+                Assert.That(opponent.Health, Is.LessThan(before), "a hidden drone still fires");
+            }
+        }
+
+        [Test]
+        public void GuardianDrone_AHostileMagnetInterceptsItsBulletInsteadOfTheGuaranteedHit()
+        {
+            var magnet = CreateWeapon("weapon.grounder", WeaponRole.DefensiveTool, damage: 0, impactRadius: 4f, ammo: 1);
+            var harness = CreateGuardianHarness(false, opponentWeapon: magnet);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 240, 1f / 120f);
+            harness.Simulation.EndActiveTurn();
+            var near = new Vector2(-1.2f, 0f);
+            opponent.MoveTo(near);
+            harness.Motors[opponent.UnitId].Teleport(near);
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.UtilityUsed), "the opponent sets its magnet first");
+            var before = opponent.Health;
+            harness.Simulation.EndActiveTurn();
+            TickMany(harness.Simulation, 600, 1f / 120f);
+            Assert.That(opponent.Health, Is.EqualTo(before), "the magnet took the bullet");
+        }
+
+        [Test]
+        public void GuardianDrone_HasOneStealthStepFourTwoFourPurchasesAndItsArt()
+        {
+            Assert.That(WeaponProgressionCatalog.TryGet("weapon.guardian-drone", out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 2, 4 }));
+            Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "stealth" }));
+            Assert.That(definition.GetSpecialPurchaseLimit(5), Is.EqualTo(1));
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/guardian_drone"), Is.Not.Null);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/guardian_drone_5A"), Is.Not.Null);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/mortira_shot"), Is.Not.Null);
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.guardian-drone");
+            var progress = new SaveWeaponProgressData { weaponId = weapon.WeaponId, rank = 6 };
+            progress.EnsureDefaults();
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "stealth" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, progress).GuardianStealth, Is.True);
+            Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, new SaveWeaponProgressData
+                { weaponId = weapon.WeaponId, rank = 5 }).GuardianStealth, Is.False);
+        }
+
         [Test]
         public void LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn()
         {

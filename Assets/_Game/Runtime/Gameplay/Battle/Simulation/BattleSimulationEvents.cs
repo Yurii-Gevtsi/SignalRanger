@@ -139,8 +139,10 @@ namespace Game.Gameplay.Battle.Simulation
 
     public readonly struct MineDeployedEvent
     {
-        public MineDeployedEvent(int mineId, Vector2 point, WeaponDefinition weapon, BattleTeamId team)
+        public MineDeployedEvent(int mineId, Vector2 point, WeaponDefinition weapon, BattleTeamId team,
+            bool concealedFromEnemy = false)
         {
+            ConcealedFromEnemy = concealedFromEnemy;
             MineId = mineId;
             Point = point;
             Weapon = weapon;
@@ -151,6 +153,8 @@ namespace Game.Gameplay.Battle.Simulation
         public Vector2 Point { get; }
         public WeaponDefinition Weapon { get; }
         public BattleTeamId Team { get; }
+        /// <summary>Observer-side camouflage: the owner still sees the device, the enemy does not.</summary>
+        public bool ConcealedFromEnemy { get; }
     }
 
     public readonly struct GrounderDeployedEvent
