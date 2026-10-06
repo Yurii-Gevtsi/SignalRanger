@@ -5,6 +5,15 @@ using UnityEngine;
 
 namespace Game.Gameplay.Battle.Weapons
 {
+    /// <summary>The element a spider mine's blast applies after the first feature is bought.</summary>
+    public enum SpiderElement
+    {
+        None = 0,
+        Cold = 1,
+        Fire = 2,
+        Poison = 3
+    }
+
     /// <summary>
     /// Battle-only result of the player's saved workshop choice. It never mutates
     /// the shared base weapon definition, so opponents keep their own balance.
@@ -66,8 +75,10 @@ namespace Game.Gameplay.Battle.Weapons
             int railPierceSteps = 0,
             bool guardianStealth = false,
             bool harpoonImpactPull = false,
-            bool harpoonDoubleGrab = false)
+            bool harpoonDoubleGrab = false,
+            SpiderElement spiderElement = SpiderElement.None)
         {
+            SpiderElement = spiderElement;
             HarpoonImpactPull = harpoonImpactPull;
             HarpoonDoubleGrab = harpoonDoubleGrab;
             GuardianStealth = guardianStealth;
@@ -178,6 +189,7 @@ namespace Game.Gameplay.Battle.Weapons
         public bool TeleportEarlyTrigger { get; }
         public int RailPierceSteps { get; }
         public bool GuardianStealth { get; }
+        public SpiderElement SpiderElement { get; }
         public bool HarpoonImpactPull { get; }
         public bool HarpoonDoubleGrab { get; }
 
@@ -200,6 +212,7 @@ namespace Game.Gameplay.Battle.Weapons
         private const string RailRifleWeaponId = "weapon.rail-rifle";
         private const string GuardianDroneWeaponId = "weapon.guardian-drone";
         private const string ElectricHarpoonWeaponId = "weapon.electric-harpoon";
+        private const string SpiderMineWeaponId = "weapon.spider-mine";
         private const string MissileWeaponId = "weapon.missle";
         private const string ToxicWeaponId = "weapon.toxic";
         private const string FireGunWeaponId = "weapon.fire-gun";
@@ -258,6 +271,14 @@ namespace Game.Gameplay.Battle.Weapons
                             mortarCascadeCount: 2 + Mathf.Clamp(firstSteps - 1, 0, 4));
                     case StickyGrenadeWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, stickyToxicRelease: true);
+                    case SpiderMineWeaponId:
+                        return new WeaponEvolutionProfile(1, 0f, 1f, spiderElement: firstSpecial.Id switch
+                        {
+                            "spider-freeze" => SpiderElement.Cold,
+                            "spider-burn" => SpiderElement.Fire,
+                            "spider-poison" => SpiderElement.Poison,
+                            _ => SpiderElement.None
+                        });
                     case ElectricHarpoonWeaponId:
                         // impact_pull (rank 5) gives the final throw; double_grab (rank 10) a second target.
                         return new WeaponEvolutionProfile(1, 0f, 1f,

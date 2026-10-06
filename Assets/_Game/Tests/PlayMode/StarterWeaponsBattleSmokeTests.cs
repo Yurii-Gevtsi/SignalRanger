@@ -546,6 +546,53 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator SpiderMine_ProductionSceneAnimatesTheBaseOrThePurchasedBodyAndItBlasts(
+            [Values(false, true)] bool purchased)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.spider-mine", rank = purchased ? 6 : 1 };
+            progress.EnsureDefaults();
+            if (purchased)
+            {
+                for (var rank = 2; rank <= 5; rank++)
+                    progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Core });
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "spider-burn" });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            }
+            WeaponProgressionBridge.Resolver = id => id == "weapon.spider-mine" ? progress : null;
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.spider-mine" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.spider-mine") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            Invoke(controller, "Fire");
+            var spider = GameObject.Find("Mine Armed");
+            Assert.That(spider, Is.Not.Null, "the crawler is shown where it was set up");
+            var animator = spider.GetComponent<WeaponProjectileSpriteAnimator>();
+            Assert.That(animator, Is.Not.Null, "it is animated with its four frames");
+            yield return null;
+            var first = spider.GetComponent<SpriteRenderer>().sprite;
+            var prefix = purchased ? "spider_mine_5A_frame_" : "spider_mine_frame_";
+            Assert.That(first, Is.Not.Null);
+            Assert.That(first.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/" + prefix + "00")));
+            var start = spider.transform.position;
+            for (var frame = 0; frame < 20; frame++)
+            {
+                for (var tick = 0; tick < 12; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(Vector2.Distance(start, spider.transform.position), Is.GreaterThan(0.2f), "it crawls");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {

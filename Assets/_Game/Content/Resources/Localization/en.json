@@ -344,6 +344,9 @@
     },
     "weaponEvolutionDescription": {
       "size-unlock": "Unlocks a maximum length 10% above the base. Four Radius upgrades add 10% each, up to +50%.",
+      "spider-burn": "The spider explodes with fire: hit droids burn for two of their turns, like from an incendiary grenade.",
+      "spider-freeze": "The spider explodes with cold: hit droids are frozen for two of their turns, like from a cryo grenade.",
+      "spider-poison": "The spider explodes with poison: hit droids are poisoned for two of their turns, like from a toxic blast.",
       "target-pull": "Automatically pulls toward the target when approaching it.",
       "gravity-pull": "Pulls unsecured objects and enemies toward the explosion center.",
       "ally-safe": "The mine is not triggered by allies.",
@@ -358,7 +361,6 @@
       "movement-lock": "Completely blocks the target’s movement for the duration of the effect.",
       "impact-pull": "Deals strong knockback along with damage after pulling the target.",
       "double-grab": "Can grab and pull two nearby targets.",
-      "element-choice": "The chosen effect freezes, ignites, or poisons the target for 1 turn on explosion.",
       "full-freeze": "Blocks the target’s movement for 1 turn.",
       "cold-bonus": "Cryo weapons deal 25% more damage while the target is frozen.",
       "movement-lock-burn": "Burning blocks the target’s movement for 1 turn.",

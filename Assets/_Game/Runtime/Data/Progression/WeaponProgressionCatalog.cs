@@ -613,7 +613,8 @@ namespace Game.Data.Progression
             Catalog("weapon.force-field", 42, 0, false, 4, 0, 0, 4),
             Catalog("weapon.boost", 6, 0, false, 0, 0, 4, 4),
             Catalog("weapon.sky-hook", 9, 0, false, 4, 0, 0, 0),
-            Catalog("weapon.spider-mine", 12, 0, false, 4, 0, 2, 4, 4, 0, "element-choice"),
+            Catalog("weapon.spider-mine", 12, 0, false, 4, 0, 2, 4, 4, 0, "spider-freeze", string.Empty,
+                string.Empty, string.Empty, "spider-burn", "spider-poison"),
             Catalog("weapon.virus", 25, 0, false, 4, 0, 0, 0),
             Catalog("weapon.bomber", 30, 0, false, 4, 0, 0, 4),
             Catalog("weapon.ufo-carrier", 30, 0, false, 0, 0, 0, 4),
@@ -660,7 +661,9 @@ namespace Game.Data.Progression
             string special5A = "",
             string special5B = "",
             string special10A = "",
-            string special10B = "")
+            string special10B = "",
+            string special5C = "",
+            string special5D = "")
         {
             var nodes = new List<WeaponUpgradeNodeDefinition>();
             if (special5Steps > 0)
@@ -669,6 +672,17 @@ namespace Game.Data.Progression
                 if (!string.IsNullOrWhiteSpace(special5B))
                 {
                     nodes.Add(Node(5, WeaponUpgradeBranch.B, WeaponUpgradeStat.None, 0, special5B));
+                }
+
+                // More first-feature options (the spider's three elements) share the evolved skin of branch A.
+                if (!string.IsNullOrWhiteSpace(special5C))
+                {
+                    nodes.Add(Node(5, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0, special5C));
+                }
+
+                if (!string.IsNullOrWhiteSpace(special5D))
+                {
+                    nodes.Add(Node(5, WeaponUpgradeBranch.A, WeaponUpgradeStat.None, 0, special5D));
                 }
             }
 

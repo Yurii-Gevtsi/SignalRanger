@@ -3335,6 +3335,155 @@ namespace Game.Tests.EditMode.Gameplay
                 Is.EqualTo(4));
         }
 
+        private static SaveWeaponProgressData CreateSpiderProgress(string optionId, int steps = 1)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.spider-mine", rank = 5 + steps };
+            progress.EnsureDefaults();
+            for (var rank = 2; rank <= 5; rank++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Core });
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = optionId });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = steps });
+            return progress;
+        }
+
+        private static Harness CreateSpiderHarness(Vector2 enemy, SaveWeaponProgressData progress = null, Vector2? ally = null)
+        {
+            var spider = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.spider-mine");
+            var harness = CreateHarness(spider, playerWeaponProgress: progress, secondPlayerPosition: ally);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            // A droid standing on the ground of the test arena (surface at y = -1, half body height 0.5).
+            var standing = new Vector2(enemy.x, -0.46f);
+            opponent.MoveTo(standing);
+            harness.Motors[opponent.UnitId].Teleport(standing);
+            return harness;
+        }
+
+        [Test]
+        public void SpiderMine_CrawlsAheadAttachesToTheEnemyAndBlastsAfterTheShortFuseWithoutHurtingAllies()
+        {
+            var harness = CreateSpiderHarness(new Vector2(-1.2f, 0f), ally: new Vector2(-2.3f, 0f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var ally = harness.State.GetUnit("player.test.02");
+            var triggeredAt = -1f;
+            var blastAt = -1f;
+            var elapsed = 0f;
+            harness.Simulation.MineTriggered += _ => triggeredAt = elapsed;
+            harness.Simulation.ProjectileExploded += (_, _) => blastAt = elapsed;
+            var deployed = 0;
+            harness.Simulation.MineDeployed += _ => deployed++;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "no aim needed");
+            Assert.That(deployed, Is.EqualTo(1));
+            Assert.That(harness.State.Turn.ActionSpent, Is.False, "setting it up does not spend the action");
+            for (var i = 0; i < 480; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+                elapsed += 1f / 120f;
+            }
+
+            Assert.That(triggeredAt, Is.EqualTo(0.7f).Within(0.2f), "it crawled about a second and attached");
+            Assert.That(blastAt - triggeredAt, Is.EqualTo(1.5f).Within(0.1f), "short fuse after attaching");
+            Assert.That(enemy.Health, Is.EqualTo(enemy.MaxHealth - 45), "the blast hurts the attached enemy");
+            Assert.That(ally.Health, Is.EqualTo(ally.MaxHealth), "allies are immune to the blast");
+            Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.False, "no element before the feature");
+            Assert.That(harness.Simulation.IsUnitLavaBurning(enemy.UnitId), Is.False);
+            Assert.That(harness.Simulation.IsUnitPoisoned(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void SpiderMine_WithNoOneAheadCrawlsForFiveSecondsAndBlastsAnyway()
+        {
+            var harness = CreateSpiderHarness(new Vector2(9.5f, 0f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var blastAt = -1f;
+            var blastX = 0f;
+            var elapsed = 0f;
+            harness.Simulation.ProjectileExploded += (_, impact) => { blastAt = elapsed; blastX = impact.Point.x; };
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            for (var i = 0; i < 840; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+                elapsed += 1f / 120f;
+            }
+
+            Assert.That(blastAt, Is.EqualTo(5f).Within(0.3f), "the search lasts five seconds");
+            Assert.That(blastX, Is.EqualTo(-3f + 0.46f + 1.4f * 5f).Within(0.5f), "crawled at about 1.4 u/s");
+            Assert.That(enemy.Health, Is.EqualTo(enemy.MaxHealth));
+        }
+
+        [TestCase("spider-freeze", 1)]
+        [TestCase("spider-burn", 2)]
+        [TestCase("spider-poison", 3)]
+        public void SpiderMine_TheChosenElementRunsTheSharedTwoTurnCycleOfTheMatchingGrenade(string optionId, int element)
+        {
+            var harness = CreateSpiderHarness(new Vector2(-1.2f, 0f), CreateSpiderProgress(optionId));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var start = enemy.Health;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 480, 1f / 120f);
+            var direct = start - enemy.Health;
+            Assert.That(direct, Is.InRange(45, 55), "only the direct blast so far (base 45 plus the Core steps), no instant tick");
+            Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.EqualTo(element == 1));
+            Assert.That(harness.Simulation.IsUnitLavaBurning(enemy.UnitId), Is.EqualTo(element == 2));
+            Assert.That(harness.Simulation.IsUnitPoisoned(enemy.UnitId), Is.EqualTo(element == 3));
+
+            var afterBlast = enemy.Health;
+            var victimTurnEnds = 0;
+            for (var i = 0; i < 8 && victimTurnEnds < 3; i++)
+            {
+                var victimTurn = harness.State.Turn.ActiveTeam == BattleTeamId.Opponent;
+                harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+                if (victimTurn) victimTurnEnds++;
+            }
+
+            Assert.That(afterBlast - enemy.Health, Is.GreaterThan(0), "the status ticked");
+            Assert.That(afterBlast - enemy.Health, Is.LessThanOrEqualTo(direct), "never more than the direct blast");
+            if (element != 3)
+                Assert.That(afterBlast - enemy.Health, Is.EqualTo(2 * Mathf.Max(1, Mathf.RoundToInt(direct * 0.2f))),
+                    "two ticks of 20% of the direct blast");
+            Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.False, "the status is gone after two victim turns");
+            Assert.That(harness.Simulation.IsUnitLavaBurning(enemy.UnitId), Is.False);
+            Assert.That(harness.Simulation.IsUnitPoisoned(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void SpiderMine_RegistryOffersThreeElementsAtRankFiveAndPaysThemThroughTheService()
+        {
+            const string id = "weapon.spider-mine";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 2, 4 }));
+            Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id),
+                Is.EquivalentTo(new[] { "spider-freeze", "spider-burn", "spider-poison" }));
+            Assert.That(definition.GetEvolutionOptions(10), Is.Empty);
+            foreach (var art in new[] { "spider_mine", "spider_mine_5A", "spider_mine_frame_00", "spider_mine_frame_03",
+                "spider_mine_5A_frame_00", "spider_mine_5A_frame_03" })
+                Assert.That(Resources.Load<Texture2D>("UI/Weapons/" + art), Is.Not.Null, art);
+
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            foreach (var (option, element) in new[] { ("spider-freeze", SpiderElement.Cold),
+                ("spider-burn", SpiderElement.Fire), ("spider-poison", SpiderElement.Poison) })
+            {
+                var save = SaveData.CreateNew();
+                save.inventory.unlockedWeaponIds.Add(id);
+                var economy = new Game.Economy.EconomyService(save);
+                economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                    string.Empty, System.Guid.NewGuid().ToString());
+                save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+                var service = new Game.Progression.WeaponUpgradeService(save, economy);
+                Assert.That(service.TryPurchaseEvolution(id, 5, option).Applied, Is.False, "needs rank five");
+                for (var i = 0; i < 4; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+                Assert.That(service.TryPurchaseEvolution(id, 5, option).Applied, Is.True);
+                var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+                restored.EnsureDefaults();
+                var profile = WeaponEvolutionRuntimeResolver.Resolve(weapon, restored.inventory.GetOrCreateWeaponProgress(id));
+                Assert.That(profile.SpiderElement, Is.EqualTo(element), option);
+                Assert.That(WeaponEvolutionIconResolver.ResolveCurrentIconResource(weapon.IconId, definition,
+                    restored.inventory.GetOrCreateWeaponProgress(id)), Is.EqualTo("UI/Weapons/spider_mine_5A"), option);
+            }
+            Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, CreateSpiderProgress("spider-freeze", 4)).SpiderElement,
+                Is.EqualTo(SpiderElement.Cold), "the old extra steps keep the element");
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {

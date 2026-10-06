@@ -195,6 +195,9 @@ namespace Game.Gameplay.Battle.Simulation
         private const float SpiderAttachFuseSeconds = 1.5f;
         private const float SpiderCrawlSpeed = 1.4f;
         private const float SpiderAttachDistance = 0.34f;
+        // The crawler follows the ground: it climbs ledges up to this height and steps down up to the next.
+        private const float SpiderClimbHeight = 0.45f;
+        private const float SpiderDropHeight = 1.2f;
 
         private readonly BattleState _state;
         private readonly TurnService _turnService;
@@ -2860,12 +2863,18 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
-            var nextPosition = spider.Position + Vector2.right * (spider.CrawlDirection * SpiderCrawlSpeed * deltaTime);
-            if (!TryFindGroundObjectLanding(nextPosition, out var groundedPosition))
+            var nextX = spider.Position.x + spider.CrawlDirection * SpiderCrawlSpeed * deltaTime;
+            var scanTop = spider.Position.y + SpiderClimbHeight;
+            var hitsWall = _terrain != null && _terrain.Grid.IsSolidWorld(new Vector2(nextX, scanTop));
+            var groundedPosition = Vector2.zero;
+            var hasGround = !hitsWall && _terrain != null
+                && _terrain.Grid.TryFindSurfaceBelow(nextX, scanTop, SpiderClimbHeight + SpiderDropHeight, out var surfaceY)
+                && (groundedPosition = new Vector2(nextX, surfaceY + 0.04f)).x == nextX;
+            if (!hasGround)
             {
-                // No supporting surface means the crawler has crossed the map
-                // edge. It detonates at the point where it leaves the arena.
-                spider.MoveTo(nextPosition);
+                // A wall that is too tall, a drop that is too deep or the map edge: the crawler blows up
+                // at the point where it can go no further.
+                spider.MoveTo(hitsWall ? spider.Position : new Vector2(nextX, spider.Position.y));
                 spider.Triggered = true;
                 spider.TriggerTimeRemaining = 0f;
                 GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(spider.Id, spider.Position));
@@ -2887,11 +2896,19 @@ namespace Game.Gameplay.Battle.Simulation
         {
             target = null;
             var targetTeam = spider.TeamId == BattleTeamId.Player ? BattleTeamId.Opponent : BattleTeamId.Player;
-            var maxDistanceSquared = SpiderAttachDistance * SpiderAttachDistance;
             foreach (var candidate in _state.GetTeam(targetTeam).Units)
             {
-                if (candidate == null || candidate.IsDefeated
-                    || (candidate.Position - spider.Position).sqrMagnitude > maxDistanceSquared)
+                if (candidate == null || candidate.IsDefeated)
+                {
+                    continue;
+                }
+
+                // The crawler is on the ground and a standing droid's centre is half a body above it, so the
+                // droid is reached when it is level with the crawler horizontally and its body spans the height.
+                var halfHeight = GetMotor(candidate.UnitId)?.Profile.HalfHeight ?? ArchetypeFor(candidate.TeamId).BodyHeight * 0.5f;
+                var offset = candidate.Position - spider.Position;
+                if (Mathf.Abs(offset.x) > SpiderAttachDistance
+                    || offset.y < -0.1f || offset.y > halfHeight + 0.3f)
                 {
                     continue;
                 }
@@ -3827,10 +3844,19 @@ namespace Game.Gameplay.Battle.Simulation
                 // The purchased toxic release turns the blast into the shared poison cycle.
                 appliesPoison = ResolveEvolutionFor(sourceTeam, impactWeapon).StickyToxicRelease;
             }
+            var spiderElement = impactWeapon.WeaponId == SpiderMineWeaponId
+                ? ResolveEvolutionFor(sourceTeam, impactWeapon).SpiderElement
+                : SpiderElement.None;
+            if (spiderElement == SpiderElement.Poison)
+            {
+                // The chosen element runs the shared cycle of the matching grenade.
+                appliesPoison = true;
+                poisonEvolution = ResolveEvolutionFor(sourceTeam, impactWeapon);
+            }
             var appliesEmpStun = impactWeapon.WeaponId == EmpWeaponId;
             var empEvolution = appliesEmpStun ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
-            var appliesChill = impactWeapon.WeaponId == CryoGrenadeWeaponId;
-            var appliesFire = impactWeapon.WeaponId == IncendiaryGrenadeWeaponId;
+            var appliesChill = impactWeapon.WeaponId == CryoGrenadeWeaponId || spiderElement == SpiderElement.Cold;
+            var appliesFire = impactWeapon.WeaponId == IncendiaryGrenadeWeaponId || spiderElement == SpiderElement.Fire;
             var appliesElectric = impactWeapon.WeaponId == EmpWeaponId;
             var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId;
             var freezeEvolution = appliesFreeze ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
