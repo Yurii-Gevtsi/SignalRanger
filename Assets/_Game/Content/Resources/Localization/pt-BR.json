@@ -263,7 +263,7 @@
       "weapon.electric-harpoon": "Prende um alvo com um cabo eletrificado para danificá-lo e puxá-lo.",
       "weapon.swap-jump": "Teletransporta você e troca sua posição com um alvo no ponto de pouso.",
       "weapon.grounder": "Atrai apenas projéteis físicos e metálicos inimigos. Eles explodem ao atingir o ímã e o danificam. Duração básica: 2 turnos do adversário.",
-      "weapon.force-field": "Projeta um campo protetor que protege uma área por um curto período de tempo.",
+      "weapon.force-field": "Absorve completamente apenas ataques de energia inimigos: as cargas desaparecem no limite do campo e os raios são interrompidos. Não detém projéteis físicos. Duração básica: 2 turnos do adversário.",
       "weapon.boost": "Impulsiona seu andróide pelo ar para cruzar lacunas perigosas rapidamente.",
       "weapon.sky-hook": "Após ser colocado, voa verticalmente através de obstáculos e pode pegar um inimigo ao contato.",
       "weapon.spider-mine": "Uma mina rastejante que explode ao encontrar um inimigo.",

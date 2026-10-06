@@ -55,6 +55,7 @@ namespace Game.Gameplay.Battle.Simulation
         private const string TeleportWeaponId = "weapon.teleport";
         private const string SwapJumpWeaponId = "weapon.swap-jump";
         private const string GrounderWeaponId = "weapon.grounder";
+        private const string ForceFieldWeaponId = "weapon.force-field";
         private const int GrounderBaseHealth = 45;
         private const string GrenadeWeaponId = "weapon.granata";
         private const string IonShotgunWeaponId = "weapon.ion-shotgun";
@@ -209,6 +210,7 @@ namespace Game.Gameplay.Battle.Simulation
         public Vector2 TitaniumBarrierBaseSize { get; private set; }
         private readonly List<ActiveMine> _activeMines = new();
         private readonly List<ActiveGrounder> _activeGrounders = new();
+        private readonly List<ActiveForceField> _activeForceFields = new();
         private readonly List<ActiveLaserFenceNode> _activeLaserFenceNodes = new();
         private readonly HashSet<ulong> _spentLaserFenceLinks = new();
         private readonly List<ActiveCharge> _activeCharges = new();
@@ -358,6 +360,10 @@ namespace Game.Gameplay.Battle.Simulation
         public event Action<MineDeployedEvent> MineDeployed;
         public event Action<GrounderDeployedEvent> GrounderDeployed;
         public event Action<int> GrounderRemoved;
+        public event Action<ForceFieldDeployedEvent> ForceFieldDeployed;
+        public event Action<int> ForceFieldRemoved;
+        /// <summary>A hostile energy carrier or beam was absorbed: field id and the absorption point.</summary>
+        public event Action<int, Vector2> ForceFieldAbsorbed;
         public event Action<LaserFenceNodeDeployedEvent> LaserFenceNodeDeployed;
         public event Action<int> MineTriggered;
         public event Action<ChargeDeployedEvent> ChargeDeployed;
@@ -481,6 +487,8 @@ namespace Game.Gameplay.Battle.Simulation
         /// their distinct combat action exists. A false action can heal, teleport,
         /// or explode when the weapon's specification calls for something else.
         /// </summary>
+        public int ActiveForceFieldCount => _activeForceFields.Count;
+
         public static bool IsBattleMechanicAvailable(WeaponDefinition weapon)
         {
             if (weapon == null)
@@ -491,7 +499,6 @@ namespace Game.Gameplay.Battle.Simulation
             return weapon.WeaponId switch
             {
                 "weapon.turn-transfer"
-                    or "weapon.force-field"
                     or "weapon.boost" or "weapon.sky-hook" or "weapon.virus"
                     or "weapon.bomber" or "weapon.ufo-carrier" or "weapon.self-destruct"
                     or "weapon.nuclear-charge" => false,
@@ -760,6 +767,11 @@ namespace Game.Gameplay.Battle.Simulation
             if (weapon.WeaponId == GrounderWeaponId)
             {
                 return DeployGrounder(unit, activeInventory, weapon);
+            }
+
+            if (weapon.WeaponId == ForceFieldWeaponId)
+            {
+                return DeployForceField(unit, activeInventory, weapon);
             }
 
             if (weapon.WeaponId == SpiderMineWeaponId)
@@ -1938,6 +1950,35 @@ namespace Game.Gameplay.Battle.Simulation
             return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, position);
         }
 
+        private BattleFireResult DeployForceField(
+            BattleUnitState unit,
+            WeaponInventoryRuntime inventory,
+            WeaponDefinition weapon)
+        {
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            // A sphere centred on the droid: the shared nearby distance N0, +10% of it per Radius purchase.
+            var progression = ProgressionFor(unit.TeamId);
+            var coreUpgrades = Mathf.Clamp(progression.ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Core), 0, 4);
+            var radiusUpgrades = Mathf.Clamp(progression.ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Radius), 0, 4);
+            var field = new ActiveForceField(
+                ++_nextProjectileId, unit.TeamId, unit.Position, weapon,
+                remainingTurns: 2 + coreUpgrades,
+                radius: weapon.ImpactRadius * (1f + radiusUpgrades * 0.10f));
+            _activeForceFields.Add(field);
+            ForceFieldDeployed?.Invoke(new ForceFieldDeployedEvent(
+                field.Id, field.Position, field.Radius, weapon, unit.TeamId));
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = false;
+            ShotFired?.Invoke(unit.TeamId, weapon, true);
+            _turnService.SpendAction(_state);
+            AdvanceTurnNow(TurnAdvanceReason.InstantActionCompleted);
+            return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, unit.Position);
+        }
+
         private BattleFireResult DeployLaserFenceNode(
             BattleUnitState unit,
             WeaponInventoryRuntime inventory,
@@ -2127,6 +2168,8 @@ namespace Game.Gameplay.Battle.Simulation
             var rangeUpgrades = ProgressionFor(unit.TeamId).ResolveUpgradeCount(
                 weapon.WeaponId, WeaponUpgradePath.Radius);
             var drillRange = WeaponUpgradeChoiceResolver.ResolveDrillLaserRange(rangeUpgrades);
+            // A beam is cut at the boundary of a hostile force field.
+            drillRange = ClipBeamAtHostileForceFields(unit.TeamId, aim.Origin, direction, drillRange);
             _activeShotWeapon = weapon;
             _activeShotEndsTurn = true;
             _turnService.SpendAction(_state);
@@ -5243,6 +5286,15 @@ namespace Game.Gameplay.Battle.Simulation
                 {
                     position += step;
 
+                    if (TryFindForceFieldForProjectile(projectile, projectileWeapon, position, out var forceField))
+                    {
+                        // Absorbed whole: no blast, no damage, no status.
+                        projectile.MoveTo(position);
+                        ForceFieldAbsorbed?.Invoke(forceField.Id, position);
+                        DiscardProjectile(i, projectile);
+                        break;
+                    }
+
                     if (TryFindGrounderForProjectile(projectile, projectileWeapon,
                             position, out var grounder)
                         && Vector2.Distance(position, grounder.Position)
@@ -6365,8 +6417,116 @@ namespace Game.Gameplay.Battle.Simulation
             GrounderRemoved?.Invoke(grounder.Id);
         }
 
+        private static bool IsForceFieldEnergyCarrier(WeaponDefinition weapon)
+        {
+            // The carrier decides the group, not the weapon alone; these weapons fly an energy charge.
+            return weapon?.WeaponId is "weapon.impulse" or "weapon.emp" or "weapon.freeze"
+                or "weapon.fire-gun" or "weapon.toxic";
+        }
+
+        private bool TryFindForceFieldForProjectile(
+            SimProjectile projectile, WeaponDefinition weapon, Vector2 samplePosition, out ActiveForceField selected)
+        {
+            selected = null;
+            if (_activeForceFields.Count == 0 || !IsForceFieldEnergyCarrier(weapon))
+            {
+                return false;
+            }
+
+            var projectileTeam = ResolveTeamForOwner(projectile.OwnerUnitId);
+            var nearestDistance = float.PositiveInfinity;
+            foreach (var field in _activeForceFields)
+            {
+                if (field.TeamId == projectileTeam)
+                {
+                    continue;
+                }
+
+                var distance = Vector2.Distance(samplePosition, field.Position);
+                if (distance > field.Radius || distance >= nearestDistance)
+                {
+                    continue;
+                }
+
+                selected = field;
+                nearestDistance = distance;
+            }
+
+            return selected != null;
+        }
+
+        /// <summary>
+        /// Shortens a beam so that it ends where it first enters a hostile force field. A beam that
+        /// starts inside a field is not cut by that field.
+        /// </summary>
+        private float ClipBeamAtHostileForceFields(
+            BattleTeamId ownerTeam, Vector2 origin, Vector2 direction, float range)
+        {
+            var clipped = range;
+            ActiveForceField absorbing = null;
+            foreach (var field in _activeForceFields)
+            {
+                if (field.TeamId == ownerTeam)
+                {
+                    continue;
+                }
+
+                var toCenter = field.Position - origin;
+                if (toCenter.magnitude <= field.Radius)
+                {
+                    continue;
+                }
+
+                var along = Vector2.Dot(toCenter, direction);
+                var perpendicularSquared = toCenter.sqrMagnitude - along * along;
+                var discriminant = field.Radius * field.Radius - perpendicularSquared;
+                if (discriminant < 0f)
+                {
+                    continue;
+                }
+
+                var entry = along - Mathf.Sqrt(discriminant);
+                if (entry <= 0f || entry >= clipped)
+                {
+                    continue;
+                }
+
+                clipped = entry;
+                absorbing = field;
+            }
+
+            if (absorbing != null)
+            {
+                ForceFieldAbsorbed?.Invoke(absorbing.Id, origin + direction * clipped);
+            }
+
+            return clipped;
+        }
+
+        private void ExpireForceFieldsForEndingTurn()
+        {
+            for (var index = _activeForceFields.Count - 1; index >= 0; index--)
+            {
+                var field = _activeForceFields[index];
+                if (field.TeamId == _state.Turn.ActiveTeam)
+                {
+                    continue;
+                }
+
+                field.RemainingTurns--;
+                if (field.RemainingTurns > 0)
+                {
+                    continue;
+                }
+
+                _activeForceFields.RemoveAt(index);
+                ForceFieldRemoved?.Invoke(field.Id);
+            }
+        }
+
         private void ExpireGroundersForEndingTurn()
         {
+            ExpireForceFieldsForEndingTurn();
             for (var index = _activeGrounders.Count - 1; index >= 0; index--)
             {
                 var grounder = _activeGrounders[index];
@@ -6725,6 +6885,27 @@ namespace Game.Gameplay.Battle.Simulation
             public string OwnerUnitId { get; }
             public WeaponDefinition Weapon { get; }
             public Vector2 Target { get; }
+        }
+
+        private sealed class ActiveForceField
+        {
+            public ActiveForceField(int id, BattleTeamId teamId, Vector2 position,
+                WeaponDefinition weapon, int remainingTurns, float radius)
+            {
+                Id = id;
+                TeamId = teamId;
+                Position = position;
+                Weapon = weapon;
+                RemainingTurns = remainingTurns;
+                Radius = radius;
+            }
+
+            public int Id { get; }
+            public BattleTeamId TeamId { get; }
+            public Vector2 Position { get; }
+            public WeaponDefinition Weapon { get; }
+            public int RemainingTurns { get; set; }
+            public float Radius { get; }
         }
 
         private sealed class ActiveGrounder

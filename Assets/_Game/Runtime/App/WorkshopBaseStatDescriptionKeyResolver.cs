@@ -43,7 +43,8 @@ namespace Game.App
         {
             return path switch
             {
-                WeaponUpgradePath.Core when weaponId == "weapon.grounder" => "architect.detail.core.grounder",
+                WeaponUpgradePath.Core when weaponId == "weapon.grounder" || weaponId == "weapon.force-field"
+                    => "architect.detail.core.grounder",
                 WeaponUpgradePath.Core when weaponId == "weapon.heal" => "architect.detail.core.repairKit",
                 WeaponUpgradePath.Core => "architect.detail.coreDescription",
                 WeaponUpgradePath.Aim => "architect.detail.aimDescription",

@@ -263,7 +263,7 @@
       "weapon.electric-harpoon": "Engancha un objetivo con un cable electrificado para dañarlo y tirar de él.",
       "weapon.swap-jump": "Te teletransporta e intercambia tu posición con un objetivo en el punto de aterrizaje.",
       "weapon.grounder": "Atrae solo proyectiles físicos y metálicos enemigos. Explotan contra el imán y lo dañan. Duración base: 2 turnos del rival.",
-      "weapon.force-field": "Proyecta un campo protector que protege un área por un corto tiempo.",
+      "weapon.force-field": "Absorbe por completo solo los ataques de energía enemigos: las cargas desaparecen en el límite del campo y los rayos se cortan. No detiene los proyectiles físicos. Duración base: 2 turnos del rival.",
       "weapon.boost": "Impulsa a tu droide por el aire para cruzar huecos peligrosos rápidamente.",
       "weapon.sky-hook": "Tras colocarse vuela verticalmente a través de obstáculos y puede recoger a un enemigo al contacto.",
       "weapon.spider-mine": "Una mina reptante que explota al encontrar un enemigo.",

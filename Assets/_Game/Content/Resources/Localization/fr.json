@@ -263,7 +263,7 @@
       "weapon.electric-harpoon": "Accroche une cible avec un câble électrifié pour l'endommager et la tirer.",
       "weapon.swap-jump": "Vous téléporte et échange votre position avec une cible au point d'atterrissage.",
       "weapon.grounder": "Attire uniquement les projectiles physiques et métalliques ennemis. Ils explosent contre l’aimant et l’endommagent. Durée de base : 2 tours adverses.",
-      "weapon.force-field": "Projette un champ de protection qui protège une zone pendant une courte période.",
+      "weapon.force-field": "Absorbe entièrement uniquement les attaques énergétiques ennemies : les charges disparaissent à la limite du champ et les faisceaux sont coupés. N’arrête pas les projectiles physiques. Durée de base : 2 tours adverses.",
       "weapon.boost": "Propulse votre droïde dans les airs pour franchir rapidement des brèches dangereuses.",
       "weapon.sky-hook": "Après installation, monte à la verticale à travers les obstacles et peut emporter un ennemi au contact.",
       "weapon.spider-mine": "Une mine rampante qui explose lorsqu’elle trouve un ennemi.",

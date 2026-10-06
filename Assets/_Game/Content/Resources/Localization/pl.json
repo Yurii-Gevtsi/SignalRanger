@@ -263,7 +263,7 @@
       "weapon.electric-harpoon": "Zahacza cel kablem pod napięciem, aby go uszkodzić i pociągnąć.",
       "weapon.swap-jump": "Teleportuje cię i zamienia twoją pozycję z celem w miejscu lądowania.",
       "weapon.grounder": "Przyciąga tylko wrogie pociski fizyczne i metalowe. Wybuchają przy magnesie i go uszkadzają. Podstawowy czas działania: 2 tury przeciwnika.",
-      "weapon.force-field": "Tworzy pole ochronne, które osłania obszar na krótki czas.",
+      "weapon.force-field": "Całkowicie pochłania tylko wrogie ataki energetyczne: ładunki znikają na granicy pola, a promienie zostają przerwane. Nie zatrzymuje pocisków fizycznych. Podstawowy czas działania: 2 tury przeciwnika.",
       "weapon.boost": "Wyrzuca twojego droida w powietrze, aby szybko pokonać niebezpieczne szczeliny.",
       "weapon.sky-hook": "Po rozstawieniu leci pionowo przez przeszkody i może podnieść wroga przy kontakcie.",
       "weapon.spider-mine": "Pełzająca mina, która wybucha po znalezieniu wroga.",

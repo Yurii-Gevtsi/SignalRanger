@@ -157,6 +157,25 @@ namespace Game.Gameplay.Battle.Simulation
         public bool ConcealedFromEnemy { get; }
     }
 
+    /// <summary>A force field was placed; the sphere is centred on the point with the given radius.</summary>
+    public readonly struct ForceFieldDeployedEvent
+    {
+        public ForceFieldDeployedEvent(int id, Vector2 point, float radius, WeaponDefinition weapon, BattleTeamId team)
+        {
+            Id = id;
+            Point = point;
+            Radius = radius;
+            Weapon = weapon;
+            Team = team;
+        }
+
+        public int Id { get; }
+        public Vector2 Point { get; }
+        public float Radius { get; }
+        public WeaponDefinition Weapon { get; }
+        public BattleTeamId Team { get; }
+    }
+
     public readonly struct GrounderDeployedEvent
     {
         public GrounderDeployedEvent(int id, Vector2 point, WeaponDefinition weapon, BattleTeamId team)

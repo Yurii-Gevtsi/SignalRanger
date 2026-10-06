@@ -264,7 +264,7 @@
       "weapon.electric-harpoon": "Captures a target with an electric cable, pulls it closer, and deals damage.",
       "weapon.swap-jump": "Teleports and swaps places with the target at the landing point.",
       "weapon.grounder": "Attracts only hostile physical and metal projectiles. They explode against the magnet and damage it. Base duration: 2 opposing turns.",
-      "weapon.force-field": "Creates a protective field that shields an area for a short time.",
+      "weapon.force-field": "Fully absorbs only hostile energy attacks: charges vanish at the field boundary and beams are cut off. Does not stop physical projectiles. Base duration: 2 opposing turns.",
       "weapon.boost": "Lets the droid fly for a short time.",
       "weapon.sky-hook": "After deployment, flies straight up through obstacles and can pick up an enemy on contact.",
       "weapon.spider-mine": "A crawling mine that explodes when it finds an enemy.",

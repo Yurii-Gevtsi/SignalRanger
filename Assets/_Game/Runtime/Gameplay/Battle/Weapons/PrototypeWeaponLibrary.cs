@@ -40,7 +40,7 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.electric-harpoon", WeaponRole.DirectProjectile, 40, 1.1f, 0.1f, 0f, 5f, 12f, 12f, 2, "electric_harpoon", "straight-long", "harpoon"),
                 Weapon("weapon.swap-jump", WeaponRole.MovementTool, 0, 1.4f, 0.1f, 1f, 5f, 5f, 14f, 1, "teleport_5_10_A", "arc-utility", "swap"),
                 Weapon("weapon.grounder", WeaponRole.DefensiveTool, 0, 1.4f, 0.1f, 0f, 5f, 4f, 8f, 1, "grounder", "ground", "grounder"),
-                Weapon("weapon.force-field", WeaponRole.DefensiveTool, 0, 1.8f, 0.1f, 0f, 6f, 4f, 8f, 1, "force_field", "ground", "shield"),
+                Weapon("weapon.force-field", WeaponRole.DefensiveTool, 0, SharedNearbyRadius, 0.1f, 0f, 6f, 4f, 8f, 1, "force_field", "ground", "shield"),
                 Weapon("weapon.boost", WeaponRole.MovementTool, 0, 0.1f, 0.08f, 0f, 6f, 1f, 1f, 2, "boost", "bonus", "boost"),
                 Weapon("weapon.sky-hook", WeaponRole.DirectProjectile, 46, 0.9f, 0.1f, 0f, 5f, 12f, 12f, 1, "sky_hook", "straight-long", "hook"),
                 Weapon("weapon.spider-mine", WeaponRole.ArcingExplosive, 45, 1.45f, 0.13f, 1.05f, 7f, 3f, 10f, 2, "spider_mine", "ground", "mine"),

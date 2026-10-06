@@ -320,7 +320,6 @@ namespace Game.Tests.EditMode.Gameplay
         {
             foreach (var (id, role) in new[]
             {
-                ("weapon.force-field", WeaponRole.DefensiveTool),
                 ("weapon.boost", WeaponRole.MovementTool)
             })
             {
@@ -2754,6 +2753,211 @@ namespace Game.Tests.EditMode.Gameplay
             var service = new Game.Progression.WeaponUpgradeService(save, economy);
             Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.False, "no Aim steps");
             Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.False, "one per battle: no Loadout steps");
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
+            }
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            var progress = restored.inventory.GetOrCreateWeaponProgress(id);
+            Assert.That(WeaponUpgradeChoiceResolver.Count(progress, WeaponUpgradePath.Core), Is.EqualTo(4));
+            Assert.That(WeaponUpgradeChoiceResolver.Count(progress, WeaponUpgradePath.Radius), Is.EqualTo(4));
+        }
+
+        private static SaveWeaponProgressData CreateForceFieldProgress(int coreSteps, int radiusSteps)
+        {
+            var progress = new SaveWeaponProgressData
+            {
+                weaponId = "weapon.force-field",
+                rank = 1 + coreSteps + radiusSteps
+            };
+            progress.EnsureDefaults();
+            var rank = 2;
+            for (var i = 0; i < coreSteps; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank++, path = (int)WeaponUpgradePath.Core });
+            for (var i = 0; i < radiusSteps; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank++, path = (int)WeaponUpgradePath.Radius });
+            return progress;
+        }
+
+        private static Harness CreateForceFieldHarness(string carrierWeaponId, SaveWeaponProgressData progress = null,
+            WeaponDefinition opponentOverride = null)
+        {
+            var field = CreateWeapon("weapon.force-field", WeaponRole.DefensiveTool, damage: 0, impactRadius: 1.4f, ammo: 1);
+            var carrier = opponentOverride ?? CreateWeapon(carrierWeaponId, WeaponRole.DirectProjectile,
+                damage: 24, impactRadius: 0.45f, gravityScale: 0f);
+            return CreateHarness(field, opponentWeapon: carrier, playerWeaponProgress: progress);
+        }
+
+        private static void PlaceForceField(Harness harness)
+        {
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.UtilityUsed));
+        }
+
+        [TestCase("weapon.impulse", true)]
+        [TestCase("weapon.emp", true)]
+        [TestCase("weapon.granata", false)]
+        [TestCase("weapon.missle", false)]
+        [TestCase("weapon.mortira", false)]
+        public void ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(
+            string carrierId, bool absorbed)
+        {
+            var harness = CreateForceFieldHarness(carrierId);
+            var absorbedAt = default(Vector2?);
+            var impacts = 0;
+            harness.Simulation.ForceFieldAbsorbed += (id, point) => absorbedAt = point;
+            harness.Simulation.ProjectileExploded += (id, impact) =>
+            {
+                if (impact.Damage > 0) impacts++;
+            };
+            PlaceForceField(harness);
+            var player = harness.State.GetUnit("player.test.01");
+            var shot = ProjectileDefinition.CreateRuntime("projectile." + carrierId, 0.1f, 0f, 3f, 24, 0.45f);
+            harness.Simulation.Spawn(new ProjectileSpawnRequest(
+                shot, "opponent.test.01", new Vector2(-8f, 0f), Vector2.right * 8f, 0.2f, Color.white));
+            TickMany(harness.Simulation, 240, 1f / 120f);
+
+            if (absorbed)
+            {
+                Assert.That(absorbedAt.HasValue, Is.True);
+                Assert.That(absorbedAt.Value.x, Is.EqualTo(player.Position.x - 1.4f).Within(0.25f), "stopped on the boundary");
+                Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+                Assert.That(impacts, Is.Zero, "no blast at all");
+                Assert.That(player.Health, Is.EqualTo(player.MaxHealth));
+            }
+            else
+            {
+                Assert.That(absorbedAt.HasValue, Is.False, "physical carriers are the magnet's business");
+                Assert.That(harness.Simulation.ProjectilesInFlight > 0 || impacts > 0 || player.Health < player.MaxHealth,
+                    Is.True, "the physical shot keeps flying or lands; the field never removes it");
+            }
+        }
+
+        [Test]
+        public void ForceField_IgnoresFriendlyEnergyAndKeepsAlreadyAppliedStatuses()
+        {
+            var harness = CreateForceFieldHarness("weapon.emp");
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var owner = harness.State.GetUnit("player.test.01");
+            var absorbedCount = 0;
+            harness.Simulation.ForceFieldAbsorbed += (_, _) => absorbedCount++;
+            PlaceForceField(harness);
+            var shot = ProjectileDefinition.CreateRuntime("projectile.weapon.emp", 0.1f, 0f, 3f, 24, 0.45f);
+            // The owner's own energy charge passes through its own field.
+            harness.Simulation.Spawn(new ProjectileSpawnRequest(
+                shot, owner.UnitId, owner.Position + new Vector2(0.4f, 0f), Vector2.right * 4f, 0.2f, Color.white));
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            Assert.That(absorbedCount, Is.Zero);
+            Assert.That(harness.Simulation.ActiveForceFieldCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ForceField_RadiusIsN0AndEveryRadiusPurchaseAddsTenPercentOfIt()
+        {
+            foreach (var (steps, expected) in new[] { (0, 1.4f), (4, 1.96f) })
+            {
+                var harness = CreateForceFieldHarness("weapon.impulse", CreateForceFieldProgress(0, steps));
+                var seen = 0f;
+                harness.Simulation.ForceFieldDeployed += evt => seen = evt.Radius;
+                var absorbedAt = default(Vector2?);
+                harness.Simulation.ForceFieldAbsorbed += (_, point) => absorbedAt = point;
+                PlaceForceField(harness);
+                Assert.That(seen, Is.EqualTo(expected).Within(0.001f));
+                var player = harness.State.GetUnit("player.test.01");
+                harness.Simulation.Spawn(new ProjectileSpawnRequest(
+                    ProjectileDefinition.CreateRuntime("projectile.weapon.impulse", 0.1f, 0f, 3f, 24, 0.45f),
+                    "opponent.test.01", new Vector2(-9f, 0f), Vector2.right * 8f, 0.2f, Color.white));
+                TickMany(harness.Simulation, 300, 1f / 120f);
+                Assert.That(absorbedAt.Value.x, Is.EqualTo(player.Position.x - expected).Within(0.25f));
+            }
+        }
+
+        [Test]
+        public void ForceField_LastsTwoEnemyTurnsAndEachCorePurchaseAddsOneUpToSix()
+        {
+            foreach (var (core, enemyTurns) in new[] { (0, 2), (4, 6) })
+            {
+                var harness = CreateForceFieldHarness("weapon.impulse", CreateForceFieldProgress(core, 0));
+                var removed = 0;
+                harness.Simulation.ForceFieldRemoved += _ => removed++;
+                PlaceForceField(harness);
+                Assert.That(harness.Simulation.ActiveForceFieldCount, Is.EqualTo(1));
+                for (var turn = 1; turn <= enemyTurns; turn++)
+                {
+                    harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // enemy turn ends
+                    Assert.That(removed, Is.EqualTo(turn == enemyTurns ? 1 : 0), $"core {core}, enemy turn {turn}");
+                    if (turn < enemyTurns) harness.Simulation.AdvanceTurnDueToNoUsableWeapon(); // our turn ends
+                }
+                Assert.That(harness.Simulation.ActiveForceFieldCount, Is.Zero);
+            }
+        }
+
+        [Test]
+        public void ForceField_IsOnePerBattleAndPlacingItHandsTheTurnOver()
+        {
+            var harness = CreateForceFieldHarness("weapon.impulse");
+            Assert.That(harness.Simulation.CanUsePlayerWeapon(harness.Simulation.ActiveInventory.Selected), Is.True);
+            PlaceForceField(harness);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.OutOfAmmo));
+        }
+
+        [Test]
+        public void ForceField_CutsAnEnergyBeamWhereItEntersAndNotABeamThatStartsInside()
+        {
+            var laser = CreateWeapon("weapon.bur", WeaponRole.ShortRangeBurst, damage: 18, impactRadius: 0.7f, ammo: -1);
+            var field = CreateWeapon("weapon.force-field", WeaponRole.DefensiveTool, damage: 0, impactRadius: 1.4f, ammo: 1);
+            var harness = CreateHarness(laser, opponentWeapon: field);
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            opponent.MoveTo(new Vector2(0f, 0f));
+            harness.Motors[opponent.UnitId].Teleport(opponent.Position);
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();            // the opponent acts first
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+
+            var range = -1f;
+            var cutAt = default(Vector2?);
+            harness.Simulation.LinearWeaponEffectStarted += evt => range = evt.Range;
+            harness.Simulation.ForceFieldAbsorbed += (_, point) => cutAt = point;
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 0f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(range, Is.EqualTo(1.6f).Within(0.02f), "x from -3 to the boundary at -1.4");
+            Assert.That(cutAt.Value.x, Is.EqualTo(-1.4f).Within(0.02f));
+        }
+
+        [Test]
+        public void ForceField_RegistryPaidCoreAndRadiusStepsLimitsDescriptionAndArtMatchTheCard()
+        {
+            const string id = "weapon.force-field";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 0, 4 }));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            Assert.That(weapon.AmmoCount, Is.EqualTo(1));
+            Assert.That(weapon.ImpactRadius, Is.EqualTo(PrototypeWeaponLibrary.SharedNearbyRadius), "the shared N0");
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/force_field"), Is.Not.Null);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/force_field_sphere"), Is.Not.Null);
+            Assert.That(Game.App.WorkshopBaseStatDescriptionKeyResolver.Resolve(WeaponUpgradePath.Core, id),
+                Is.EqualTo("architect.detail.core.grounder"));
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.False);
             for (var i = 0; i < 4; i++)
             {
                 Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);

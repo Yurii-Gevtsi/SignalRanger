@@ -151,6 +151,8 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Dictionary<int, GameObject> _projectileVisuals = new();
         private readonly Dictionary<int, GameObject> _mineVisuals = new();
         private readonly Dictionary<int, GameObject> _grounderVisuals = new();
+        private readonly Dictionary<int, GameObject> _forceFieldVisuals = new();
+        private readonly Dictionary<int, float> _forceFieldPulseUntil = new();
         private readonly Dictionary<int, (WeaponDefinition Weapon, BattleTeamId Team)> _mineOwners = new();
         private readonly Dictionary<int, LaserFenceNodeDeployedEvent> _laserFenceNodes = new();
         private readonly List<LineRenderer> _laserFenceLinks = new();
@@ -541,6 +543,7 @@ namespace Game.Gameplay.Battle.Assembly
             _duel?.Tick(Time.unscaledDeltaTime, _battleState.Turn.TurnNumber);
 
             _simulation.SetPlayerTurnTimerPaused(_firstBattleGuide != null && _firstBattleGuide.PausesPlayerTimer);
+            UpdateForceFieldPulses();
 
             if (_coachTimer > 0f && !_arsenalMenuOpen)
             {
@@ -777,6 +780,9 @@ namespace Game.Gameplay.Battle.Assembly
             simulation.MineTriggered += OnSimulationMineTriggered;
             simulation.GrounderDeployed += OnSimulationGrounderDeployed;
             simulation.GrounderRemoved += OnSimulationGrounderRemoved;
+            simulation.ForceFieldDeployed += OnSimulationForceFieldDeployed;
+            simulation.ForceFieldRemoved += OnSimulationForceFieldRemoved;
+            simulation.ForceFieldAbsorbed += OnSimulationForceFieldAbsorbed;
             simulation.LaserFenceNodeDeployed += OnSimulationLaserFenceNodeDeployed;
             simulation.ChargeDeployed += OnSimulationChargeDeployed;
             simulation.GroundObjectRepositioned += OnSimulationGroundObjectRepositioned;
@@ -1527,6 +1533,8 @@ namespace Game.Gameplay.Battle.Assembly
             _projectileVisuals.Clear();
             _mineVisuals.Clear();
             _grounderVisuals.Clear();
+            _forceFieldVisuals.Clear();
+            _forceFieldPulseUntil.Clear();
             _laserFenceNodes.Clear();
             _laserFenceLinks.Clear();
             _firePuddleVisuals.Clear();
@@ -2387,6 +2395,79 @@ namespace Game.Gameplay.Battle.Assembly
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = LoadWeaponIconSprite(grounder.Weapon?.IconId ?? "grounder");
             renderer.sortingOrder = 27;
+        }
+
+        private void OnSimulationForceFieldDeployed(ForceFieldDeployedEvent field)
+        {
+            var visual = new GameObject("Force Field Placed");
+            _arenaObjects.Add(visual);
+            _forceFieldVisuals[field.Id] = visual;
+            visual.transform.position = field.Point;
+            var renderer = visual.AddComponent<SpriteRenderer>();
+            renderer.sprite = LoadWeaponIconSprite("force_field_sphere");
+            renderer.sortingOrder = 26;
+            if (renderer.sprite != null)
+            {
+                // The sphere art spans the field's diameter.
+                visual.transform.localScale = Vector3.one * (field.Radius * 2f / renderer.sprite.bounds.size.x);
+            }
+        }
+
+        private void OnSimulationForceFieldRemoved(int fieldId)
+        {
+            _forceFieldPulseUntil.Remove(fieldId);
+            if (!_forceFieldVisuals.TryGetValue(fieldId, out var visual))
+            {
+                return;
+            }
+
+            _forceFieldVisuals.Remove(fieldId);
+            _arenaObjects.Remove(visual);
+            Destroy(visual);
+        }
+
+        private void OnSimulationForceFieldAbsorbed(int fieldId, Vector2 point)
+        {
+            _forceFieldPulseUntil[fieldId] = Time.time + 0.3f;
+            if (_forceFieldVisuals.TryGetValue(fieldId, out var visual) && visual != null
+                && visual.TryGetComponent<SpriteRenderer>(out var renderer))
+            {
+                renderer.color = new Color(0.7f, 0.95f, 1f, 1f);
+            }
+        }
+
+        private void UpdateForceFieldPulses()
+        {
+            if (_forceFieldPulseUntil.Count == 0)
+            {
+                return;
+            }
+
+            List<int> finished = null;
+            foreach (var pair in _forceFieldPulseUntil)
+            {
+                if (Time.time < pair.Value)
+                {
+                    continue;
+                }
+
+                (finished ??= new List<int>()).Add(pair.Key);
+            }
+
+            if (finished == null)
+            {
+                return;
+            }
+
+            foreach (var id in finished)
+            {
+                _forceFieldPulseUntil.Remove(id);
+                if (_forceFieldVisuals.TryGetValue(id, out var visual) && visual != null
+                    && visual.TryGetComponent<SpriteRenderer>(out var renderer))
+                {
+                    renderer.color = Color.white;
+                }
+            }
         }
 
         private void OnSimulationGrounderRemoved(int grounderId)

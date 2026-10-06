@@ -263,7 +263,7 @@
       "weapon.electric-harpoon": "Hedefe zarar vermek ve onu çekmek için elektrikli bir kabloya asılır.",
       "weapon.swap-jump": "Sizi ışınlar ve iniş noktasındaki bir hedefle konumunuzu değiştirir.",
       "weapon.grounder": "Yalnızca düşman fiziksel ve metal mermilerini çeker. Mermiler mıknatısa çarpınca patlar ve ona hasar verir. Temel süre: rakibin 2 turu.",
-      "weapon.force-field": "Bir alanı kısa süreliğine koruyan koruyucu bir alan yansıtır.",
+      "weapon.force-field": "Yalnızca düşman enerji saldırılarını tamamen emer: yükler alanın sınırında yok olur, ışınlar kesilir. Fiziksel mermileri durdurmaz. Temel süre: rakibin 2 turu.",
       "weapon.boost": "Tehlikeli boşlukları hızla aşmak için droidinizi havada ilerletir.",
       "weapon.sky-hook": "Yerleştirildikten sonra engellerden dikey olarak uçar ve temas halinde düşmanı yakalayabilir.",
       "weapon.spider-mine": "Düşman bulduğunda patlayan sürünen bir mayın.",

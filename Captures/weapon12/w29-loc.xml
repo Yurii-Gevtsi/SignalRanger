@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Passed" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0,3775693">
+  <test-suite type="TestSuite" id="1000" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="786" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.377569" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1906" name="Game.Tests.EditMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.EditMode.dll" runstate="Runnable" testcasecount="786" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.320859" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1907" name="Game" fullname="Game" runstate="Runnable" testcasecount="786" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.311358" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1908" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="786" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.302517" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1909" name="EditMode" fullname="Game.Tests.EditMode" runstate="Runnable" testcasecount="786" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.291590" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1913" name="Localization" fullname="Game.Tests.EditMode.Localization" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.279212" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1198" name="LocalizationCoverageTests" fullname="Game.Tests.EditMode.Localization.LocalizationCoverageTests" classname="Game.Tests.EditMode.Localization.LocalizationCoverageTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.276572" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1202" name="CampaignSectorAndPlanetNamesExistInEveryDictionary" fullname="Game.Tests.EditMode.Localization.LocalizationCoverageTests.CampaignSectorAndPlanetNamesExistInEveryDictionary" methodname="CampaignSectorAndPlanetNamesExistInEveryDictionary" classname="Game.Tests.EditMode.Localization.LocalizationCoverageTests" runstate="Runnable" seed="834476961" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.058683" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1199" name="EveryGameTextKeyExistsInEveryDictionary" fullname="Game.Tests.EditMode.Localization.LocalizationCoverageTests.EveryGameTextKeyExistsInEveryDictionary" methodname="EveryGameTextKeyExistsInEveryDictionary" classname="Game.Tests.EditMode.Localization.LocalizationCoverageTests" runstate="Runnable" seed="1454137848" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.036846" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1200" name="EveryLanguageCarriesTheSameKeysAsTheBaseDictionary" fullname="Game.Tests.EditMode.Localization.LocalizationCoverageTests.EveryLanguageCarriesTheSameKeysAsTheBaseDictionary" methodname="EveryLanguageCarriesTheSameKeysAsTheBaseDictionary" classname="Game.Tests.EditMode.Localization.LocalizationCoverageTests" runstate="Runnable" seed="1258038250" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.032782" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1204" name="EveryQuestAndMissionHasItsTextInEveryDictionary" fullname="Game.Tests.EditMode.Localization.LocalizationCoverageTests.EveryQuestAndMissionHasItsTextInEveryDictionary" methodname="EveryQuestAndMissionHasItsTextInEveryDictionary" classname="Game.Tests.EditMode.Localization.LocalizationCoverageTests" runstate="Runnable" seed="908499459" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.083013" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1201" name="NoDictionaryEntryIsLeftEmpty" fullname="Game.Tests.EditMode.Localization.LocalizationCoverageTests.NoDictionaryEntryIsLeftEmpty" methodname="NoDictionaryEntryIsLeftEmpty" classname="Game.Tests.EditMode.Localization.LocalizationCoverageTests" runstate="Runnable" seed="1146106675" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.031799" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1203" name="UkrainianDictionaryUsesStrictUtf8WithoutLossMarkers" fullname="Game.Tests.EditMode.Localization.LocalizationCoverageTests.UkrainianDictionaryUsesStrictUtf8WithoutLossMarkers" methodname="UkrainianDictionaryUsesStrictUtf8WithoutLossMarkers" classname="Game.Tests.EditMode.Localization.LocalizationCoverageTests" runstate="Runnable" seed="161391763" result="Passed" start-time="2026-10-06 17:49:03Z" end-time="2026-10-06 17:49:03Z" duration="0.002596" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

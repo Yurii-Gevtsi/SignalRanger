@@ -263,7 +263,7 @@
       "weapon.electric-harpoon": "Haken Sie ein Ziel mit einem stromführenden Kabel ein, um es zu beschädigen und zu ziehen.",
       "weapon.swap-jump": "Teleportiert Sie und tauscht Ihre Position mit einem Ziel am Landepunkt.",
       "weapon.grounder": "Zieht nur feindliche physische und metallische Geschosse an. Sie explodieren am Magneten und beschädigen ihn. Hält standardmäßig 2 gegnerische Züge.",
-      "weapon.force-field": "Projiziert ein Schutzfeld, das einen Bereich kurzzeitig abschirmt.",
+      "weapon.force-field": "Absorbiert nur feindliche Energieangriffe vollständig: Ladungen verschwinden an der Feldgrenze, Strahlen werden abgeschnitten. Physische Geschosse hält es nicht auf. Hält standardmäßig 2 gegnerische Züge.",
       "weapon.boost": "Treibt Ihren Droiden durch die Luft, um gefährliche Lücken schnell zu überwinden.",
       "weapon.sky-hook": "Fliegt nach dem Aufstellen senkrecht durch Hindernisse und kann bei Kontakt einen Gegner aufnehmen.",
       "weapon.spider-mine": "Eine kriechende Mine, die explodiert, wenn sie einen Gegner findet.",

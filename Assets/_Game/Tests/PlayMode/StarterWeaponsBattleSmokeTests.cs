@@ -403,6 +403,52 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator ForceField_ProductionSceneShowsTheSphereAbsorbsAnEnemyChargeAndRemovesItAfterTwoEnemyTurns()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.force-field" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.force-field") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            Invoke(controller, "Fire");
+            var placed = GameObject.Find("Force Field Placed");
+            Assert.That(placed, Is.Not.Null, "the sphere is shown where it was placed");
+            var renderer = placed.GetComponent<SpriteRenderer>();
+            Assert.That(renderer.sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/force_field_sphere")));
+            Assert.That(renderer.sprite.bounds.size.x * placed.transform.localScale.x,
+                Is.EqualTo(PrototypeWeaponLibrary.SharedNearbyRadius * 2f).Within(0.01f), "diameter = 2 x N0");
+            Assert.That(inventory.GetSelectedRemainingAmmo(), Is.Zero, "one per battle");
+
+            var enemy = Get<BattleState>(controller, "_battleState").GetTeam(BattleTeamId.Opponent).Units[0];
+            var spawned = false;
+            simulation.ProjectileSpawned += _ => spawned = true;
+            var field = placed.transform.position;
+            simulation.Spawn(new ProjectileSpawnRequest(
+                Game.Gameplay.Battle.Projectiles.ProjectileDefinition.CreateRuntime("projectile.weapon.impulse", 0.1f, 0f, 3f, 24, 0.45f),
+                enemy.UnitId, (Vector2)field + new Vector2(3.5f, 0f), Vector2.left * 8f, 0.2f, Color.white));
+            for (var tick = 0; tick < 240; tick++) simulation.Tick(1f / 120f);
+            Assert.That(spawned, Is.True);
+            Assert.That(simulation.ProjectilesInFlight, Is.Zero, "the charge was absorbed");
+            Assert.That(renderer.color, Is.Not.EqualTo(Color.white), "the sphere flashes on absorption");
+
+            for (var turnEnd = 0; turnEnd < 4 && GameObject.Find("Force Field Placed") != null; turnEnd++)
+            {
+                simulation.AdvanceTurnDueToNoUsableWeapon();
+                yield return null;
+            }
+            Assert.That(GameObject.Find("Force Field Placed"), Is.Null, "the sphere is gone after its two enemy turns");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {

@@ -610,7 +610,7 @@ namespace Game.Data.Progression
             Catalog("weapon.electric-harpoon", 20, 0, false, 4, 0, 2, 4, 1, 1, "impact-pull", string.Empty, "double-grab"),
             Catalog("weapon.swap-jump", 25, 0, false, 0, 4, 0, 4),
             Catalog("weapon.grounder", 30, 0, false, 4, 0, 0, 4),
-            Catalog("weapon.force-field", 42, 0, false, 0, 0, 0, 4),
+            Catalog("weapon.force-field", 42, 0, false, 4, 0, 0, 4),
             Catalog("weapon.boost", 6, 0, false, 0, 0, 4, 4),
             Catalog("weapon.sky-hook", 9, 0, false, 4, 0, 0, 0),
             Catalog("weapon.spider-mine", 12, 0, false, 4, 0, 2, 4, 4, 0, "element-choice"),
