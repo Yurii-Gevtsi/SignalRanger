@@ -222,6 +222,9 @@ namespace Game.Data.Progression
                 }
             }
             var baseOrdinal = 0;
+            var unrecordedSpecialRanks = progress.upgradeChoices?.Count > 0
+                ? GetSpecialPurchaseCount(progress, 5) + GetSpecialPurchaseCount(progress, 10)
+                : 0;
             for (var rank = 2; rank <= Math.Min(progress.rank, throughRank); rank++)
             {
                 if (TryGetRecordedPath(progress, rank, out var recordedPath))
@@ -261,6 +264,14 @@ namespace Game.Data.Progression
                 if (rank == 5 && Special5PurchaseCount > 0
                     || rank == 10 && Special10PurchaseCount > 0)
                 {
+                    continue;
+                }
+
+                // Explicit saves record every base purchase, so an unrecorded rank is a paid
+                // special step. It must not be mistaken for an unpaid base upgrade.
+                if (unrecordedSpecialRanks > 0)
+                {
+                    unrecordedSpecialRanks--;
                     continue;
                 }
 

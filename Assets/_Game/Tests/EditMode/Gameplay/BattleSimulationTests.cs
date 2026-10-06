@@ -2040,6 +2040,161 @@ namespace Game.Tests.EditMode.Gameplay
                 "arrival blasts a pocket so the body fits");
         }
 
+        private static SaveWeaponProgressData CreateTeleportProgress(bool earlyTrigger)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.teleport", rank = earlyTrigger ? 11 : 6 };
+            progress.EnsureDefaults();
+            var last = earlyTrigger ? 10 : 5;
+            for (var rank = 2; rank <= last; rank++)
+            {
+                if (rank == 6) continue; // rank six is the paid instant_touch step
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                    { rank = rank, path = (int)(rank % 2 == 0 ? WeaponUpgradePath.Aim : WeaponUpgradePath.Loadout) });
+            }
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "instant-touch" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            if (earlyTrigger)
+            {
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 10, optionId = "early-trigger" });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 10, purchaseCount = 1 });
+            }
+            return progress;
+        }
+
+        private static Harness CreateTeleportHarness(SaveWeaponProgressData progress, float gravity = 1f)
+        {
+            var sphere = CreateWeapon("weapon.teleport", WeaponRole.MovementTool, damage: 0, impactRadius: 2.5f,
+                ammo: 2, gravityScale: gravity, timeoutSeconds: 8f);
+            return CreateHarness(sphere, playerWeaponProgress: progress);
+        }
+
+        [Test]
+        public void TeleportSphere_BaseBouncesOnFirstContactWhileInstantTouchTeleportsAtOnce()
+        {
+            var baseHarness = CreateTeleportHarness(null);
+            Assert.That(baseHarness.Simulation.TryFire(new AimState(new Vector2(-3f, 1.5f), Vector2.down, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(baseHarness.Simulation, 30, 1f / 120f);
+            Assert.That(baseHarness.Simulation.ProjectilesInFlight, Is.EqualTo(1), "base sphere bounces on");
+
+            var harness = CreateTeleportHarness(CreateTeleportProgress(false));
+            var owner = harness.State.GetUnit("player.test.01");
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(1.5f, 1.5f), Vector2.down, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero, "first contact consumed the sphere");
+            Assert.That(owner.Position.x, Is.EqualTo(1.5f).Within(0.4f));
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(owner.Position), Is.False);
+        }
+
+        [Test]
+        public void TeleportSphere_InstantTouchOnACeilingLeavesTheDroidOnTheFreeSideAndItFalls()
+        {
+            var harness = CreateTeleportHarness(CreateTeleportProgress(false));
+            harness.Terrain.StampSolidRect(new Vector2(-3f, 3f), new Vector2(6f, 1f)); // underside at y = 2.5
+            var owner = harness.State.GetUnit("player.test.01");
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 1.4f), Vector2.up, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+            Assert.That(owner.Position.y, Is.GreaterThan(1.2f), "arrived at the ceiling contact");
+            Assert.That(owner.Position.y, Is.LessThan(2.5f), "free side below the ceiling, not on top");
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(owner.Position + Vector2.up * 0.5f), Is.False);
+            var startY = owner.Position.y;
+            TickMany(harness.Simulation, 360, 1f / 120f);
+            Assert.That(owner.Position.y, Is.LessThan(startY - 0.5f), "unsupported droid falls");
+        }
+
+        [Test]
+        public void TeleportSphere_InstantTouchOnAWallDoesNotJumpOntoTheObstacle()
+        {
+            var harness = CreateTeleportHarness(CreateTeleportProgress(false));
+            harness.Terrain.StampSolidRect(new Vector2(0.5f, 1f), new Vector2(1f, 4f)); // x 0..1, y -1..3
+            var owner = harness.State.GetUnit("player.test.01");
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0.5f), Vector2.right, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            Assert.That(owner.Position.x, Is.LessThan(0.1f), "free side of the wall");
+            Assert.That(owner.Position.x, Is.GreaterThan(-1.2f));
+            Assert.That(owner.Position.y, Is.LessThan(2f), "not carried to the top of the obstacle");
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(owner.Position), Is.False);
+        }
+
+        [Test]
+        public void TeleportSphere_EarlyTriggerSecondPressTeleportsToTheCurrentSpherePointWithoutASecondCharge()
+        {
+            var harness = CreateTeleportHarness(CreateTeleportProgress(true), gravity: 0f);
+            var owner = harness.State.GetUnit("player.test.01");
+            var aim = new AimState(new Vector2(-3f, 2.5f), Vector2.right, 12f, true);
+            Assert.That(harness.Simulation.CanTriggerTeleportEarly(), Is.False);
+            Assert.That(harness.Simulation.TryFire(aim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(harness.Simulation.CanTriggerTeleportEarly(), Is.True);
+            var spherePoint = harness.Simulation.Projectiles[0].Position;
+            var ammoBefore = harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo();
+
+            Assert.That(harness.Simulation.TryFire(aim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(Vector2.Distance(owner.Position, spherePoint), Is.LessThan(0.05f));
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+            Assert.That(harness.Simulation.CanTriggerTeleportEarly(), Is.False);
+            Assert.That(harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo(), Is.EqualTo(ammoBefore));
+            TickMany(harness.Simulation, 600, 1f / 120f);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+        }
+
+        [Test]
+        public void TeleportSphere_WithoutTheEarlyTriggerSecondPressIsBlockedAndContactStillWorks()
+        {
+            var harness = CreateTeleportHarness(CreateTeleportProgress(false), gravity: 0f);
+            var aim = new AimState(new Vector2(-3f, 2.5f), Vector2.right, 12f, true);
+            Assert.That(harness.Simulation.TryFire(aim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(harness.Simulation.CanTriggerTeleportEarly(), Is.False);
+            Assert.That(harness.Simulation.TryFire(aim).Outcome, Is.EqualTo(BattleFireOutcome.Blocked));
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void TeleportSphere_FeaturesAreBoughtThroughThePaidServiceKeepTheSphereBodyAndSurviveJson()
+        {
+            const string id = "weapon.teleport";
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            var progress = save.inventory.GetOrCreateWeaponProgress(id);
+            progress.blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False, "no Core steps");
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False, "no Radius steps");
+            Assert.That(service.TryPurchaseEvolution(id, 5, "instant-touch").Applied, Is.False, "needs rank five");
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.True);
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.True);
+            Assert.That(service.TryPurchaseEvolution(id, 10, "early-trigger").Applied, Is.False, "needs rank ten");
+            Assert.That(service.TryPurchaseEvolution(id, 5, "instant-touch").Applied, Is.True);
+            Assert.That(service.TryPurchaseEvolution(id, 5, "instant-touch").Applied, Is.False, "one step only");
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.True);
+            for (var i = 0; i < 2; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.True);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.False, "aim limit is four");
+            var early = service.TryPurchaseEvolution(id, 10, "early-trigger");
+            Assert.That(early.Applied, Is.True, $"rank={progress.rank} result={early.Rank} level={early.RequiredCommanderLevel} credits={early.Cost.Credits} bp={early.Cost.Blueprints} have={save.economy.softCurrency}/{progress.blueprints}");
+
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            var restoredProgress = restored.inventory.GetOrCreateWeaponProgress(id);
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            var profile = WeaponEvolutionRuntimeResolver.Resolve(weapon, restoredProgress);
+            Assert.That(profile.TeleportInstantTouch, Is.True);
+            Assert.That(profile.TeleportEarlyTrigger, Is.True);
+            Assert.That(profile.TeleportExchangesEnemy, Is.False, "no legacy exchange behaviour");
+
+            WeaponProgressionCatalog.TryGet(id, out var definition);
+            Assert.That(WeaponEvolutionIconResolver.ResolveCurrentIconResource(weapon.IconId, definition, restoredProgress),
+                Is.EqualTo("UI/Weapons/teleport"));
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/teleport"), Is.Not.Null);
+        }
+
         [Test]
         public void SwapJump_WithoutNearbyEnemy_RepositionsOwnerOnly()
         {

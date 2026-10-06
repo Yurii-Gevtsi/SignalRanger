@@ -19,6 +19,12 @@ namespace Game.Gameplay.Battle.Weapons
                 return string.Empty;
             }
 
+            // The teleport sphere keeps its own body: teleport_5_10_A belongs to the swap teleport.
+            if (iconId == "teleport")
+            {
+                return string.Empty;
+            }
+
             var branchCode = branch == WeaponUpgradeBranch.A ? "A" : "B";
             var canonicalSkin = ResolveCanonicalFirstSpecialSkin(iconId, branch);
             if (!string.IsNullOrWhiteSpace(canonicalSkin)

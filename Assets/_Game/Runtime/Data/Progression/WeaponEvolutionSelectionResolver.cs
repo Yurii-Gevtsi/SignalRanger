@@ -53,7 +53,10 @@ namespace Game.Data.Progression
 
             // Older profiles stored one branch for both milestones. Retain that
             // representation until the player makes a new independent choice.
-            var legacyBranch = progress == null ? WeaponUpgradeBranch.None : (WeaponUpgradeBranch)progress.branch;
+            // Once any independent choice exists the profile is modern: the legacy branch is only
+            // a mirror of the first purchase and must not count as a milestone-10 choice.
+            var isModern = progress?.evolutionChoices != null && progress.evolutionChoices.Count > 0;
+            var legacyBranch = progress == null || isModern ? WeaponUpgradeBranch.None : (WeaponUpgradeBranch)progress.branch;
             if (definition != null && legacyBranch != WeaponUpgradeBranch.None
                 && definition.TryGetNode(rank, legacyBranch, out var legacy)
                 && legacy.IsEvolution && !string.IsNullOrWhiteSpace(legacy.MechanicId))

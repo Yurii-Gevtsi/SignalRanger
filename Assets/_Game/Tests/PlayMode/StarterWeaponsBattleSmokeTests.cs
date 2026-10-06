@@ -273,6 +273,59 @@ namespace Game.Tests.PlayMode
             LogAssert.NoUnexpectedReceived();
         }
 
+        [UnityTest]
+        public IEnumerator TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt()
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.teleport", rank = 11 };
+            progress.EnsureDefaults();
+            for (var rank = 2; rank <= 10; rank++)
+            {
+                if (rank == 6) continue;
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                    { rank = rank, path = (int)(rank % 2 == 0 ? WeaponUpgradePath.Aim : WeaponUpgradePath.Loadout) });
+            }
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "instant-touch" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 10, optionId = "early-trigger" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 10, purchaseCount = 1 });
+            WeaponProgressionBridge.Resolver = id => id == "weapon.teleport" ? progress : null;
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.teleport" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.teleport") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var visuals = Get<Dictionary<int, GameObject>>(controller, "_projectileVisuals");
+            Texture shown = null;
+            simulation.ProjectileSpawned += projectile =>
+                shown = visuals[projectile.Id].GetComponentInChildren<SpriteRenderer>().sprite.texture;
+            var terrain = Get<BattleTerrain>(controller, "_battleTerrain");
+            Set(controller, "_aimState", new AimState(new Vector2(0f, terrain.Grid.WorldMaxY - 2f), Vector2.right, 12f, true));
+            Invoke(controller, "Fire");
+            Assert.That(simulation.ProjectilesInFlight, Is.EqualTo(1));
+            Assert.That(shown, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/teleport")),
+                "the purchased feature keeps the sphere body");
+            for (var tick = 0; tick < 6; tick++) simulation.Tick(1f / 120f);
+            Assert.That(simulation.CanTriggerTeleportEarly(), Is.True);
+            Assert.That(typeof(BattleSceneController).GetMethod("CanContinueMinePlacementInput", PrivateInstance)
+                    .Invoke(controller, null), Is.EqualTo(true),
+                "the Fire button stays usable for the second press");
+            var spawnedBeforeSecondPress = simulation.Projectiles.Count;
+            Invoke(controller, "Fire");
+            Assert.That(simulation.ProjectilesInFlight, Is.Zero,
+                "the second press consumed the sphere; before=" + spawnedBeforeSecondPress
+                + " now=" + string.Join(",", System.Linq.Enumerable.Select(simulation.Projectiles,
+                    p => p.Definition.ProjectileId + "#" + p.Id + "@" + p.Position))
+                + " early=" + simulation.CanTriggerTeleportEarly());
+            LogAssert.NoUnexpectedReceived();
+        }
+
         private static readonly int[] BarrierModes = { -1, 0, 4 };
 
         [UnityTest]

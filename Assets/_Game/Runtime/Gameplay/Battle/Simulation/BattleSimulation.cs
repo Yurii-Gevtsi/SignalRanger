@@ -589,6 +589,11 @@ namespace Game.Gameplay.Battle.Simulation
                 return new BattleFireResult(BattleFireOutcome.Fired, _state.Turn.ActiveTeam, _weaponsById[RopeWeaponId]);
             }
 
+            if (TryTriggerTeleportSphereEarly(out var earlyTeleportResult))
+            {
+                return earlyTeleportResult;
+            }
+
             var canQueuePlacementWhileProjectileIsInFlight = _state.Turn.ActiveTeam == BattleTeamId.Player
                 && ((_playerInventory.Selected?.WeaponId == MineWeaponId
                         && _minesDeployedThisTurn > 0
@@ -776,6 +781,13 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 _hoppingGrenadeProjectileId = _projectiles[_projectiles.Count - 1].Id;
             }
+            _teleportSphereProjectileId = -1;
+            if (weapon.WeaponId == TeleportWeaponId
+                && ResolveEvolutionFor(unit.TeamId, weapon).TeleportEarlyTrigger
+                && _projectiles.Count > projectilesBeforeFire)
+            {
+                _teleportSphereProjectileId = _projectiles[_projectiles.Count - 1].Id;
+            }
             ShotFired?.Invoke(unit.TeamId, weapon, _activeShotEndsTurn);
             return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon);
         }
@@ -803,6 +815,42 @@ namespace Game.Gameplay.Battle.Simulation
             ShotFired?.Invoke(unit.TeamId, weapon, true);
             AdvanceTurnNow(TurnAdvanceReason.InstantActionCompleted);
             return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon);
+        }
+
+        private int _teleportSphereProjectileId = -1;
+
+        /// <summary>
+        /// True while a thrown teleport sphere with the purchased early trigger is
+        /// still flying for the active unit: a second fire press detonates it.
+        /// </summary>
+        public bool CanTriggerTeleportEarly()
+        {
+            if (_teleportSphereProjectileId < 0 || Result.IsFinished)
+            {
+                return false;
+            }
+
+            var sphere = _projectiles.Find(value => value.Id == _teleportSphereProjectileId);
+            return sphere != null && sphere.OwnerUnitId == _state.Turn.ActiveUnitId;
+        }
+
+        private bool TryTriggerTeleportSphereEarly(out BattleFireResult result)
+        {
+            result = default;
+            if (!CanTriggerTeleportEarly())
+            {
+                return false;
+            }
+
+            var index = _projectiles.FindIndex(value => value.Id == _teleportSphereProjectileId);
+            var sphere = _projectiles[index];
+            var weapon = ResolveWeaponFromProjectileId(sphere.Definition.ProjectileId);
+            var team = _state.Turn.ActiveTeam;
+            _teleportSphereProjectileId = -1;
+            // The sphere is consumed where it is this frame; no further ammo is spent.
+            ResolveProjectileAt(index, sphere.Position);
+            result = new BattleFireResult(BattleFireOutcome.Fired, team, weapon, sphere.Position);
+            return true;
         }
 
         public bool CanContinueHoppingGrenade()
@@ -3072,6 +3120,20 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
+            if (impactWeapon.WeaponId == TeleportWeaponId && evolution.TeleportInstantTouch)
+            {
+                // The sphere's own point is kept: only a physical overlap of the body with
+                // the surface is resolved, by the smallest shift towards free space. A
+                // droid with nothing underneath then falls under normal gravity.
+                var freeCenter = ResolveFreeBodyCenter(impactPoint, owner.TeamId);
+                owner.MoveTo(freeCenter);
+                var arrivalMotor = GetMotor(owner.UnitId);
+                arrivalMotor?.Teleport(freeCenter);
+                arrivalMotor?.WakeIfUnsupported();
+                OwnerRepositioned?.Invoke(owner.UnitId);
+                return;
+            }
+
             var target = ResolveUnitLandingPosition(impactPoint, owner.TeamId);
             if (impactWeapon.Role == WeaponRole.MovementTool)
             {
@@ -3095,6 +3157,57 @@ namespace Game.Gameplay.Battle.Simulation
             owner.MoveTo(ResolveUnitLandingPosition(new Vector2(owner.Position.x + deltaX, target.y), owner.TeamId));
             GetMotor(owner.UnitId)?.Teleport(owner.Position);
             OwnerRepositioned?.Invoke(owner.UnitId);
+        }
+
+        private bool BodyOverlapsTerrain(Vector2 center, float halfWidth, float halfHeight)
+        {
+            if (_terrain == null)
+            {
+                return false;
+            }
+
+            for (var column = -1; column <= 1; column++)
+            {
+                for (var row = -2; row <= 2; row++)
+                {
+                    var sample = center + new Vector2(column * halfWidth, row * halfHeight * 0.5f);
+                    if (_terrain.Grid.IsSolidWorld(sample))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Smallest shift of a body centre that leaves the body clear of solid ground.
+        /// </summary>
+        private Vector2 ResolveFreeBodyCenter(Vector2 point, BattleTeamId teamId)
+        {
+            var halfHeight = ArchetypeFor(teamId).BodyHeight * 0.5f;
+            var halfWidth = _settings.UnitCollisionHalfWidth;
+            if (!BodyOverlapsTerrain(point, halfWidth, halfHeight))
+            {
+                return point;
+            }
+
+            const int directions = 24;
+            for (var radius = 0.04f; radius <= 3f; radius += 0.04f)
+            {
+                for (var direction = 0; direction < directions; direction++)
+                {
+                    var angle = direction * Mathf.PI * 2f / directions;
+                    var candidate = point + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+                    if (!BodyOverlapsTerrain(candidate, halfWidth, halfHeight))
+                    {
+                        return candidate;
+                    }
+                }
+            }
+
+            return point;
         }
 
         private Vector2 ResolveTeleportLanding(Vector2 impactPoint, BattleTeamId teamId)
@@ -4668,6 +4781,9 @@ namespace Game.Gameplay.Battle.Simulation
                     || grenadeEvolution.GrenadeSticks;
                 var isHoppingGrenade = projectileWeapon?.WeaponId == HoppingGrenadeWeaponId;
                 var isAttachmentDevice = IsAttachmentDevice(projectileWeapon);
+                var isInstantTouchTeleport = projectileWeapon?.WeaponId == TeleportWeaponId
+                    && ResolveEvolutionFor(ResolveTeamForOwner(projectile.OwnerUnitId), projectileWeapon)
+                        .TeleportInstantTouch;
 
                 if (projectile.IsRestingFuse)
                 {
@@ -4874,6 +4990,13 @@ namespace Game.Gameplay.Battle.Simulation
                             break;
                         }
 
+                        if (isInstantTouchTeleport)
+                        {
+                            // The first contact with anything triggers at the last free point.
+                            ResolveProjectileAt(i, position - step, hitTerrain: true);
+                            break;
+                        }
+
                         if (isStickyGrenade)
                         {
                             projectile.StartRestingFuse(position - step, StickyGrenadeFuseSeconds);
@@ -4919,7 +5042,7 @@ namespace Game.Gameplay.Battle.Simulation
                     }
 
                     var ignoresUnitsInFlight = projectileWeapon?.WeaponId == GrenadeWeaponId
-                        || projectileWeapon?.WeaponId == TeleportWeaponId
+                        || (projectileWeapon?.WeaponId == TeleportWeaponId && !isInstantTouchTeleport)
                         || projectileWeapon?.WeaponId == SwapJumpWeaponId
                         || projectile.Definition.ProjectileId == MineDeployProjectileId
                         || isLaserFenceDeploy;

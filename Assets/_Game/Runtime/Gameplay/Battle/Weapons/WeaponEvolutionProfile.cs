@@ -60,9 +60,13 @@ namespace Game.Gameplay.Battle.Weapons
             float fpvControlBonusSeconds = 0f,
             float fpvDamageMultiplier = 1f,
             float fpvImpactRadiusMultiplier = 1f,
-            bool stickyToxicRelease = false)
+            bool stickyToxicRelease = false,
+            bool teleportInstantTouch = false,
+            bool teleportEarlyTrigger = false)
         {
             StickyToxicRelease = stickyToxicRelease;
+            TeleportInstantTouch = teleportInstantTouch;
+            TeleportEarlyTrigger = teleportEarlyTrigger;
             SalvoCount = Mathf.Max(1, salvoCount);
             SalvoIntervalSeconds = Mathf.Max(0f, salvoIntervalSeconds);
             KnockbackMultiplier = Mathf.Max(0f, knockbackMultiplier);
@@ -162,6 +166,8 @@ namespace Game.Gameplay.Battle.Weapons
         public float FpvDamageMultiplier { get; }
         public float FpvImpactRadiusMultiplier { get; }
         public bool StickyToxicRelease { get; }
+        public bool TeleportInstantTouch { get; }
+        public bool TeleportEarlyTrigger { get; }
 
         public static WeaponEvolutionProfile Base => new(1, 0f, 1f, 3, 0);
     }
@@ -237,6 +243,10 @@ namespace Game.Gameplay.Battle.Weapons
                             mortarCascadeCount: 2 + Mathf.Clamp(firstSteps - 1, 0, 4));
                     case StickyGrenadeWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, stickyToxicRelease: true);
+                    case TeleportWeaponId:
+                        // early_trigger (rank 10) is added on top of instant_touch (rank 5).
+                        return new WeaponEvolutionProfile(1, 0f, 1f,
+                            teleportInstantTouch: true, teleportEarlyTrigger: hasSecondSpecial);
                 }
             }
 

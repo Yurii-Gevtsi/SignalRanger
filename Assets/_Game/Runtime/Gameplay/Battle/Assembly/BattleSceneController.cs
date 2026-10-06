@@ -294,6 +294,14 @@ namespace Game.Gameplay.Battle.Assembly
 
         private bool CanContinueMinePlacementInput()
         {
+            // The sphere's throw already spent the action; the early trigger is the follow-up press.
+            if (_battleState.Turn.ActiveTeam == BattleTeamId.Player
+                && _inventory?.Selected?.WeaponId == "weapon.teleport"
+                && _simulation.CanTriggerTeleportEarly())
+            {
+                return true;
+            }
+
             if (_battleState.Turn.ActiveTeam != BattleTeamId.Player
                 || _inventory == null
                 || HasActiveMotion
@@ -307,7 +315,9 @@ namespace Game.Gameplay.Battle.Assembly
             return (_inventory.Selected?.WeaponId == "weapon.mine"
                     && _inventory.CanFireSelected)
                 || (_inventory.Selected?.WeaponId == "weapon.hopping-grenade"
-                    && _simulation.CanContinueHoppingGrenade());
+                    && _simulation.CanContinueHoppingGrenade())
+                || (_inventory.Selected?.WeaponId == "weapon.teleport"
+                    && _simulation.CanTriggerTeleportEarly());
         }
 
         private void Awake()
@@ -2825,13 +2835,16 @@ namespace Game.Gameplay.Battle.Assembly
                 && (HidesHeldWeaponDuringFlight(weapon) || _inventory.GetSelectedRemainingAmmo() <= 0))
             {
                 var keepsHoppingControl = weapon?.WeaponId == "weapon.hopping-grenade" && !setsShotStatus;
-                _hideHeldWeaponForReusableThrow = keepsHoppingControl;
-                _playerWeaponSelected = keepsHoppingControl;
+                // The purchased early trigger needs the same weapon and aim for the second press.
+                var keepsSphereControl = weapon?.WeaponId == "weapon.teleport" && _simulation.CanTriggerTeleportEarly();
+                _hideHeldWeaponForReusableThrow = keepsHoppingControl || keepsSphereControl;
+                _playerWeaponSelected = keepsHoppingControl || keepsSphereControl;
                 RefreshPlayerWeaponVisual();
             }
 
             if (team != BattleTeamId.Player
-                || (!_simulation.CanContinueBlasterBurst && weapon?.WeaponId != "weapon.hopping-grenade"))
+                || (!_simulation.CanContinueBlasterBurst && weapon?.WeaponId != "weapon.hopping-grenade"
+                    && !(weapon?.WeaponId == "weapon.teleport" && _simulation.CanTriggerTeleportEarly())))
             {
                 ResetAimState();
             }
@@ -5493,7 +5506,8 @@ namespace Game.Gameplay.Battle.Assembly
                 && !HasPendingGroundAction
                 && playerHasTime
                 && _playerWeaponSelected
-                && (_inventory.CanFireSelected || _simulation.CanContinueHoppingGrenade())
+                && (_inventory.CanFireSelected || _simulation.CanContinueHoppingGrenade()
+                    || _simulation.CanTriggerTeleportEarly())
                 && fireInputReady;
             var guideActive = _firstBattleGuide != null && _firstBattleGuide.IsActive;
             var isFirstTrainingBattle = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId);
