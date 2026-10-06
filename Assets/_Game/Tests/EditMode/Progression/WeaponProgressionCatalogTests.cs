@@ -20,7 +20,12 @@ namespace Game.Tests.EditMode.Progression
             var progress=save.inventory.GetOrCreateWeaponProgress(id);
             progress.blueprints=10000;
             var service=new WeaponUpgradeService(save,SeedEconomy(save));
-            for(var i=0;i<4;i++) Assert.That(service.TryUpgrade(id,WeaponUpgradePath.Loadout).Applied,Is.True);
+            // Canonical TTH limits are 4/4/2/4 (core/aim/loadout/radius): the loadout is capped at two
+            // purchases, so rank five is reached with those two plus two aim steps.
+            for(var i=0;i<2;i++) Assert.That(service.TryUpgrade(id,WeaponUpgradePath.Loadout).Applied,Is.True);
+            Assert.That(service.TryUpgrade(id,WeaponUpgradePath.Loadout).Applied,Is.False);
+            for(var i=0;i<2;i++) Assert.That(service.TryUpgrade(id,WeaponUpgradePath.Aim).Applied,Is.True);
+            Assert.That(progress.rank,Is.EqualTo(5));
             for(var i=0;i<5;i++)
             {
                 Assert.That(service.TryPurchaseEvolution(id,5,"cascade-mortar").Applied,Is.True);

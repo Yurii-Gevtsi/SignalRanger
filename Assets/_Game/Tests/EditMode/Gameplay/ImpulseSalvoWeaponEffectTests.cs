@@ -591,7 +591,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void Resolver_MapsMortarBranchesToFragmentsAndCascades()
+        public void Resolver_MapsTheSingleMortarFeatureToFiveCascadeCounts()
         {
             var weapon = WeaponDefinition.CreateRuntime(
                 "weapon.mortira",
@@ -608,35 +608,25 @@ namespace Game.Tests.EditMode.Gameplay
                 null,
                 null);
 
-            var fragment = WeaponEvolutionRuntimeResolver.Resolve(weapon, new SaveWeaponProgressData
+            var withoutFeature = WeaponEvolutionRuntimeResolver.Resolve(weapon, new SaveWeaponProgressData
             {
                 weaponId = weapon.WeaponId,
-                rank = 5,
-                branch = (int)WeaponUpgradeBranch.A
+                rank = 5
             });
-            var assault = WeaponEvolutionRuntimeResolver.Resolve(weapon, new SaveWeaponProgressData
-            {
-                weaponId = weapon.WeaponId,
-                rank = 10,
-                branch = (int)WeaponUpgradeBranch.A
-            });
-            var cascade = WeaponEvolutionRuntimeResolver.Resolve(weapon, new SaveWeaponProgressData
-            {
-                weaponId = weapon.WeaponId,
-                rank = 5,
-                branch = (int)WeaponUpgradeBranch.B
-            });
-            var multiCascade = WeaponEvolutionRuntimeResolver.Resolve(weapon, new SaveWeaponProgressData
-            {
-                weaponId = weapon.WeaponId,
-                rank = 10,
-                branch = (int)WeaponUpgradeBranch.B
-            });
+            Assert.That(withoutFeature.MortarCascadeCount, Is.Zero);
+            Assert.That(withoutFeature.MortarFragmentCount, Is.Zero);
 
-            Assert.That(fragment.MortarFragmentCount, Is.EqualTo(4));
-            Assert.That(assault.MortarFragmentCount, Is.EqualTo(5));
-            Assert.That(cascade.MortarCascadeCount, Is.EqualTo(1));
-            Assert.That(multiCascade.MortarCascadeCount, Is.EqualTo(2));
+            // Five paid steps of the one feature give 2/3/4/5/6 physical shards.
+            for (var steps = 1; steps <= 5; steps++)
+            {
+                var progress = new SaveWeaponProgressData { weaponId = weapon.WeaponId, rank = 5 + steps };
+                progress.EnsureDefaults();
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "cascade-mortar" });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = steps });
+                var profile = WeaponEvolutionRuntimeResolver.Resolve(weapon, progress);
+                Assert.That(profile.MortarCascadeCount, Is.EqualTo(steps + 1), $"purchases={steps}");
+                Assert.That(profile.MortarFragmentCount, Is.Zero);
+            }
         }
 
         [Test]

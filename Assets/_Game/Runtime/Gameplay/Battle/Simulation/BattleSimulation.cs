@@ -136,11 +136,6 @@ namespace Game.Gameplay.Battle.Simulation
         private const string MissileClusterProjectilePrefix = "projectile.weapon.missle.cluster.";
         private const float TeleportExchangeTargetRadius = 2.5f;
         private const float TeleportImpulseMinimumDistance = 0.08f;
-        private const float MortarFragmentSpreadDegrees = 45f;
-        private const float MortarFragmentSpeed = 3.4f;
-        private const float MortarCascadeDelaySeconds = 0.12f;
-        private const float MortarCascadeDamageScale = 0.5f;
-        private const float MortarCascadeSpeed = 2.2f;
         private const string MortarCascadeProjectilePrefix = "projectile.weapon.mortira.cascade.";
         private const string RopeWeaponId = "weapon.rope";
         private const float RopeHookSpeed = 18f;
@@ -1571,17 +1566,6 @@ namespace Game.Gameplay.Battle.Simulation
                 && projectileId.StartsWith(MortarCascadeProjectilePrefix, StringComparison.Ordinal);
         }
 
-        private static int GetMortarCascadeStage(string projectileId)
-        {
-            if (!IsMortarCascade(projectileId))
-            {
-                return 0;
-            }
-
-            return int.TryParse(projectileId.Substring(MortarCascadeProjectilePrefix.Length), out var stage)
-                ? Mathf.Max(0, stage)
-                : 0;
-        }
 
         private static bool IsMissileCluster(string projectileId)
         {

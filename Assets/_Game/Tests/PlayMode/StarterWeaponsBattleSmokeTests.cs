@@ -177,7 +177,7 @@ namespace Game.Tests.PlayMode
             var progress = new SaveWeaponProgressData { weaponId = "weapon.mortira", rank = 5 + purchases };
             progress.EnsureDefaults();
             for (var i = 2; i <= 5; i++) progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
-                { rank = i, path = (int)WeaponUpgradePath.Loadout });
+                { rank = i, path = (int)(i <= 3 ? WeaponUpgradePath.Loadout : WeaponUpgradePath.Aim) });
             if (purchases > 0)
             {
                 progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "cascade-mortar" });
@@ -214,6 +214,16 @@ namespace Game.Tests.PlayMode
                 yield return null;
             }
             Assert.That(shards, Is.EqualTo(purchases == 0 ? 2 : purchases + 1));
+            // The whole cascade must resolve and hand the turn over, not merely appear.
+            var turnAdvanced = false;
+            simulation.TurnAdvanced += (_, _) => turnAdvanced = true;
+            for (var frame = 0; frame < 120 && (simulation.HasProjectilesInFlight || !turnAdvanced); frame++)
+            {
+                for (var tick = 0; tick < 60; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(simulation.ProjectilesInFlight, Is.Zero, "every shard must detonate or expire");
+            Assert.That(turnAdvanced, Is.True, "the turn ends after the last shard resolves");
             LogAssert.NoUnexpectedReceived();
         }
 

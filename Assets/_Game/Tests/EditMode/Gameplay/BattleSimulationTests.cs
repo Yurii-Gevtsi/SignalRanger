@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game.Data.Progression;
 using Game.Data.Save;
 using Game.Gameplay.Battle.Domain;
@@ -48,7 +49,8 @@ namespace Game.Tests.EditMode.Gameplay
             IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null,
             Vector2? secondOpponentPosition = null,
             SaveWeaponProgressData playerWeaponProgress = null,
-            Vector2? secondPlayerPosition = null, int playerMaxHealth = 100, float terrainDepth = 4f)
+            Vector2? secondPlayerPosition = null, int playerMaxHealth = 100, float terrainDepth = 4f,
+            SaveWeaponProgressData opponentWeaponProgress = null)
         {
             var bounds = new Rect(-10f, -terrainDepth - 4f, 20f, terrainDepth + 12f);
             var terrain = BattleTerrain.CreateProcedural(bounds);
@@ -137,7 +139,11 @@ namespace Game.Tests.EditMode.Gameplay
                 playerWeaponProgress != null
                     ? BattleWeaponProgression.FromResolver(new[] { playerWeapon },
                         weaponId => weaponId == playerWeapon.WeaponId ? playerWeaponProgress : null)
-                    : BattleWeaponProgression.FromEvolutions(playerWeaponEvolutions));
+                    : BattleWeaponProgression.FromEvolutions(playerWeaponEvolutions),
+                opponentWeaponProgress != null
+                    ? BattleWeaponProgression.FromResolver(new[] { resolvedOpponentWeapon },
+                        weaponId => weaponId == resolvedOpponentWeapon.WeaponId ? opponentWeaponProgress : null)
+                    : null);
 
             return new Harness
             {
@@ -1774,7 +1780,7 @@ namespace Game.Tests.EditMode.Gameplay
             var progress = new SaveWeaponProgressData { weaponId=mortar.WeaponId, rank=5+purchases };
             progress.EnsureDefaults();
             for (var i=2;i<=5;i++) progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
-                { rank=i, path=(int)WeaponUpgradePath.Loadout });
+                { rank=i, path=(int)(i<=3 ? WeaponUpgradePath.Loadout : WeaponUpgradePath.Aim) });
             progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank=5, optionId="cascade-mortar" });
             progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank=5, purchaseCount=purchases });
             var harness = CreateHarness(mortar, playerWeaponProgress:progress, terrainDepth:24f);
@@ -1810,6 +1816,45 @@ namespace Game.Tests.EditMode.Gameplay
             }
             Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+        }
+
+        [Test]
+        public void CanonicalMortar_HostileSequentialShardsAreInterceptedByTheMagnetAndTheQueueClears()
+        {
+            var grounder = CreateWeapon("weapon.grounder", WeaponRole.DefensiveTool,
+                damage: 0, impactRadius: 4f, ammo: 1);
+            var mortar = CreateWeapon("weapon.mortira", damage: 48, impactRadius: 1.2f, timeoutSeconds: 3f);
+            var progress = new SaveWeaponProgressData { weaponId = mortar.WeaponId, rank = 8 };
+            progress.EnsureDefaults();
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "cascade-mortar" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 3 });
+            var harness = CreateHarness(grounder, opponentWeapon: mortar, opponentWeaponProgress: progress);
+            var devicePosition = default(Vector2?);
+            harness.Simulation.GrounderDeployed += evt => devicePosition = evt.Point;
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent),
+                "placing the magnet hands the turn to the opponent");
+
+            var shardImpacts = new List<Vector2>();
+            var trace = new List<string>();
+            harness.Simulation.ProjectileSpawned += p => trace.Add("spawn:" + p.Definition.ProjectileId);
+            harness.Simulation.ImpactResolved += impact =>
+            {
+                trace.Add("impact:" + impact.Weapon?.WeaponId + "@" + impact.Point);
+                if (impact.Weapon.WeaponId == "weapon.mortira.fragment") shardImpacts.Add(impact.Point);
+            };
+            var origin = devicePosition.Value + new Vector2(2.5f, 1f);
+            Assert.That(harness.Simulation.TryFire(new AimState(origin, Vector2.left, 6f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 1200, 1f / 120f);
+
+            Assert.That(shardImpacts, Is.Not.Empty,
+                "paid shards must still resolve near the magnet; trace=" + string.Join(" | ", trace)
+                + " grounder=" + devicePosition + " inFlight=" + harness.Simulation.ProjectilesInFlight
+                + " shards=" + string.Join(";", harness.Simulation.Projectiles.Select(p =>
+                    p.Definition.ProjectileId + "@" + p.Position + " v=" + p.Velocity + " life=" + p.RemainingLifetime)));
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero, "no orphaned shard may remain queued");
         }
 
         [Test]
