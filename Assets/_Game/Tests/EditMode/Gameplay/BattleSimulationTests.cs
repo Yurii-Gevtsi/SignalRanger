@@ -2514,6 +2514,154 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, CreateHarpoonProgress(false)).HarpoonDoubleGrab, Is.False);
         }
 
+        private static SaveWeaponProgressData CreateSwapJumpProgress(int aimPurchases, int radiusPurchases)
+        {
+            var progress = new SaveWeaponProgressData
+            {
+                weaponId = "weapon.swap-jump",
+                rank = 1 + aimPurchases + radiusPurchases
+            };
+            progress.EnsureDefaults();
+            var rank = 2;
+            for (var i = 0; i < aimPurchases; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank++, path = (int)WeaponUpgradePath.Aim });
+            for (var i = 0; i < radiusPurchases; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank++, path = (int)WeaponUpgradePath.Radius });
+            return progress;
+        }
+
+        private static Harness CreateSwapJumpHarness(SaveWeaponProgressData progress = null, float gravity = 0f,
+            float timeout = 0.15f, Vector2? enemy = null)
+        {
+            var sphere = CreateWeapon("weapon.swap-jump", WeaponRole.MovementTool, damage: 0, impactRadius: 1.4f,
+                ammo: 1, gravityScale: gravity, timeoutSeconds: timeout);
+            var harness = CreateHarness(sphere, playerWeaponProgress: progress);
+            if (enemy.HasValue)
+            {
+                var opponent = harness.State.GetUnit("opponent.test.01");
+                opponent.MoveTo(enemy.Value);
+                harness.Motors[opponent.UnitId].Teleport(enemy.Value);
+            }
+
+            return harness;
+        }
+
+        private static Vector2 MeasureSwapJumpLanding()
+        {
+            var probe = CreateSwapJumpHarness();
+            var landing = Vector2.zero;
+            probe.Simulation.ProjectileExploded += (id, impact) => landing = impact.Point;
+            Assert.That(probe.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(probe.Simulation, 120, 1f / 120f);
+            Assert.That(landing, Is.Not.EqualTo(Vector2.zero));
+            return landing;
+        }
+
+        [Test]
+        public void SwapJump_SphereBouncesOffTheGroundLikeTheTeleportSphereBeforeItLands()
+        {
+            var harness = CreateSwapJumpHarness(gravity: 1f, timeout: 8f);
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 1.5f), Vector2.down, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.EqualTo(1), "the base physics bounces on first contact");
+            TickMany(harness.Simulation, 1200, 1f / 120f);
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(harness.State.GetUnit("player.test.01").Position), Is.False);
+        }
+
+        [Test]
+        public void SwapJump_NearbyDistanceIsTheSharedN0AndEveryRadiusPurchaseAddsTenPercentOfIt()
+        {
+            var landing = MeasureSwapJumpLanding();
+            var enemyAt = new Vector2(landing.x + 1.8f, 0f);
+
+            var baseHarness = CreateSwapJumpHarness(enemy: enemyAt);
+            var baseEnemy = baseHarness.State.GetUnit("opponent.test.01");
+            Assert.That(baseHarness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(baseHarness.Simulation, 120, 1f / 120f);
+            Assert.That(baseEnemy.Position.x, Is.EqualTo(enemyAt.x).Within(0.01f), "1.8 is outside the base N0 of 1.4");
+
+            var paid = CreateSwapJumpHarness(CreateSwapJumpProgress(0, 4), enemy: enemyAt);
+            var paidEnemy = paid.State.GetUnit("opponent.test.01");
+            Assert.That(paid.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(paid.Simulation, 120, 1f / 120f);
+            Assert.That(paidEnemy.Position.x, Is.EqualTo(-3f).Within(0.05f), "four purchases give N0 x 1.4 = 1.96");
+
+            var close = CreateSwapJumpHarness(enemy: new Vector2(landing.x + 1.2f, 0f));
+            var closeEnemy = close.State.GetUnit("opponent.test.01");
+            Assert.That(close.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(close.Simulation, 120, 1f / 120f);
+            Assert.That(closeEnemy.Position.x, Is.EqualTo(-3f).Within(0.05f), "1.2 is inside the base N0");
+        }
+
+        [Test]
+        public void SwapJump_PlainTransferEndsTheTurnAndTheChargeIsGone()
+        {
+            var harness = CreateSwapJumpHarness();
+            Assert.That(harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo(), Is.EqualTo(1));
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 3600, 1f / 120f);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent), "the transfer ends the turn");
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.OutOfAmmo), "one per battle");
+        }
+
+        [Test]
+        public void SwapJump_ExchangePutsTheEnemyAtTheThrowOriginAndEndsTheTurn()
+        {
+            var landing = MeasureSwapJumpLanding();
+            var harness = CreateSwapJumpHarness(enemy: new Vector2(landing.x + 0.6f, 0f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 3600, 1f / 120f);
+            Assert.That(enemy.Position.x, Is.EqualTo(-3f).Within(0.05f), "the enemy stands at the throw origin");
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+        }
+
+        [Test]
+        public void SwapJump_RegistryPaidAimAndRadiusStepsLimitsAndArtMatchTheCard()
+        {
+            const string id = "weapon.swap-jump";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 0, 4, 0, 4 }));
+            Assert.That(definition.GetEvolutionOptions(5), Is.Empty);
+            Assert.That(definition.GetEvolutionOptions(10), Is.Empty);
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            Assert.That(weapon.IconId, Is.EqualTo("teleport_5_10_A"));
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/teleport_5_10_A"), Is.Not.Null);
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False, "no Core steps");
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.False, "one per battle: no Loadout steps");
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.True);
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
+            }
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            var progress = restored.inventory.GetOrCreateWeaponProgress(id);
+            Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, progress).TeleportExchangesEnemy, Is.False);
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {
@@ -2817,7 +2965,7 @@ namespace Game.Tests.EditMode.Gameplay
                 damage: 0,
                 gravityScale: 0f,
                 timeoutSeconds: 0.15f);
-            var harness = CreateHarness(swapJump, secondOpponentPosition: new Vector2(-0.3f, 0f));
+            var harness = CreateHarness(swapJump, secondOpponentPosition: new Vector2(-0.8f, 0f));
             var player = harness.State.GetUnit("player.test.01");
             var opponent = harness.State.GetUnit("opponent.test.01");
             var fartherOpponent = harness.State.GetUnit("opponent.test.02");

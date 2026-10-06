@@ -3401,7 +3401,11 @@ namespace Game.Gameplay.Battle.Simulation
             out TeleportExchangeTarget target)
         {
             target = null;
-            var bestDistanceSquared = TeleportExchangeTargetRadius * TeleportExchangeTargetRadius;
+            // The shared "nearby" distance N0; every Radius purchase adds 10% of the base.
+            var radiusPurchases = ProgressionFor(owner.TeamId).ResolveUpgradeCount(
+                SwapJumpWeaponId, WeaponUpgradePath.Radius);
+            var nearbyRadius = PrototypeWeaponLibrary.SharedNearbyRadius * (1f + 0.1f * radiusPurchases);
+            var bestDistanceSquared = nearbyRadius * nearbyRadius;
             var bestUnitId = string.Empty;
             foreach (var team in _state.Teams)
             {
@@ -3417,7 +3421,7 @@ namespace Game.Gameplay.Battle.Simulation
                     }
 
                     var distanceSquared = (unit.Position - impactPoint).sqrMagnitude;
-                    if (distanceSquared > TeleportExchangeTargetRadius * TeleportExchangeTargetRadius)
+                    if (distanceSquared > nearbyRadius * nearbyRadius)
                     {
                         continue;
                     }
@@ -6105,7 +6109,8 @@ namespace Game.Gameplay.Battle.Simulation
             var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
             var terrainBounceLimit = projectile.Definition.TerrainBounceLimit;
             var usesDefaultBounceRules = weapon != null
-                && (weapon.WeaponId == TeleportWeaponId || weapon.WeaponId == GrenadeWeaponId);
+                && (weapon.WeaponId == TeleportWeaponId || weapon.WeaponId == SwapJumpWeaponId
+                    || weapon.WeaponId == GrenadeWeaponId);
             if (!usesDefaultBounceRules && terrainBounceLimit <= 0)
             {
                 return false;
