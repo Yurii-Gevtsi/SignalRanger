@@ -602,7 +602,7 @@ namespace Game.Data.Progression
             Catalog("weapon.hopping-grenade", 20, 11000, false, 4, 4, 4, 4),
             Catalog("weapon.incendiary-grenade", 20, 11000, false, 4, 4, 2, 4),
             Catalog("weapon.repair-jammer", 25, 16000, false, 0, 0, 2, 2),
-            Catalog("weapon.missle", 30, 22000, false, 4, 4, 2, 4),
+            Catalog("weapon.missle", 30, 22000, false, 4, 4, 0, 4),
             Catalog("weapon.orbital-rocket", 36, 30000, false, 4, 0, 2, 4),
             Catalog("weapon.guardian-drone", 6, 0, false, 4, 0, 2, 4, 1, 0, "stealth"),
             Catalog("weapon.emp", 15, 0, false, 4, 4, 2, 4, 2, 2, "aim-jam", string.Empty, "movement-lock"),

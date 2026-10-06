@@ -330,7 +330,7 @@ namespace Game.Tests.PlayMode
         [UnityTest]
         public IEnumerator ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(
             [Values("weapon.cryo-grenade:cryo_grenade", "weapon.hopping-grenade:hopping_grenade",
-                "weapon.incendiary-grenade:incendiary_grenade")] string pair)
+                "weapon.incendiary-grenade:incendiary_grenade", "weapon.missle:missle_fly")] string pair)
         {
             var weaponId = pair.Split(':')[0];
             var body = pair.Split(':')[1];
@@ -353,6 +353,12 @@ namespace Game.Tests.PlayMode
             Set(controller, "_aimState", new AimState(new Vector2(0f, terrain.Grid.WorldMaxY - 2f), Vector2.down, 12f, true));
             Invoke(controller, "Fire");
             Assert.That(shown, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/" + body)));
+            if (weaponId == "weapon.missle")
+            {
+                // missle_fly already contains its tail: no second exhaust layer may be added on top.
+                foreach (var pair2 in visuals)
+                    Assert.That(pair2.Value.transform.Find("Visual/Rocket Trail"), Is.Null);
+            }
             for (var frame = 0; frame < 120 && simulation.HasProjectilesInFlight; frame++)
             {
                 for (var tick = 0; tick < 60; tick++) simulation.Tick(1f / 120f);

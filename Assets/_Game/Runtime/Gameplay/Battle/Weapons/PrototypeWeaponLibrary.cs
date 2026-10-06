@@ -32,7 +32,7 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.hopping-grenade", WeaponRole.ArcingExplosive, 37, 1.25f, 0.12f, 1.05f, 7f, 5f, 14f, 3, "hopping_grenade", "arc", "hopping"),
                 Weapon("weapon.incendiary-grenade", WeaponRole.ArcingExplosive, 38, 1.4f, 0.12f, 1.05f, 6f, 5f, 14f, 2, "incendiary_grenade", "arc", "fire"),
                 Weapon("weapon.repair-jammer", WeaponRole.DefensiveTool, 0, 1.2f, 0.1f, 0f, 5f, 4f, 8f, 2, "repair_jammer", "ground", "jammer"),
-                Weapon("weapon.missle", WeaponRole.ArcingExplosive, 52, 1.4f, 0.13f, 0.8f, 8f, 5f, 13f, 2, "missle", "arc-homing", "homing"),
+                Weapon("weapon.missle", WeaponRole.ArcingExplosive, 52, 1.4f, 0.13f, 0.8f, 8f, 5f, 13f, 1, "missle", "arc-homing", "homing"),
                 Weapon("weapon.orbital-rocket", WeaponRole.ArcingExplosive, 65, 2.1f, 0.16f, 1.1f, 6f, 5f, 14f, 2, "missle_5_10_A", "arc", "orbital"),
                 Weapon("weapon.guardian-drone", WeaponRole.DefensiveTool, 42, 1.6f, 0.12f, 0f, 7f, 4f, 9f, 2, "guardian_drone", "ground", "drone"),
                 Weapon("weapon.emp", WeaponRole.DirectProjectile, 38, 1.5f, 0.13f, 0f, 7f, 9f, 9f, 2, "emp", "straight-long", "emp"),

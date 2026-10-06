@@ -129,7 +129,10 @@ namespace Game.Gameplay.Battle.Simulation
         private const float DrillCarveSpacing = 0.09f;
         private const float FirePuddleDropSearchDistance = 40f;
         private const float MissileHomingDelaySeconds = 0.45f;
-        private const float MissileSteerDegreesPerSecond = 210f;
+        // Smooth, limited turning: the rocket arcs towards its target instead of snapping round.
+        private const float MissileSteerDegreesPerSecond = 150f;
+        // Without a purchased manoeuvre the rocket may still climb over up to this many obstacles.
+        private const int MissileBaseObstacleBypasses = 2;
         private const float BallisticMissileHorizontalSteerSpeed = 10f;
         private const float BallisticMissileSplitDistance = 1.65f;
         private const float MissileDetourClearance = 0.6f;
@@ -4859,7 +4862,7 @@ namespace Game.Gameplay.Battle.Simulation
                 var evolution = ResolveEvolutionFor(ResolveTeamForOwner(request.OwnerUnitId), spawnedWeapon);
                 projectile.ConfigureMissileEvolution(
                     evolution.MissileSplitChargeCount,
-                    evolution.MissileObstacleBypassCount);
+                    Mathf.Max(MissileBaseObstacleBypasses, evolution.MissileObstacleBypassCount));
             }
 
             _projectiles.Add(projectile);

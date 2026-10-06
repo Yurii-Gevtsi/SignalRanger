@@ -3192,6 +3192,66 @@ namespace Game.Tests.EditMode.Gameplay
                 Is.EqualTo(missile.ImpactRadius * 0.58f).Within(0.001f));
         }
 
+        private static Harness CreateHomingHarness(float gravity = 0.8f)
+        {
+            var missile = CreateWeapon("weapon.missle", WeaponRole.ArcingExplosive, damage: 52, impactRadius: 1.4f,
+                ammo: 1, gravityScale: gravity, timeoutSeconds: 8f);
+            return CreateHarness(missile);
+        }
+
+        [Test]
+        public void HomingMissile_IsASingleUseRocketWithoutKitPurchases()
+        {
+            var harness = CreateHomingHarness();
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0.5f), new Vector2(1f, 1f).normalized, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo(), Is.Zero, "one use per battle");
+            Assert.That(WeaponProgressionCatalog.TryGet("weapon.missle", out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 0, 4 }));
+            Assert.That(definition.HasEvolutionOptions, Is.False);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/missle_fly"), Is.Not.Null);
+            Assert.That(Resources.Load<Texture2D>("UI/Generated/missle_tail_clean"), Is.Not.Null);
+        }
+
+        [Test]
+        public void HomingMissile_KeepsSteeringToTheTargetWithBoundedTurnRateAndHurtsButDoesNotKillAHealthyDroid()
+        {
+            var harness = CreateHomingHarness();
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0.5f), new Vector2(0.3f, 1f).normalized, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            var projectile = harness.Simulation.Projectiles[0];
+            var maxTurn = 0f;
+            var time = 0f;
+            var lastAngle = Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg;
+            for (var i = 0; i < 900 && harness.Simulation.ProjectilesInFlight > 0; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+                time += 1f / 120f;
+                if (harness.Simulation.ProjectilesInFlight == 0) break;
+                var angle = Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg;
+                if (time > 0.6f) maxTurn = Mathf.Max(maxTurn, Mathf.Abs(Mathf.DeltaAngle(lastAngle, angle)) * 120f);
+                lastAngle = angle;
+            }
+            Assert.That(opponent.Health, Is.LessThan(opponent.MaxHealth), "it homed in on the target");
+            Assert.That(opponent.IsDefeated, Is.False, "one direct blast does not kill a healthy equal droid");
+            Assert.That(maxTurn, Is.LessThanOrEqualTo(160f), "no sharp turns");
+        }
+
+        [Test]
+        public void HomingMissile_ClimbsSmoothlyOverAnObstacleOnItsWayToTheTarget()
+        {
+            var harness = CreateHomingHarness(gravity: 0f);
+            harness.Terrain.StampSolidRect(new Vector2(0.5f, 0.5f), new Vector2(1f, 3f)); // x 0..1, y -1..2
+            var opponent = harness.State.GetUnit("opponent.test.01");
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-7f, 0.4f), Vector2.right, 8f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 1500, 1f / 120f);
+            Assert.That(harness.Terrain.Grid.IsSolidWorld(new Vector2(0.5f, 0.5f)), Is.True, "the wall was not blown away");
+            Assert.That(opponent.Health, Is.LessThan(opponent.MaxHealth), "it flew over the wall and hit the droid");
+        }
+
         [Test]
         public void HomingMissile_ManeuverEvolution_CreatesDetourAroundTerrainObstacle()
         {
@@ -3216,7 +3276,8 @@ namespace Game.Tests.EditMode.Gameplay
             TickMany(harness.Simulation, 70, 1f / 120f);
 
             Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight);
-            Assert.AreEqual(0, harness.Simulation.Projectiles[0].MissileObstacleBypassesRemaining);
+            Assert.AreEqual(1, harness.Simulation.Projectiles[0].MissileObstacleBypassesRemaining,
+                "the base rocket already has two bypasses; one has just been used");
             Assert.That(harness.Simulation.Projectiles[0].HasMissileWaypoint, Is.True);
         }
 
