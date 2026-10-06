@@ -10,13 +10,14 @@
     "explicitIntent": null,
     "observations": []
   },
-  "status": "active",
-  "stepIndex": 2,
-  "phaseId": "assurance",
-  "currentCapabilityId": "software.review.standards-spec",
+  "status": "completed",
+  "stepIndex": 3,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
   "completedCapabilities": [
     "software.testing.design",
-    "software.testing.tdd"
+    "software.testing.tdd",
+    "software.review.standards-spec"
   ],
   "activationHistory": [
     {
@@ -120,47 +121,40 @@
           ]
         }
       ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "90bc1cb1-f3ba-4c51-8f5d-469f71a3659f",
+      "capabilityId": "software.review.standards-spec",
+      "recipeId": "software.review.standards-spec.recipe",
+      "reasonCode": "diff-ready",
+      "triggerEvidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "review"
+      ],
+      "evidence": [
+        {
+          "kind": "standards-review-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-final-validation-2026-10-06.md"
+          ]
+        },
+        {
+          "kind": "spec-review-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-final-validation-2026-10-06.md"
+          ]
+        }
+      ]
     }
   ],
-  "currentActivation": {
-    "schemaVersion": 1,
-    "activationId": "90bc1cb1-f3ba-4c51-8f5d-469f71a3659f",
-    "capabilityId": "software.review.standards-spec",
-    "recipeId": "software.review.standards-spec.recipe",
-    "reasonCode": "diff-ready",
-    "triggerEvidenceRefs": [
-      "activation:software.implementation.execute:completed"
-    ],
-    "status": "active",
-    "stageIndex": 0,
-    "stageId": "review",
-    "completedStages": [],
-    "evidence": []
-  },
-  "currentCommand": {
-    "schemaVersion": 1,
-    "type": "provider.invoke",
-    "activationId": "90bc1cb1-f3ba-4c51-8f5d-469f71a3659f",
-    "capabilityId": "software.review.standards-spec",
-    "recipeId": "software.review.standards-spec.recipe",
-    "stageId": "review",
-    "reasonCode": "diff-ready",
-    "triggerEvidenceRefs": [
-      "activation:software.implementation.execute:completed"
-    ],
-    "provider": {
-      "kind": "skill",
-      "id": "rex-code-review",
-      "source": "bundled",
-      "instructionsRef": "skill-sources/rex-code-review/SKILL.md"
-    },
-    "objective": "独立对照仓库规范和原始规格审查有边界的代码差异。",
-    "expectedEvidence": [
-      "standards-review-recorded",
-      "spec-review-recorded"
-    ],
-    "executionToken": "1848f6ac-0f69-405f-9be2-ac907be13e4b"
-  },
+  "currentActivation": null,
+  "currentCommand": null,
   "facts": [
     {
       "kind": "behavior-change",
@@ -226,5 +220,5 @@
     ]
   },
   "createdAt": "2026-10-06T12:32:57.379Z",
-  "updatedAt": "2026-10-06T13:15:20.834Z"
+  "updatedAt": "2026-10-06T13:19:13.736Z"
 }
