@@ -2364,6 +2364,156 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(Resources.Load<Texture2D>("UI/Weapons/emp_shot"), Is.Not.Null);
         }
 
+        private static SaveWeaponProgressData CreateHarpoonProgress(bool doubleGrab)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.electric-harpoon", rank = doubleGrab ? 11 : 6 };
+            progress.EnsureDefaults();
+            var paths = new[] { WeaponUpgradePath.Core, WeaponUpgradePath.Core, WeaponUpgradePath.Loadout, WeaponUpgradePath.Loadout };
+            for (var rank = 2; rank <= 5; rank++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)paths[rank - 2] });
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "impact-pull" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            if (doubleGrab)
+            {
+                var later = new[] { WeaponUpgradePath.Core, WeaponUpgradePath.Core, WeaponUpgradePath.Radius, WeaponUpgradePath.Radius };
+                for (var rank = 7; rank <= 10; rank++)
+                    progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)later[rank - 7] });
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 10, optionId = "double-grab" });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 10, purchaseCount = 1 });
+            }
+            return progress;
+        }
+
+        private static Harness CreateHarpoonHarness(SaveWeaponProgressData progress = null, Vector2? secondOpponent = null)
+        {
+            var harpoon = CreateWeapon("weapon.electric-harpoon", WeaponRole.DirectProjectile, damage: 40, impactRadius: 1.1f,
+                gravityScale: 0f, timeoutSeconds: 8f);
+            return CreateHarness(harpoon, playerWeaponProgress: progress, secondOpponentPosition: secondOpponent);
+        }
+
+        private static void FireHarpoon(Harness harness)
+        {
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-2.4f, 0.1f), Vector2.right, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+        }
+
+        [Test]
+        public void ElectricHarpoon_HitDealsXAtOnceThenPullsAlongTheGroundAtDoubleSpeed()
+        {
+            var harness = CreateHarpoonHarness();
+            var target = harness.State.GetUnit("opponent.test.01");
+            var start = target.Health;
+            FireHarpoon(harness);
+            TickMany(harness.Simulation, 60, 1f / 120f);                 // hook reaches the droid
+            Assert.That(harness.Simulation.IsPlayerElectricHarpoonAttached, Is.True);
+            Assert.That(start - target.Health, Is.EqualTo(14), "X is dealt on the hit");
+            Assert.That(harness.Simulation.IsUnitElectrified(target.UnitId), Is.True, "electric overlay while pulled");
+            var x0 = target.Position.x;
+            TickMany(harness.Simulation, 60, 1f / 120f);                 // half a second of pulling
+            Assert.That(x0 - target.Position.x, Is.EqualTo(2.4f).Within(0.7f), "twice the old 2.4 u/s, along the ground");
+            Assert.That(target.Position.y, Is.LessThan(1f), "dragged over the ground, not flying to the shooter");
+        }
+
+        [Test]
+        public void ElectricHarpoon_WithoutImpactPullTheContactEndsTheCycleWithNoFinalBlowOrThrow()
+        {
+            var harness = CreateHarpoonHarness();
+            var target = harness.State.GetUnit("opponent.test.01");
+            var start = target.Health;
+            FireHarpoon(harness);
+            TickMany(harness.Simulation, 600, 1f / 120f);
+            Assert.That(harness.Simulation.HasPlayerElectricHarpoon, Is.False);
+            Assert.That(start - target.Health, Is.LessThanOrEqualTo(14 + 6 * 2), "X and at most the second ticks, no Z");
+            Assert.That(harness.Motors[target.UnitId].Velocity.magnitude, Is.LessThan(2.6f), "no strong throw");
+        }
+
+        [Test]
+        public void ElectricHarpoon_ImpactPullAddsTheFinalBlowAndAThrowAtSixtyDegrees()
+        {
+            var harness = CreateHarpoonHarness(CreateHarpoonProgress(false));
+            var target = harness.State.GetUnit("opponent.test.01");
+            var owner = harness.State.GetUnit("player.test.01");
+            var start = target.Health;
+            FireHarpoon(harness);
+            Vector2 launch = default;
+            for (var i = 0; i < 1200 && !harness.Simulation.HasProjectilesInFlight && launch == default; i++)
+            {
+                harness.Simulation.Tick(1f / 120f);
+                if (!harness.Simulation.HasPlayerElectricHarpoon && harness.Simulation.ElectricHarpoonActiveCaptures == 0)
+                {
+                    launch = harness.Motors[target.UnitId].Velocity;
+                    break;
+                }
+            }
+            Assert.That(launch, Is.Not.EqualTo(default(Vector2)), "the droid was pulled in and thrown");
+            var angle = Mathf.Atan2(launch.y, Mathf.Abs(launch.x)) * Mathf.Rad2Deg;
+            Assert.That(angle, Is.EqualTo(60f).Within(6f));
+            Assert.That(launch.x, Is.GreaterThan(0f), "thrown away from the shooter");
+            Assert.That(launch.magnitude, Is.GreaterThan(9f), "range of about two rope lengths");
+            Assert.That(start - target.Health, Is.GreaterThanOrEqualTo(14 + 14), "X and Z");
+        }
+
+        [Test]
+        public void ElectricHarpoon_BlockedTargetKeepsTheRopeForFiveSecondsThenLetsGoWithoutAFinalAction()
+        {
+            var harness = CreateHarpoonHarness(CreateHarpoonProgress(false));
+            harness.Terrain.StampSolidRect(new Vector2(0.5f, 2f), new Vector2(1f, 6f)); // a tall wall at x 0..1
+            var target = harness.State.GetUnit("opponent.test.01");
+            var start = target.Health;
+            FireHarpoon(harness);
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            Assert.That(harness.Simulation.IsPlayerElectricHarpoonAttached, Is.True);
+            TickMany(harness.Simulation, 240, 1f / 120f);                // two seconds in
+            Assert.That(harness.Simulation.HasPlayerElectricHarpoon, Is.True, "the rope stays while the target is stuck");
+            TickMany(harness.Simulation, 480, 1f / 120f);                // past the window
+            Assert.That(harness.Simulation.HasPlayerElectricHarpoon, Is.False, "the rope lets go after five seconds");
+            var lost = start - target.Health;
+            Assert.That(lost, Is.InRange(14 + 6 * 4, 14 + 6 * 5), "X plus one Y per second, no Z");
+            Assert.That(target.Position.x, Is.GreaterThan(1f), "never reached the shooter");
+        }
+
+        [Test]
+        public void ElectricHarpoon_DoubleGrabHoldsTwoDroidsEachWithItsOwnCycle()
+        {
+            var harness = CreateHarpoonHarness(CreateHarpoonProgress(true), secondOpponent: new Vector2(5f, 0f));
+            var first = harness.State.GetUnit("opponent.test.01");
+            var second = harness.State.GetUnit("opponent.test.02");
+            var firstStart = first.Health;
+            var secondStart = second.Health;
+            FireHarpoon(harness);
+            TickMany(harness.Simulation, 120, 1f / 120f);
+            Assert.That(harness.Simulation.ElectricHarpoonActiveCaptures, Is.EqualTo(2));
+            Assert.That(firstStart - first.Health, Is.GreaterThanOrEqualTo(14));
+            Assert.That(secondStart - second.Health, Is.GreaterThanOrEqualTo(14), "the second droid has its own X");
+            Assert.That(harness.Simulation.ElectricHarpoonExtraTargets.Count, Is.EqualTo(1), "a second rope is drawn");
+
+            // Without the purchase only one droid is caught.
+            var single = CreateHarpoonHarness(CreateHarpoonProgress(false), secondOpponent: new Vector2(5f, 0f));
+            var other = single.State.GetUnit("opponent.test.02");
+            FireHarpoon(single);
+            TickMany(single.Simulation, 120, 1f / 120f);
+            Assert.That(single.Simulation.ElectricHarpoonActiveCaptures, Is.LessThanOrEqualTo(1));
+            Assert.That(other.Health, Is.EqualTo(other.MaxHealth), "the second droid is untouched");
+        }
+
+        [Test]
+        public void ElectricHarpoon_RegistryRopeLengthAndSkinsMatchTheCard()
+        {
+            Assert.That(WeaponProgressionCatalog.TryGet("weapon.electric-harpoon", out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 2, 4 }));
+            Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "impact-pull" }));
+            Assert.That(definition.GetEvolutionOptions(10).Select(o => o.Id), Is.EquivalentTo(new[] { "double-grab" }));
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveRopeLength(4), Is.EqualTo(WeaponUpgradeChoiceResolver.RopeBaseLength * 1.4f).Within(0.01f));
+            foreach (var art in new[] { "electric_harpoon", "electric_harpoon_shot", "electric_harpoon_5A", "electric_harpoon_5A_shot" })
+                Assert.That(Resources.Load<Texture2D>("UI/Weapons/" + art), Is.Not.Null, art);
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.electric-harpoon");
+            var profile = WeaponEvolutionRuntimeResolver.Resolve(weapon, CreateHarpoonProgress(true));
+            Assert.That(profile.HarpoonImpactPull, Is.True);
+            Assert.That(profile.HarpoonDoubleGrab, Is.True);
+            Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, CreateHarpoonProgress(false)).HarpoonDoubleGrab, Is.False);
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {

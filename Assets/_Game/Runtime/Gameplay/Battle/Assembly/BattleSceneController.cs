@@ -188,6 +188,7 @@ namespace Game.Gameplay.Battle.Assembly
         private LineRenderer _ropeLine;
         private GameObject _ropeHookVisual;
         private LineRenderer _electricHarpoonLine;
+        private LineRenderer _electricHarpoonExtraLine;
         private GameObject _electricHarpoonHookVisual;
         private readonly List<SpriteRenderer> _trajectoryDots = new();
 
@@ -1673,6 +1674,9 @@ namespace Game.Gameplay.Battle.Assembly
             _ropeLine.sortingOrder = 31;
             _electricHarpoonLine = CreateLine("Electric Harpoon Tether", 0.035f, new Color(0.16f, 0.85f, 1f, 1f));
             _electricHarpoonLine.sortingOrder = 32;
+            _electricHarpoonExtraLine = CreateLine("Electric Harpoon Second Tether", 0.035f, new Color(0.16f, 0.85f, 1f, 1f));
+            _electricHarpoonExtraLine.sortingOrder = 32;
+            _electricHarpoonExtraLine.enabled = false;
             BuildTrajectoryDots();
         }
 
@@ -4075,6 +4079,7 @@ namespace Game.Gameplay.Battle.Assembly
             if (_electricHarpoonLine == null || _simulation == null || !_simulation.HasPlayerElectricHarpoon)
             {
                 if (_electricHarpoonLine != null) _electricHarpoonLine.enabled = false;
+                if (_electricHarpoonExtraLine != null) _electricHarpoonExtraLine.enabled = false;
                 if (_electricHarpoonHookVisual != null) _electricHarpoonHookVisual.SetActive(false);
                 return;
             }
@@ -4089,6 +4094,17 @@ namespace Game.Gameplay.Battle.Assembly
             _electricHarpoonLine.enabled = true;
             _electricHarpoonLine.SetPosition(0, presenter.State.Position);
             _electricHarpoonLine.SetPosition(1, hookPosition);
+            var extraTargets = _simulation.ElectricHarpoonExtraTargets;
+            if (_electricHarpoonExtraLine != null)
+            {
+                // The double grab holds a second droid on its own taut rope.
+                _electricHarpoonExtraLine.enabled = extraTargets.Count > 0;
+                if (extraTargets.Count > 0)
+                {
+                    _electricHarpoonExtraLine.SetPosition(0, presenter.State.Position);
+                    _electricHarpoonExtraLine.SetPosition(1, extraTargets[0]);
+                }
+            }
             if (_electricHarpoonHookVisual == null)
             {
                 _electricHarpoonHookVisual = new GameObject("Electric Harpoon Hook");

@@ -150,7 +150,17 @@ namespace Game.Gameplay.Battle.Simulation
         private const string ElectricHarpoonWeaponId = "weapon.electric-harpoon";
         private const float ElectricHarpoonBaseLength = 8f;
         private const float ElectricHarpoonHookSpeed = 18f;
-        private const float ElectricHarpoonPullSpeed = 2.4f;
+        // Twice the previous pulling speed; the target is dragged along the ground, not teleported.
+        private const float ElectricHarpoonPullSpeed = 4.8f;
+        private const float ElectricHarpoonPullWindowSeconds = 5f;
+        private const float ElectricHarpoonContactX = 0.75f;
+        private const float ElectricHarpoonContactY = 0.9f;
+        private const float ElectricHarpoonHopSpeed = 2.4f;
+        private const float ElectricHarpoonThrowAngleDegrees = 60f;
+        // Prototype X (hit), Y (per second) and Z (final) shares of the weapon damage.
+        private const float ElectricHarpoonHitShare = 0.35f;
+        private const float ElectricHarpoonTickShare = 0.15f;
+        private const float ElectricHarpoonFinalShare = 0.35f;
         private const float ElectricHarpoonDamageTickSeconds = 1f;
         private const float ElectricHarpoonTargetRadius = 0.18f;
         private const float ElectricHarpoonReleaseDistance = 0.62f;
@@ -231,7 +241,11 @@ namespace Game.Gameplay.Battle.Simulation
         private int _laserFenceNodesDeployedThisTurn;
         private int _nextProjectileId;
         private float _simulationAccumulator;
-        private float _electricHarpoonDamageAccumulator;
+        private readonly List<HarpoonCapture> _harpoonCaptures = new();
+        private bool _harpoonHookFinished;
+        private bool _harpoonImpactPull;
+        private bool _harpoonDoubleGrab;
+        private float _harpoonRopeLength;
         private int _walkIntentDirection;
         private int _controlledProjectileId = -1;
         private Vector2 _controlledProjectileInput;
@@ -379,6 +393,37 @@ namespace Game.Gameplay.Battle.Simulation
         public Vector2 ElectricHarpoonHookPosition => _electricHarpoonTraversal?.HookPosition ?? Vector2.zero;
         public Vector2 ElectricHarpoonOrigin => _electricHarpoonTraversal?.Origin ?? Vector2.zero;
         public Vector2 ElectricHarpoonDirection => _electricHarpoonTraversal?.Direction ?? Vector2.right;
+        /// <summary>Positions of the additional captured droids (double grab), for the extra ropes.</summary>
+        public IReadOnlyList<Vector2> ElectricHarpoonExtraTargets
+        {
+            get
+            {
+                var extra = new List<Vector2>();
+                for (var i = 1; i < _harpoonCaptures.Count; i++)
+                {
+                    var unit = FindUnit(_harpoonCaptures[i].UnitId);
+                    if (unit != null && !_harpoonCaptures[i].Finished)
+                    {
+                        extra.Add(unit.Position);
+                    }
+                }
+
+                return extra;
+            }
+        }
+        public int ElectricHarpoonActiveCaptures
+        {
+            get
+            {
+                var count = 0;
+                foreach (var capture in _harpoonCaptures)
+                {
+                    if (!capture.Finished) count++;
+                }
+
+                return count;
+            }
+        }
         public bool HasPendingGroundAction => _activeCharges.Count > 0;
         public bool HasActiveControlledProjectile => _controlledProjectileId >= 0;
         public bool CanContinueBlasterBurst => _state.Turn.ActiveTeam == BattleTeamId.Player
@@ -2134,17 +2179,23 @@ namespace Game.Gameplay.Battle.Simulation
                 return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
             }
 
-            var rank = ResolveRankFor(unit.TeamId, weapon);
+            var evolution = ResolveEvolutionFor(unit.TeamId, weapon);
+            var radiusPurchases = ProgressionFor(unit.TeamId).ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Radius);
             var direction = aim.Direction.sqrMagnitude > 0.01f ? aim.Direction.normalized : Vector2.right;
+            // The rope length and its growth are those of the rope weapon.
+            _harpoonRopeLength = WeaponUpgradeChoiceResolver.ResolveRopeLength(radiusPurchases);
+            _harpoonImpactPull = evolution.HarpoonImpactPull;
+            _harpoonDoubleGrab = evolution.HarpoonDoubleGrab;
+            _harpoonHookFinished = false;
+            _harpoonCaptures.Clear();
             _electricHarpoonTraversal = new ElectricHarpoonTraversal(
                 unit.UnitId,
                 aim.Origin,
                 direction,
-                ElectricHarpoonBaseLength + (rank - 1) * 0.55f,
+                _harpoonRopeLength,
                 ElectricHarpoonHookSpeed,
-                ElectricHarpoonPullSpeed + (rank - 1) * 0.08f,
-                Mathf.Max(1f, Mathf.RoundToInt(weapon.Damage * 0.15f)));
-            _electricHarpoonDamageAccumulator = 0f;
+                ElectricHarpoonPullSpeed,
+                Mathf.Max(1f, Mathf.RoundToInt(weapon.Damage * ElectricHarpoonTickShare)));
             _activeShotWeapon = weapon;
             _activeShotEndsTurn = true;
             _turnService.SpendAction(_state);
@@ -4739,6 +4790,11 @@ namespace Game.Gameplay.Battle.Simulation
             }
         }
 
+        /// <summary>
+        /// Flight of the hook, then up to five seconds of ground pulling per captured droid. Hit damage
+        /// X is dealt at once, Y every second (with a small hop and the electric overlay); reaching the
+        /// shooter inside the window deals Z and throws the droid away only with impact_pull.
+        /// </summary>
         private void StepElectricHarpoon(float tickSeconds)
         {
             var traversal = _electricHarpoonTraversal;
@@ -4750,87 +4806,203 @@ namespace Game.Gameplay.Battle.Simulation
             var owner = FindUnit(traversal.OwnerUnitId);
             if (owner == null || owner.IsDefeated)
             {
-                _electricHarpoonTraversal = null;
+                EndElectricHarpoon(completeAction: false);
                 return;
             }
 
-            if (!traversal.IsAttached)
+            if (!_harpoonHookFinished)
             {
-                var hookStart = traversal.HookPosition;
-                if (!traversal.StepHook(tickSeconds))
+                StepElectricHarpoonHook(traversal, owner, tickSeconds);
+                if (_electricHarpoonTraversal == null)
                 {
-                    _electricHarpoonTraversal = null;
-                    CompleteInstantAction();
                     return;
                 }
+            }
 
-                if (TryFindGrounderForHook(owner.TeamId, hookStart,
-                        traversal.HookPosition, out var harpoonGrounder))
+            var anyActive = false;
+            foreach (var capture in _harpoonCaptures)
+            {
+                if (capture.Finished)
                 {
-                    DamageGrounder(harpoonGrounder, 1);
-                    _electricHarpoonTraversal = null;
-                    CompleteInstantAction();
-                    return;
+                    continue;
                 }
 
-                foreach (var team in _state.Teams)
+                StepHarpoonCapture(capture, owner, tickSeconds);
+                anyActive |= !capture.Finished;
+            }
+
+            // While the hook is still flying (double grab) it must keep moving: only a finished hook rides the first droid.
+            if (_harpoonHookFinished && _harpoonCaptures.Count > 0 && _harpoonCaptures[0].Finished == false)
+            {
+                var first = FindUnit(_harpoonCaptures[0].UnitId);
+                if (first != null)
                 {
-                    if (team.TeamId == owner.TeamId)
+                    traversal.Attach(first.UnitId, first.Position);
+                }
+            }
+
+            UnitsMoved?.Invoke();
+            if (_harpoonHookFinished && !anyActive)
+            {
+                EndElectricHarpoon(completeAction: true);
+            }
+        }
+
+        private void StepElectricHarpoonHook(ElectricHarpoonTraversal traversal, BattleUnitState owner, float tickSeconds)
+        {
+            var hookStart = traversal.HookPosition;
+            if (!traversal.StepHook(tickSeconds))
+            {
+                // The hook ran out of rope: with captured droids the pulling goes on, otherwise the shot ends.
+                _harpoonHookFinished = true;
+                if (_harpoonCaptures.Count == 0)
+                {
+                    EndElectricHarpoon(completeAction: true);
+                }
+
+                return;
+            }
+
+            if (TryFindGrounderForHook(owner.TeamId, hookStart, traversal.HookPosition, out var harpoonGrounder))
+            {
+                DamageGrounder(harpoonGrounder, 1);
+                EndElectricHarpoon(completeAction: true);
+                return;
+            }
+
+            var capacity = _harpoonDoubleGrab ? 2 : 1;
+            foreach (var team in _state.Teams)
+            {
+                if (team.TeamId == owner.TeamId)
+                {
+                    continue;
+                }
+
+                foreach (var target in team.Units)
+                {
+                    if (_harpoonCaptures.Count >= capacity)
+                    {
+                        break;
+                    }
+
+                    if (target == null || target.IsDefeated
+                        || _harpoonCaptures.Exists(capture => capture.UnitId == target.UnitId)
+                        || !IsTouchingUnitHitbox(traversal.HookPosition, ElectricHarpoonTargetRadius, target))
                     {
                         continue;
                     }
 
-                    foreach (var target in team.Units)
-                    {
-                        if (target == null || target.IsDefeated
-                            || !IsTouchingUnitHitbox(traversal.HookPosition, ElectricHarpoonTargetRadius, target))
-                        {
-                            continue;
-                        }
+                    var hit = Mathf.Max(1, Mathf.RoundToInt(
+                        _weaponsById[ElectricHarpoonWeaponId].Damage * ElectricHarpoonHitShare));
+                    ApplyDamage(target, ResolveOutgoingDamage(owner.UnitId, hit), ElectricHarpoonWeaponId, owner.TeamId);
+                    ApplyElectrifiedOverlay(target.UnitId);
+                    _harpoonCaptures.Add(new HarpoonCapture(target.UnitId, ElectricHarpoonPullWindowSeconds));
+                }
+            }
 
-                        traversal.Attach(target.UnitId, target.Position);
-                        break;
+            if (_harpoonCaptures.Count >= capacity)
+            {
+                _harpoonHookFinished = true;
+                if (_harpoonCaptures.Count > 0)
+                {
+                    var first = FindUnit(_harpoonCaptures[0].UnitId);
+                    if (first != null)
+                    {
+                        traversal.Attach(first.UnitId, first.Position);
                     }
+                }
+            }
+        }
 
-                    if (traversal.IsAttached)
+        private void StepHarpoonCapture(HarpoonCapture capture, BattleUnitState owner, float tickSeconds)
+        {
+            var target = FindUnit(capture.UnitId);
+            if (target == null || target.IsDefeated)
+            {
+                capture.Finished = true;
+                return;
+            }
+
+            var weapon = _weaponsById[ElectricHarpoonWeaponId];
+            capture.TimeRemaining -= tickSeconds;
+            ApplyElectrifiedOverlay(target.UnitId);
+
+            var motor = GetMotor(target.UnitId);
+            var delta = owner.Position - target.Position;
+            if (Mathf.Abs(delta.x) <= ElectricHarpoonContactX && Mathf.Abs(delta.y) <= ElectricHarpoonContactY)
+            {
+                // Reached the shooter inside the window: the final blow only exists with impact_pull.
+                if (_harpoonImpactPull)
+                {
+                    var finalDamage = Mathf.Max(1, Mathf.RoundToInt(weapon.Damage * ElectricHarpoonFinalShare));
+                    ApplyDamage(target, ResolveOutgoingDamage(owner.UnitId, finalDamage), ElectricHarpoonWeaponId, owner.TeamId);
+                    if (!target.IsDefeated && motor != null)
                     {
-                        break;
+                        var away = Mathf.Abs(delta.x) > 0.05f ? -Mathf.Sign(delta.x) : -owner.FacingDirectionX;
+                        var angle = ElectricHarpoonThrowAngleDegrees * Mathf.Deg2Rad;
+                        // Range of about two rope lengths in free space: v^2 sin(2a) / g.
+                        var range = _harpoonRopeLength * 2f;
+                        var speed = Mathf.Sqrt(range * motor.Gravity / Mathf.Sin(2f * angle));
+                        motor.AddImpulse(new Vector2(away * Mathf.Cos(angle), Mathf.Sin(angle)) * speed);
                     }
                 }
 
+                capture.Finished = true;
                 return;
             }
 
-            var targetUnit = FindUnit(traversal.TargetUnitId);
-            if (targetUnit == null || targetUnit.IsDefeated)
+            if (motor != null && motor.IsStable)
             {
-                _electricHarpoonTraversal = null;
+                var direction = delta.x >= 0f ? 1 : -1;
+                var walkScale = ElectricHarpoonPullSpeed / Mathf.Max(0.1f, motor.WalkSpeed);
+                motor.Walk(direction, tickSeconds * walkScale);
+                target.MoveTo(motor.Position);
+            }
+
+            capture.TickAccumulator += tickSeconds;
+            while (capture.TickAccumulator >= ElectricHarpoonDamageTickSeconds)
+            {
+                capture.TickAccumulator -= ElectricHarpoonDamageTickSeconds;
+                var tick = Mathf.Max(1, Mathf.RoundToInt(weapon.Damage * ElectricHarpoonTickShare));
+                ApplyDamage(target, ResolveOutgoingDamage(owner.UnitId, tick), ElectricHarpoonWeaponId, owner.TeamId);
+                if (!target.IsDefeated && motor != null)
+                {
+                    // A small hop that can carry the droid over an obstacle.
+                    var toward = delta.x >= 0f ? 1f : -1f;
+                    motor.AddImpulse(new Vector2(toward * 0.9f, ElectricHarpoonHopSpeed));
+                }
+            }
+
+            if (capture.TimeRemaining <= 0f)
+            {
+                // Not pulled in five seconds: the rope simply lets go, no final action.
+                capture.Finished = true;
+            }
+        }
+
+        private void EndElectricHarpoon(bool completeAction)
+        {
+            _electricHarpoonTraversal = null;
+            _harpoonCaptures.Clear();
+            _harpoonHookFinished = false;
+            if (completeAction)
+            {
                 CompleteInstantAction();
-                return;
             }
+        }
 
-            var destination = Vector2.MoveTowards(
-                targetUnit.Position,
-                owner.Position,
-                traversal.PullSpeed * Mathf.Max(0f, tickSeconds));
-            targetUnit.MoveTo(destination);
-            GetMotor(targetUnit.UnitId)?.Teleport(destination);
-            traversal.Attach(targetUnit.UnitId, destination);
-
-            _electricHarpoonDamageAccumulator += Mathf.Max(0f, tickSeconds);
-            while (_electricHarpoonDamageAccumulator >= ElectricHarpoonDamageTickSeconds)
+        private sealed class HarpoonCapture
+        {
+            public HarpoonCapture(string unitId, float window)
             {
-                _electricHarpoonDamageAccumulator -= ElectricHarpoonDamageTickSeconds;
-                ApplyDamage(targetUnit, Mathf.Max(1, Mathf.RoundToInt(traversal.DamagePerSecond)), ElectricHarpoonWeaponId, owner.TeamId);
-                ApplyElectrifiedOverlay(targetUnit.UnitId);
+                UnitId = unitId;
+                TimeRemaining = window;
             }
 
-            UnitsMoved?.Invoke();
-            if (Vector2.Distance(owner.Position, targetUnit.Position) <= ElectricHarpoonReleaseDistance)
-            {
-                _electricHarpoonTraversal = null;
-                CompleteInstantAction();
-            }
+            public string UnitId { get; }
+            public float TimeRemaining { get; set; }
+            public float TickAccumulator { get; set; }
+            public bool Finished { get; set; }
         }
 
         public void Spawn(in ProjectileSpawnRequest request)

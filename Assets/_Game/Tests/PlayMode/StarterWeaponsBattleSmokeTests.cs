@@ -370,6 +370,46 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
+            [Values(false, true)] bool purchased)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.electric-harpoon", rank = purchased ? 6 : 1 };
+            progress.EnsureDefaults();
+            if (purchased)
+            {
+                var paths = new[] { WeaponUpgradePath.Core, WeaponUpgradePath.Core, WeaponUpgradePath.Loadout, WeaponUpgradePath.Loadout };
+                for (var rank = 2; rank <= 5; rank++)
+                    progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)paths[rank - 2] });
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "impact-pull" });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            }
+            WeaponProgressionBridge.Resolver = id => id == "weapon.electric-harpoon" ? progress : null;
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.electric-harpoon" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.electric-harpoon") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var terrain = Get<BattleTerrain>(controller, "_battleTerrain");
+            Set(controller, "_aimState", new AimState(new Vector2(0f, terrain.Grid.WorldMaxY - 2f), Vector2.right, 12f, true));
+            Invoke(controller, "Fire");
+            for (var tick = 0; tick < 12; tick++) simulation.Tick(1f / 120f);
+            Invoke(controller, "UpdateElectricHarpoonVisual");
+            var hook = GameObject.Find("Electric Harpoon Hook");
+            Assert.That(hook, Is.Not.Null);
+            var expected = Resources.Load<Texture2D>(purchased
+                ? "UI/Weapons/electric_harpoon_5A_shot" : "UI/Weapons/electric_harpoon_shot");
+            Assert.That(hook.GetComponent<SpriteRenderer>().sprite.texture, Is.EqualTo(expected));
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator GuardianDrone_ProductionSceneHidesAStealthDroneOnlyFromTheEnemyObserver()
         {
             yield return null;

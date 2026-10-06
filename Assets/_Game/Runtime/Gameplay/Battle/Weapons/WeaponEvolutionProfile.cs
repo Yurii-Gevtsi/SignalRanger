@@ -64,8 +64,12 @@ namespace Game.Gameplay.Battle.Weapons
             bool teleportInstantTouch = false,
             bool teleportEarlyTrigger = false,
             int railPierceSteps = 0,
-            bool guardianStealth = false)
+            bool guardianStealth = false,
+            bool harpoonImpactPull = false,
+            bool harpoonDoubleGrab = false)
         {
+            HarpoonImpactPull = harpoonImpactPull;
+            HarpoonDoubleGrab = harpoonDoubleGrab;
             GuardianStealth = guardianStealth;
             RailPierceSteps = Mathf.Clamp(railPierceSteps, 0, 4);
             StickyToxicRelease = stickyToxicRelease;
@@ -174,6 +178,8 @@ namespace Game.Gameplay.Battle.Weapons
         public bool TeleportEarlyTrigger { get; }
         public int RailPierceSteps { get; }
         public bool GuardianStealth { get; }
+        public bool HarpoonImpactPull { get; }
+        public bool HarpoonDoubleGrab { get; }
 
         public static WeaponEvolutionProfile Base => new(1, 0f, 1f, 3, 0);
     }
@@ -193,6 +199,7 @@ namespace Game.Gameplay.Battle.Weapons
         private const string StickyGrenadeWeaponId = "weapon.sticky-grenade";
         private const string RailRifleWeaponId = "weapon.rail-rifle";
         private const string GuardianDroneWeaponId = "weapon.guardian-drone";
+        private const string ElectricHarpoonWeaponId = "weapon.electric-harpoon";
         private const string MissileWeaponId = "weapon.missle";
         private const string ToxicWeaponId = "weapon.toxic";
         private const string FireGunWeaponId = "weapon.fire-gun";
@@ -251,6 +258,10 @@ namespace Game.Gameplay.Battle.Weapons
                             mortarCascadeCount: 2 + Mathf.Clamp(firstSteps - 1, 0, 4));
                     case StickyGrenadeWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, stickyToxicRelease: true);
+                    case ElectricHarpoonWeaponId:
+                        // impact_pull (rank 5) gives the final throw; double_grab (rank 10) a second target.
+                        return new WeaponEvolutionProfile(1, 0f, 1f,
+                            harpoonImpactPull: true, harpoonDoubleGrab: hasSecondSpecial);
                     case GuardianDroneWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, guardianStealth: true);
                     case RailRifleWeaponId:

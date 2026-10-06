@@ -314,6 +314,12 @@ namespace Game.Gameplay.Battle.Motion
             return moved ? WalkOutcome.Moved : WalkOutcome.None;
         }
 
+        /// <summary>Walking speed of this unit's profile, in world units per second.</summary>
+        public float WalkSpeed => _profile.WalkSpeed;
+
+        /// <summary>Gravity this unit falls with, in world units per second squared.</summary>
+        public float Gravity => _profile.Gravity;
+
         public void ResetWalk()
         {
             _walkEnergy = 0f;
