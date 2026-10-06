@@ -449,6 +449,58 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Boost_ProductionSceneLiftsTheDroidSteersItAndASecondPressDropsIt()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.boost" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var motors = Get<Dictionary<string, UnitMotor>>(controller, "_unitMotors");
+            var state = Get<BattleState>(controller, "_battleState");
+            var player = state.GetUnit(state.Turn.ActiveUnitId);
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.boost") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var startY = player.Position.y;
+            Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            Invoke(controller, "Fire");
+            Assert.That(simulation.HasPlayerBoost, Is.True);
+            for (var frame = 0; frame < 12; frame++)
+            {
+                for (var tick = 0; tick < 20; tick++) simulation.Tick(1f / 120f);
+                Invoke(controller, "RefreshUnitViews");
+                yield return null;
+            }
+            var hoverY = player.Position.y;
+            Assert.That(hoverY, Is.GreaterThan(startY + 0.3f), "lifted off");
+            Assert.That(motors[player.UnitId].IsHovering, Is.True);
+
+            // The shared rope buttons steer it: "up" arrives as -1 from the HUD.
+            Set(controller, "_ropeVerticalInput", -1);
+            Invoke(controller, "UpdateWalking");
+            for (var tick = 0; tick < 120; tick++) simulation.Tick(1f / 120f);
+            Assert.That(player.Position.y, Is.GreaterThan(hoverY + 1f), "the up button climbs");
+            Set(controller, "_ropeVerticalInput", 0);
+            Invoke(controller, "UpdateWalking");
+
+            Invoke(controller, "Fire");
+            Assert.That(simulation.HasPlayerBoost, Is.False, "the second press cuts the fuel");
+            for (var frame = 0; frame < 60 && !motors[player.UnitId].IsStable; frame++)
+            {
+                for (var tick = 0; tick < 20; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(motors[player.UnitId].IsStable, Is.True, "the droid landed");
+            Assert.That(player.Position.y, Is.EqualTo(startY).Within(0.3f));
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {

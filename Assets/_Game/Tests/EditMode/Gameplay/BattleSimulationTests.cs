@@ -320,7 +320,8 @@ namespace Game.Tests.EditMode.Gameplay
         {
             foreach (var (id, role) in new[]
             {
-                ("weapon.boost", WeaponRole.MovementTool)
+                ("weapon.turn-transfer", WeaponRole.DefensiveTool),
+                ("weapon.sky-hook", WeaponRole.MovementTool)
             })
             {
                 var weapon = CreateWeapon(id, role, ammo: 1);
@@ -2971,6 +2972,208 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(WeaponUpgradeChoiceResolver.Count(progress, WeaponUpgradePath.Core), Is.EqualTo(4));
             Assert.That(WeaponUpgradeChoiceResolver.Count(progress, WeaponUpgradePath.Radius), Is.EqualTo(4));
         }
+
+        private static SaveWeaponProgressData CreateBoostProgress(int loadoutSteps, int radiusSteps)
+        {
+            var progress = new SaveWeaponProgressData
+            {
+                weaponId = "weapon.boost",
+                rank = 1 + loadoutSteps + radiusSteps
+            };
+            progress.EnsureDefaults();
+            var rank = 2;
+            for (var i = 0; i < loadoutSteps; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank++, path = (int)WeaponUpgradePath.Loadout });
+            for (var i = 0; i < radiusSteps; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank++, path = (int)WeaponUpgradePath.Radius });
+            return progress;
+        }
+
+        private static Harness CreateBoostHarness(SaveWeaponProgressData progress = null, int ammo = 2)
+        {
+            var boost = CreateWeapon("weapon.boost", WeaponRole.MovementTool, damage: 0, impactRadius: 0.1f, ammo: ammo,
+                gravityScale: 0f);
+            return CreateHarness(boost, playerWeaponProgress: progress);
+        }
+
+        private static readonly AimState NoAim = new AimState(Vector2.zero, Vector2.zero, 0f, false);
+
+        [Test]
+        public void Boost_RisesStraightUpToTheTopOfAJumpAndHangsWithoutGravity()
+        {
+            var jumpHarness = CreateBoostHarness();
+            var jumper = jumpHarness.State.GetUnit("player.test.01");
+            var floorY = jumper.Position.y;
+            Assert.That(jumpHarness.Simulation.TryStartJump(1), Is.EqualTo(BattleJumpOutcome.Jumped));
+            var jumpApex = floorY;
+            for (var i = 0; i < 400; i++)
+            {
+                jumpHarness.Simulation.Tick(1f / 120f);
+                jumpApex = Mathf.Max(jumpApex, jumper.Position.y);
+            }
+
+            var harness = CreateBoostHarness();
+            var unit = harness.State.GetUnit("player.test.01");
+            var startX = unit.Position.x;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(harness.Simulation.HasPlayerBoost, Is.True);
+            TickMany(harness.Simulation, 360, 1f / 120f);                    // 3 s
+            var hoverY = unit.Position.y;
+            Assert.That(hoverY, Is.EqualTo(jumpApex).Within(0.2f), "up to roughly the apex of an ordinary jump");
+            Assert.That(unit.Position.x, Is.EqualTo(startX).Within(0.001f), "vertical, no arc");
+            TickMany(harness.Simulation, 120, 1f / 120f);
+            Assert.That(unit.Position.y, Is.EqualTo(hoverY).Within(0.001f), "it hangs there, gravity does not act");
+            Assert.That(harness.State.Turn.ActionSpent, Is.False, "the fuel does not spend the action");
+        }
+
+        [Test]
+        public void Boost_SteersInFourDirectionsAndOtherDroidsBlockTheBody()
+        {
+            var harness = CreateBoostHarness(CreateBoostProgress(0, 4));     // nine seconds of fuel
+            var unit = harness.State.GetUnit("player.test.01");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            var hoverY = unit.Position.y;
+            var half = MotorHoverSpeed * 0.5f;                                // half a second of steering
+
+            harness.Simulation.SetBoostInput(0, 1);
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            Assert.That(unit.Position.y - hoverY, Is.EqualTo(half).Within(0.1f), "up");
+            harness.Simulation.SetBoostInput(0, -1);
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            Assert.That(unit.Position.y, Is.EqualTo(hoverY).Within(0.1f), "down");
+
+            var x0 = unit.Position.x;
+            harness.Simulation.SetBoostInput(1, 0);
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            Assert.That(unit.Position.x - x0, Is.EqualTo(half).Within(0.1f), "right");
+            harness.Simulation.SetBoostInput(-1, 0);
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            Assert.That(unit.Position.x, Is.EqualTo(x0).Within(0.1f), "left");
+
+            // The opposing droid stands at x = 3: pushing right never goes through it.
+            harness.Simulation.SetBoostInput(1, 0);
+            TickMany(harness.Simulation, 480, 1f / 120f);
+            Assert.That(unit.Position.x, Is.LessThan(3f), "other droids block the body");
+            Assert.That(harness.Simulation.HasPlayerBoost, Is.True, "the timer keeps running while blocked");
+        }
+
+        [Test]
+        public void Boost_CeilingStopsTheRiseAndTheTimerKeepsGoing()
+        {
+            var harness = CreateBoostHarness();
+            harness.Terrain.StampSolidRect(new Vector2(-3f, 2.2f), new Vector2(4f, 1f)); // underside at y = 1.7
+            var unit = harness.State.GetUnit("player.test.01");
+            const float halfHeight = 0.5f;                                     // the test motor profile
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 60, 1f / 120f);
+            var apexY = unit.Position.y;
+            Assert.That(apexY + halfHeight, Is.LessThan(1.7f), "the ordinary apex is below this ceiling");
+            harness.Simulation.SetBoostInput(0, 1);
+            TickMany(harness.Simulation, 180, 1f / 120f);
+            Assert.That(unit.Position.y + halfHeight, Is.LessThanOrEqualTo(1.72f), "stopped under the ceiling");
+            Assert.That(unit.Position.y, Is.GreaterThan(apexY + 0.2f), "it did climb up to it");
+            Assert.That(harness.Simulation.HasPlayerBoost, Is.True, "the timer keeps running");
+        }
+
+        [Test]
+        public void Boost_LastsFiveSecondsAndEveryRadiusPurchaseAddsOne()
+        {
+            foreach (var (radius, seconds) in new[] { (0, 5f), (4, 9f) })
+            {
+                var harness = CreateBoostHarness(CreateBoostProgress(0, radius));
+                Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+                TickMany(harness.Simulation, Mathf.RoundToInt((seconds - 0.2f) * 120f), 1f / 120f);
+                Assert.That(harness.Simulation.HasPlayerBoost, Is.True, $"still burning before {seconds}");
+                TickMany(harness.Simulation, 48, 1f / 120f);
+                Assert.That(harness.Simulation.HasPlayerBoost, Is.False, $"burned out after {seconds}");
+            }
+        }
+
+        [Test]
+        public void Boost_SecondPressOrTheEndOfTimeLetsTheDroidFallAndLandWithoutSpendingTheAction()
+        {
+            var harness = CreateBoostHarness();
+            var unit = harness.State.GetUnit("player.test.01");
+            var floorY = unit.Position.y;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 360, 1f / 120f);
+            Assert.That(unit.Position.y, Is.GreaterThan(floorY + 0.3f));
+            Assert.That(harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo(), Is.EqualTo(1));
+
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "second press");
+            Assert.That(harness.Simulation.HasPlayerBoost, Is.False);
+            Assert.That(harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo(), Is.EqualTo(1), "no second charge spent");
+            TickMany(harness.Simulation, 480, 1f / 120f);
+            Assert.That(unit.Position.y, Is.LessThan(floorY + 0.1f), "fell back down to the surface");
+            Assert.That(harness.Motors[unit.UnitId].IsStable, Is.True);
+            Assert.That(harness.State.Turn.ActionSpent, Is.False);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+        }
+
+        [Test]
+        public void Boost_ChargesRunOutAndTheTurnEndingCutsTheFuel()
+        {
+            var harness = CreateBoostHarness();
+            Assert.That(harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo(), Is.EqualTo(2));
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 240, 1f / 120f);
+            var unit = harness.State.GetUnit("player.test.01");
+            var airborneY = unit.Position.y;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();     // the turn ends while hovering
+            Assert.That(harness.Simulation.HasPlayerBoost, Is.False);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+            TickMany(harness.Simulation, 480, 1f / 120f);
+            Assert.That(unit.Position.y, Is.LessThan(airborneY - 0.3f), "the droid fell once the fuel was cut");
+
+            var spent = CreateBoostHarness(null, ammo: 1);
+            Assert.That(spent.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(spent.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));  // cut the fuel
+            TickMany(spent.Simulation, 480, 1f / 120f);
+            Assert.That(spent.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.OutOfAmmo));
+        }
+
+        [Test]
+        public void Boost_RegistryLimitsRadiusSecondsLoadoutChargesAndArtMatchTheCard()
+        {
+            const string id = "weapon.boost";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 0, 0, 4, 4 }));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            Assert.That(weapon.AmmoCount, Is.EqualTo(2));
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveBoostSeconds(0), Is.EqualTo(5f));
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveBoostSeconds(4), Is.EqualTo(9f));
+            Assert.That(BattleSimulation.RequiresAim(weapon), Is.False, "no aiming, the fuel is lit in place");
+            Assert.That(BattleSimulation.IsBattleMechanicAvailable(weapon), Is.True);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/boost"), Is.Not.Null);
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Aim).Applied, Is.False);
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.True);
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
+            }
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Loadout).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
+            var restored = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            var progress = restored.inventory.GetOrCreateWeaponProgress(id);
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(weapon, definition, progress, WeaponUpgradePath.Radius),
+                Is.EqualTo(9f));
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(weapon, definition, progress, WeaponUpgradePath.Loadout),
+                Is.EqualTo(6f));
+        }
+
+        private const float MotorHoverSpeed = Game.Gameplay.Battle.Motion.UnitMotor.HoverMoveSpeed;
 
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)

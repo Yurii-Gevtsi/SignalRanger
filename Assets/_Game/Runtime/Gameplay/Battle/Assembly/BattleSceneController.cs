@@ -4041,7 +4041,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void UpdateWalking()
         {
-            if (_simulation != null && _simulation.IsPlayerRopeAttached)
+            if (_simulation != null && (_simulation.IsPlayerRopeAttached || _simulation.HasPlayerBoost))
             {
                 UpdateRopeTraversalInput();
                 return;
@@ -4100,12 +4100,24 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void UpdateRopeTraversalInput()
         {
-            if (_simulation == null || !_simulation.IsPlayerRopeAttached)
+            if (_simulation == null)
             {
                 return;
             }
 
             var horizontal = _keyboardWalkInputDirection != 0 ? _keyboardWalkInputDirection : _uiWalkInputDirection;
+            if (_simulation.HasPlayerBoost)
+            {
+                // The shared rope buttons report "up" as -1; the fuel steering uses up = +1.
+                _simulation.SetBoostInput(horizontal, -_ropeVerticalInput);
+                return;
+            }
+
+            if (!_simulation.IsPlayerRopeAttached)
+            {
+                return;
+            }
+
             _simulation.SetRopeTraversalInput(horizontal, _ropeVerticalInput);
         }
 
@@ -4285,7 +4297,8 @@ namespace Game.Gameplay.Battle.Assembly
             var electroOverlayFrames = LoadElectroOverlayFrames();
             foreach (var presenter in _unitPresenters)
             {
-                var isJumping = _unitMotors.TryGetValue(presenter.State.UnitId, out var motor) && motor.IsJumping;
+                var isJumping = _unitMotors.TryGetValue(presenter.State.UnitId, out var motor)
+                    && (motor.IsJumping || motor.IsHovering);
                 var jumpTrailScale = isJumping ? motor.JumpTrailScale : 0f;
                 presenter.Refresh(presenter.State.UnitId == _battleState.Turn.ActiveUnitId, isJumping, jumpTrailScale);
                 presenter.View.SetFreezeOverlay(freezeOverlay,
@@ -5599,7 +5612,7 @@ namespace Game.Gameplay.Battle.Assembly
 
             var weapon = _inventory.Selected;
             var playerHasTime = _simulation.MovementTimeRemaining > 0f;
-            var ropeAttached = _simulation.IsPlayerRopeAttached;
+            var ropeAttached = _simulation.IsPlayerRopeAttached || _simulation.HasPlayerBoost;
             var directDroneControlActive = _simulation.HasActiveControlledProjectile;
             var fireInputReady = ropeAttached || !BattleSimulation.RequiresAim(weapon) || _aimState.HasInput;
             var canContinueMinePlacement = CanContinueMinePlacementInput();
@@ -5610,7 +5623,7 @@ namespace Game.Gameplay.Battle.Assembly
                 && playerHasTime
                 && _playerWeaponSelected
                 && (_inventory.CanFireSelected || _simulation.CanContinueHoppingGrenade()
-                    || _simulation.CanTriggerTeleportEarly())
+                    || _simulation.CanTriggerTeleportEarly() || _simulation.HasPlayerBoost)
                 && fireInputReady;
             var guideActive = _firstBattleGuide != null && _firstBattleGuide.IsActive;
             var isFirstTrainingBattle = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId);

@@ -57,6 +57,12 @@ namespace Game.Gameplay.Battle.Motion
         private float _ropeSwingAcceleration;
         private int _ropeHorizontalInput;
         private int _ropeVerticalInput;
+        private bool _hovering;
+        private bool _hoverRisen;
+        private float _hoverTargetY;
+        private int _hoverHorizontalInput;
+        private int _hoverVerticalInput;
+        private System.Func<Vector2, bool> _hoverExtraBlocker;
 
         public UnitMotor(TerrainGrid terrain, UnitMotionProfile profile, Vector2 position, float killY)
         {
@@ -78,6 +84,13 @@ namespace Game.Gameplay.Battle.Motion
         /// <summary>True only for a player or bot initiated jump, not a fall or knockback.</summary>
         public bool IsJumping { get; private set; }
         public bool HasRope => _hasRope;
+        public bool IsHovering => _hovering;
+
+        /// <summary>World units per second of the automatic rise when the fuel is lit.</summary>
+        public const float HoverRiseSpeed = 4.5f;
+
+        /// <summary>World units per second of the directional control while hovering.</summary>
+        public const float HoverMoveSpeed = 3.2f;
 
         /// <summary>
         /// Jet-trail scale over the designed jump arc: it grows toward the apex,
@@ -87,6 +100,11 @@ namespace Game.Gameplay.Battle.Motion
         {
             get
             {
+                if (_hovering)
+                {
+                    return 1f;
+                }
+
                 if (!IsJumping || _jumpDuration <= 0f)
                 {
                     return 0f;
@@ -136,7 +154,53 @@ namespace Game.Gameplay.Battle.Motion
             IsJumping = false;
             ResetJumpPhase();
             _climbDebt = 0f;
+            StopHover();
             DetachRope();
+        }
+
+        /// <summary>
+        /// Lights the rocket fuel: the body rises straight up by <paramref name="riseHeight"/> (or until
+        /// something blocks it) and then hangs in the air. Gravity does not act until
+        /// <see cref="StopHover"/>. <paramref name="extraBlocker"/> lets the caller add bodies the terrain
+        /// does not know about, such as other droids.
+        /// </summary>
+        public void StartHover(float riseHeight, System.Func<Vector2, bool> extraBlocker = null)
+        {
+            _hovering = true;
+            _hoverRisen = false;
+            _hoverTargetY = Position.y + Mathf.Max(0.1f, riseHeight);
+            _hoverHorizontalInput = 0;
+            _hoverVerticalInput = 0;
+            _hoverExtraBlocker = extraBlocker;
+            Velocity = Vector2.zero;
+            IsStable = false;
+            IsJumping = false;
+            ResetJumpPhase();
+            _climbDebt = 0f;
+            DetachRope();
+        }
+
+        /// <summary>Horizontal and vertical (up positive) steering of the hovering body.</summary>
+        public void SetHoverInput(int horizontalDirection, int verticalDirection)
+        {
+            _hoverHorizontalInput = horizontalDirection == 0 ? 0 : horizontalDirection > 0 ? 1 : -1;
+            _hoverVerticalInput = verticalDirection == 0 ? 0 : verticalDirection > 0 ? 1 : -1;
+        }
+
+        /// <summary>Cuts the fuel; the body falls under normal physics unless something supports it.</summary>
+        public void StopHover()
+        {
+            if (!_hovering)
+            {
+                return;
+            }
+
+            _hovering = false;
+            _hoverHorizontalInput = 0;
+            _hoverVerticalInput = 0;
+            _hoverExtraBlocker = null;
+            Velocity = Vector2.zero;
+            IsStable = false;
         }
 
         public void AttachRope(Vector2 anchor, float length, float maximumLength, float swingAcceleration)
@@ -225,6 +289,11 @@ namespace Game.Gameplay.Battle.Motion
                 return MotorStepOutcome.Resting;
             }
 
+            if (_hovering)
+            {
+                return StepHover(deltaTime);
+            }
+
             if (IsJumping)
             {
                 _jumpElapsed = Mathf.Min(_jumpDuration, _jumpElapsed + Mathf.Max(0f, deltaTime));
@@ -280,6 +349,60 @@ namespace Game.Gameplay.Battle.Motion
             }
 
             return MotorStepOutcome.Airborne;
+        }
+
+        private MotorStepOutcome StepHover(float deltaTime)
+        {
+            var velocity = new Vector2(
+                _hoverHorizontalInput * HoverMoveSpeed,
+                _hoverRisen ? _hoverVerticalInput * HoverMoveSpeed : HoverRiseSpeed);
+            Velocity = velocity;
+            var displacement = velocity * deltaTime;
+            var cell = Mathf.Min(_terrain.CellSize.x, _terrain.CellSize.y);
+            var stepCount = Mathf.Max(1, Mathf.CeilToInt(Mathf.Max(
+                Mathf.Abs(displacement.x), Mathf.Abs(displacement.y)) / cell));
+            var step = displacement / stepCount;
+            for (var i = 0; i < stepCount; i++)
+            {
+                // Axes are tried separately so a wall or a ceiling stops only its own direction.
+                if (!Mathf.Approximately(step.x, 0f))
+                {
+                    var next = Position + new Vector2(step.x, 0f);
+                    if (!IsHoverBlocked(next))
+                    {
+                        Position = next;
+                    }
+                }
+
+                if (!Mathf.Approximately(step.y, 0f))
+                {
+                    var next = Position + new Vector2(0f, step.y);
+                    if (!IsHoverBlocked(next))
+                    {
+                        Position = next;
+                    }
+                    else if (!_hoverRisen && step.y > 0f)
+                    {
+                        _hoverRisen = true;
+                    }
+                }
+
+                if (!_hoverRisen && Position.y >= _hoverTargetY)
+                {
+                    _hoverRisen = true;
+                }
+            }
+
+            return MotorStepOutcome.Airborne;
+        }
+
+        private bool IsHoverBlocked(Vector2 center)
+        {
+            return center.x - _profile.HalfWidth < _terrain.WorldMinX
+                || center.x + _profile.HalfWidth > _terrain.WorldMaxX
+                || center.y + _profile.HalfHeight > _terrain.WorldMaxY
+                || IsBodyBlocked(center)
+                || (_hoverExtraBlocker != null && _hoverExtraBlocker(center));
         }
 
         /// <summary>

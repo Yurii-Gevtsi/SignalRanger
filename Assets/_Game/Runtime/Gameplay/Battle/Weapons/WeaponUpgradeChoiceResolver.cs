@@ -73,6 +73,8 @@ namespace Game.Gameplay.Battle.Weapons
                         && option.Id == TitaniumBarrierRules.SizeFeatureId, count),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.rope" =>
                     ResolveRopeLength(count),
+                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.boost" =>
+                    ResolveBoostSeconds(count),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.ion-shotgun" =>
                     weapon.ProjectileRadius * (1f + count * RadiusPercentPerUpgrade),
                 WeaponUpgradePath.Radius => weapon.ImpactRadius *
@@ -101,6 +103,12 @@ namespace Game.Gameplay.Battle.Weapons
         public static float ResolveRepairHealPercent(int coreUpgrades)
         {
             return 25f * (1f + Math.Clamp(coreUpgrades, 0, 4) * 0.10f);
+        }
+
+        /// <summary>Rocket fuel burns for five seconds; every Radius purchase adds one.</summary>
+        public static float ResolveBoostSeconds(int radiusUpgrades)
+        {
+            return 5f + Math.Clamp(radiusUpgrades, 0, 4);
         }
 
         public static float ResolveRopeLength(int radiusUpgrades)
@@ -155,7 +163,7 @@ namespace Game.Gameplay.Battle.Weapons
             WeaponProgressionDefinition definition = null)
         {
             if (weapon?.WeaponId is "weapon.bur" or "weapon.bur-rocket" or "weapon.titanium-barrier"
-                or "weapon.hopping-grenade")
+                or "weapon.hopping-grenade" or "weapon.boost")
             {
                 return 0;
             }

@@ -55,6 +55,7 @@ namespace Game.Gameplay.Battle.Simulation
         private const string TeleportWeaponId = "weapon.teleport";
         private const string SwapJumpWeaponId = "weapon.swap-jump";
         private const string GrounderWeaponId = "weapon.grounder";
+        private const string BoostWeaponId = "weapon.boost";
         private const string ForceFieldWeaponId = "weapon.force-field";
         private const int GrounderBaseHealth = 45;
         private const string GrenadeWeaponId = "weapon.granata";
@@ -256,6 +257,7 @@ namespace Game.Gameplay.Battle.Simulation
         private bool _playerTurnTimerPaused;
         private int _turnSequence;
         private RopeTraversal _ropeTraversal;
+        private BoostSession _boost;
         private ElectricHarpoonTraversal _electricHarpoonTraversal;
         private Vector2? _orbitalTargetMarker;
         private PendingOrbitalStrike _pendingOrbitalStrike;
@@ -386,6 +388,9 @@ namespace Game.Gameplay.Battle.Simulation
             || _scheduledProjectileSpawns.Count > 0
             || _ropeTraversal != null && !_ropeTraversal.IsAttached
             || _electricHarpoonTraversal != null;
+        /// <summary>True while the active droid is on rocket fuel (hovering).</summary>
+        public bool HasPlayerBoost => _boost != null && _boost.OwnerUnitId == _state.Turn.ActiveUnitId;
+        public float BoostSecondsRemaining => _boost?.Remaining ?? 0f;
         public bool HasPlayerRopeTraversal => _ropeTraversal != null
             && _ropeTraversal.OwnerUnitId == _state.Turn.ActiveUnitId;
         public bool IsPlayerRopeAttached => HasPlayerRopeTraversal && _ropeTraversal.IsAttached;
@@ -499,7 +504,7 @@ namespace Game.Gameplay.Battle.Simulation
             return weapon.WeaponId switch
             {
                 "weapon.turn-transfer"
-                    or "weapon.boost" or "weapon.sky-hook" or "weapon.virus"
+                    or "weapon.sky-hook" or "weapon.virus"
                     or "weapon.bomber" or "weapon.ufo-carrier" or "weapon.self-destruct"
                     or "weapon.nuclear-charge" => false,
                 _ => true
@@ -519,6 +524,7 @@ namespace Game.Gameplay.Battle.Simulation
                 && weapon.WeaponId != C4WeaponId
                 && weapon.WeaponId != RepairJammerWeaponId
                 && weapon.WeaponId != OrbitalRocketWeaponId
+                && weapon.WeaponId != BoostWeaponId
                 && weapon.WeaponId != FpvWeaponId;
         }
 
@@ -646,6 +652,14 @@ namespace Game.Gameplay.Battle.Simulation
 
         public BattleFireResult TryFire(AimState aim)
         {
+            if (_boost != null && _boost.OwnerUnitId == _state.Turn.ActiveUnitId)
+            {
+                // A second press cuts the fuel; the droid falls unless it is supported.
+                var boostWeapon = _boost.Weapon;
+                EndBoost();
+                return new BattleFireResult(BattleFireOutcome.Fired, _state.Turn.ActiveTeam, boostWeapon);
+            }
+
             if (_ropeTraversal != null && _ropeTraversal.IsAttached
                 && _ropeTraversal.OwnerUnitId == _state.Turn.ActiveUnitId)
             {
@@ -722,6 +736,11 @@ namespace Game.Gameplay.Battle.Simulation
                 && TryHopRestingGrenade(unit, weapon, effectiveAim, out var hopResult))
             {
                 return hopResult;
+            }
+
+            if (weapon.WeaponId == BoostWeaponId)
+            {
+                return StartBoost(unit, activeInventory, weapon);
             }
 
             if (weapon.WeaponId == RopeWeaponId)
@@ -1179,6 +1198,7 @@ namespace Game.Gameplay.Battle.Simulation
                 StepRetreat(_settings.SimulationTickSeconds);
                 StepWalkIntent(_settings.SimulationTickSeconds);
                 StepRopeTraversal(_settings.SimulationTickSeconds);
+                StepBoost(_settings.SimulationTickSeconds);
                 StepElectricHarpoon(_settings.SimulationTickSeconds);
                 StepScheduledProjectileSpawns(_settings.SimulationTickSeconds);
                 StepProjectiles(_settings.SimulationTickSeconds);
@@ -1755,6 +1775,7 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void ResetMotionForNewTurn()
         {
+            EndBoost();
             if (_ropeTraversal != null)
             {
                 _ropeTraversal.Detach(GetMotor(_ropeTraversal.OwnerUnitId));
@@ -1948,6 +1969,115 @@ namespace Game.Gameplay.Battle.Simulation
             _turnService.SpendAction(_state);
             AdvanceTurnNow(TurnAdvanceReason.InstantActionCompleted);
             return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, position);
+        }
+
+        private BattleFireResult StartBoost(
+            BattleUnitState unit,
+            WeaponInventoryRuntime inventory,
+            WeaponDefinition weapon)
+        {
+            var motor = GetMotor(unit.UnitId);
+            if (motor == null || !motor.IsStable)
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+            }
+
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            var radiusPurchases = ProgressionFor(unit.TeamId).ResolveUpgradeCount(
+                weapon.WeaponId, WeaponUpgradePath.Radius);
+            var archetype = ArchetypeFor(unit.TeamId);
+            // Up to the top of an ordinary jump, then it hangs there.
+            var apexHeight = Mathf.Lerp(archetype.FrontJumpHeight, archetype.BackJumpHeight, 0.5f);
+            _boost = new BoostSession(
+                unit.UnitId, weapon, WeaponUpgradeChoiceResolver.ResolveBoostSeconds(radiusPurchases));
+            motor.StartHover(apexHeight, center => HoverBodyTouchesAnotherDroid(unit, center, motor.Profile.HalfHeight));
+            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            UnitsMoved?.Invoke();
+            return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon);
+        }
+
+        private bool HoverBodyTouchesAnotherDroid(BattleUnitState self, Vector2 center, float selfHalfHeight)
+        {
+            foreach (var team in _state.Teams)
+            {
+                foreach (var other in team.Units)
+                {
+                    if (other == null || other == self || other.IsDefeated)
+                    {
+                        continue;
+                    }
+
+                    var otherHalfHeight = GetMotor(other.UnitId)?.Profile.HalfHeight ?? selfHalfHeight;
+                    if (Mathf.Abs(center.x - other.Position.x) < _settings.OccupiedRadius
+                        && Mathf.Abs(center.y - other.Position.y) < selfHalfHeight + otherHalfHeight)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Steers the hovering droid: horizontal and vertical (up positive) direction.</summary>
+        public void SetBoostInput(int horizontalDirection, int verticalDirection)
+        {
+            if (_boost == null)
+            {
+                return;
+            }
+
+            _boost.HorizontalInput = horizontalDirection;
+            _boost.VerticalInput = verticalDirection;
+        }
+
+        private void StepBoost(float tickSeconds)
+        {
+            if (_boost == null)
+            {
+                return;
+            }
+
+            var unit = FindUnit(_boost.OwnerUnitId);
+            var motor = GetMotor(_boost.OwnerUnitId);
+            if (unit == null || unit.IsDefeated || motor == null || !motor.IsHovering)
+            {
+                EndBoost();
+                return;
+            }
+
+            // A frozen or disoriented droid keeps the automatic rise and hover but cannot steer.
+            var canSteer = !IsUnitFrozen(unit.UnitId) && !IsActiveUnitDisoriented();
+            motor.SetHoverInput(
+                canSteer ? _boost.HorizontalInput : 0,
+                canSteer ? _boost.VerticalInput : 0);
+            if (canSteer && _boost.HorizontalInput != 0)
+            {
+                unit.SetFacing(_boost.HorizontalInput > 0 ? 1 : -1);
+            }
+
+            _boost.Remaining -= tickSeconds;
+            if (_boost.Remaining <= 0f)
+            {
+                EndBoost();
+            }
+        }
+
+        private void EndBoost()
+        {
+            if (_boost == null)
+            {
+                return;
+            }
+
+            var motor = GetMotor(_boost.OwnerUnitId);
+            _boost = null;
+            motor?.StopHover();
+            UnitsMoved?.Invoke();
         }
 
         private BattleFireResult DeployForceField(
@@ -6885,6 +7015,22 @@ namespace Game.Gameplay.Battle.Simulation
             public string OwnerUnitId { get; }
             public WeaponDefinition Weapon { get; }
             public Vector2 Target { get; }
+        }
+
+        private sealed class BoostSession
+        {
+            public BoostSession(string ownerUnitId, WeaponDefinition weapon, float seconds)
+            {
+                OwnerUnitId = ownerUnitId;
+                Weapon = weapon;
+                Remaining = seconds;
+            }
+
+            public string OwnerUnitId { get; }
+            public WeaponDefinition Weapon { get; }
+            public float Remaining { get; set; }
+            public int HorizontalInput { get; set; }
+            public int VerticalInput { get; set; }
         }
 
         private sealed class ActiveForceField
