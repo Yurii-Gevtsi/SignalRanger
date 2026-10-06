@@ -216,6 +216,7 @@ namespace Game.Gameplay.Battle.Simulation
         // Shared two-turn elemental cycle: cold uses it now, fire and the others reuse the same rules.
         private readonly Dictionary<string, ElementalStatus> _chillEffects = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ElementalStatus> _fireEffects = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, ElementalStatus> _electricEffects = new(StringComparer.Ordinal);
         private const int ElementalBaseDurationTurns = 2;
         private const int ElementalRepeatBonusPercent = 25;
         private readonly Dictionary<string, ActiveDisorientation> _freezes = new(StringComparer.Ordinal);
@@ -1094,6 +1095,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessPoisonForEndingActiveTurn();
             ProcessElementalForEndingActiveTurn(_chillEffects);
             ProcessElementalForEndingActiveTurn(_fireEffects);
+            ProcessElementalForEndingActiveTurn(_electricEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
@@ -1365,6 +1367,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessPoisonForEndingActiveTurn();
             ProcessElementalForEndingActiveTurn(_chillEffects);
             ProcessElementalForEndingActiveTurn(_fireEffects);
+            ProcessElementalForEndingActiveTurn(_electricEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
@@ -3583,6 +3586,7 @@ namespace Game.Gameplay.Battle.Simulation
             var empEvolution = appliesEmpStun ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
             var appliesChill = impactWeapon.WeaponId == CryoGrenadeWeaponId;
             var appliesFire = impactWeapon.WeaponId == IncendiaryGrenadeWeaponId;
+            var appliesElectric = impactWeapon.WeaponId == EmpWeaponId;
             var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId;
             var freezeEvolution = appliesFreeze ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
 
@@ -3595,10 +3599,12 @@ namespace Game.Gameplay.Battle.Simulation
                 impact.ProjectileId,
                 settings,
                 (unit, amount) => ResolveElementalRepeatBonus(
-                    _fireEffects, appliesFire, unit,
+                    _electricEffects, appliesElectric, unit,
                     ResolveElementalRepeatBonus(
-                        _chillEffects, appliesChill, unit,
-                        ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution))));
+                        _fireEffects, appliesFire, unit,
+                        ResolveElementalRepeatBonus(
+                            _chillEffects, appliesChill, unit,
+                            ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution)))));
             foreach (var damageEvent in damageEvents)
             {
                 DamageApplied?.Invoke(sourceTeam, damageEvent);
@@ -3616,6 +3622,11 @@ namespace Game.Gameplay.Battle.Simulation
                 if (appliesFire)
                 {
                     ApplyElementalStatus(_fireEffects, target, sourceTeam, damageEvent.Damage);
+                }
+
+                if (appliesElectric)
+                {
+                    ApplyElementalStatus(_electricEffects, target, sourceTeam, damageEvent.Damage);
                 }
 
                 if (appliesEmpStun)
@@ -4089,6 +4100,7 @@ namespace Game.Gameplay.Battle.Simulation
 
             return (_electrifiedOverlayRemainingSeconds.TryGetValue(unitId, out var secondsRemaining)
                     && secondsRemaining > 0f)
+                || _electricEffects.ContainsKey(unitId)
                 || (_empStuns.TryGetValue(unitId, out var stun)
                     && stun.TurnsRemaining > 0)
                 || (_empWeakens.TryGetValue(unitId, out var weaken)
@@ -4612,6 +4624,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessPoisonForEndingActiveTurn();
             ProcessElementalForEndingActiveTurn(_chillEffects);
             ProcessElementalForEndingActiveTurn(_fireEffects);
+            ProcessElementalForEndingActiveTurn(_electricEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();

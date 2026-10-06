@@ -2290,6 +2290,80 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.That(Resources.Load<Texture2D>("UI/Weapons/fire_shot_" + frame), Is.Not.Null, $"fire_shot_{frame}");
         }
 
+        private static Harness CreateEmpHarness(Vector2? ally = null, int damage = 40)
+        {
+            var emp = CreateWeapon("weapon.emp", WeaponRole.DirectProjectile, damage: damage, impactRadius: 2.5f,
+                gravityScale: 0f, timeoutSeconds: 8f);
+            return CreateHarness(emp, secondPlayerPosition: ally);
+        }
+
+        [Test]
+        public void EmpCannon_AppliesTheSharedTwoTurnElectricCycleWithoutAnyBanInItsBase()
+        {
+            var harness = CreateEmpHarness(ally: new Vector2(4f, 0f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var friend = harness.State.GetUnit("player.test.02");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var direct = start - enemy.Health;
+            Assert.That(direct, Is.GreaterThan(0));
+            Assert.That(harness.Simulation.IsUnitElectrified(enemy.UnitId), Is.True);
+            Assert.That(harness.Simulation.IsUnitElectrified(friend.UnitId), Is.True, "allies in the primary radius too");
+            Assert.That(harness.Simulation.CanActiveUnitFire(), Is.True, "no shot ban in the base");
+
+            var tick = Mathf.Max(1, Mathf.RoundToInt(direct * 0.2f));
+            var afterBlast = enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // victim turn ends: tick
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // second tick and removal
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick * 2));
+            Assert.That(harness.Simulation.IsUnitElectrified(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void EmpCannon_RepeatHitRefreshesWithoutStackingAndBoostsOnlyTheDirectDamage()
+        {
+            var harness = CreateEmpHarness(damage: 20);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var first = start - enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            enemy.MoveTo(new Vector2(3f, 0f));
+            harness.Motors[enemy.UnitId].Teleport(enemy.Position);
+            var beforeSecond = enemy.Health;
+            ThrowAtOpponent(harness);
+            var second = beforeSecond - enemy.Health;
+            Assert.That(second, Is.EqualTo(Mathf.CeilToInt(first * 1.25f)).Within(1));
+            var tick = Mathf.Max(1, Mathf.RoundToInt(second * 0.2f));
+            var afterSecond = enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(enemy.Health, Is.EqualTo(afterSecond - tick * 2));
+            Assert.That(harness.Simulation.IsUnitElectrified(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void EmpCannon_RegistryAndSkinsMatchTheCatalogWhileTheBansAwaitTheOwner()
+        {
+            Assert.That(WeaponProgressionCatalog.TryGet("weapon.emp", out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+            Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "aim-jam" }));
+            Assert.That(definition.GetEvolutionOptions(10).Select(o => o.Id), Is.EquivalentTo(new[] { "movement-lock" }));
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.emp", rank = 6 };
+            progress.EnsureDefaults();
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "aim-jam" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            Assert.That(WeaponEvolutionIconResolver.ResolveCurrentIconResource("emp", definition, progress),
+                Is.EqualTo("UI/Weapons/emp_5_10_B"));
+            Assert.That(WeaponEvolutionIconResolver.ResolveCurrentIconResource("emp", definition,
+                new SaveWeaponProgressData { weaponId = "weapon.emp", rank = 1 }), Is.EqualTo("UI/Weapons/emp"));
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/emp_shot"), Is.Not.Null);
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {
