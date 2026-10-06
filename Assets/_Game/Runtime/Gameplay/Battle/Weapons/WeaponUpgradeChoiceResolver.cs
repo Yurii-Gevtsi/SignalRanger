@@ -48,7 +48,7 @@ namespace Game.Gameplay.Battle.Weapons
             var count = Count(progress, path) + Math.Max(0, extraPurchases);
             return path switch
             {
-                WeaponUpgradePath.Core => weapon.WeaponId == "weapon.grounder"
+                WeaponUpgradePath.Core => weapon.WeaponId is "weapon.grounder" or "weapon.force-field"
                     ? 2f + count
                     : weapon.WeaponId == "weapon.heal" ? ResolveRepairHealPercent(count)
                     : Mathf.RoundToInt(weapon.Damage *
@@ -77,6 +77,7 @@ namespace Game.Gameplay.Battle.Weapons
                     weapon.ProjectileRadius * (1f + count * RadiusPercentPerUpgrade),
                 WeaponUpgradePath.Radius => weapon.ImpactRadius *
                     (1f + count * (weapon.WeaponId == "weapon.grounder" || weapon.WeaponId == "weapon.granata"
+                        || weapon.WeaponId == "weapon.force-field" || weapon.WeaponId == "weapon.swap-jump"
                         || weapon.WeaponId == "weapon.impulse"
                         || weapon.WeaponId == "weapon.c4"
                         || weapon.WeaponId == "weapon.mine" || weapon.WeaponId == "weapon.titanium-disc"
@@ -161,6 +162,7 @@ namespace Game.Gameplay.Battle.Weapons
 
             var percentPerUpgrade = weapon != null &&
                 (weapon.WeaponId == "weapon.grounder" || weapon.WeaponId == "weapon.granata"
+                    || weapon.WeaponId == "weapon.force-field" || weapon.WeaponId == "weapon.swap-jump"
                     || weapon.WeaponId == "weapon.impulse"
                     || weapon.WeaponId == "weapon.c4" || weapon.WeaponId == "weapon.mine"
                     || weapon.WeaponId == "weapon.titanium-disc" || weapon.WeaponId == "weapon.mortira") ? 10 : 8;

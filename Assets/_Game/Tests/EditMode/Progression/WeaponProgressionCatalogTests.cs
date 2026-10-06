@@ -113,6 +113,25 @@ namespace Game.Tests.EditMode.Progression
                 Is.EqualTo(1.96f).Within(0.0001f));
         }
 
+        [TestCase("weapon.force-field", WeaponUpgradePath.Core, 4, 6f)]
+        [TestCase("weapon.force-field", WeaponUpgradePath.Radius, 4, 1.96f)]
+        [TestCase("weapon.swap-jump", WeaponUpgradePath.Radius, 4, 1.96f)]
+        public void NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps(
+            string weaponId, WeaponUpgradePath path, int steps, float expected)
+        {
+            var weapon = Game.Gameplay.Battle.Weapons.WeaponDefinition.CreateRuntime(
+                weaponId, weaponId + ".name", Game.Gameplay.Battle.Weapons.WeaponRole.DefensiveTool,
+                0, 1.4f, 0.14f, 0f, 8f, 6f, 20f, 1, null, null);
+            var progress = new SaveWeaponProgressData { weaponId = weaponId, rank = 1 + steps };
+            progress.EnsureDefaults();
+            for (var i = 0; i < steps; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = 2 + i, path = (int)path });
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(weapon, null, progress, path),
+                Is.EqualTo(expected).Within(0.0001f));
+            if (path == WeaponUpgradePath.Radius)
+                Assert.That(WeaponUpgradeChoiceResolver.ResolveImpactRadiusPercent(weapon, progress), Is.EqualTo(40));
+        }
+
         [Test]
         public void UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers()
         {
