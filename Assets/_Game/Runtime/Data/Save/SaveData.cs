@@ -404,7 +404,8 @@ namespace Game.Data.Save
                 || upgrade.purchaseCount < 1);
             for (var index = 0; index < specialUpgrades.Count; index++)
             {
-                specialUpgrades[index].purchaseCount = Math.Min(4, specialUpgrades[index].purchaseCount);
+                var limit = weaponId == "weapon.mortira" && specialUpgrades[index].rank == 5 ? 5 : 4;
+                specialUpgrades[index].purchaseCount = Math.Min(limit, specialUpgrades[index].purchaseCount);
             }
 
             if (resetCycle < 0)

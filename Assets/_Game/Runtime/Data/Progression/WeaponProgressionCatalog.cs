@@ -231,6 +231,11 @@ namespace Game.Data.Progression
                     continue;
                 }
 
+                // Mortar paid-special steps occupy ranks without a TTH record.
+                // Explicit modern saves must not receive inferred unpaid base upgrades.
+                if (WeaponId == "weapon.mortira" && progress.upgradeChoices?.Count > 0)
+                    continue;
+
                 // This weapon reaches rank five with its four Loadout purchases.
                 // Rank six is the paid size feature, not an unrecorded Radius step.
                 if (WeaponId == "weapon.titanium-barrier" && rank == 6
@@ -578,7 +583,7 @@ namespace Game.Data.Progression
             Catalog("weapon.titanium-disc", 9, 3000, false, 4, 4, 4, 4),
             Catalog("weapon.bur-rocket", 9, 3000, false, 4, 4, 4, 4),
             Catalog("weapon.titanium-barrier", 9, 3000, false, 0, 0, 4, 4, 1, 0, "size-unlock"),
-            Catalog("weapon.mortira", 12, 5000, false, 4, 4, 2, 4, 4, 0, "fragment-mortar", "cascade-mortar"),
+            Catalog("weapon.mortira", 12, 5000, false, 4, 4, 2, 4, 5, 0, "cascade-mortar"),
             Catalog("weapon.sticky-grenade", 12, 5000, false, 4, 4, 2, 4, 4, 0, "toxic-release"),
             Catalog("weapon.teleport", 12, 5000, false, 0, 4, 4, 0, 1, 1, "instant-touch", string.Empty, "early-trigger"),
             Catalog("weapon.rail-rifle", 15, 7500, false, 4, 0, 4, 0, 4, 0, "terrain-pierce"),

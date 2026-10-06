@@ -391,7 +391,7 @@ namespace Game.Gameplay.Battle.Assembly
                     inventory.SetRemainingAmmo(weapon, 4);
                 }
                 else if (weapon.WeaponId is "weapon.granata" or "weapon.ion-shotgun" or "weapon.c4"
-                    or "weapon.heal" or "weapon.titanium-disc" or "weapon.titanium-barrier")
+                    or "weapon.heal" or "weapon.titanium-disc" or "weapon.titanium-barrier" or "weapon.mortira")
                 {
                     var loadoutLimit = weapon.WeaponId is "weapon.c4" or "weapon.heal" ? 2 : 4;
                     var loadoutPurchases = Mathf.Clamp(progression.ResolveUpgradeCount(

@@ -48,11 +48,11 @@ namespace Game.Tests.EditMode.Gameplay
             IReadOnlyDictionary<string, WeaponEvolutionProfile> playerWeaponEvolutions = null,
             Vector2? secondOpponentPosition = null,
             SaveWeaponProgressData playerWeaponProgress = null,
-            Vector2? secondPlayerPosition = null, int playerMaxHealth = 100)
+            Vector2? secondPlayerPosition = null, int playerMaxHealth = 100, float terrainDepth = 4f)
         {
-            var bounds = new Rect(-10f, -8f, 20f, 16f);
+            var bounds = new Rect(-10f, -terrainDepth - 4f, 20f, terrainDepth + 12f);
             var terrain = BattleTerrain.CreateProcedural(bounds);
-            terrain.StampSolidRect(new Vector2(0f, -3f), new Vector2(20f, 4f));
+            terrain.StampSolidRect(new Vector2(0f, -1f - terrainDepth * 0.5f), new Vector2(20f, terrainDepth));
 
             var playerArchetype = CreateArchetype("archetype.player", playerMaxHealth);
             var opponentArchetype = CreateArchetype("archetype.opponent");
@@ -112,7 +112,7 @@ namespace Game.Tests.EditMode.Gameplay
             turnService.StartFirstTurn(state, BattleTeamId.Player);
 
             var settings = new BattleSimulationSettings(
-                fallDeathY: -6f,
+                fallDeathY: -terrainDepth - 2f,
                 simulationTickSeconds: 1f / 120f,
                 playerTurnDurationSeconds: 30f,
                 occupiedRadius: 0.72f,
@@ -1737,133 +1737,106 @@ namespace Game.Tests.EditMode.Gameplay
                 Is.EqualTo(BattleFireOutcome.OutOfAmmo));
         }
 
-        [TestCase(4)]
-        [TestCase(5)]
-        public void Mortar_FragmentEvolution_SpawnsConfiguredHalfStrengthFragments(int fragmentCount)
+        [Test]
+        public void CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade()
         {
-            var mortar = CreateWeapon(
-                "weapon.mortira",
-                damage: 48,
-                impactRadius: 1.8f,
-                gravityScale: 0f,
-                timeoutSeconds: 0.2f);
-            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
-            {
-                [mortar.WeaponId] = new WeaponEvolutionProfile(
-                    1,
-                    0f,
-                    1f,
-                    mortarFragmentCount: fragmentCount)
-            };
-            var harness = CreateHarness(mortar, playerWeaponEvolutions: evolutions);
+            var mortar = CreateWeapon("weapon.mortira", damage: 48, impactRadius: 1.8f,
+                gravityScale: 0f, timeoutSeconds: 0.2f);
+            var harness = CreateHarness(mortar);
             var fragments = new List<SimProjectile>();
-            var fragmentImpacts = new List<WeaponDefinition>();
-            harness.Simulation.ProjectileSpawned += projectile =>
+            harness.Simulation.ProjectileSpawned += p =>
             {
-                if (projectile.Definition.ProjectileId.EndsWith(".fragment", System.StringComparison.Ordinal))
-                {
-                    fragments.Add(projectile);
-                }
+                if (p.Definition.ProjectileId != "projectile.weapon.mortira") fragments.Add(p);
+            };
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(0f, 4f), Vector2.up, 6f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(fragments.Count, Is.EqualTo(2));
+            Assert.That(fragments[0].Velocity.x, Is.LessThan(0f));
+            Assert.That(fragments[1].Velocity.x, Is.GreaterThan(0f));
+            foreach (var fragment in fragments)
+            {
+                Assert.That(fragment.Definition.ProjectileId, Is.EqualTo("projectile.weapon.mortira.fragment"));
+                Assert.That(fragment.Definition.Damage, Is.EqualTo(24));
+                Assert.That(fragment.Definition.ImpactRadius, Is.EqualTo(1.8f));
+                Assert.That(fragment.Definition.Radius, Is.EqualTo(mortar.ProjectileRadius * 0.5f));
+            }
+        }
+
+        [TestCase(1, 2)]
+        [TestCase(2, 3)]
+        [TestCase(3, 4)]
+        [TestCase(4, 5)]
+        [TestCase(5, 6)]
+        public void CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(int purchases, int expected)
+        {
+            var mortar = CreateWeapon("weapon.mortira", damage:48, impactRadius:1.55f);
+            var progress = new SaveWeaponProgressData { weaponId=mortar.WeaponId, rank=5+purchases };
+            progress.EnsureDefaults();
+            for (var i=2;i<=5;i++) progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                { rank=i, path=(int)WeaponUpgradePath.Loadout });
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank=5, optionId="cascade-mortar" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank=5, purchaseCount=purchases });
+            var harness = CreateHarness(mortar, playerWeaponProgress:progress, terrainDepth:24f);
+            var fragments = new List<SimProjectile>();
+            var impactPoints = new List<Vector2>();
+            var impactTimes = new List<float>();
+            var time=0f;
+            harness.Simulation.ProjectileSpawned += p =>
+            {
+                if (p.Definition.ProjectileId.StartsWith("projectile.weapon.mortira.cascade.")) fragments.Add(p);
             };
             harness.Simulation.ImpactResolved += impact =>
             {
-                if (impact.Weapon?.WeaponId == "weapon.mortira.fragment")
-                {
-                    fragmentImpacts.Add(impact.Weapon);
-                }
+                if (impact.Weapon.WeaponId == "weapon.mortira.fragment")
+                { impactPoints.Add(impact.Point); impactTimes.Add(time); }
             };
-
-            Assert.AreEqual(
-                BattleFireOutcome.Fired,
-                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true)).Outcome);
-            TickMany(harness.Simulation, 30, 1f / 120f);
-
-            Assert.AreEqual(fragmentCount, fragments.Count);
-            Assert.That(fragments[0].Definition.Radius, Is.EqualTo(mortar.ProjectileRadius * 0.5f).Within(0.001f));
-            Assert.AreEqual(24, fragments[0].Definition.Damage);
-            Assert.That(fragments[0].Definition.ImpactRadius, Is.EqualTo(0.9f).Within(0.001f));
-            foreach (var fragment in fragments)
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(0f, 0.5f), Vector2.down, 6f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            for(var i=0;i<3600;i++) { time+=1f/120f; harness.Simulation.Tick(1f/120f); }
+            Assert.That(fragments.Count, Is.EqualTo(expected));
+            Assert.That(impactPoints.Count, Is.EqualTo(expected));
+            for(var i=0;i<expected;i++)
             {
-                Assert.Less(fragment.Velocity.y, 0f, "fragments launch back against the shell's travel direction");
+                Assert.That(fragments[i].Definition.Damage, Is.EqualTo(24));
+                Assert.That(fragments[i].Definition.ImpactRadius, Is.EqualTo(1.55f));
+                Assert.That(harness.Terrain.Grid.IsSolidWorld(impactPoints[i]), Is.False);
+                if(i>0)
+                {
+                    Assert.That(impactTimes[i]-impactTimes[i-1], Is.GreaterThan(0.7f));
+                    Assert.That(impactPoints[i].y, Is.LessThan(impactPoints[i-1].y-0.3f),
+                        "next physical fragment must descend into newly destroyed support");
+                }
             }
-
-            TickMany(harness.Simulation, 420, 1f / 120f);
-            Assert.AreEqual(fragmentCount, fragmentImpacts.Count);
-            Assert.That(fragmentImpacts[0].ImpactRadius, Is.EqualTo(mortar.ImpactRadius * 0.5f).Within(0.001f));
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
         }
 
         [Test]
-        public void Mortar_BaseWeapon_SpawnsFiveFragmentsWithoutCascade()
+        public void CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep()
         {
-            var mortar = CreateWeapon(
-                "weapon.mortira",
-                damage: 48,
-                impactRadius: 1.8f,
-                gravityScale: 0f,
-                timeoutSeconds: 0.2f);
-            var harness = CreateHarness(mortar);
-            var fragmentCount = 0;
-            var spawnedCascade = false;
-            harness.Simulation.ProjectileSpawned += projectile =>
-            {
-                if (projectile.Definition.ProjectileId.StartsWith(
-                    "projectile.weapon.mortira.fragment", System.StringComparison.Ordinal))
-                {
-                    fragmentCount++;
-                }
-
-                spawnedCascade |= projectile.Definition.ProjectileId.StartsWith(
-                    "projectile.weapon.mortira.cascade.", System.StringComparison.Ordinal);
-            };
-
-            Assert.AreEqual(
-                BattleFireOutcome.Fired,
-                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true)).Outcome);
-            TickMany(harness.Simulation, 30, 1f / 120f);
-
-            Assert.That(fragmentCount, Is.EqualTo(5));
-            Assert.That(spawnedCascade, Is.False);
+            var mortar = CreateWeapon("weapon.mortira", impactRadius: 1.8f);
+            var progress = new SaveWeaponProgressData { weaponId = mortar.WeaponId, rank = 3 };
+            progress.EnsureDefaults();
+            for (var i = 2; i <= 3; i++) progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                { rank = i, path = (int)WeaponUpgradePath.Radius });
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveImpactRadiusPercent(mortar, progress), Is.EqualTo(20));
+            WeaponProgressionCatalog.TryGet(mortar.WeaponId, out var definition);
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(mortar, definition, progress, WeaponUpgradePath.Radius),
+                Is.EqualTo(2.16f).Within(0.001f));
         }
 
         [Test]
-        public void Mortar_CascadeEvolution_SpawnsTwoProgressivelySmallerCharges()
+        public void CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin()
         {
-            var mortar = CreateWeapon(
-                "weapon.mortira",
-                damage: 48,
-                impactRadius: 1.8f,
-                gravityScale: 0f,
-                timeoutSeconds: 0.2f);
-            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
-            {
-                [mortar.WeaponId] = new WeaponEvolutionProfile(
-                    1,
-                    0f,
-                    1f,
-                    mortarCascadeCount: 2)
-            };
-            var harness = CreateHarness(mortar, playerWeaponEvolutions: evolutions);
-            var cascades = new List<SimProjectile>();
-            harness.Simulation.ProjectileSpawned += projectile =>
-            {
-                if (projectile.Definition.ProjectileId.StartsWith(
-                        "projectile.weapon.mortira.cascade.",
-                        System.StringComparison.Ordinal))
-                {
-                    cascades.Add(projectile);
-                }
-            };
-
-            Assert.AreEqual(
-                BattleFireOutcome.Fired,
-                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.up, 6f, true)).Outcome);
-            TickMany(harness.Simulation, 540, 1f / 120f);
-
-            Assert.AreEqual(2, cascades.Count);
-            Assert.AreEqual(24, cascades[0].Definition.Damage);
-            Assert.That(cascades[0].Definition.ImpactRadius, Is.EqualTo(0.9f).Within(0.001f));
-            Assert.AreEqual(12, cascades[1].Definition.Damage);
-            Assert.That(cascades[1].Definition.ImpactRadius, Is.EqualTo(0.45f).Within(0.001f));
+            Assert.That(WeaponProgressionCatalog.TryGet("weapon.mortira", out var definition), Is.True);
+            Assert.That(definition.GetEvolutionOptions(5).Count, Is.EqualTo(1));
+            Assert.That(definition.GetEvolutionOptions(5)[0].Id, Is.EqualTo("cascade-mortar"));
+            Assert.That(definition.GetSpecialPurchaseLimit(5), Is.EqualTo(5));
+            Assert.That(definition.GetEvolutionOptions(10), Is.Empty);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/mortira_shot"), Is.Not.Null);
+            Assert.That(WeaponEvolutionIconResolver.ResolveEvolutionIconResource("mortira",5,WeaponUpgradeBranch.A),
+                Is.EqualTo("UI/Weapons/mortira_5_10_B"));
         }
 
         [Test]

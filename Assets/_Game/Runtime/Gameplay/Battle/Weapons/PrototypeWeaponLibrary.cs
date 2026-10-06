@@ -24,7 +24,7 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.titanium-disc", WeaponRole.DirectProjectile, 35, SharedExplosionRadius, 0.1f, 0f, 5f, SharedProjectileSpeed, SharedProjectileSpeed, 3, "titanium_disc", "straight-long", "ricochet"),
                 Weapon("weapon.bur-rocket", WeaponRole.ArcingExplosive, 46, SharedExplosionRadius, 0.12f, 0.8f, 8f, SharedProjectileSpeed, SharedProjectileSpeed, 2, "bur_rocket", "arc-special", "drill"),
                 Weapon("weapon.titanium-barrier", WeaponRole.CoverTool, 0, TitaniumBarrierRules.BaseWidth, 0.1f, 0f, 6f, 1f, 1f, 2, "titanium_barrier", "ground", "barrier"),
-                Weapon("weapon.mortira", WeaponRole.ArcingExplosive, 48, 1.8f, 0.16f, 1.15f, 9f, 4f, 12f, 2, "mortira", "arc", "fragment"),
+                Weapon("weapon.mortira", WeaponRole.ArcingExplosive, 48, 1.8f, 0.16f, 1.15f, 9f, 12f, 12f, 2, "mortira", "arc", "fragment"),
                 Weapon("weapon.sticky-grenade", WeaponRole.ArcingExplosive, 40, 1.45f, 0.13f, 1.05f, 5f, 7f, 18f, 2, "sticky_grenade", "arc", "toxic"),
                 Weapon("weapon.teleport", WeaponRole.MovementTool, 0, 2.5f, 0.11f, 1.1f, 8f, 8f, 24f, 2, "teleport", "arc-utility", "teleport"),
                 Weapon("weapon.rail-rifle", WeaponRole.DirectProjectile, 52, 0.35f, 0.07f, 0f, 5f, 15f, 15f, 2, "rail_rifle", "straight-long", "penetration"),

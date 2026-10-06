@@ -78,6 +78,7 @@ namespace Game.Gameplay.Battle.Weapons
                         || weapon.WeaponId == "weapon.impulse"
                         || weapon.WeaponId == "weapon.c4"
                         || weapon.WeaponId == "weapon.mine" || weapon.WeaponId == "weapon.titanium-disc"
+                        || weapon.WeaponId == "weapon.mortira"
                         ? 0.10f : RadiusPercentPerUpgrade)),
                 _ => 0f
             };
@@ -159,7 +160,7 @@ namespace Game.Gameplay.Battle.Weapons
                 (weapon.WeaponId == "weapon.grounder" || weapon.WeaponId == "weapon.granata"
                     || weapon.WeaponId == "weapon.impulse"
                     || weapon.WeaponId == "weapon.c4" || weapon.WeaponId == "weapon.mine"
-                    || weapon.WeaponId == "weapon.titanium-disc") ? 10 : 8;
+                    || weapon.WeaponId == "weapon.titanium-disc" || weapon.WeaponId == "weapon.mortira") ? 10 : 8;
             return Count(progress, WeaponUpgradePath.Radius) * percentPerUpgrade;
         }
 

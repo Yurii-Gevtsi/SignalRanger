@@ -20,7 +20,7 @@ console.log(`Started ${mode} job ${job}`);
 for (let i = 0; i < 20; i++) {
   const result = call('get_test_job', {job_id:job, include_details:true, wait_timeout:30}, `Captures/weapon12/${run}-results.json`);
   if (!result.success) { await new Promise(resolve => setTimeout(resolve, 1000)); continue; }
-  if (result.data?.status === 'running') continue;
+  if (result.data?.status === 'running' && (await stat(xmlPath)).mtimeMs <= previous) continue;
   for (let retry = 0; retry < 20 && (await stat(xmlPath)).mtimeMs <= previous; retry++)
     await new Promise(resolve => setTimeout(resolve, 500));
   if ((await stat(xmlPath)).mtimeMs <= previous) throw new Error('No fresh test XML');

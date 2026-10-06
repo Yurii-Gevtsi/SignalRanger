@@ -1,0 +1,113 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "5b8b7d8a51eb4bea801cb261f2fef01e",
+    "status": "succeeded",
+    "mode": "EditMode",
+    "started_unix_ms": 1791294039482,
+    "finished_unix_ms": 1791294049874,
+    "last_update_unix_ms": 1791294049874,
+    "progress": {
+      "completed": 8,
+      "total": 8,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791294049743,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep",
+      "last_finished_unix_ms": 1791294049753,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "EditMode",
+      "summary": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 0.8312731,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade",
+          "state": "Passed",
+          "durationSeconds": 0.2315517,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin",
+          "state": "Passed",
+          "durationSeconds": 0.0432693,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(1,2)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(1,2)",
+          "state": "Passed",
+          "durationSeconds": 0.1421982,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(2,3)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(2,3)",
+          "state": "Passed",
+          "durationSeconds": 0.0452807,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(3,4)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(3,4)",
+          "state": "Passed",
+          "durationSeconds": 0.0596185,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(4,5)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(4,5)",
+          "state": "Passed",
+          "durationSeconds": 0.0359241,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(5,6)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(5,6)",
+          "state": "Passed",
+          "durationSeconds": 0.0422521,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep",
+          "state": "Passed",
+          "durationSeconds": 0.0096182,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}

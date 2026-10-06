@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="8" result="Passed" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 13:40:48Z" end-time="2026-10-06 13:40:49Z" duration="0,8312731">
+  <test-suite type="TestSuite" id="1000" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="703" result="Passed" start-time="2026-10-06 13:40:48Z" end-time="2026-10-06 13:40:49Z" duration="0.831273" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1821" name="Game.Tests.EditMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.EditMode.dll" runstate="Runnable" testcasecount="703" result="Passed" start-time="2026-10-06 13:40:48Z" end-time="2026-10-06 13:40:49Z" duration="0.783000" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1822" name="Game" fullname="Game" runstate="Runnable" testcasecount="703" result="Passed" start-time="2026-10-06 13:40:48Z" end-time="2026-10-06 13:40:49Z" duration="0.774575" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1823" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="703" result="Passed" start-time="2026-10-06 13:40:48Z" end-time="2026-10-06 13:40:49Z" duration="0.764286" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1824" name="EditMode" fullname="Game.Tests.EditMode" runstate="Runnable" testcasecount="703" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.753213" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1831" name="Gameplay" fullname="Game.Tests.EditMode.Gameplay" runstate="Runnable" testcasecount="427" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.736690" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1257" name="BattleSimulationTests" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="164" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.711841" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1373" name="CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade" methodname="CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="227491246" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.231552" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1381" name="CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin" methodname="CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1592054292" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.043269" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1379" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.341911" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1374" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(1,2)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(1,2)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="124388731" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.142198" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1375" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(2,3)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(2,3)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="967367895" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.045281" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1376" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(3,4)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(3,4)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="719551190" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.059619" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1377" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(4,5)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(4,5)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1540860416" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.035924" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1378" name="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(5,6)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(5,6)" methodname="CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="813171044" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.042252" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1380" name="CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep" methodname="CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="24003974" result="Passed" start-time="2026-10-06 13:40:49Z" end-time="2026-10-06 13:40:49Z" duration="0.009618" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

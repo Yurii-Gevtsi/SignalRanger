@@ -1081,38 +1081,12 @@ namespace Game.Gameplay.Battle.Simulation
         {
             var impactWeapon = ResolveImpactWeapon(impact);
             var impactForResolution = impact;
-            if (impactWeapon?.WeaponId == "weapon.mortira"
-                && impact.ProjectileId == "projectile.weapon.mortira")
-            {
-                var evolution = ResolveEvolutionFor(ResolveTeamForOwner(impact.OwnerUnitId), impactWeapon);
-                SpawnMortarFragments(impact, impactWeapon,
-                    Mathf.Max(5, evolution.MortarFragmentCount));
-                if (evolution.MortarCascadeCount > 0)
-                {
-                    SpawnMortarCascade(impact, impactWeapon, 1);
-                }
-            }
-            else if (IsMortarFragment(impact.ProjectileId)
+            var isPrimaryMortar = impactWeapon?.WeaponId == "weapon.mortira"
+                && impact.ProjectileId == "projectile.weapon.mortira";
+            if ((IsMortarFragment(impact.ProjectileId) || IsMortarCascade(impact.ProjectileId))
                 && _weaponsById.TryGetValue("weapon.mortira", out var mortar))
             {
                 impactWeapon = CreateMortarFragmentWeapon(mortar);
-                impactForResolution = new ProjectileImpact(
-                    impact.ProjectileId,
-                    impact.OwnerUnitId,
-                    impact.Point,
-                    impact.Velocity,
-                    impactWeapon.Damage,
-                    impactWeapon.ImpactRadius);
-            }
-            else if (IsMortarCascade(impact.ProjectileId)
-                && _weaponsById.TryGetValue("weapon.mortira", out var cascadeMortar))
-            {
-                var evolution = ResolveEvolutionFor(ResolveTeamForOwner(impact.OwnerUnitId), cascadeMortar);
-                var stage = GetMortarCascadeStage(impact.ProjectileId);
-                if (stage < evolution.MortarCascadeCount)
-                {
-                    SpawnMortarCascade(impact, cascadeMortar, stage + 1);
-                }
             }
             else if (IsMissileCluster(impact.ProjectileId)
                 && _weaponsById.TryGetValue(MissileWeaponId, out var missile))
@@ -1151,6 +1125,13 @@ namespace Game.Gameplay.Battle.Simulation
                 SpawnIncendiaryPuddles(impactForResolution, impactWeapon);
             }
             ImpactResolved?.Invoke(new ImpactResolvedEvent(impact.Point, impactWeapon, terrainChanged));
+            if (isPrimaryMortar)
+            {
+                var evolution = ResolveEvolutionFor(ResolveTeamForOwner(impact.OwnerUnitId), impactWeapon);
+                SpawnMortarFragments(impact, impactWeapon,
+                    evolution.MortarCascadeCount > 0 ? evolution.MortarCascadeCount : 2,
+                    evolution.MortarCascadeCount > 0);
+            }
             UnitsMoved?.Invoke();
 
             if (HasProjectilesInFlight)
@@ -1377,65 +1358,92 @@ namespace Game.Gameplay.Battle.Simulation
             }
         }
 
-        /// <summary>
-        /// Spawns the selected fragment-mortar evolution in a deterministic fan.
-        /// </summary>
-        private void SpawnMortarFragments(ProjectileImpact impact, WeaponDefinition weapon, int count)
+        private sealed class MortarSequence
         {
-            var fragmentWeapon = CreateMortarFragmentWeapon(weapon);
-            var fragmentDefinition = ProjectileDefinition.CreateRuntime(
-                "projectile.weapon.mortira.fragment",
-                fragmentWeapon.ProjectileRadius,
-                weapon.GravityScale,
-                3f,
-                fragmentWeapon.Damage,
-                fragmentWeapon.ImpactRadius);
+            public readonly List<int> ProjectileIds = new();
+            public float ContactSeconds;
+        }
 
-            var incoming = impact.Velocity.sqrMagnitude > 0.01f ? impact.Velocity.normalized : Vector2.down;
-            var baseAngle = Mathf.Atan2(-incoming.y, -incoming.x) * Mathf.Rad2Deg;
+        private readonly Dictionary<int, MortarSequence> _mortarSequences = new();
+
+        private void SpawnMortarFragments(ProjectileImpact impact, WeaponDefinition weapon, int count, bool sequential)
+        {
+            var sequence = sequential ? new MortarSequence() : null;
+            var fragmentDamage = Mathf.Max(1, Mathf.CeilToInt(impact.Damage * 0.5f));
             for (var i = 0; i < count; i++)
             {
-                var t = count > 1 ? i / (float)(count - 1) : 0.5f;
-                var angle = (baseAngle + Mathf.Lerp(-MortarFragmentSpreadDegrees, MortarFragmentSpreadDegrees, t)) * Mathf.Deg2Rad;
-                var direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-                Spawn(new ProjectileSpawnRequest(
-                    fragmentDefinition,
-                    impact.OwnerUnitId,
-                    impact.Point + direction * 0.08f,
-                    direction * MortarFragmentSpeed,
-                    fragmentDefinition.Radius * 2f,
-                    ProjectileWeaponEffect.GetProjectileColor(weapon.Role)));
+                var definition = ProjectileDefinition.CreateRuntime(
+                    sequential ? MortarCascadeProjectilePrefix + (i + 1) : "projectile.weapon.mortira.fragment",
+                    weapon.ProjectileRadius * 0.5f, weapon.GravityScale, 30f,
+                    fragmentDamage, impact.ImpactRadius);
+                var side = i % 2 == 0 ? -1f : 1f;
+                var position = impact.Point + new Vector2(side * (sequential ? 0.03f : 0.12f), 0.2f);
+                var velocity = sequential ? new Vector2(side * 0.18f, 0.6f) : new Vector2(side * 3f, 2.5f);
+                Spawn(new ProjectileSpawnRequest(definition, impact.OwnerUnitId, position, velocity,
+                    definition.Radius * 2f, ProjectileWeaponEffect.GetProjectileColor(weapon.Role)));
+                if (sequence != null)
+                {
+                    var id = _nextProjectileId;
+                    sequence.ProjectileIds.Add(id);
+                    _mortarSequences.Add(id, sequence);
+                }
             }
         }
 
-        /// <summary>
-        /// The cascade branch drops a progressively smaller charge into the new
-        /// crater. Damage and impact radius halve per stage, while terrain
-        /// destruction stays tied to the base mortar in ResolveImpact.
-        /// </summary>
-        private void SpawnMortarCascade(ProjectileImpact impact, WeaponDefinition weapon, int stage)
+        private void StepMortarFragment(int index, SimProjectile projectile, MortarSequence sequence, float deltaTime)
         {
-            var scale = Mathf.Pow(MortarCascadeDamageScale, Mathf.Max(1, stage));
-            var definition = ProjectileDefinition.CreateRuntime(
-                MortarCascadeProjectilePrefix + stage,
-                weapon.ProjectileRadius * scale,
-                weapon.GravityScale,
-                1.5f,
-                Mathf.Max(1, Mathf.CeilToInt(weapon.Damage * scale)),
-                weapon.ImpactRadius * scale);
+            // Waiting shards remain physical: support is queried again after every crater.
+            projectile.ReduceLifetime(deltaTime);
+            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
+            var velocity = projectile.Velocity + _projectileGravityPerScale * projectile.Definition.GravityScale * deltaTime;
+            var position = projectile.Position;
+            if (TryFindGrounderForProjectile(projectile, weapon, position, out var attractor))
+            {
+                var direction = attractor.Position - position;
+                if (direction.sqrMagnitude > 0.0001f)
+                    velocity = Vector2.MoveTowards(velocity,
+                        direction.normalized * Mathf.Max(5f, velocity.magnitude), 35f * deltaTime);
+            }
+            var displacement = velocity * deltaTime;
+            var steps = Mathf.Max(1, Mathf.CeilToInt(displacement.magnitude / ProjectileSubStepLength));
+            var contact = false;
+            for (var step = 0; step < steps; step++)
+            {
+                var next = position + displacement / steps;
+                if (TryFindGrounderForProjectile(projectile, weapon, next, out var grounder)
+                    && Vector2.Distance(next, grounder.Position)
+                        <= Mathf.Max(0.35f, projectile.Definition.Radius + 0.18f))
+                {
+                    ResolveGrounderProjectileContact(index, projectile, weapon, grounder, next);
+                    return;
+                }
+                if (_terrain?.Grid.IsSolidWorld(next) == true)
+                {
+                    velocity = ProjectileBounceRules.ReflectOffTerrain(_terrain.Grid, next, velocity,
+                        projectile.Definition.Radius, ProjectileSubStepLength) * ProjectileBounceRules.SpeedRetain;
+                    contact = true;
+                    break;
+                }
+                position = next;
+            }
+            projectile.MoveTo(position);
+            projectile.SetVelocity(velocity);
+            var radius = Mathf.Max(0.08f, projectile.Definition.Radius);
+            contact |= _terrain?.Grid.IsSolidWorld(position + Vector2.down * radius) == true;
+            if (sequence.ProjectileIds[0] != projectile.Id) return;
+            if (contact) sequence.ContactSeconds += deltaTime;
+            if (sequence.ContactSeconds < 0.8f && position.y >= _settings.FallDeathY - 2f
+                && projectile.RemainingLifetime > 0f) return;
+            ResolveProjectileAt(index, position);
+        }
 
-            var horizontalDirection = Mathf.Abs(impact.Velocity.x) > 0.01f
-                ? Mathf.Sign(impact.Velocity.x)
-                : 0f;
-            var velocity = new Vector2(horizontalDirection * MortarCascadeSpeed * 0.18f, -MortarCascadeSpeed);
-            Schedule(new ProjectileSpawnRequest(
-                    definition,
-                    impact.OwnerUnitId,
-                    impact.Point + Vector2.up * 0.12f,
-                    velocity,
-                    definition.Radius * 2f,
-                    ProjectileWeaponEffect.GetProjectileColor(weapon.Role)),
-                MortarCascadeDelaySeconds);
+        private void ReleaseMortarFragment(int projectileId)
+        {
+            if (!_mortarSequences.TryGetValue(projectileId, out var sequence)) return;
+            if (sequence.ProjectileIds.Count > 0 && sequence.ProjectileIds[0] == projectileId)
+                sequence.ContactSeconds = 0f;
+            sequence.ProjectileIds.Remove(projectileId);
+            _mortarSequences.Remove(projectileId);
         }
 
         private static WeaponDefinition CreateMortarFragmentWeapon(WeaponDefinition weapon)
@@ -1445,7 +1453,7 @@ namespace Game.Gameplay.Battle.Simulation
                 weapon.DisplayKey,
                 weapon.Role,
                 Mathf.Max(1, Mathf.CeilToInt(weapon.Damage * 0.5f)),
-                weapon.ImpactRadius * 0.5f,
+                weapon.ImpactRadius,
                 weapon.ProjectileRadius * 0.5f,
                 weapon.GravityScale,
                 3f,
@@ -4649,6 +4657,11 @@ namespace Game.Gameplay.Battle.Simulation
             for (var i = _projectiles.Count - 1; i >= 0; i--)
             {
                 var projectile = _projectiles[i];
+                if (_mortarSequences.TryGetValue(projectile.Id, out var mortarSequence))
+                {
+                    StepMortarFragment(i, projectile, mortarSequence, deltaTime);
+                    continue;
+                }
                 if (!string.IsNullOrEmpty(projectile.GuaranteedTargetUnitId))
                 {
                     StepGuaranteedTargetProjectile(i, projectile, deltaTime);
@@ -5033,6 +5046,7 @@ namespace Game.Gameplay.Battle.Simulation
         {
             var projectile = _projectiles[projectileIndex];
             _projectiles.RemoveAt(projectileIndex);
+            ReleaseMortarFragment(projectile.Id);
 
             var impactDamage = projectile.Definition.Damage;
             var impactWeapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
@@ -5227,6 +5241,7 @@ namespace Game.Gameplay.Battle.Simulation
         private void DiscardProjectile(int projectileIndex, SimProjectile projectile)
         {
             _projectiles.RemoveAt(projectileIndex);
+            ReleaseMortarFragment(projectile.Id);
             if (projectile.Id == _hoppingGrenadeProjectileId)
             {
                 _hoppingGrenadeProjectileId = -1;

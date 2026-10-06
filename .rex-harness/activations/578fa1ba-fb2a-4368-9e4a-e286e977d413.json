@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "578fa1ba-fb2a-4368-9e4a-e286e977d413",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-13-mortar-closure",
+  "profile": "default",
+  "request": {
+    "message": "Fully implement and verify weapon 13 mortar per canonical combat specification: primary explosion, two base side fragments, purchased crater-breach rolling and sequential fragments, four purchases to six fragments, skins and progression.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "active",
+  "stepIndex": 1,
+  "phaseId": "delivery",
+  "currentCapabilityId": "software.testing.tdd",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "7b875e75-c510-4f2b-bf4f-358293a52e98",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-13-test-contract.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-13-test-contract.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-13-test-contract.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-13-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": {
+    "schemaVersion": 1,
+    "activationId": "ba5f53d9-b3b8-48ba-8d3f-3841a569dd4c",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/weapon-13-testability.json",
+      "receipt:dff698a6-2dcb-4e47-8684-332cf82dbbfd"
+    ],
+    "status": "active",
+    "stageIndex": 2,
+    "stageId": "refactor",
+    "completedStages": [
+      "red",
+      "green"
+    ],
+    "evidence": [
+      {
+        "kind": "failing-test-observed",
+        "refs": [
+          "receipt:dff698a6-2dcb-4e47-8684-332cf82dbbfd"
+        ]
+      },
+      {
+        "kind": "red-failure-reason-recorded",
+        "refs": [
+          "file:docs/architecture/weapon-13-testability.json"
+        ]
+      },
+      {
+        "kind": "passing-test-observed",
+        "refs": [
+          "receipt:fa8def3b-b0fd-4176-ad81-6273234a8429"
+        ]
+      },
+      {
+        "kind": "implementation-diff-recorded",
+        "refs": [
+          "file:docs/architecture/weapon-13-implementation-review.md"
+        ]
+      }
+    ]
+  },
+  "currentCommand": {
+    "schemaVersion": 1,
+    "type": "provider.invoke",
+    "activationId": "ba5f53d9-b3b8-48ba-8d3f-3841a569dd4c",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "stageId": "refactor",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/weapon-13-testability.json",
+      "receipt:dff698a6-2dcb-4e47-8684-332cf82dbbfd"
+    ],
+    "provider": {
+      "kind": "skill",
+      "id": "rex-tdd",
+      "source": "bundled",
+      "instructionsRef": "skill-sources/rex-tdd/SKILL.md"
+    },
+    "objective": "保持测试通过，整理实现并审查测试差异没有弱化用户行为约束。",
+    "expectedEvidence": [
+      "refactor-check-recorded",
+      "test-diff-review-recorded"
+    ],
+    "executionToken": "8d1e7e6b-c47f-459c-a6ac-0d9eea4eb2b8"
+  },
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:docs/architecture/weapon-13-testability.json",
+        "receipt:dff698a6-2dcb-4e47-8684-332cf82dbbfd"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:docs/architecture/weapon-13-testability.json",
+    "redCandidate": {
+      "publicEntry": "BattleSimulation.TryFire/Tick/ProjectileSpawned",
+      "setup": "Base mortar, short deterministic main timeout, count subsequent physical fragments.",
+      "command": {
+        "executable": "node",
+        "args": [
+          "Captures/weapon12/run-mcp-tests.mjs",
+          "mortar-red",
+          "EditMode",
+          "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "Exactly two side fragments without cascade.",
+      "observed": "Expected 2 but was 5; one failed Unity EditMode test in Captures/weapon12/mortar-red.xml.",
+      "receiptRef": "receipt:dff698a6-2dcb-4e47-8684-332cf82dbbfd",
+      "failureReason": "Main impact forces at least five fragments regardless of approved baseline count."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design",
+      "software.testing.tdd"
+    ]
+  },
+  "createdAt": "2026-10-06T13:21:51.368Z",
+  "updatedAt": "2026-10-06T13:42:05.890Z"
+}

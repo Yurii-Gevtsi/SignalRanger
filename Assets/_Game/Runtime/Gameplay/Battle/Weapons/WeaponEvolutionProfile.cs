@@ -229,11 +229,8 @@ namespace Game.Gameplay.Battle.Weapons
                             : new WeaponEvolutionProfile(1, 0f, 1f,
                                 repairProtectionTurns: Mathf.Clamp(firstSteps, 1, 3));
                     case MortarWeaponId:
-                        return firstSpecial.LegacyBranch == WeaponUpgradeBranch.B
-                            ? new WeaponEvolutionProfile(1, 0f, 1f,
-                                mortarCascadeCount: Mathf.Clamp(firstSteps, 1, 4))
-                            : new WeaponEvolutionProfile(1, 0f, 1f,
-                                mortarFragmentCount: 5 + Mathf.Clamp(firstSteps, 1, 4));
+                        return new WeaponEvolutionProfile(1, 0f, 1f,
+                            mortarCascadeCount: 2 + Mathf.Clamp(firstSteps - 1, 0, 4));
                 }
             }
 
@@ -397,26 +394,8 @@ namespace Game.Gameplay.Battle.Weapons
                 }
             }
 
-            if (weapon.WeaponId == MortarWeaponId)
-            {
-                if (branch == WeaponUpgradeBranch.A)
-                {
-                    return new WeaponEvolutionProfile(
-                        1,
-                        0f,
-                        1f,
-                        mortarFragmentCount: selectedEvolutionRank >= 10 ? 5 : 4);
-                }
-
-                if (branch == WeaponUpgradeBranch.B)
-                {
-                    return new WeaponEvolutionProfile(
-                        1,
-                        0f,
-                        1f,
-                        mortarCascadeCount: selectedEvolutionRank >= 10 ? 2 : 1);
-                }
-            }
+            if (weapon.WeaponId == MortarWeaponId && branch != WeaponUpgradeBranch.None)
+                return new WeaponEvolutionProfile(1, 0f, 1f, mortarCascadeCount: 2);
 
             if (weapon.WeaponId == MissileWeaponId)
             {

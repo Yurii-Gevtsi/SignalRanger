@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Failed(Child)" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 13:24:59Z" end-time="2026-10-06 13:25:00Z" duration="1,027572">
+  <test-suite type="TestSuite" id="1000" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 13:24:59Z" end-time="2026-10-06 13:25:00Z" duration="1.027572" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1816" name="Game.Tests.EditMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.EditMode.dll" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 13:24:59Z" end-time="2026-10-06 13:25:00Z" duration="0.822235" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1817" name="Game" fullname="Game" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 13:24:59Z" end-time="2026-10-06 13:25:00Z" duration="0.743571" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1818" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 13:24:59Z" end-time="2026-10-06 13:25:00Z" duration="0.727097" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1819" name="EditMode" fullname="Game.Tests.EditMode" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 13:24:59Z" end-time="2026-10-06 13:25:00Z" duration="0.674448" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestSuite" id="1826" name="Gameplay" fullname="Game.Tests.EditMode.Gameplay" runstate="Runnable" testcasecount="423" result="Failed" site="Child" start-time="2026-10-06 13:24:59Z" end-time="2026-10-06 13:25:00Z" duration="0.603239" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1256" name="BattleSimulationTests" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="160" result="Failed" site="Child" start-time="2026-10-06 13:24:59Z" end-time="2026-10-06 13:25:00Z" duration="0.527563" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1375" name="CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade" methodname="CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="793171072" result="Failed" start-time="2026-10-06 13:24:59Z" end-time="2026-10-06 13:25:00Z" duration="0.303507" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: 2
+  But was:  5
+]]></message>
+                    <stack-trace><![CDATA[at Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade () [0x000b9] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Gameplay\BattleSimulationTests.cs:1824
+]]></stack-trace>
+                  </failure>
+                  <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

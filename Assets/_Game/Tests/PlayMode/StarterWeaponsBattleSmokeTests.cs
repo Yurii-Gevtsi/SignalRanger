@@ -30,7 +30,7 @@ namespace Game.Tests.PlayMode
         {
             "weapon.bur", "weapon.impulse", "weapon.granata", "weapon.rope",
             "weapon.plasma-sword", "weapon.ion-shotgun", "weapon.c4", "weapon.mine",
-            "weapon.heal", "weapon.titanium-disc", "weapon.bur-rocket", "weapon.titanium-barrier"
+            "weapon.heal", "weapon.titanium-disc", "weapon.bur-rocket", "weapon.titanium-barrier", "weapon.mortira"
         };
 
         private Func<string, bool> _previousUnlocks;
@@ -165,6 +165,55 @@ namespace Game.Tests.PlayMode
                 for (var tick = 0; tick < 60; tick++) simulation.Tick(1f / 120f);
                 yield return null;
             }
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        private static readonly int[] MortarPurchases = { 0, 1, 2, 3, 4, 5 };
+
+        [UnityTest]
+        public IEnumerator Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(
+            [ValueSource(nameof(MortarPurchases))] int purchases)
+        {
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.mortira", rank = 5 + purchases };
+            progress.EnsureDefaults();
+            for (var i = 2; i <= 5; i++) progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                { rank = i, path = (int)WeaponUpgradePath.Loadout });
+            if (purchases > 0)
+            {
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "cascade-mortar" });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = purchases });
+            }
+            WeaponProgressionBridge.Resolver = id => id == "weapon.mortira" ? progress : null;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.mortira") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var visuals = Get<Dictionary<int, GameObject>>(controller, "_projectileVisuals");
+            var shards = 0;
+            simulation.ProjectileSpawned += projectile =>
+            {
+                var renderer = visuals[projectile.Id].GetComponentInChildren<SpriteRenderer>();
+                Assert.That(renderer.sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/mortira_shot")));
+                if (projectile.Definition.ProjectileId != "projectile.weapon.mortira") shards++;
+            };
+            var terrain = Get<BattleTerrain>(controller, "_battleTerrain");
+            Set(controller, "_aimState", new AimState(new Vector2(0f, terrain.Grid.WorldMaxY - 2f), Vector2.down, 1f, true));
+            Invoke(controller, "Fire");
+            Assert.That(simulation.ProjectilesInFlight, Is.EqualTo(1));
+            Assert.That(simulation.Projectiles[0].Velocity.magnitude,
+                Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed).Within(0.001f));
+            for (var frame = 0; frame < 30 && shards == 0; frame++)
+            {
+                for (var tick = 0; tick < 60; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(shards, Is.EqualTo(purchases == 0 ? 2 : purchases + 1));
             LogAssert.NoUnexpectedReceived();
         }
 

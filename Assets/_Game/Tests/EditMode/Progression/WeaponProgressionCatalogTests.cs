@@ -12,6 +12,35 @@ namespace Game.Tests.EditMode.Progression
     public sealed class WeaponProgressionCatalogTests
     {
         [Test]
+        public void Mortar_FivePaidFeatureStepsSurviveSaveAndDoNotInventTthPurchases()
+        {
+            const string id = "weapon.mortira";
+            var save=SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var progress=save.inventory.GetOrCreateWeaponProgress(id);
+            progress.blueprints=10000;
+            var service=new WeaponUpgradeService(save,SeedEconomy(save));
+            for(var i=0;i<4;i++) Assert.That(service.TryUpgrade(id,WeaponUpgradePath.Loadout).Applied,Is.True);
+            for(var i=0;i<5;i++)
+            {
+                Assert.That(service.TryPurchaseEvolution(id,5,"cascade-mortar").Applied,Is.True);
+                save.EnsureDefaults();
+                var weapon=PrototypeWeaponLibrary.CreateAll().Single(w=>w.WeaponId==id);
+                var battle=BattleWeaponProgression.FromResolver(new[]{weapon},_=>progress);
+                Assert.That(battle.ResolveEvolution(id).MortarCascadeCount,Is.EqualTo(i+2));
+                Assert.That(battle.ResolveUpgradeCount(id,WeaponUpgradePath.Core),Is.Zero);
+                Assert.That(battle.ResolveUpgradeCount(id,WeaponUpgradePath.Radius),Is.Zero);
+            }
+            Assert.That(service.TryPurchaseEvolution(id,5,"cascade-mortar").Applied,Is.False);
+            Assert.That(service.TryPurchaseEvolution(id,5,"fragment-mortar").Applied,Is.False);
+            Assert.That(progress.rank,Is.EqualTo(10));
+            var restored = UnityEngine.JsonUtility.FromJson<SaveData>(UnityEngine.JsonUtility.ToJson(save));
+            restored.EnsureDefaults();
+            Assert.That(restored.inventory.GetOrCreateWeaponProgress(id).specialUpgrades
+                .Single(item => item.rank == 5).purchaseCount, Is.EqualTo(5));
+        }
+
+        [Test]
         public void CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps()
         {
             Assert.That(WeaponProgressionCatalog.All.Count, Is.EqualTo(41));
@@ -28,9 +57,9 @@ namespace Game.Tests.EditMode.Progression
 
             Assert.That(WeaponProgressionCatalog.TryGet("weapon.mortira", out var mortar), Is.True);
             Assert.That(mortar.GetEvolutionOptions(5).Select(option => option.Id),
-                Is.EquivalentTo(new[] { "fragment-mortar", "cascade-mortar" }));
-            Assert.That(mortar.Special5PurchaseCount, Is.EqualTo(4));
-            Assert.That(mortar.MaxRank, Is.EqualTo(19));
+                Is.EquivalentTo(new[] { "cascade-mortar" }));
+            Assert.That(mortar.Special5PurchaseCount, Is.EqualTo(5));
+            Assert.That(mortar.MaxRank, Is.EqualTo(20));
 
             Assert.That(WeaponProgressionCatalog.TryGet("weapon.rope", out var rope), Is.True);
             Assert.That(rope.HasEvolutionOptions, Is.False);
@@ -121,7 +150,7 @@ namespace Game.Tests.EditMode.Progression
         }
 
         [Test]
-        public void SelectedMortarSpecialCanBePurchasedFourTimesAndThenStops()
+        public void SelectedMortarSpecialCanBePurchasedFiveTimesAndThenStops()
         {
             var saveData = SaveData.CreateNew();
             if (!saveData.inventory.unlockedWeaponIds.Contains("weapon.mortira"))
@@ -134,14 +163,12 @@ namespace Game.Tests.EditMode.Progression
             progress.blueprints = 10000;
             var service = new WeaponUpgradeService(saveData, economy);
 
-            Assert.That(service.TryPurchaseEvolution("weapon.mortira", 5, "fragment-mortar").Applied, Is.True);
-            Assert.That(service.TryPurchaseEvolution("weapon.mortira", 5, "fragment-mortar").Applied, Is.True);
-            Assert.That(service.TryPurchaseEvolution("weapon.mortira", 5, "fragment-mortar").Applied, Is.True);
-            Assert.That(service.TryPurchaseEvolution("weapon.mortira", 5, "fragment-mortar").Applied, Is.True);
-            Assert.That(service.TryPurchaseEvolution("weapon.mortira", 5, "fragment-mortar").Applied, Is.False);
+            for (var i = 0; i < 5; i++)
+                Assert.That(service.TryPurchaseEvolution("weapon.mortira", 5, "cascade-mortar").Applied, Is.True);
+            Assert.That(service.TryPurchaseEvolution("weapon.mortira", 5, "cascade-mortar").Applied, Is.False);
 
-            Assert.That(progress.rank, Is.EqualTo(9));
-            Assert.That(progress.specialUpgrades.Single(item => item.rank == 5).purchaseCount, Is.EqualTo(4));
+            Assert.That(progress.rank, Is.EqualTo(10));
+            Assert.That(progress.specialUpgrades.Single(item => item.rank == 5).purchaseCount, Is.EqualTo(5));
         }
 
         [Test]
