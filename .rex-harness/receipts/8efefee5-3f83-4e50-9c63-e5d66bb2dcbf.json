@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "8efefee5-3f83-4e50-9c63-e5d66bb2dcbf",
+  "command": {
+    "executable": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Unity.exe",
+    "args": [
+      "-batchmode",
+      "-nographics",
+      "-quit",
+      "-projectPath",
+      "C:\\Projects\\Game",
+      "-runTests",
+      "-testPlatform",
+      "EditMode",
+      "-testFilter",
+      "Game.Tests.EditMode.App.WorkshopBaseStatCardStateResolverTests",
+      "-testResults",
+      "Temp\\workshop-card-visibility-green.xml",
+      "-logFile",
+      "Temp\\workshop-card-visibility-green.log"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-19T13:30:13.053Z"
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "rex.standards-spec-review.v1",
+  "workItem": "weapon-combat-repair-jammer-completion",
+  "baseline": "HEAD",
+  "targetFiles": [
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs",
+    "Assets/_Game/Runtime/Gameplay/Battle/Weapons/WeaponEvolutionProfile.cs",
+    "Assets/_Game/Tests/EditMode/Gameplay/BattleSimulationTests.cs"
+  ],
+  "diffRef": "git diff HEAD -- targetFiles (non-empty)",
+  "specSources": [
+    "docs/design/weapon-combat-specification.md:75",
+    "docs/design/weapon-combat-specification.md:121",
+    "docs/design/weapon-catalog-canonical.md:147",
+    "docs/design/weapon-catalog-canonical.md:203",
+    "AGENTS.md"
+  ],
+  "standards": {
+    "findings": [],
+    "checked": {
+      "mysteriousName": "not found",
+      "duplicatedCode": "not found; one public jammer query is reused by direct and timed healing paths",
+      "featureEnvy": "not found",
+      "dataClumps": "not found",
+      "primitiveObsession": "not found for the bounded duration counter",
+      "repeatedSwitches": "not found",
+      "shotgunSurgery": "not found",
+      "divergentChange": "not found",
+      "speculativeGenerality": "not found",
+      "messageChains": "not found",
+      "middleMan": "not found",
+      "refusedBequest": "not found"
+    },
+    "verdict": "pass"
+  },
+  "spec": {
+    "findings": [
+      {
+        "severity": "hard",
+        "location": "Assets/_Game/Runtime/Data/Progression/WeaponProgressionCatalog.cs:529",
+        "evidence": "The approved catalog says the jammer duration has exactly two upgrades for 2→3→4 turns, but the progression catalog still declares four Radius upgrades (0/0/2/4).",
+        "recommendation": "Change the jammer radius/duration track to two purchases and add a progression-level test."
+      },
+      {
+        "severity": "hard",
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Assembly/BattleSceneController.cs",
+        "evidence": "weapon-combat-specification.md:121 requires a visible no-repair-2 icon by the affected unit's HP for the full status duration; this change exposes IsUnitRepairJammed but has no controller subscription or rendered icon.",
+        "recommendation": "Add a battle presentation slice that creates, positions, and removes the approved icon using the public status query."
+      }
+    ],
+    "verdict": "changes-required"
+  },
+  "finalVerdict": "changes-required",
+  "evidence": [
+    "receipt:1a758a64-9498-49e5-b966-50523c213a93",
+    "receipt:92368721-1792-4376-8892-01e408b2af6b",
+    "receipt:3cf676bf-1cf9-430a-b2ab-0489944fa844"
+  ]
+}

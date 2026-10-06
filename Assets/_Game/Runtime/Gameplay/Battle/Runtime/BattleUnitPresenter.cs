@@ -44,6 +44,11 @@ namespace Game.Gameplay.Battle.Runtime
             _view.ClearEquippedWeapon();
         }
 
+        public void SetRepairJammerActive(bool isActive)
+        {
+            _view.SetRepairJammerActive(isActive);
+        }
+
         public void SetWeaponAim(Vector2 direction)
         {
             _view.SetWeaponAim(direction);

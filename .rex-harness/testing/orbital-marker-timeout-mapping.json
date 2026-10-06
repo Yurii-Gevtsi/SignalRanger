@@ -1,0 +1,1 @@
+{"acceptanceMapping":[{"behavior":"timer invalidates visual target draft","observable":"OnSimulationTurnAdvanced clears the marker when reason is PlayerTimerExpired","test":"scoped controller source and Unity compilation"}]}

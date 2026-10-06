@@ -1,0 +1,1 @@
+{"workItem":"weapon-combat-orbital-marker-timeout","inScope":["clear visual marker on PlayerTimerExpired turn boundary"],"outOfScope":["other input behavior","simulation damage"],"completionCriteria":["no red marker persists after the draft becomes invalid due to timer expiry"]}

@@ -24,17 +24,25 @@ namespace Game.Gameplay.Battle.Visuals
             IReadOnlyList<BattleVisualLayer> overlayLayers = null,
             Rect? cameraFrame = null,
             Vector2? worldOffset = null,
+            Vector2? arenaContentOffset = null,
             Vector2? arenaScale = null,
             Vector2? arenaScalePivot = null,
             float cameraTopPanAllowancePercent = 0f,
-            float killZoneOffsetY = 0f)
+            float cameraBottomPanAllowance = 0f,
+            float killZoneOffsetY = 0f,
+            bool hasKillZone = true,
+            Color? arenaTint = null)
         {
             CameraFrame = cameraFrame;
             WorldOffset = worldOffset ?? Vector2.zero;
+            ArenaContentOffset = arenaContentOffset ?? WorldOffset;
             ArenaScale = arenaScale ?? Vector2.one;
             ArenaScalePivot = arenaScalePivot ?? Vector2.zero;
             CameraTopPanAllowancePercent = Mathf.Max(0f, cameraTopPanAllowancePercent);
+            CameraBottomPanAllowance = Mathf.Max(0f, cameraBottomPanAllowance);
             KillZoneOffsetY = killZoneOffsetY;
+            HasKillZone = hasKillZone;
+            ArenaTint = arenaTint ?? Color.white;
             Background = background;
             Foreground = foreground;
             PlayerSkinResourcePath = playerSkinResourcePath ?? string.Empty;
@@ -65,14 +73,21 @@ namespace Game.Gameplay.Battle.Visuals
         public IReadOnlyList<BattleVisualLayer> OverlayLayers { get; }
         public Rect? CameraFrame { get; }
 
-        /// <summary>Shared placement offset for the background, terrain and kill-zone.</summary>
+        /// <summary>Placement offset for the camera-filling background.</summary>
         public Vector2 WorldOffset { get; }
+
+        /// <summary>Placement offset for terrain, units and the kill-zone.</summary>
+        public Vector2 ArenaContentOffset { get; }
 
         /// <summary>Scale applied only to the arena and its collision world, not the sky.</summary>
         public Vector2 ArenaScale { get; }
         public Vector2 ArenaScalePivot { get; }
         public float CameraTopPanAllowancePercent { get; }
+        /// <summary>Extra background-covered space available when panning below the authored camera frame.</summary>
+        public float CameraBottomPanAllowance { get; }
         public float KillZoneOffsetY { get; }
+        public bool HasKillZone { get; }
+        public Color ArenaTint { get; }
 
         /// <summary>Which way the source art looks before any runtime flip.</summary>
         public int PlayerSkinFacingDirectionX { get; }

@@ -154,6 +154,21 @@ namespace Game.Gameplay.Battle.Weapons
                 : default;
         }
 
+        public int ResolveUpgradeCount(string weaponId, WeaponUpgradePath path)
+        {
+            return weaponId != null && _progress.TryGetValue(weaponId, out var progress)
+                ? WeaponUpgradeChoiceResolver.Count(progress, path)
+                : 0;
+        }
+
+        public bool HasPurchasedEvolution(string weaponId, int milestoneRank, string optionId)
+        {
+            return _progress.TryGetValue(weaponId, out var progress) && progress.rank >= milestoneRank
+                && WeaponProgressionCatalog.TryGet(weaponId, out var definition)
+                && WeaponEvolutionSelectionResolver.TryGetChoice(definition, progress, milestoneRank, out var option)
+                && option.Id == optionId && definition.GetSpecialPurchaseCount(progress, milestoneRank) > 0;
+        }
+
         /// <summary>Rank this side fights the weapon at; 1 when it is undeveloped.</summary>
         public int ResolveRank(string weaponId)
         {
@@ -164,6 +179,30 @@ namespace Game.Gameplay.Battle.Weapons
         public int ResolveBranch(string weaponId)
         {
             return weaponId != null && _progress.TryGetValue(weaponId, out var progress) ? progress.branch : 0;
+        }
+
+        /// <summary>The purchased rank-five choice owns the visible weapon body.</summary>
+        public string ResolveCurrentIconId(WeaponDefinition weapon, string iconId = null)
+        {
+            if (weapon == null)
+            {
+                return iconId;
+            }
+
+            iconId ??= weapon.IconId;
+            if (string.IsNullOrWhiteSpace(iconId)
+                || !_progress.TryGetValue(weapon.WeaponId, out var progress)
+                || progress.rank < 5
+                || !WeaponProgressionCatalog.TryGet(weapon.WeaponId, out var definition))
+            {
+                return iconId;
+            }
+
+            var resource = WeaponEvolutionIconResolver.ResolveCurrentIconResource(iconId, definition, progress);
+            const string prefix = "UI/Weapons/";
+            return resource.StartsWith(prefix, StringComparison.Ordinal)
+                ? resource.Substring(prefix.Length)
+                : iconId;
         }
 
         /// <summary>Highest rank across the whole loadout, for a one-glance readout.</summary>

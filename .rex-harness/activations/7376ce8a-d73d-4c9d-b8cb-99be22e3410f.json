@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "7376ce8a-d73d-4c9d-b8cb-99be22e3410f",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-lifecycle-and-control",
+  "profile": "default",
+  "request": {
+    "message": "Fix the sword runtime crop and held-weapon lifecycle; make the combat weapon picker dynamically scroll with four visible rows; audit and unify projectile/held-item visuals; implement sticky grenade, repair jammer and virus attachments, placeable signal/grounder/force-field/spider/drone behavior, controllable bomber/carrier drones, signal rocket ascent, and repeat-fire retention for weapons that require it.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 1,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "0b81cf8d-f3e1-4804-8b76-641ed48cb8b0",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-lifecycle-and-control-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-lifecycle-and-control-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-lifecycle-and-control-testability.json"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-lifecycle-and-control-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:docs/architecture/weapon-lifecycle-and-control-testability.json",
+    "reason": "The active Unity Editor currently owns the project lock, so an isolated batch-mode public test scenario cannot run safely.",
+    "missingAcceptance": "Close the active Unity Editor before running focused EditMode and PlayMode validation for the weapon lifecycle changes."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-18T10:36:56.550Z",
+  "updatedAt": "2026-09-18T10:37:40.517Z"
+}

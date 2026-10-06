@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "4ac1bdd3-a31e-4626-afb6-67d1dccee617",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 3221226505,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "958c5daca738e1066d9b90dc9f55a01b1ae4f24ed11e3bab4b990c10228b6a7d",
+  "observedAt": "2026-09-23T07:30:02.965Z"
+}

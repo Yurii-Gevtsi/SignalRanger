@@ -21,6 +21,25 @@ namespace Game.Tests.EditMode.Modes
         }
 
         [Test]
+        public void PurchasedFirstSpecialSetsBattleBodySkinEvenAfterFurtherRanks()
+        {
+            var weapon = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                value => value.WeaponId == "weapon.impulse");
+            var progress = new SaveWeaponProgressData
+            {
+                weaponId = weapon.WeaponId,
+                rank = 11,
+                evolutionChoices = new List<SaveWeaponEvolutionChoiceData>
+                {
+                    new() { rank = 5, optionId = "double-impulse" }
+                }
+            };
+            var battle = BattleWeaponProgression.FromResolver(new[] { weapon }, _ => progress);
+
+            Assert.That(battle.ResolveCurrentIconId(weapon), Is.EqualTo("impulse_5_10_B"));
+        }
+
+        [Test]
         public void AnOpponentsRanksAndBranchesComeFromItsOwnLoadout()
         {
             var weapons = WeaponsById();
@@ -49,6 +68,24 @@ namespace Game.Tests.EditMode.Modes
 
             Assert.That(undeveloped.ResolveModifiers("weapon.impulse").DamagePercent, Is.EqualTo(0));
             Assert.That(developed.ResolveModifiers("weapon.impulse").DamagePercent, Is.GreaterThan(0));
+        }
+
+        [Test]
+        public void RankOnlyImpulseProgression_AllocatesBaseChoicesAndSkipsTheSpecialRank()
+        {
+            var weapons = WeaponsById();
+            var rankFour = BattleWeaponProgression.FromRanks(weapons,
+                new[] { "weapon.impulse" }, new[] { 4 }, null);
+            var rankFive = BattleWeaponProgression.FromRanks(weapons,
+                new[] { "weapon.impulse" }, new[] { 5 }, null);
+            var rankSix = BattleWeaponProgression.FromRanks(weapons,
+                new[] { "weapon.impulse" }, new[] { 6 }, null);
+
+            Assert.That(rankFour.ResolveUpgradeCount("weapon.impulse", WeaponUpgradePath.Core), Is.EqualTo(1));
+            Assert.That(rankFour.ResolveUpgradeCount("weapon.impulse", WeaponUpgradePath.Aim), Is.EqualTo(1));
+            Assert.That(rankFour.ResolveUpgradeCount("weapon.impulse", WeaponUpgradePath.Radius), Is.EqualTo(1));
+            Assert.That(rankFive.ResolveUpgradeCount("weapon.impulse", WeaponUpgradePath.Core), Is.EqualTo(1));
+            Assert.That(rankSix.ResolveUpgradeCount("weapon.impulse", WeaponUpgradePath.Core), Is.EqualTo(2));
         }
 
         [Test]

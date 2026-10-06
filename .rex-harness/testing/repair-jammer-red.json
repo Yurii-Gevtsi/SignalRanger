@@ -1,0 +1,10 @@
+{
+  "test": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage",
+  "command": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage",
+  "input": "The repair jammer has one round and a hostile droid stands within its configured attachment range.",
+  "expected": "TryFire returns Fired and the target takes no direct damage during the attachment delay.",
+  "observed": "TryFire returned Blocked.",
+  "exitCode": 1,
+  "failureReason": "The mechanic availability gate blocks the weapon before the existing attachment projectile path.",
+  "receiptRef": "receipt:ef851c0c-2c8a-42c4-bcbe-0df37cf151df"
+}

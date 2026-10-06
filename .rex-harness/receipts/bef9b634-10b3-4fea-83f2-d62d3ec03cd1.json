@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "bef9b634-10b3-4fea-83f2-d62d3ec03cd1",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PullsHostilePhysicalShotIntoDevice"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "fda5e8af40ef0a6a8c6c33f5e3b4301f4b30743cbec694a11ef97f28a8c3b3bd",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-26T08:27:59.309Z"
+}

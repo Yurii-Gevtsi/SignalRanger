@@ -1,0 +1,19 @@
+{
+  "workItem": "weapon-combat-repair-jammer-completion",
+  "userGoal": "Finish the remaining repair-jammer combat behavior: every healing source is blocked, the duration is upgrade-driven at 2→3→4 target turns, and simulation state is observable for the no-repair-2 presentation.",
+  "inScope": [
+    "Direct defensive healing and existing timed repair regeneration respect the active jammer.",
+    "The status duration is derived from the firing weapon evolution and expires after the configured number of completed target turns.",
+    "BattleSimulation provides a public read-only query that presentation can use per affected unit."
+  ],
+  "outOfScope": [
+    "Importing or wiring the no-repair-2 art into a scene prefab.",
+    "Unimplemented future healing systems with no runtime seam in the repository.",
+    "Any other weapon mechanics."
+  ],
+  "completionCriteria": [
+    "A jammed target gains no timed regeneration while jammed, then resumes when the status expires.",
+    "A profile configured for two jammer duration upgrades blocks healing for four completed target turns.",
+    "A public state query reports active then inactive status at the observed lifecycle boundary."
+  ]
+}

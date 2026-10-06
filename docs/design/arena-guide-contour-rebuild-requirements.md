@@ -11,9 +11,12 @@
   or guide-colour pixels.  Every final visual is a transparent RGBA PNG and
   every paired mask has the exact same dimensions.
 - Every resulting fragment is rendered at two times the master-pixel density
-  and receives an individual image-to-image quality pass.  Final alpha and
-  silhouette still come from the reference fragment, so the quality pass cannot
-  introduce a background or move an edge.
+  and receives an individual image-to-image quality pass. Its cleaned generated
+  alpha is the visual/mask source. It is clipped only outside the documented
+  two-pixel exterior tolerance, and only genuinely missing pixels in a declared
+  shared overlap band may be restored from the direct crop. This prevents a
+  generated background, unbounded collision growth, and transparent seams
+  without replacing the entire generated contour with the reference alpha.
 - Kraken keeps its existing segmentation and collision masks.  Only its three
   visual fragments receive the two-times resolution quality pass.
 

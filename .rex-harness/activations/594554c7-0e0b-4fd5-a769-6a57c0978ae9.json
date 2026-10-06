@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "594554c7-0e0b-4fd5-a769-6a57c0978ae9",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-catalog-runtime-implementation-41",
+  "profile": "default",
+  "request": {
+    "message": "Implement the 41-item canonical runtime weapon catalog now: add missing prototype IDs, sources, coreShop filtering, per-path limits, and special data; preserve existing UI changes. This is a new implementation task after the Unity project lock was removed.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 2,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.implementation.minimize",
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "ce946992-5ea8-499d-80d9-e263cf8c855b",
+      "capabilityId": "software.implementation.minimize",
+      "recipeId": "software.implementation.minimize.recipe",
+      "reasonCode": "new-construct-proposed",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "minimize"
+      ],
+      "evidence": [
+        {
+          "kind": "reuse-ladder-evaluated",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-minimal-construction.md"
+          ]
+        },
+        {
+          "kind": "minimal-option-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-minimal-construction.md"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "fa451905-a0cb-4ae7-91f3-b3a7d659d7b7",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-v2-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "new-construct-proposed",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:docs/architecture/weapon-runtime-catalog-41-v2-testability.json",
+    "reason": "The Unity batchmode process compiled the project and exited with code 0, but did not execute the requested EditMode filter: no Test Run entry and no test-results XML were written. A process exit code alone cannot establish the expected 41-item catalog RED.",
+    "missingAcceptance": "Restore or identify a Unity Test Runner command/assembly configuration that executes Game.Tests.EditMode.Gameplay.WeaponUiCatalogAvailabilityTests and writes a result XML. Then run the newly added catalog contract test to record its real RED before catalog implementation."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.implementation.minimize",
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-16T18:56:56.843Z",
+  "updatedAt": "2026-09-16T19:01:37.857Z"
+}

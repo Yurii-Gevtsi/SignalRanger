@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/guardian-drone-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire, EndActiveTurn and Tick through the Unity EditMode battle harness",
+    "setup": "A player deploys weapon.guardian-drone, then the opponent moves into its 1.6-unit detection range during its active turn.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_DeploysAndGuaranteedShotEndsTriggeredTurn"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "The combat action returns Fired; the deployed drone fires once at its original target, damages it, and ends that target's active turn.",
+    "observed": "The combat action returns Blocked before any guardian deployment can occur.",
+    "failureReason": "IsBattleMechanicAvailable explicitly rejects weapon.guardian-drone.",
+    "receiptRef": "receipt:cbcbf58a-f009-4ffa-acdd-ee795985bced"
+  }
+}

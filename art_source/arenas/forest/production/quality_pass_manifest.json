@@ -1,0 +1,62 @@
+{
+  "rule": "Every source segment receives one enhanced RGBA visual; its paired mask is generated from that enhanced visual alpha.",
+  "visual_style": "Stylized hand-painted 2D sci-fi game illustration; large clean shapes; soft cel-shading; light coloured shadows without deep black; moderate contrast; warm diffused light; restrained fine texture, scratches and micro-cracks; clear silhouettes and large readable colour planes; slightly muted but lively pastel turquoise, green, sand, cream and warm orange palette; background simpler, lighter and lower contrast than foreground with gentle atmospheric perspective; clean lines without excessive sharpening, HDR or coloured halos; hand-painted and expressive, not childish or overly cartoonish; no photorealism or excessive material micro-detail.",
+  "pieces": [
+    {
+      "id": "section_01",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "source_sha256": "8905ba7d27baab99d864cca8bdf592197841b85184f4d1dce219db4987daf411",
+      "enhanced_visual_sha256": "63e2d0225c17d7fa9cebf9c0f09f2848f2e22a3330469c649555d4cf136f0346",
+      "mask_sha256": "9f4701d6ffe0267904d7ab969b46cb98cbc8ab56f674140505b472d22d69ec0a",
+      "width": 1210,
+      "height": 900,
+      "alpha_source": "enhanced_visual"
+    },
+    {
+      "id": "section_02",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "source_sha256": "5002c060e39886458955551046db9015729185b73aaa3ba98fb4d18f8a694ef3",
+      "enhanced_visual_sha256": "e9e377e27b6420d09675cac96372506a84a39bb1e2e4af0d1592332f50565a39",
+      "mask_sha256": "75ee64e4d8403ab3008f1c3957a87d77f7ffa11d6388cf0d51fc44e3296692d5",
+      "width": 966,
+      "height": 1226,
+      "alpha_source": "enhanced_visual"
+    },
+    {
+      "id": "section_03",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "source_sha256": "eab4f61dd2b0e3a79523513de2424eb97531d0b5d462c06c60635e4eb8e9cf4e",
+      "enhanced_visual_sha256": "199d357df62781661c3251bad828e309352b2ad016dfbf738afbc7f03b67eff7",
+      "mask_sha256": "76766e1f6521817d03bc2b00e1250f45207ead60f92ef4a2f9b17f008344fac2",
+      "width": 952,
+      "height": 1014,
+      "alpha_source": "enhanced_visual"
+    },
+    {
+      "id": "section_04",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "source_sha256": "9173fb745da26cf9cf985a84b5f207825dbd3e0101254787335fd5fc02f1e055",
+      "enhanced_visual_sha256": "6b6da931a12ebd41d29f0e970a469d859b4271e84a1780fc3b46ad1bb595d65e",
+      "mask_sha256": "2a1cb1c97bbeff1ba7890b2c7b27d10489d117569097c89cdf39d876ef83d530",
+      "width": 1402,
+      "height": 554,
+      "alpha_source": "enhanced_visual"
+    }
+  ],
+  "alignment": {
+    "passed": true,
+    "tolerance_px": 2,
+    "original_alpha_pixels": 2047075,
+    "exterior_drift_budget_ratio": 0.035,
+    "exterior_drift_budget_pixels": 71647,
+    "missing_pixels": 41418,
+    "out_of_bounds_pixels": 53302,
+    "seam_gap_pixels": 0,
+    "max_seam_gap_component_pixels": 0,
+    "seam_gap_budget_pixels": 64,
+    "seam_gap_component_budget_pixels": 32,
+    "overlap_pixels": 10329,
+    "source_overlap_pixels": 4152,
+    "max_piece_overlap": 2
+  }
+}

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Failed(Child)" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 13:06:47Z" end-time="2026-10-06 13:07:03Z" duration="15,5208285">
+  <test-suite type="TestSuite" id="1871" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="18" result="Failed" site="Child" start-time="2026-10-06 13:06:47Z" end-time="2026-10-06 13:07:03Z" duration="15.520829" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1864" name="Game.Tests.PlayMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.PlayMode.dll" runstate="Runnable" testcasecount="18" result="Failed" site="Child" start-time="2026-10-06 13:06:47Z" end-time="2026-10-06 13:07:03Z" duration="15.516199" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1865" name="Game" fullname="Game" runstate="Runnable" testcasecount="18" result="Failed" site="Child" start-time="2026-10-06 13:06:47Z" end-time="2026-10-06 13:07:03Z" duration="15.513190" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1866" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="18" result="Failed" site="Child" start-time="2026-10-06 13:06:47Z" end-time="2026-10-06 13:07:03Z" duration="15.509286" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1867" name="PlayMode" fullname="Game.Tests.PlayMode" runstate="Runnable" testcasecount="18" result="Failed" site="Child" start-time="2026-10-06 13:06:47Z" end-time="2026-10-06 13:07:03Z" duration="15.504135" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1846" name="StarterWeaponsBattleSmokeTests" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="15" result="Failed" site="Child" start-time="2026-10-06 13:06:47Z" end-time="2026-10-06 13:07:03Z" duration="15.499965" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="ParameterizedMethod" id="1863" name="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="3" result="Failed" site="Child" start-time="2026-10-06 13:06:47Z" end-time="2026-10-06 13:07:03Z" duration="15.495557" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                </properties>
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1860" name="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)" methodname="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="545698076" result="Failed" start-time="2026-10-06 13:06:47Z" end-time="2026-10-06 13:06:55Z" duration="7.986842" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: 0.5f +/- 0.00100000005f
+  But was:  1.0f
+]]></message>
+                    <stack-trace><![CDATA[at Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests+<TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape>d__8.MoveNext () [0x00342] in C:\Projects\Game\Assets\_Game\Tests\PlayMode\StarterWeaponsBattleSmokeTests.cs:223
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@f3e6c9a02477\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1861" name="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)" methodname="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="667142134" result="Failed" start-time="2026-10-06 13:06:55Z" end-time="2026-10-06 13:06:59Z" duration="3.927084" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: 1.10000002f +/- 0.00100000005f
+  But was:  1.0f
+]]></message>
+                    <stack-trace><![CDATA[at Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests+<TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape>d__8.MoveNext () [0x002ea] in C:\Projects\Game\Assets\_Game\Tests\PlayMode\StarterWeaponsBattleSmokeTests.cs:219
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@f3e6c9a02477\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1862" name="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)" methodname="TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="887853229" result="Failed" start-time="2026-10-06 13:06:59Z" end-time="2026-10-06 13:07:03Z" duration="3.574605" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: 1.5f +/- 0.00100000005f
+  But was:  1.0f
+]]></message>
+                    <stack-trace><![CDATA[at Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests+<TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape>d__8.MoveNext () [0x002ea] in C:\Projects\Game\Assets\_Game\Tests\PlayMode\StarterWeaponsBattleSmokeTests.cs:219
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@f3e6c9a02477\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                  <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

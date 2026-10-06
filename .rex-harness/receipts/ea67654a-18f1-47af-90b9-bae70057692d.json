@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "ea67654a-18f1-47af-90b9-bae70057692d",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "93a23d3bd2499b519e0bb83da7114176660f294a402d3302fdd0a84b04ed9a2a",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-23T05:27:37.310Z"
+}

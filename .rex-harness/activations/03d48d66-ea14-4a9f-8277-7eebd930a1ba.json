@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "03d48d66-ea14-4a9f-8277-7eebd930a1ba",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-swap-jump-validation",
+  "profile": "default",
+  "request": {
+    "message": "Validate and finish the existing swap-jump implementation against approved specification item 27. Fix the owner destination to sphere landing rather than enemy position, preserve throw-time origin, verify Unity tests, document and commit only this weapon.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 3,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design",
+    "software.testing.tdd",
+    "software.review.standards-spec"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "ded2fff7-b79b-48fc-b59b-77a626eca90d",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-scope.json"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-mapping.json"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-seam.json"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-owner-landing-testability.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "8fab4d41-7fce-44c6-b971-68cf7695c02e",
+      "capabilityId": "software.testing.tdd",
+      "recipeId": "software.testing.tdd.recipe",
+      "reasonCode": "honest-red-candidate",
+      "triggerEvidenceRefs": [
+        "request:current",
+        "activation:software.testing.design:completed",
+        "file:.rex-harness/testing/swap-jump-owner-landing-testability.json",
+        "receipt:70fb9c11-330c-414b-a3a8-0daca2f76715"
+      ],
+      "status": "completed",
+      "stageIndex": 3,
+      "stageId": "",
+      "completedStages": [
+        "red",
+        "green",
+        "refactor"
+      ],
+      "evidence": [
+        {
+          "kind": "failing-test-observed",
+          "refs": [
+            "receipt:2a63a1d6-bd4d-4d4a-8ad3-7edeb3bff7d3"
+          ]
+        },
+        {
+          "kind": "red-failure-reason-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-owner-landing-red.json"
+          ]
+        },
+        {
+          "kind": "passing-test-observed",
+          "refs": [
+            "receipt:17fe8c58-b61c-45aa-9096-4cc3f638ecdf"
+          ]
+        },
+        {
+          "kind": "implementation-diff-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-owner-landing-implementation.json"
+          ]
+        },
+        {
+          "kind": "refactor-check-recorded",
+          "refs": [
+            "receipt:da9b78ad-cbd9-4ec1-8be1-60a65e62312d"
+          ]
+        },
+        {
+          "kind": "test-diff-review-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-owner-landing-refactor-review.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "e42cfa37-d143-443f-8ece-3ad92e7e61c1",
+      "capabilityId": "software.review.standards-spec",
+      "recipeId": "software.review.standards-spec.recipe",
+      "reasonCode": "diff-ready",
+      "triggerEvidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "review"
+      ],
+      "evidence": [
+        {
+          "kind": "standards-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/swap-jump-2026-09-26.md"
+          ]
+        },
+        {
+          "kind": "spec-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/swap-jump-2026-09-26.md"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:.rex-harness/testing/swap-jump-owner-landing-testability.json",
+        "receipt:70fb9c11-330c-414b-a3a8-0daca2f76715"
+      ]
+    },
+    {
+      "kind": "diff-ready",
+      "evidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:.rex-harness/testing/swap-jump-owner-landing-testability.json",
+    "redCandidate": {
+      "publicEntry": "BattleSimulation.TryFire and Tick",
+      "setup": "Throw a swap-jump sphere toward a nearby enemy, capture its actual ProjectileExploded impact point, and compare the owner's landing to that point after the exchange.",
+      "command": {
+        "executable": "node",
+        "args": [
+          "tools/run-unity-mcp-editmode-test.mjs",
+          "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_ExchangesClosestEnemyUsingThrowOrigin"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "Owner x equals sphere impact x within 0.05; enemy lands at the captured throw origin.",
+      "observed": "Focused Unity EditMode test failed: sphere x was -1.4166677, owner x was -1.5 (enemy's prior x).",
+      "receiptRef": "receipt:70fb9c11-330c-414b-a3a8-0daca2f76715",
+      "failureReason": "Swap-jump reuses ExchangeTeleportPositions, which moves the owner to target.Position rather than the sphere impact."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design",
+      "software.testing.tdd",
+      "software.review.standards-spec"
+    ]
+  },
+  "createdAt": "2026-09-26T07:15:29.527Z",
+  "updatedAt": "2026-09-26T07:46:00.070Z"
+}

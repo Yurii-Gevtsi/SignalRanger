@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "ba4e2b07-8986-437c-bf8e-362466dde559",
+  "command": {
+    "executable": "powershell.exe",
+    "args": [
+      "-NoProfile",
+      "-Command",
+      "Start-Process -FilePath C:\\Program",
+      "Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Unity.exe -ArgumentList @(-batchmode,-nographics,-projectPath,C:\\Projects\\Game,-runTests,-testPlatform,EditMode,-testFilter,Game.Tests.EditMode.Gameplay.WeaponUiCatalogAvailabilityTests,-testResults,C:\\Projects\\Game\\Temp\\weapon-ui-catalog-rex.xml,-logFile,C:\\Projects\\Game\\Temp\\weapon-ui-catalog-rex.log) -Wait; if ((Get-Content C:\\Projects\\Game\\Temp\\weapon-ui-catalog-rex.xml -Raw) -match result=\"Passed\") { exit 0 }; exit 1"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "3f0611ba8e7cadcf0ce817feeadfde2fbe78a0269be629240bb63a6fdca79cae",
+  "observedAt": "2026-09-16T16:22:49.238Z"
+}

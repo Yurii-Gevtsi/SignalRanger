@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "020ecc8c-59c2-4b6e-abf7-da8b0f4170ee",
+  "command": {
+    "executable": "powershell.exe",
+    "args": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      "$nunit = [Reflection.Assembly]::LoadFrom(C:\\Program",
+      "Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\Resources\\PackageManager\\BuiltInPackages\\com.unity.ext.nunit\\net472\\unity-custom\\nunit.framework.dll); $assembly = [Reflection.Assembly]::LoadFrom((Resolve-Path Temp\\WorkshopSpecialCardStateResolverTests.green.dll)); $fixture = [Activator]::CreateInstance($assembly.GetType(Game.Tests.EditMode.App.WorkshopSpecialCardStateResolverTests, $true)); $methods = @(Resolve_KeepsSpecialLockedBeforeItsUnlockRank, Resolve_UnlocksTheNextPurchasableSpecial, Resolve_KeepsACompletedOneTimeSpecialAvailableForInspection); foreach ($name in $methods) { $fixture.GetType().GetMethod($name).Invoke($fixture, $null) }; PASS:",
+      "$($methods.Count)",
+      "focused",
+      "special-card",
+      "behavior",
+      "tests",
+      "passed."
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "c3369a68e67aac4b33bb6ac0f11abb755bec9748dbc9a125a821daa63b3dd59d",
+  "observedAt": "2026-09-19T14:37:14.640Z"
+}

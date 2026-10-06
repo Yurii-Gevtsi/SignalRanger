@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "3af706d3-6812-493c-b770-fd746b200ab9",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_DeploysTwoGroundNodesFromRealCombatShots"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "05e75c5972d43c59a2d4555a63f32bc63d206eba9abec1f6754f4b94ad33375c",
+  "observedAt": "2026-09-22T17:18:43.291Z"
+}

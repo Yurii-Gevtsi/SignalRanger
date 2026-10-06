@@ -117,7 +117,8 @@ namespace Game.Gameplay.Battle.AI
                 weapon.GravityScale,
                 weapon.ProjectileRadius,
                 weapon.TimeoutSeconds,
-                new TrajectoryObstacles(context.Bodies, context.AimTarget));
+                new TrajectoryObstacles(context.Bodies, context.AimTarget),
+                weapon);
 
             // Never fire on a friendly: a direct ally hit disqualifies the arc
             // outright. Graded ally-splash risk (distance along the trajectory)

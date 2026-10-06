@@ -1,6 +1,7 @@
 using System;
 using Game.Data.Progression;
 using Game.Data.Save;
+using UnityEngine;
 
 namespace Game.Gameplay.Battle.Weapons
 {
@@ -11,6 +12,9 @@ namespace Game.Gameplay.Battle.Weapons
     /// </summary>
     public static class WeaponUpgradeChoiceResolver
     {
+        public const float DrillLaserBaseRange = 3.25f;
+        public const float RopeBaseLength = 8f;
+        private const float DrillLaserRangePerUpgrade = 0.10f;
         private const int BaseAccuracy = 70;
         private const int AccuracyPerAimUpgrade = 4;
         private const int DamagePercentPerCoreUpgrade = 3;
@@ -24,25 +28,9 @@ namespace Game.Gameplay.Battle.Weapons
                 return 0;
             }
 
-            var count = 0;
-            for (var rank = 2; rank <= Math.Min(progress.rank, throughRank); rank++)
-            {
-                if (TryGetChoice(progress, rank, out var selectedPath))
-                {
-                    count += selectedPath == path ? 1 : 0;
-                    continue;
-                }
-
-                // Compatibility for saves created before free TTH choices existed.
-                // A legacy node is only used when no explicit choice was saved for
-                // that rank, preventing double counting after the first new purchase.
-                if (LegacyPath(progress, rank) == path)
-                {
-                    count++;
-                }
-            }
-
-            return count;
+            return WeaponProgressionCatalog.TryGet(progress.weaponId, out var definition)
+                ? definition.CountBaseUpgrades(progress, path, throughRank)
+                : 0;
         }
 
         public static float ResolveValue(
@@ -52,7 +40,7 @@ namespace Game.Gameplay.Battle.Weapons
             WeaponUpgradePath path,
             int extraPurchases = 0)
         {
-            if (weapon == null || progress == null)
+            if (weapon == null)
             {
                 return 0f;
             }
@@ -60,14 +48,71 @@ namespace Game.Gameplay.Battle.Weapons
             var count = Count(progress, path) + Math.Max(0, extraPurchases);
             return path switch
             {
-                WeaponUpgradePath.Core => weapon.Damage * (1f + count * DamagePercentPerCoreUpgrade / 100f),
+                WeaponUpgradePath.Core => weapon.WeaponId == "weapon.grounder"
+                    ? 2f + count
+                    : weapon.WeaponId == "weapon.heal" ? ResolveRepairHealPercent(count)
+                    : Mathf.RoundToInt(weapon.Damage *
+                        (1f + ResolveCoreDamagePercent(weapon, count) / 100f)),
+                WeaponUpgradePath.Aim when weapon.WeaponId == "weapon.rope" =>
+                    ResolveRopeAimSectorDegrees(count),
                 WeaponUpgradePath.Aim => BaseAccuracy + count * AccuracyPerAimUpgrade,
+                WeaponUpgradePath.Loadout when weapon.WeaponId == "weapon.mine" => 4f,
                 WeaponUpgradePath.Loadout => weapon.HasLimitedAmmo
                     ? weapon.AmmoCount + count * AmmoPerLoadoutUpgrade
                     : -1f,
-                WeaponUpgradePath.Radius => weapon.ImpactRadius * (1f + count * RadiusPercentPerUpgrade),
+                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.bur" =>
+                    ResolveDrillLaserRange(count),
+                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.bur-rocket" =>
+                    ResolveDrillRocketTerrainSeconds(count),
+                WeaponUpgradePath.Radius when weapon.WeaponId == TitaniumBarrierRules.WeaponId =>
+                    weapon.ImpactRadius * TitaniumBarrierRules.MaximumScale(
+                        definition != null && progress?.rank >= 5
+                        && WeaponEvolutionSelectionResolver.TryGetChoice(definition, progress, 5, out var option)
+                        && option.Id == TitaniumBarrierRules.SizeFeatureId, count),
+                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.rope" =>
+                    ResolveRopeLength(count),
+                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.ion-shotgun" =>
+                    weapon.ProjectileRadius * (1f + count * RadiusPercentPerUpgrade),
+                WeaponUpgradePath.Radius => weapon.ImpactRadius *
+                    (1f + count * (weapon.WeaponId == "weapon.grounder" || weapon.WeaponId == "weapon.granata"
+                        || weapon.WeaponId == "weapon.impulse"
+                        || weapon.WeaponId == "weapon.c4"
+                        || weapon.WeaponId == "weapon.mine" || weapon.WeaponId == "weapon.titanium-disc"
+                        ? 0.10f : RadiusPercentPerUpgrade)),
                 _ => 0f
             };
+        }
+
+        public static float ResolveDrillLaserRange(int radiusUpgrades)
+        {
+            return DrillLaserBaseRange *
+                (1f + Math.Min(Math.Max(radiusUpgrades, 0), 4) * DrillLaserRangePerUpgrade);
+        }
+
+        public static float ResolveDrillRocketTerrainSeconds(int radiusUpgrades)
+        {
+            return 1f + Math.Clamp(radiusUpgrades, 0, 4) * 0.10f;
+        }
+
+        public static float ResolveRepairHealPercent(int coreUpgrades)
+        {
+            return 25f * (1f + Math.Clamp(coreUpgrades, 0, 4) * 0.10f);
+        }
+
+        public static float ResolveRopeLength(int radiusUpgrades)
+        {
+            return RopeBaseLength * (1f + Math.Clamp(radiusUpgrades, 0, 4) * 0.10f);
+        }
+
+        public static float ResolveRopeAimSectorDegrees(int aimUpgrades)
+        {
+            return 45f + Math.Clamp(aimUpgrades, 0, 4) * 4f;
+        }
+
+        public static float ResolveAimPreviewMultiplier(int aimUpgrades)
+        {
+            return (BaseAccuracy + Math.Clamp(aimUpgrades, 0, 4) * AccuracyPerAimUpgrade) /
+                (float)BaseAccuracy;
         }
 
         public static int ResolveDamagePercent(
@@ -75,7 +120,29 @@ namespace Game.Gameplay.Battle.Weapons
             SaveWeaponProgressData progress,
             WeaponProgressionDefinition definition = null)
         {
-            return Count(progress, WeaponUpgradePath.Core) * DamagePercentPerCoreUpgrade;
+            return ResolveCoreDamagePercent(weapon, Count(progress, WeaponUpgradePath.Core));
+        }
+
+        private static int ResolveCoreDamagePercent(WeaponDefinition weapon, int count)
+        {
+            if (weapon != null && (weapon.WeaponId == "weapon.impulse"
+                || weapon.WeaponId == "weapon.granata"
+                || weapon.WeaponId == "weapon.plasma-sword"
+                || weapon.WeaponId == "weapon.ion-shotgun"
+                || weapon.WeaponId == "weapon.c4" || weapon.WeaponId == "weapon.mine"
+                || weapon.WeaponId == "weapon.titanium-disc"))
+            {
+                return Math.Clamp(count, 0, 4) switch
+                {
+                    1 => 50,
+                    2 => 200,
+                    3 => 400,
+                    4 => 900,
+                    _ => 0
+                };
+            }
+
+            return count * DamagePercentPerCoreUpgrade;
         }
 
         public static int ResolveImpactRadiusPercent(
@@ -83,7 +150,17 @@ namespace Game.Gameplay.Battle.Weapons
             SaveWeaponProgressData progress,
             WeaponProgressionDefinition definition = null)
         {
-            return (int)Math.Round(Count(progress, WeaponUpgradePath.Radius) * RadiusPercentPerUpgrade * 100f);
+            if (weapon?.WeaponId is "weapon.bur" or "weapon.bur-rocket" or "weapon.titanium-barrier")
+            {
+                return 0;
+            }
+
+            var percentPerUpgrade = weapon != null &&
+                (weapon.WeaponId == "weapon.grounder" || weapon.WeaponId == "weapon.granata"
+                    || weapon.WeaponId == "weapon.impulse"
+                    || weapon.WeaponId == "weapon.c4" || weapon.WeaponId == "weapon.mine"
+                    || weapon.WeaponId == "weapon.titanium-disc") ? 10 : 8;
+            return Count(progress, WeaponUpgradePath.Radius) * percentPerUpgrade;
         }
 
         public static bool TryGetChoice(SaveWeaponProgressData progress, int rank, out WeaponUpgradePath path)
@@ -107,27 +184,5 @@ namespace Game.Gameplay.Battle.Weapons
             return false;
         }
 
-        private static WeaponUpgradePath LegacyPath(SaveWeaponProgressData progress, int rank)
-        {
-            if (progress == null || string.IsNullOrWhiteSpace(progress.weaponId)
-                || !WeaponProgressionCatalog.TryGet(progress.weaponId, out var definition)
-                || definition == null
-                || !definition.TryGetNode(rank, (WeaponUpgradeBranch)progress.branch, out var node)
-                || node.IsEvolution)
-            {
-                return WeaponUpgradePath.None;
-            }
-
-            return node.Stat switch
-            {
-                WeaponUpgradeStat.Damage => WeaponUpgradePath.Core,
-                WeaponUpgradeStat.Accuracy => WeaponUpgradePath.Aim,
-                WeaponUpgradeStat.Range => WeaponUpgradePath.Aim,
-                WeaponUpgradeStat.Ammo => WeaponUpgradePath.Loadout,
-                WeaponUpgradeStat.ProjectileCount => WeaponUpgradePath.Loadout,
-                WeaponUpgradeStat.ImpactRadius => WeaponUpgradePath.Radius,
-                _ => WeaponUpgradePath.None
-            };
-        }
     }
 }

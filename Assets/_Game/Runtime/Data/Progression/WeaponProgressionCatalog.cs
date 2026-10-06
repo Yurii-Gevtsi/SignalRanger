@@ -195,30 +195,89 @@ namespace Game.Data.Progression
             };
         }
 
-        public int CountBaseUpgrades(SaveWeaponProgressData progress, WeaponUpgradePath path)
+        public bool CanPurchaseBaseUpgrade(SaveWeaponProgressData progress, WeaponUpgradePath path)
+        {
+            if (CountBaseUpgrades(progress, path) >= GetBaseUpgradeLimit(path)) return false;
+            return WeaponId != "weapon.titanium-barrier" || path != WeaponUpgradePath.Radius
+                || progress?.rank >= 5 && WeaponEvolutionSelectionResolver.TryGetChoice(this, progress, 5, out var option)
+                    && option.Id == "size-unlock" && GetSpecialPurchaseCount(progress, 5) > 0;
+        }
+
+        public int CountBaseUpgrades(SaveWeaponProgressData progress, WeaponUpgradePath path,
+            int throughRank = 60)
         {
             if (progress == null || !WeaponUpgradeEconomy.IsValidPath(path))
             {
                 return 0;
             }
 
-            var count = 0;
-            for (var rank = 2; rank <= progress.rank; rank++)
+            var counts = new int[5];
+            var availablePaths = new List<WeaponUpgradePath>(4);
+            for (var index = 1; index <= 4; index++)
+            {
+                var availablePath = (WeaponUpgradePath)index;
+                if (GetBaseUpgradeLimit(availablePath) > 0)
+                {
+                    availablePaths.Add(availablePath);
+                }
+            }
+            var baseOrdinal = 0;
+            for (var rank = 2; rank <= Math.Min(progress.rank, throughRank); rank++)
             {
                 if (TryGetRecordedPath(progress, rank, out var recordedPath))
                 {
-                    count += recordedPath == path ? 1 : 0;
+                    counts[(int)recordedPath]++;
+                    baseOrdinal++;
                     continue;
                 }
 
-                if (TryGetNode(rank, (WeaponUpgradeBranch)progress.branch, out var node)
-                    && !node.IsEvolution && ResolveBasePath(node.Stat) == path)
+                // This weapon reaches rank five with its four Loadout purchases.
+                // Rank six is the paid size feature, not an unrecorded Radius step.
+                if (WeaponId == "weapon.titanium-barrier" && rank == 6
+                    && GetSpecialPurchaseCount(progress, 5) > 0)
                 {
-                    count++;
+                    continue;
                 }
+
+                if (TryGetNode(rank, (WeaponUpgradeBranch)progress.branch, out var node))
+                {
+                    if (!node.IsEvolution)
+                    {
+                        var legacyPath = ResolveBasePath(node.Stat);
+                        if (WeaponUpgradeEconomy.IsValidPath(legacyPath))
+                        {
+                            counts[(int)legacyPath]++;
+                            baseOrdinal++;
+                        }
+                    }
+                    continue;
+                }
+
+                if (rank == 5 && Special5PurchaseCount > 0
+                    || rank == 10 && Special10PurchaseCount > 0)
+                {
+                    continue;
+                }
+
+                // Rank-only opponent loadouts and older saves have no recorded TTH
+                // choices. Allocate their base ranks deterministically within the
+                // same four caps so they receive real battle stats and cannot buy
+                // past a full path after migration.
+                for (var offset = 0; offset < availablePaths.Count; offset++)
+                {
+                    var candidate = availablePaths[(baseOrdinal + offset) % availablePaths.Count];
+                    if (counts[(int)candidate] >= GetBaseUpgradeLimit(candidate))
+                    {
+                        continue;
+                    }
+
+                    counts[(int)candidate]++;
+                    break;
+                }
+                baseOrdinal++;
             }
 
-            return count;
+            return counts[(int)path];
         }
 
         private static bool TryGetRecordedPath(SaveWeaponProgressData progress, int rank,
@@ -514,11 +573,11 @@ namespace Game.Data.Progression
             Catalog("weapon.plasma-sword", 3, 900, false, 4, 0, 0, 0),
             Catalog("weapon.ion-shotgun", 3, 900, false, 4, 0, 4, 4),
             Catalog("weapon.c4", 6, 1800, false, 4, 0, 2, 4),
-            Catalog("weapon.mine", 6, 1800, false, 4, 0, 4, 4, 1, 1, "ally-safe", string.Empty, "ally-immune"),
+            Catalog("weapon.mine", 6, 1800, false, 4, 0, 0, 4, 1, 1, "ally-safe", string.Empty, "ally-immune"),
             Catalog("weapon.heal", 6, 1800, false, 4, 0, 2, 0, 3, 0, "protective-repair", "regenerative-repair"),
             Catalog("weapon.titanium-disc", 9, 3000, false, 4, 4, 4, 4),
             Catalog("weapon.bur-rocket", 9, 3000, false, 4, 4, 4, 4),
-            Catalog("weapon.titanium-barrier", 9, 3000, false, 0, 0, 4, 4),
+            Catalog("weapon.titanium-barrier", 9, 3000, false, 0, 0, 4, 4, 1, 0, "size-unlock"),
             Catalog("weapon.mortira", 12, 5000, false, 4, 4, 2, 4, 4, 0, "fragment-mortar", "cascade-mortar"),
             Catalog("weapon.sticky-grenade", 12, 5000, false, 4, 4, 2, 4, 4, 0, "toxic-release"),
             Catalog("weapon.teleport", 12, 5000, false, 0, 4, 4, 0, 1, 1, "instant-touch", string.Empty, "early-trigger"),
@@ -526,7 +585,7 @@ namespace Game.Data.Progression
             Catalog("weapon.cryo-grenade", 15, 7500, false, 4, 4, 2, 4),
             Catalog("weapon.hopping-grenade", 20, 11000, false, 4, 4, 4, 4),
             Catalog("weapon.incendiary-grenade", 20, 11000, false, 4, 4, 2, 4),
-            Catalog("weapon.repair-jammer", 25, 16000, false, 0, 0, 2, 4),
+            Catalog("weapon.repair-jammer", 25, 16000, false, 0, 0, 2, 2),
             Catalog("weapon.missle", 30, 22000, false, 4, 4, 2, 4),
             Catalog("weapon.orbital-rocket", 36, 30000, false, 4, 0, 2, 4),
             Catalog("weapon.guardian-drone", 6, 0, false, 4, 0, 2, 4, 1, 0, "stealth"),
@@ -534,7 +593,7 @@ namespace Game.Data.Progression
             Catalog("weapon.turn-transfer", 15, 0, false, 0, 0, 1, 0),
             Catalog("weapon.electric-harpoon", 20, 0, false, 4, 0, 2, 4, 1, 1, "impact-pull", string.Empty, "double-grab"),
             Catalog("weapon.swap-jump", 25, 0, false, 0, 4, 0, 4),
-            Catalog("weapon.grounder", 30, 0, false, 0, 0, 0, 4),
+            Catalog("weapon.grounder", 30, 0, false, 4, 0, 0, 4),
             Catalog("weapon.force-field", 42, 0, false, 0, 0, 0, 4),
             Catalog("weapon.boost", 6, 0, false, 0, 0, 4, 4),
             Catalog("weapon.sky-hook", 9, 0, false, 4, 0, 0, 0),

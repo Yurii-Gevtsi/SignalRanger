@@ -1,0 +1,3 @@
+# Grounder magnet refactor check
+
+The contact query now takes the candidate substep position, while steering uses the projectile's stored current position. This keeps the same attraction behavior and makes contact detection accurate when a fast projectile crosses the radius within one simulation tick. The public test still asserts the actual explosion point near the grounder; no assertion was removed, skipped, or widened. Unity EditMode passed after the change, exit 0, `receipt:f5d7bb2d-6da1-42fc-a22c-ca0b1c9f6311`. RED remains `receipt:bef9b634-10b3-4fea-83f2-d62d3ec03cd1`. Remaining full-weapon cases are listed in `.rex-harness/testing/grounder-magnet-scope.md`.

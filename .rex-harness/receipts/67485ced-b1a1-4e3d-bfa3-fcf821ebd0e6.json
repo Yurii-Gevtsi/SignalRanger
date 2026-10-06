@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "67485ced-b1a1-4e3d-bfa3-fcf821ebd0e6",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/localization-audit.mjs",
+      "--strict"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "855c55a4f4eec5e4499dbf4180205d94df4dc8a56d45fd43f3f04540bc8d4f4d",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-17T05:20:12.980Z"
+}

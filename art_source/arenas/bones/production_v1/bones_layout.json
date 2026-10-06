@@ -1,0 +1,14 @@
+{
+  "canvas": {
+    "width": 3548,
+    "height": 1774
+  },
+  "production_scale": 2,
+  "source_master": "master.png",
+  "enhanced_reference": "source_layers/enhanced_renders/bones_master_enhanced.png",
+  "source_sections": [
+    "section_1.png",
+    "section_2.png",
+    "section_3.png"
+  ]
+}

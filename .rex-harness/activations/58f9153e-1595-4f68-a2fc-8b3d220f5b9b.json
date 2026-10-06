@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "58f9153e-1595-4f68-a2fc-8b3d220f5b9b",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "battle-weapon-polish-and-teleport",
+  "profile": "default",
+  "request": {
+    "message": "Implement the current player-reported battle regressions and controls.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "active",
+  "stepIndex": 0,
+  "phaseId": "delivery",
+  "currentCapabilityId": "software.testing.design",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": {
+    "schemaVersion": 1,
+    "activationId": "187cc020-3be8-4237-889a-10043542a874",
+    "capabilityId": "software.testing.design",
+    "recipeId": "software.testing.design.recipe",
+    "reasonCode": "behavior-change",
+    "triggerEvidenceRefs": [
+      "request:current"
+    ],
+    "status": "active",
+    "stageIndex": 1,
+    "stageId": "decide-testability",
+    "completedStages": [
+      "design-tests"
+    ],
+    "evidence": [
+      {
+        "kind": "test-scope-contract-recorded",
+        "refs": [
+          "file:docs/architecture/battle-weapon-polish-and-teleport-test-scope.md"
+        ]
+      },
+      {
+        "kind": "acceptance-test-mapping-recorded",
+        "refs": [
+          "file:docs/architecture/battle-weapon-polish-and-teleport-test-scope.md"
+        ]
+      },
+      {
+        "kind": "test-seam-recorded",
+        "refs": [
+          "file:docs/architecture/battle-weapon-polish-and-teleport-test-scope.md"
+        ]
+      }
+    ]
+  },
+  "currentCommand": {
+    "schemaVersion": 1,
+    "type": "provider.invoke",
+    "activationId": "187cc020-3be8-4237-889a-10043542a874",
+    "capabilityId": "software.testing.design",
+    "recipeId": "software.testing.design.recipe",
+    "stageId": "decide-testability",
+    "reasonCode": "behavior-change",
+    "triggerEvidenceRefs": [
+      "request:current"
+    ],
+    "provider": {
+      "kind": "skill",
+      "id": "rex-test-design",
+      "source": "bundled",
+      "instructionsRef": "skill-sources/rex-test-design/SKILL.md"
+    },
+    "objective": "基于真实公共场景基线，明确是否存在诚实的 RED；没有行为差异时转入加固验证，验收不可观察时明确阻塞。",
+    "expectedEvidence": [
+      "testability-decision-recorded"
+    ],
+    "executionToken": "41ae5441-fa2e-44ed-bd5e-071cebd9bff6"
+  },
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-18T11:14:16.866Z",
+  "updatedAt": "2026-09-18T11:26:22.338Z"
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/grounder-scene-visual-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSceneController simulation event handler with real Unity SpriteRenderer and imported resource",
+    "setup": "Create a BattleSceneController GameObject, deliver GrounderDeployedEvent, inspect the actual placed sprite, then deliver GrounderRemoved.",
+    "command": {
+      "executable": "node",
+      "args": ["tools/run-unity-mcp-editmode-test.mjs", "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.Grounder_DeploymentShowsItsSkinAndRemovalClearsIt"],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "A visible grounder SpriteRenderer appears at deployment point and is untracked on removal.",
+    "observed": "Unity EditMode failure at BattleVisualResourceTests.cs:227: deployment handler was null.",
+    "failureReason": "The scene controller is not subscribed to grounder lifecycle events and has no handler.",
+    "receiptRef": "receipt:43680575-a9f9-491e-b4a6-ddc5b72fd442"
+  }
+}

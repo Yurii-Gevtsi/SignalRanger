@@ -109,7 +109,9 @@ namespace Game.Tests.EditMode.Gameplay
             var profile = BotProfileLibrary.For(difficulty);
             var random = new SystemBotRandom(seed);
             IBotShotPlanner planner = difficulty == AiDifficulty.Easy
-                ? new HeuristicShotPlanner(difficulty)
+                ? new HeuristicShotPlanner(
+                    difficulty,
+                    new BallisticShotPlanner(probe, profile, random, Physics2D.gravity))
                 : new BallisticShotPlanner(probe, profile, random, Physics2D.gravity);
             var scanner = new WalkReachabilityScanner(harness.Terrain.Grid, harness.MotionProfile, FallDeathY);
             var positionPlanner = new BotPositionPlanner(scanner, planner, profile, harness.MotionProfile.WalkSpeed);

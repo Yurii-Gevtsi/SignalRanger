@@ -294,7 +294,8 @@ namespace Game.Gameplay.Battle.AI
         private BotShotPlan? PlanShotFromCurrent()
         {
             var unit = ActiveOpponentUnit();
-            if (unit == null || _weapon == null || !_simulation.CanActiveUnitFire())
+            if (unit == null || _weapon == null || !_simulation.CanActiveUnitFire()
+                || !_profile.EvaluateAllWeapons && !BattleSimulation.IsBattleMechanicAvailable(_weapon))
             {
                 return null;
             }
@@ -345,7 +346,7 @@ namespace Game.Gameplay.Battle.AI
             for (var i = 0; i < inventory.Count; i++)
             {
                 inventory.Select(i);
-                if (!inventory.CanFireSelected)
+                if (!inventory.CanFireSelected || !BattleSimulation.IsBattleMechanicAvailable(inventory.Selected))
                 {
                     continue;
                 }

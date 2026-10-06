@@ -1,0 +1,6 @@
+{
+  "arena": "city",
+  "sections": 5,
+  "source_alpha_pixels": 1099305,
+  "rule": "Source segments are direct original crops. One enhanced RGBA visual and a new alpha-derived mask are required per section before promotion."
+}

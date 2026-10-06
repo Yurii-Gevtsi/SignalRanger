@@ -1,0 +1,13 @@
+{
+  "kind": "behavior-delta",
+  "decisionRef": "file:docs/architecture/weapon-12-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire and WeaponProgressionDefinition.TryGetEvolutionOption",
+    "setup": "Canonical titanium barrier; confirm a half-size preview at center (0,3), rotated 0 or 90 degrees; query its rank-five paid size feature.",
+    "command": { "executable": "powershell", "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "Temp/weapon12-run.ps1", "red", "EditMode", "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier"], "cwd": "C:/Projects/Game" },
+    "expected": "Placed center equals preview center; rank-five size-unlock exists with one purchase.",
+    "observed": "Three failed Unity EditMode cases: center errors 1.285496 and 1.55000019 world units; size-unlock option absent.",
+    "failureReason": "Generic cover placement adds a launch-distance offset and stamps a fixed rectangle; catalog lacks the approved paid feature.",
+    "receiptRef": "receipt:b2594a83-5671-4c3e-b4e4-2b278f2f1c00"
+  }
+}

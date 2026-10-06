@@ -1,0 +1,6 @@
+{
+  "workItem": "weapon-combat-repair-jammer-ui-and-track",
+  "implementation": "WeaponProgressionCatalog now defines two Radius-path purchases for weapon.repair-jammer, matching its 2→3→4 duration track.",
+  "test": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades",
+  "receipt": "receipt:ea67654a-18f1-47af-90b9-bae70057692d"
+}

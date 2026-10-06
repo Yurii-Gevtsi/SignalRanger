@@ -1,0 +1,5 @@
+{
+  "decision": "No refactor needed for this catalog correction; the limit remains declared at its canonical data source.",
+  "testDiffReview": "The test queries the public catalog and retains the exact two-purchase invariant.",
+  "testReceiptRef": "receipt:2cb9d0e6-7b98-44c0-88e9-037c0a46e87f"
+}

@@ -1,0 +1,6 @@
+{
+  "phase": "refactor",
+  "decision": "No source refactor is needed: importing the validated resource is the smallest complete change for this focused test.",
+  "testDiffReview": "The test continues to load the exact runtime Resources path and assert both source dimensions. It does not weaken the missing-resource constraint or substitute a placeholder texture.",
+  "testReceiptRef": "receipt:9b6fe360-9963-4bcf-abcf-06eb31d303f1"
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "52694dad-8cae-4061-ab6e-2e6d77bd2ce4",
+  "command": {
+    "executable": "git",
+    "args": [
+      "diff",
+      "--check",
+      "--",
+      "docs/design/unity-2d-art-pipeline.md",
+      "tools/arena-assets/rebuild_guide_contour_arenas.py"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "f6a593f5e90b2c7c584256176b8edfe94d9a40a23a4a105facbe00d2a2c29137",
+  "observedAt": "2026-09-06T18:16:20.105Z"
+}

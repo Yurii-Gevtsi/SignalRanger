@@ -1,0 +1,7 @@
+# Grounder placement GREEN
+
+Public setup: one-ammo defensive grounder selected by a player at 80/100 HP; no aim input. Expected: placement is accepted, a deployed-device event is emitted, owner HP stays 80, and the player's grounder ammo is exhausted. The test first failed because grounder was blocked (`receipt:089032b5-315e-40cc-9adb-716048c09334`).
+
+Implementation diff: `BattleSimulation.cs` removes only grounder from the unavailable set, dispatches it to `DeployGrounder`, consumes ammo, resolves a nearby grounded position, creates an `ActiveGrounder` record, emits `GrounderDeployed`, and ends the action without healing. `BattleSimulationEvents.cs` adds the typed deployed event. `BattleSimulationTests.cs` asserts acceptance, event, HP, and ammo through public APIs. This is the placement slice; attraction, expiry, upgrades, and combat visual remain pending under the full weapon-28 objective.
+
+Exact command: `node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PlacesWithoutAimAndDoesNotHealOwner`. First post-edit run failed because the test checked `ActiveInventory` after the turn had advanced to the opponent; the fixture was corrected to check `CanUsePlayerWeapon(grounder)` so it still verifies player ammo. Retest passed in Unity EditMode, exit 0: `receipt:a47e9b37-d9a9-488f-8fd7-d48e74358a90`. `git diff --check` on the touched files passed.

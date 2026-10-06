@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "dfb1061c-c102-4772-a16f-bf3cb0c02bcd",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "architect-evolution-specialty-cards",
+  "profile": "default",
+  "request": {
+    "message": "Make Architect specialty cards data-driven: hide absent specialties, render one or two unlocked milestone progress segments, show a direct detail/cost panel for a single evolution, and present a choice modal with two evolution cards for branch choices at ranks five and ten.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-13T15:14:04.028Z",
+  "updatedAt": "2026-09-13T15:14:04.028Z"
+}

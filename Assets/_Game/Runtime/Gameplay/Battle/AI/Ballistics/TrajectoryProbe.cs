@@ -1,4 +1,6 @@
 using Game.Gameplay.Battle.Terrain;
+using Game.Gameplay.Battle.Projectiles;
+using Game.Gameplay.Battle.Weapons;
 using UnityEngine;
 
 namespace Game.Gameplay.Battle.AI.Ballistics
@@ -45,13 +47,16 @@ namespace Game.Gameplay.Battle.AI.Ballistics
             float gravityScale,
             float projectileRadius,
             float timeoutSeconds,
-            in TrajectoryObstacles obstacles)
+            in TrajectoryObstacles obstacles,
+            WeaponDefinition weapon = null)
         {
             var gravity = _gravityBase * gravityScale;
             var position = origin;
             var velocity = launchVelocity;
             var remainingLifetime = Mathf.Max(0f, timeoutSeconds);
             var elapsed = 0f;
+            var bounceCount = 0;
+            var usesGrenadeTerrainRules = UsesGrenadeTerrainRules(weapon);
 
             var toTarget = obstacles.TargetPoint - origin;
             var baseDistance = toTarget.magnitude;
@@ -65,13 +70,14 @@ namespace Game.Gameplay.Battle.AI.Ballistics
                 remainingLifetime -= _tickSeconds;
                 if (remainingLifetime <= 0f)
                 {
-                    return Report(TrajectoryEndKind.Timeout, position, obstacles, baseDistance, maxProgress, elapsed, false, false);
+                    return Report(TrajectoryEndKind.Timeout, position, obstacles, baseDistance, maxProgress, elapsed, false, false, bounceCount);
                 }
 
                 velocity += gravity * _tickSeconds;
                 var displacement = velocity * _tickSeconds;
                 var stepCount = Mathf.Max(1, Mathf.CeilToInt(displacement.magnitude / _subStepLength));
                 var step = displacement / stepCount;
+                var bouncedThisTick = false;
 
                 for (var stepIndex = 0; stepIndex < stepCount; stepIndex++)
                 {
@@ -89,22 +95,46 @@ namespace Game.Gameplay.Battle.AI.Ballistics
 
                     if (position.y < _fallDeathY - 2f)
                     {
-                        return Report(TrajectoryEndKind.OutOfWorld, position, obstacles, baseDistance, maxProgress, elapsed, false, false);
+                        return Report(TrajectoryEndKind.OutOfWorld, position, obstacles, baseDistance, maxProgress, elapsed, false, false, bounceCount);
                     }
 
                     if (_terrain != null && _terrain.IsSolidWorld(position))
                     {
-                        return Report(TrajectoryEndKind.Terrain, position, obstacles, baseDistance, maxProgress, elapsed, false, false);
+                        var safePosition = position - step;
+                        if (usesGrenadeTerrainRules
+                            && bounceCount < ProjectileBounceRules.MaxBounces
+                            && velocity.magnitude >= ProjectileBounceRules.RestingFuseMinSpeed)
+                        {
+                            var reflected = ProjectileBounceRules.ReflectOffTerrain(
+                                _terrain,
+                                position,
+                                velocity,
+                                projectileRadius,
+                                _subStepLength);
+                            velocity = reflected * ProjectileBounceRules.SpeedRetain;
+                            position = safePosition;
+                            bounceCount++;
+                            bouncedThisTick = true;
+                            break;
+                        }
+
+                        return Report(TrajectoryEndKind.Terrain, safePosition, obstacles, baseDistance, maxProgress, elapsed, false, false, bounceCount);
                     }
 
-                    if (TryHitBody(position, projectileRadius, obstacles, out var hitPoint, out var hitTarget, out var hitAlly))
+                    if (!usesGrenadeTerrainRules
+                        && TryHitBody(position, projectileRadius, obstacles, out var hitPoint, out var hitTarget, out var hitAlly))
                     {
-                        return Report(TrajectoryEndKind.Unit, hitPoint, obstacles, baseDistance, maxProgress, elapsed, hitTarget, hitAlly);
+                        return Report(TrajectoryEndKind.Unit, hitPoint, obstacles, baseDistance, maxProgress, elapsed, hitTarget, hitAlly, bounceCount);
                     }
+                }
+
+                if (bouncedThisTick)
+                {
+                    continue;
                 }
             }
 
-            return Report(TrajectoryEndKind.Timeout, position, obstacles, baseDistance, maxProgress, elapsed, false, false);
+            return Report(TrajectoryEndKind.Timeout, position, obstacles, baseDistance, maxProgress, elapsed, false, false, bounceCount);
         }
 
         private static bool TryHitBody(
@@ -145,13 +175,27 @@ namespace Game.Gameplay.Battle.AI.Ballistics
             float maxProgress,
             float flightTime,
             bool endedOnTarget,
-            bool endedOnAlly)
+            bool endedOnAlly,
+            int bounceCount)
         {
             var distanceToTarget = (endPoint - obstacles.TargetPoint).magnitude;
             var clearPathRatio = baseDistance > Epsilon
                 ? maxProgress / baseDistance
                 : (endedOnTarget ? 1f : 0f);
-            return new TrajectoryReport(endKind, endPoint, distanceToTarget, clearPathRatio, flightTime, endedOnTarget, endedOnAlly);
+            return new TrajectoryReport(
+                endKind,
+                endPoint,
+                distanceToTarget,
+                clearPathRatio,
+                flightTime,
+                endedOnTarget,
+                endedOnAlly,
+                bounceCount);
+        }
+
+        private static bool UsesGrenadeTerrainRules(WeaponDefinition weapon)
+        {
+            return weapon?.WeaponId == "weapon.granata";
         }
     }
 }

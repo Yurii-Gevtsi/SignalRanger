@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/laser-fence-beam-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire, EndActiveTurn and Tick through the Unity EditMode battle harness",
+    "setup": "Two real laser-fence deployment shots land. The opponent is placed at their midpoint, its motor is synchronized, then its turn begins.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "The opponent loses the configured 42 base damage once and its active turn ends.",
+    "observed": "The opponent remains at 100 HP after two simulation ticks.",
+    "failureReason": "Grounded laser nodes are registered, but Tick has no beam-link contact and damage resolution.",
+    "receiptRef": "receipt:64edc865-37f2-477a-bb7a-57233c3562f0"
+  }
+}

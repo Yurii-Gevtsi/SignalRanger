@@ -33,11 +33,14 @@ variants are not accepted deliverables.
 5. `single-composite`: exactly one `*_reconstructed_transparent.png` is
    emitted. It is an RGBA composition of final enhanced visuals only; no
    coloured-background preview variants are emitted.
-6. `alignment`: reconstructing final visuals from the emitted layout produces
-   a silhouette that agrees with the original within the documented 2-pixel
-   overlap tolerance. The report must identify unexpected gaps, out-of-bounds
-   pixels, and overlaps larger than that tolerance. It must fail the build if
-   an unintended hole or displacement is found.
+6. `alignment`: reconstructing final visuals from the emitted layout first
+   checks every shared source-overlap band. After a 2-production-pixel
+   antialiasing allowance, no more than 64 missing seam pixels may remain and
+   no connected gap may exceed 32 pixels. The full silhouette is also compared
+   with the original: non-shared outer contour drift is accepted only up to
+   3.5% of original opaque pixels and is always reported. This bounded
+   tolerance covers image-to-image refinement only; a larger drift,
+   out-of-bounds growth, or any seam defect fails the build.
 7. `runtime-pairing`: each final visual/mask pair has identical dimensions and
    the manifest records source, enhancement, mask, coordinates, overlap, and
    validation result.

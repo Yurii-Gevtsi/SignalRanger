@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "c0ccc392-9f8e-47fe-a760-b1c2d738ad64",
+  "command": {
+    "executable": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Unity.exe",
+    "args": [
+      "-batchmode",
+      "-nographics",
+      "-quit",
+      "-projectPath",
+      "C:\\Projects\\Game",
+      "-runTests",
+      "-testPlatform",
+      "EditMode",
+      "-testFilter",
+      "Game.Tests.EditMode.App.WorkshopUpgradeDescriptionResolverTests",
+      "-testResults",
+      "C:\\Projects\\Game\\Temp\\workshop-upgrade-description-tests.xml",
+      "-logFile",
+      "-"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "4b8cb363721aa12dcbe920a8e867bf8ac0bbcc98c8fda4329bbd750e6ead6c4d",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-19T13:03:36.738Z"
+}

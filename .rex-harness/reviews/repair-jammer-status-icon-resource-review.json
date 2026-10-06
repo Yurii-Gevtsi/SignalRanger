@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "rex.standards-spec-review.v1",
+  "workItem": "weapon-combat-repair-jammer-status-icon",
+  "baseline": "HEAD",
+  "targetFiles": [
+    "Assets/_Game/Content/Resources/UI/Common/no-repair-2.png",
+    "Assets/_Game/Content/Resources/UI/Common/no-repair-2.png.meta",
+    "Assets/_Game/Tests/EditMode/Gameplay/BattleVisualResourceTests.cs"
+  ],
+  "diffRef": "Scoped review of the added status-icon asset and its focused Resources test; unrelated existing BattleVisualResourceTests changes were excluded.",
+  "specSources": [
+    "docs/design/weapon-combat-specification.md:121",
+    "docs/design/weapon-catalog-canonical.md:203",
+    "AGENTS.md"
+  ],
+  "standards": {
+    "findings": [],
+    "checked": {
+      "mysteriousName": "not found; the resource path names the approved icon explicitly",
+      "duplicatedCode": "not found",
+      "featureEnvy": "not applicable to an asset import and focused resource test",
+      "dataClumps": "not found",
+      "primitiveObsession": "not applicable",
+      "repeatedSwitches": "not found",
+      "shotgunSurgery": "not found; the slice stays in the established UI Resources family",
+      "divergentChange": "not found",
+      "speculativeGenerality": "not found",
+      "messageChains": "not found",
+      "middleMan": "not found",
+      "refusedBequest": "not applicable"
+    },
+    "verdict": "pass"
+  },
+  "spec": {
+    "findings": [
+      {
+        "severity": "hard",
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Runtime/BattleUnitView.cs",
+        "evidence": "The imported approved image is loadable, but the combat view still has no repair-jammer icon renderer or state setter. weapon-combat-specification.md:121 requires no-repair-2 beside the affected droid HP for the entire status lifetime.",
+        "recommendation": "Add the bounded BattleUnitView status-icon state and refresh it from BattleSimulation.IsUnitRepairJammed through the battle presentation layer, with a focused view test."
+      }
+    ],
+    "verdict": "changes-required"
+  },
+  "finalVerdict": "changes-required",
+  "evidence": [
+    "receipt:26425070-404b-4dc6-a315-6e2456def31a",
+    "receipt:9b6fe360-9963-4bcf-abcf-06eb31d303f1"
+  ]
+}

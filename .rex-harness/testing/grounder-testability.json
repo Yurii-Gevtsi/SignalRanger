@@ -1,0 +1,18 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/grounder-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire",
+    "setup": "Player selects one-ammo grounder, has 80/100 HP, and presses fire with no aim input.",
+    "command": {
+      "executable": "node",
+      "args": ["tools/run-unity-mcp-editmode-test.mjs", "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PlacesWithoutAimAndDoesNotHealOwner"],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "UtilityUsed; no healing; one use consumed.",
+    "observed": "Unity EditMode test failed: expected UtilityUsed, got Blocked.",
+    "failureReason": "BattleSimulation.IsBattleMechanicAvailable explicitly blocks weapon.grounder pending its combat implementation.",
+    "receiptRef": "receipt:089032b5-315e-40cc-9adb-716048c09334"
+  }
+}

@@ -1,0 +1,3 @@
+# Grounder upgrades refactor check
+
+The new battle entry resolves saved choices through the existing side-specific `BattleWeaponProgression`; it stores duration and detection range at deployment, so later save changes cannot alter a placed device. The existing weapon upgrade resolver owns displayed values. No assertion was deleted or weakened. Catalog, six-turn lifetime, 40% value, actual outer-range interception, and existing attraction focused tests pass. Unity's generated EditMode project also builds with zero errors. `git diff --check` has no whitespace errors. Cleanup deferred: use a shared weapon-specific upgrade policy if another defensive device needs this same pair of stats; no speculative framework now.

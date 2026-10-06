@@ -15,9 +15,18 @@ namespace Game.Tests.EditMode.App
             Assert.That(WorkshopBaseStatDescriptionKeyResolver.Resolve(path, weaponId), Is.EqualTo(expectedKey));
         }
 
+        [Test]
+        public void GrounderCore_DescribesAddedDuration()
+        {
+            Assert.That(WorkshopBaseStatDescriptionKeyResolver.Resolve(
+                    WeaponUpgradePath.Core, "weapon.grounder"),
+                Is.EqualTo("architect.detail.core.grounder"));
+        }
+
         [TestCase("weapon.rope", "architect.detail.radius.rope")]
         [TestCase("weapon.ion-shotgun", "architect.detail.radius.ionShotgun")]
         [TestCase("weapon.titanium-disc", "architect.detail.radius.titaniumDisc")]
+        [TestCase("weapon.bur", "architect.detail.radius.drillRocket")]
         [TestCase("weapon.bur-rocket", "architect.detail.radius.drillRocket")]
         [TestCase("weapon.boost", "architect.detail.radius.boost")]
         [TestCase("weapon.guardian-drone", "architect.detail.radius.guardianDrone")]

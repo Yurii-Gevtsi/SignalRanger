@@ -36,6 +36,7 @@ namespace Game.Gameplay.Battle.Weapons
             bool mineAlliesImmuneToExplosion = false,
             int repairProtectionTurns = 0,
             int repairRegenerationTurns = 0,
+            int repairJammerDurationBonusTurns = 0,
             bool teleportExchangesEnemy = false,
             bool teleportExchangesAlliesAndObjects = false,
             int teleportDisorientationTurns = 0,
@@ -84,6 +85,7 @@ namespace Game.Gameplay.Battle.Weapons
             MineAlliesImmuneToExplosion = mineAlliesImmuneToExplosion;
             RepairProtectionTurns = Mathf.Max(0, repairProtectionTurns);
             RepairRegenerationTurns = Mathf.Max(0, repairRegenerationTurns);
+            RepairJammerDurationBonusTurns = Mathf.Clamp(repairJammerDurationBonusTurns, 0, 2);
             TeleportExchangesEnemy = teleportExchangesEnemy;
             TeleportExchangesAlliesAndObjects = teleportExchangesAlliesAndObjects;
             TeleportDisorientationTurns = Mathf.Max(0, teleportDisorientationTurns);
@@ -133,6 +135,7 @@ namespace Game.Gameplay.Battle.Weapons
         public bool MineAlliesImmuneToExplosion { get; }
         public int RepairProtectionTurns { get; }
         public int RepairRegenerationTurns { get; }
+        public int RepairJammerDurationBonusTurns { get; }
         public bool TeleportExchangesEnemy { get; }
         public bool TeleportExchangesAlliesAndObjects { get; }
         public int TeleportDisorientationTurns { get; }
@@ -166,10 +169,10 @@ namespace Game.Gameplay.Battle.Weapons
         private const string BlasterWeaponId = "weapon.blaster-caset";
         private const string BurWeaponId = "weapon.bur";
         private const string BurRocketWeaponId = "weapon.bur-rocket";
-        private const string C4WeaponId = "weapon.c4";
         private const string GrenadeWeaponId = "weapon.granata";
         private const string MineWeaponId = "weapon.mine";
         private const string HealWeaponId = "weapon.heal";
+        private const string RepairJammerWeaponId = "weapon.repair-jammer";
         private const string TeleportWeaponId = "weapon.teleport";
         private const string MortarWeaponId = "weapon.mortira";
         private const string MissileWeaponId = "weapon.missle";
@@ -179,16 +182,59 @@ namespace Game.Gameplay.Battle.Weapons
         private const string FreezeWeaponId = "weapon.freeze";
         private const string FpvWeaponId = "weapon.fpv-drone";
         private const float SalvoIntervalSeconds = 0.18f;
-        private const float ImpactKnockbackMultiplier = 1.55f;
-        private const float AssaultKnockbackMultiplier = 2.15f;
 
         public static WeaponEvolutionProfile Resolve(WeaponDefinition weapon, SaveWeaponProgressData progress)
         {
-            if (weapon == null
-                || progress == null
-                || progress.rank < 5)
+            if (weapon == null || progress == null)
             {
                 return WeaponEvolutionProfile.Base;
+            }
+
+            if (weapon.WeaponId == RepairJammerWeaponId)
+            {
+                return new WeaponEvolutionProfile(1, 0f, 1f,
+                    repairJammerDurationBonusTurns: ResolveJammerDurationBonus(progress));
+            }
+
+            if (progress.rank < 5)
+            {
+                return WeaponEvolutionProfile.Base;
+            }
+
+            if (progress.evolutionChoices != null && progress.evolutionChoices.Count > 0
+                && WeaponProgressionCatalog.TryGet(weapon.WeaponId, out var canonicalDefinition)
+                && WeaponEvolutionSelectionResolver.TryGetChoice(canonicalDefinition, progress, 5, out var firstSpecial))
+            {
+                var firstSteps = ResolvePurchasedSteps(progress, 5);
+                var hasSecondSpecial = WeaponEvolutionSelectionResolver.TryGetChoice(
+                    canonicalDefinition, progress, 10, out _);
+                switch (weapon.WeaponId)
+                {
+                    case ImpulseWeaponId:
+                        return new WeaponEvolutionProfile(
+                            Mathf.Clamp(1 + firstSteps, 2, 4), SalvoIntervalSeconds, 1f);
+                    case GrenadeWeaponId:
+                        return new WeaponEvolutionProfile(1, 0f, 1f,
+                            grenadeMagneticSeekRadius: 1.5f,
+                            grenadeGravityPullRadius: hasSecondSpecial ? 1.5f : 0f,
+                            grenadePullAcceleration: hasSecondSpecial ? 8f : 0f);
+                    case MineWeaponId:
+                        return new WeaponEvolutionProfile(1, 0f, 1f,
+                            mineTriggersEnemiesOnly: true,
+                            mineAlliesImmuneToExplosion: hasSecondSpecial);
+                    case HealWeaponId:
+                        return firstSpecial.LegacyBranch == WeaponUpgradeBranch.B
+                            ? new WeaponEvolutionProfile(1, 0f, 1f,
+                                repairRegenerationTurns: Mathf.Clamp(firstSteps, 1, 3))
+                            : new WeaponEvolutionProfile(1, 0f, 1f,
+                                repairProtectionTurns: Mathf.Clamp(firstSteps, 1, 3));
+                    case MortarWeaponId:
+                        return firstSpecial.LegacyBranch == WeaponUpgradeBranch.B
+                            ? new WeaponEvolutionProfile(1, 0f, 1f,
+                                mortarCascadeCount: Mathf.Clamp(firstSteps, 1, 4))
+                            : new WeaponEvolutionProfile(1, 0f, 1f,
+                                mortarFragmentCount: 5 + Mathf.Clamp(firstSteps, 1, 4));
+                }
             }
 
             var branch = (WeaponUpgradeBranch)progress.branch;
@@ -270,48 +316,17 @@ namespace Game.Gameplay.Battle.Weapons
                 }
             }
 
-            if (weapon.WeaponId == C4WeaponId)
-            {
-                if (branch == WeaponUpgradeBranch.A)
-                {
-                    return new WeaponEvolutionProfile(
-                        1,
-                        0f,
-                        1f,
-                        c4DamageMultiplier: selectedEvolutionRank >= 10 ? 1.3f : 1.15f,
-                        c4ImpactRadiusMultiplier: selectedEvolutionRank >= 10 ? 1.55f : 1.3f);
-                }
-
-                if (branch == WeaponUpgradeBranch.B)
-                {
-                    return new WeaponEvolutionProfile(
-                        1,
-                        0f,
-                        selectedEvolutionRank >= 10 ? 3f : 2.15f,
-                        c4ImpactRadiusMultiplier: selectedEvolutionRank >= 10 ? 0.85f : 0.93f);
-                }
-            }
-
             if (weapon.WeaponId == GrenadeWeaponId)
             {
-                if (branch == WeaponUpgradeBranch.A)
+                if (branch == WeaponUpgradeBranch.A || branch == WeaponUpgradeBranch.B)
                 {
                     return new WeaponEvolutionProfile(
                         1,
                         0f,
                         1f,
-                        grenadeSticks: true,
-                        grenadeMagneticSeekRadius: selectedEvolutionRank >= 10 ? 2.4f : 0f);
-                }
-
-                if (branch == WeaponUpgradeBranch.B)
-                {
-                    return new WeaponEvolutionProfile(
-                        1,
-                        0f,
-                        1f,
-                        grenadeGravityPullRadius: selectedEvolutionRank >= 10 ? 5f : 3.5f,
-                        grenadePullAcceleration: 8f);
+                        grenadeMagneticSeekRadius: 1.5f,
+                        grenadeGravityPullRadius: selectedEvolutionRank >= 10 ? 1.5f : 0f,
+                        grenadePullAcceleration: selectedEvolutionRank >= 10 ? 8f : 0f);
                 }
             }
 
@@ -519,18 +534,47 @@ namespace Game.Gameplay.Battle.Weapons
                 return WeaponEvolutionProfile.Base;
             }
 
-            if (branch == WeaponUpgradeBranch.A)
+            if (branch == WeaponUpgradeBranch.A || branch == WeaponUpgradeBranch.B)
             {
                 return new WeaponEvolutionProfile(selectedEvolutionRank >= 10 ? 3 : 2, SalvoIntervalSeconds, 1f);
             }
 
-            if (branch == WeaponUpgradeBranch.B)
+            return WeaponEvolutionProfile.Base;
+        }
+
+        private static int ResolveJammerDurationBonus(SaveWeaponProgressData progress)
+        {
+            if (progress?.upgradeChoices == null)
             {
-                return new WeaponEvolutionProfile(1, 0f,
-                    selectedEvolutionRank >= 10 ? AssaultKnockbackMultiplier : ImpactKnockbackMultiplier);
+                return 0;
             }
 
-            return WeaponEvolutionProfile.Base;
+            var purchases = 0;
+            foreach (var choice in progress.upgradeChoices)
+            {
+                if (choice != null && choice.path == (int)WeaponUpgradePath.Radius)
+                {
+                    purchases++;
+                }
+            }
+
+            return Mathf.Clamp(purchases, 0, 2);
+        }
+
+        private static int ResolvePurchasedSteps(SaveWeaponProgressData progress, int milestoneRank)
+        {
+            if (progress.specialUpgrades != null)
+            {
+                foreach (var upgrade in progress.specialUpgrades)
+                {
+                    if (upgrade != null && upgrade.rank == milestoneRank)
+                    {
+                        return Mathf.Max(1, upgrade.purchaseCount);
+                    }
+                }
+            }
+
+            return 1;
         }
     }
 }

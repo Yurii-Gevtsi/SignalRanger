@@ -1,0 +1,18 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/swap-jump-owner-landing-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire and Tick",
+    "setup": "Throw a swap-jump sphere toward a nearby enemy, capture its actual ProjectileExploded impact point, and compare the owner's landing to that point after the exchange.",
+    "command": {
+      "executable": "node",
+      "args": ["tools/run-unity-mcp-editmode-test.mjs", "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_ExchangesClosestEnemyUsingThrowOrigin"],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "Owner x equals sphere impact x within 0.05; enemy lands at the captured throw origin.",
+    "observed": "Focused Unity EditMode test failed: sphere x was -1.4166677, owner x was -1.5 (enemy's prior x).",
+    "failureReason": "Swap-jump reuses ExchangeTeleportPositions, which moves the owner to target.Position rather than the sphere impact.",
+    "receiptRef": "receipt:70fb9c11-330c-414b-a3a8-0daca2f76715"
+  }
+}

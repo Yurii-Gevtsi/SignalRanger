@@ -11,69 +11,155 @@
     "observations": []
   },
   "status": "active",
-  "stepIndex": 0,
-  "phaseId": "delivery",
-  "currentCapabilityId": "software.testing.design",
-  "completedCapabilities": [],
-  "activationHistory": [],
+  "stepIndex": 2,
+  "phaseId": "assurance",
+  "currentCapabilityId": "software.review.standards-spec",
+  "completedCapabilities": [
+    "software.testing.design",
+    "software.testing.tdd"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "5642dc18-2f39-4217-94ce-c705ffc03aba",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/design/arena-guide-contour-rebuild-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/design/arena-guide-contour-rebuild-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/design/arena-guide-contour-rebuild-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/design/arena-guide-contour-rebuild-testability.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "934433e6-ed22-4880-b2de-a49e733126a4",
+      "capabilityId": "software.testing.tdd",
+      "recipeId": "software.testing.tdd.recipe",
+      "reasonCode": "honest-red-candidate",
+      "triggerEvidenceRefs": [
+        "request:current",
+        "activation:software.testing.design:completed",
+        "file:docs/design/arena-guide-contour-rebuild-testability.json",
+        "receipt:9cfde294-f5fe-4135-bc6e-1fc8d71f7c5c"
+      ],
+      "status": "completed",
+      "stageIndex": 3,
+      "stageId": "",
+      "completedStages": [
+        "red",
+        "green",
+        "refactor"
+      ],
+      "evidence": [
+        {
+          "kind": "failing-test-observed",
+          "refs": [
+            "receipt:9cfde294-f5fe-4135-bc6e-1fc8d71f7c5c"
+          ]
+        },
+        {
+          "kind": "red-failure-reason-recorded",
+          "refs": [
+            "file:docs/design/arena-guide-contour-rebuild-testability.json"
+          ]
+        },
+        {
+          "kind": "passing-test-observed",
+          "refs": [
+            "receipt:322fca05-5832-4ecc-9cca-3cd4a1cb8b7e"
+          ]
+        },
+        {
+          "kind": "implementation-diff-recorded",
+          "refs": [
+            "file:tools/arena-assets/rebuild_guide_contour_arenas.py"
+          ]
+        },
+        {
+          "kind": "refactor-check-recorded",
+          "refs": [
+            "receipt:322fca05-5832-4ecc-9cca-3cd4a1cb8b7e"
+          ]
+        },
+        {
+          "kind": "test-diff-review-recorded",
+          "refs": [
+            "artifact:arena-city-canonical-test-diff-review"
+          ]
+        }
+      ]
+    }
+  ],
   "currentActivation": {
     "schemaVersion": 1,
-    "activationId": "5642dc18-2f39-4217-94ce-c705ffc03aba",
-    "capabilityId": "software.testing.design",
-    "recipeId": "software.testing.design.recipe",
-    "reasonCode": "behavior-change",
+    "activationId": "d0d23492-3c6c-4724-bdc2-eec0c0cb541e",
+    "capabilityId": "software.review.standards-spec",
+    "recipeId": "software.review.standards-spec.recipe",
+    "reasonCode": "diff-ready",
     "triggerEvidenceRefs": [
-      "request:current"
+      "activation:software.implementation.execute:completed"
     ],
     "status": "active",
-    "stageIndex": 1,
-    "stageId": "decide-testability",
-    "completedStages": [
-      "design-tests"
-    ],
-    "evidence": [
-      {
-        "kind": "test-scope-contract-recorded",
-        "refs": [
-          "file:docs/design/arena-guide-contour-rebuild-test-scope.md"
-        ]
-      },
-      {
-        "kind": "acceptance-test-mapping-recorded",
-        "refs": [
-          "file:docs/design/arena-guide-contour-rebuild-test-scope.md"
-        ]
-      },
-      {
-        "kind": "test-seam-recorded",
-        "refs": [
-          "file:docs/design/arena-guide-contour-rebuild-test-scope.md"
-        ]
-      }
-    ]
+    "stageIndex": 0,
+    "stageId": "review",
+    "completedStages": [],
+    "evidence": []
   },
   "currentCommand": {
     "schemaVersion": 1,
     "type": "provider.invoke",
-    "activationId": "5642dc18-2f39-4217-94ce-c705ffc03aba",
-    "capabilityId": "software.testing.design",
-    "recipeId": "software.testing.design.recipe",
-    "stageId": "decide-testability",
-    "reasonCode": "behavior-change",
+    "activationId": "d0d23492-3c6c-4724-bdc2-eec0c0cb541e",
+    "capabilityId": "software.review.standards-spec",
+    "recipeId": "software.review.standards-spec.recipe",
+    "stageId": "review",
+    "reasonCode": "diff-ready",
     "triggerEvidenceRefs": [
-      "request:current"
+      "activation:software.implementation.execute:completed"
     ],
     "provider": {
       "kind": "skill",
-      "id": "rex-test-design",
+      "id": "rex-code-review",
       "source": "bundled",
-      "instructionsRef": "skill-sources/rex-test-design/SKILL.md"
+      "instructionsRef": "skill-sources/rex-code-review/SKILL.md"
     },
-    "objective": "基于真实公共场景基线，明确是否存在诚实的 RED；没有行为差异时转入加固验证，验收不可观察时明确阻塞。",
+    "objective": "独立对照仓库规范和原始规格审查有边界的代码差异。",
     "expectedEvidence": [
-      "testability-decision-recorded"
+      "standards-review-recorded",
+      "spec-review-recorded"
     ],
-    "executionToken": "00b94230-d42f-4cd2-9bee-d40cd2cb6941"
+    "executionToken": "a7f8bc54-e9e8-4789-bdd8-5cd9b0b35167"
   },
   "facts": [
     {
@@ -81,18 +167,60 @@
       "evidenceRefs": [
         "request:current"
       ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:docs/design/arena-guide-contour-rebuild-testability.json",
+        "receipt:9cfde294-f5fe-4135-bc6e-1fc8d71f7c5c"
+      ]
+    },
+    {
+      "kind": "diff-ready",
+      "evidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ]
     }
   ],
   "promotion": null,
   "blockedReason": "",
-  "testabilityDecision": null,
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:docs/design/arena-guide-contour-rebuild-testability.json",
+    "redCandidate": {
+      "publicEntry": "python tools/arena-assets/rebuild_guide_contour_arenas.py --arenas city --prepare",
+      "setup": "City contains only its transparent original, the artist's marked layout, and an optional separate background at art_source/arenas/city.",
+      "command": {
+        "executable": "python",
+        "args": [
+          "tools/arena-assets/rebuild_guide_contour_arenas.py",
+          "--arenas",
+          "city",
+          "--prepare"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "The pipeline validates the transparent original and writes the minimal canonical source package without retired production_source inputs.",
+      "observed": "The real public command returned exit code 1, recorded by receipt:9cfde294-f5fe-4135-bc6e-1fc8d71f7c5c.",
+      "receiptRef": "receipt:9cfde294-f5fe-4135-bc6e-1fc8d71f7c5c",
+      "failureReason": "The current public entry-point contract still depends on retired production_source inputs."
+    }
+  },
   "requirementsDecision": null,
   "executionProfile": {
     "label": "balanced",
     "capabilityIds": [
-      "software.testing.design"
+      "software.testing.design",
+      "software.testing.tdd",
+      "software.review.standards-spec"
     ]
   },
   "createdAt": "2026-09-06T17:56:20.732Z",
-  "updatedAt": "2026-09-06T17:58:27.906Z"
+  "updatedAt": "2026-09-06T18:18:02.513Z"
 }

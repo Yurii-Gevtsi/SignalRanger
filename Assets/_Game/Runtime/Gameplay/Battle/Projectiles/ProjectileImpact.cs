@@ -31,6 +31,7 @@ namespace Game.Gameplay.Battle.Projectiles
         public int Damage { get; }
         public float ImpactRadius { get; }
         public float KnockbackMultiplier { get; }
+        /// <summary>Position of the firing unit for movement weapons that exchange positions.</summary>
         public Vector2? SourceOrigin { get; }
     }
 }

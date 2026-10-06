@@ -22,13 +22,17 @@ namespace Game.Gameplay.Battle.Runtime
         private static readonly Vector3 ElectroOverlayScale = new(0.06f, 0.16f, 1f);
         private const string HeadingFontResourcePath = "Fonts/Orbitron";
         private const string JetTrailResourcePath = "UI/Common/jet_trail_light";
+        private const string RepairJammerStatusIconResourcePath = "UI/Common/no-repair-2";
         private const string DeadWreckageResourcePath = "Visuals/Characters/dead";
         private static readonly Vector3 DeadWreckageScale = new(0.15f, 0.15f, 1f);
         private static readonly Vector3 WeaponMountPosition = new(-0.68f, 0.42f, 0f);
         private static readonly Vector3 HealthLabelPosition = new(0f, 1.3f, 0f);
         private static readonly Vector3 HealthLabelScale = new(0.15f, 0.15f, 1f);
+        private static readonly Vector3 RepairJammerStatusIconPosition = new(0.56f, 1.3f, 0f);
+        private static readonly Vector3 RepairJammerStatusIconScale = new(0.12f, 0.12f, 1f);
         private static Sprite _solidWhiteSprite;
         private static Font _headingFont;
+        private static Sprite _repairJammerStatusIconSprite;
 
         [SerializeField] private SpriteRenderer bodyRenderer;
         [SerializeField] private Transform firePoint;
@@ -51,6 +55,7 @@ namespace Game.Gameplay.Battle.Runtime
         private Transform _weaponMount;
         private SpriteRenderer _weaponRenderer;
         private SpriteRenderer _jetTrailRenderer;
+        private SpriteRenderer _repairJammerStatusIconRenderer;
         private SpriteRenderer _deadWreckageRenderer;
         private bool _deadWreckageLoadAttempted;
         private SpriteRenderer _freezeOverlayRenderer;
@@ -175,6 +180,16 @@ namespace Game.Gameplay.Battle.Runtime
             var scale = Mathf.Clamp01(scaleMultiplier) * JetTrailVisualScale;
             _jetTrailRenderer.transform.localScale = new Vector3(scale, scale, 1f);
             _jetTrailRenderer.enabled = isActive && scale > 0.001f && _jetTrailRenderer.sprite != null;
+        }
+
+        public void SetRepairJammerActive(bool isActive)
+        {
+            EnsureReferences();
+            EnsureRepairJammerStatusIcon();
+            if (_repairJammerStatusIconRenderer != null)
+            {
+                _repairJammerStatusIconRenderer.enabled = isActive;
+            }
         }
 
         public void SetFreezeOverlay(Sprite sprite, bool isFrozen)
@@ -535,6 +550,50 @@ namespace Game.Gameplay.Battle.Runtime
             _jetTrailRenderer.sortingOrder = IdleSortingOrder - 2;
             _jetTrailRenderer.color = Color.white;
             _jetTrailRenderer.enabled = false;
+        }
+
+        private void EnsureRepairJammerStatusIcon()
+        {
+            if (_repairJammerStatusIconRenderer != null)
+            {
+                return;
+            }
+
+            if (_repairJammerStatusIconSprite == null)
+            {
+                _repairJammerStatusIconSprite = CreateRepairJammerStatusIconSprite();
+            }
+
+            if (_repairJammerStatusIconSprite == null)
+            {
+                return;
+            }
+
+            var iconObject = new GameObject("Repair Jammer Status Icon");
+            var iconTransform = iconObject.transform;
+            iconTransform.SetParent(transform, false);
+            iconTransform.localPosition = RepairJammerStatusIconPosition;
+            iconTransform.localScale = RepairJammerStatusIconScale;
+            _repairJammerStatusIconRenderer = iconObject.AddComponent<SpriteRenderer>();
+            _repairJammerStatusIconRenderer.sprite = _repairJammerStatusIconSprite;
+            _repairJammerStatusIconRenderer.sortingOrder = 34;
+            _repairJammerStatusIconRenderer.color = Color.white;
+            _repairJammerStatusIconRenderer.enabled = false;
+        }
+
+        private static Sprite CreateRepairJammerStatusIconSprite()
+        {
+            var texture = Resources.Load<Texture2D>(RepairJammerStatusIconResourcePath);
+            if (texture == null)
+            {
+                return null;
+            }
+
+            return Sprite.Create(
+                texture,
+                new Rect(0f, 0f, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f),
+                100f);
         }
 
         /// <summary>

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "2df3aa69-9884-46de-a193-1279f29bafac",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "restore-editmode-test-runner",
+  "profile": "default",
+  "request": {
+    "message": "Diagnose and restore the Unity EditMode Test Runner entry for Game.Tests.EditMode so batchmode executes filtered tests and writes result XML. Do not alter gameplay behavior.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-16T19:02:08.259Z",
+  "updatedAt": "2026-09-16T19:02:08.259Z"
+}

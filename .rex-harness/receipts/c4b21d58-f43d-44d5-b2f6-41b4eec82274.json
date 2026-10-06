@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "c4b21d58-f43d-44d5-b2f6-41b4eec82274",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_WithoutNearbyEnemy_RepositionsOwnerOnly"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "8ec03f5273c58f841bb5f2f75a7442e79308b8d605477a8d0ab5684199dd0bb9",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-26T07:29:09.835Z"
+}

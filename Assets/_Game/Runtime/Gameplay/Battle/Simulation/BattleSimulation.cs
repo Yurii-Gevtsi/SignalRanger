@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Data.Progression;
 using Game.Gameplay.Battle.Domain;
 using Game.Gameplay.Battle.Motion;
 using Game.Gameplay.Battle.Projectiles;
@@ -17,6 +18,9 @@ namespace Game.Gameplay.Battle.Simulation
     /// </summary>
     public sealed class BattleSimulation : IProjectileSpawner, IDelayedProjectileSpawner
     {
+        private const string TitaniumDiscWeaponId = "weapon.titanium-disc";
+        private const float TitaniumDiscDamageBonusPerBounce = 0.25f;
+
         /// <summary>
         /// Max distance a projectile advances per collision sub-step. Public so
         /// the bot's <c>TrajectoryProbe</c> can mirror this exactly instead of
@@ -37,20 +41,35 @@ namespace Game.Gameplay.Battle.Simulation
         private const string PoisonDamageSourceId = "status.poison";
         private const string BurnDamageSourceId = "status.burn";
         private const float EmpOverlayDurationSeconds = 0.75f;
-        private const int ToxicBaseDamagePerTurn = 6;
-        private const int ToxicBaseDurationTurns = 3;
+        private const float ElementalStatusDamageRatio = 0.2f;
+        private const int ToxicBaseDurationTurns = 2;
         private const float PoisonMovementDamageTickSeconds = 1f;
         private const string MineWeaponId = "weapon.mine";
+        private const string GuardianDroneWeaponId = "weapon.guardian-drone";
+        private const string LaserFenceWeaponId = "weapon.laser-fence";
         private const string MissileWeaponId = "weapon.missle";
         private const string TeleportWeaponId = "weapon.teleport";
         private const string SwapJumpWeaponId = "weapon.swap-jump";
+        private const string GrounderWeaponId = "weapon.grounder";
+        private const int GrounderBaseHealth = 45;
         private const string GrenadeWeaponId = "weapon.granata";
+        private const string IonShotgunWeaponId = "weapon.ion-shotgun";
         private const string FpvWeaponId = "weapon.fpv-drone";
+        private const string BomberWeaponId = "weapon.bomber";
+        private const string CarrierWeaponId = "weapon.ufo-carrier";
         private const string FreezeWeaponId = "weapon.freeze";
+        private const string CryoGrenadeWeaponId = "weapon.cryo-grenade";
         private const string EmpWeaponId = "weapon.emp";
         private const int CryoBaseFreezeTurns = 1;
         private const int CryoChainWindowTurnSequences = 2;
         private const string MineDeployProjectileId = "projectile.weapon.mine.deploy";
+        private const string GuardianDroneDeployProjectileId = "projectile.weapon.guardian-drone.deploy";
+        private const string GuardianDroneShotProjectileId = "projectile.weapon.guardian-drone.shot";
+        private const string LaserFenceDeployProjectileId = "projectile.weapon.laser-fence.deploy";
+        private const int MaxLaserFenceNodesPerTurn = 4;
+        private const float LaserFenceGravityScale = 1.05f;
+        private const float LaserFenceLinkRange = 5.4f;
+        private const float LaserFenceContactRadius = 0.42f;
         private const int BaseBlasterShotsPerTurn = 3;
         // Keep the armed mine in the same close placement zone as C4 instead of
         // lobbing it into the next platform.
@@ -61,12 +80,14 @@ namespace Game.Gameplay.Battle.Simulation
         // simply walk out of the blast.
         private const float MineActivationDelaySeconds = 2f;
         private const float MineTriggerDelaySeconds = 1f;
+        private const float GuardianDroneRiseSeconds = 0.25f;
+        private const float GuardianDroneRiseHeight = 0.6f;
+        private const float GuardianDroneShotSpeed = 22f;
         private const float C4FuseSeconds = 3f;
         private const float C4DropDurationSeconds = 0.35f;
         private const float C4DeployDistance = 0.82f;
         private const float DrillDurationSeconds = 3f;
         private const float DrillVisualGrowthSeconds = 1.2f;
-        private const float DrillMaxRange = 3.25f;
         private const float DrillTickSeconds = 1f;
         private const float DrillTerrainTickSeconds = 0.18f;
         private const float FireStreamDurationSeconds = 3f;
@@ -83,12 +104,8 @@ namespace Game.Gameplay.Battle.Simulation
         // 8 px into terrain, while heat reaches twice that spread around it.
         private const float FirePuddleTerrainBurnRadius = 0.18f;
         private const float FirePuddleDamageRadius = 0.32f;
-        private const float DrillRocketTerrainDurationSeconds = 1f;
         private const float DrillRocketTerrainSpeedRetain = 1f;
         private const float DrillRocketTunnelRadius = 0.24f;
-        private const float BounceSpeedRetain = 0.46f;
-        private const int MaxBounces = 5;
-        private const float RestingFuseMinSpeed = 0.35f;
         private const float MagneticGrenadeSteerAcceleration = 15f;
         private const float GravityGrenadeMinimumDistance = 0.22f;
         private const float GravityGrenadeProjectilePullScale = 0.6f;
@@ -126,10 +143,38 @@ namespace Game.Gameplay.Battle.Simulation
         private const float MortarCascadeSpeed = 2.2f;
         private const string MortarCascadeProjectilePrefix = "projectile.weapon.mortira.cascade.";
         private const string RopeWeaponId = "weapon.rope";
-        private const float RopeBaseLength = 8f;
         private const float RopeHookSpeed = 18f;
-        private const float RopeBaseSectorDegrees = 45f;
         private const float RopeBaseSwingAcceleration = 8f;
+        private const string ElectricHarpoonWeaponId = "weapon.electric-harpoon";
+        private const float ElectricHarpoonBaseLength = 8f;
+        private const float ElectricHarpoonHookSpeed = 18f;
+        private const float ElectricHarpoonPullSpeed = 2.4f;
+        private const float ElectricHarpoonDamageTickSeconds = 1f;
+        private const float ElectricHarpoonTargetRadius = 0.18f;
+        private const float ElectricHarpoonReleaseDistance = 0.62f;
+        private const string PlasmaSwordWeaponId = "weapon.plasma-sword";
+        private const string StickyGrenadeWeaponId = "weapon.sticky-grenade";
+        private const float StickyGrenadeFuseSeconds = 1.5f;
+        private const string HoppingGrenadeWeaponId = "weapon.hopping-grenade";
+        private const float HoppingGrenadeLaunchSpeed = 5.5f;
+        private const float HoppingGrenadeVerticalSpeed = 3.8f;
+        private const string IncendiaryGrenadeWeaponId = "weapon.incendiary-grenade";
+        private const int IncendiaryPuddleCount = 4;
+        private const float IncendiaryPuddleSpreadRadius = 0.55f;
+        private const float IncendiaryPuddleLifetimeSeconds = 2.5f;
+        private const string RepairJammerWeaponId = "weapon.repair-jammer";
+        private const int RepairJammerBaseDurationTurns = 2;
+        private const string OrbitalRocketWeaponId = "weapon.orbital-rocket";
+        private const float OrbitalRocketFallSpeed = 14f;
+        private const float OrbitalRocketMinimumSpawnHeight = 4f;
+        private const string VirusWeaponId = "weapon.virus";
+        private const float AttachmentDeviceRange = 2.75f;
+        private const float AttachmentDeviceSpeed = 9f;
+        private const string SpiderMineWeaponId = "weapon.spider-mine";
+        private const float SpiderSearchDurationSeconds = 5f;
+        private const float SpiderAttachFuseSeconds = 1.5f;
+        private const float SpiderCrawlSpeed = 1.4f;
+        private const float SpiderAttachDistance = 0.34f;
 
         private readonly BattleState _state;
         private readonly TurnService _turnService;
@@ -147,15 +192,22 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly CharacterArchetype _opponentArchetype;
         private readonly TurnMovementState _playerMovement;
         private readonly List<SimProjectile> _projectiles = new();
+        private Texture2D _titaniumBarrierTexture;
+        public Vector2 TitaniumBarrierBaseSize { get; private set; }
         private readonly List<ActiveMine> _activeMines = new();
+        private readonly List<ActiveGrounder> _activeGrounders = new();
+        private readonly List<ActiveLaserFenceNode> _activeLaserFenceNodes = new();
+        private readonly HashSet<ulong> _spentLaserFenceLinks = new();
         private readonly List<ActiveCharge> _activeCharges = new();
         private readonly List<ActiveTimedEffect> _activeTimedEffects = new();
         private readonly List<ScheduledProjectileSpawn> _scheduledProjectileSpawns = new();
         private readonly List<ActiveFirePuddle> _activeFirePuddles = new();
+        private int _hoppingGrenadeProjectileId = -1;
         private readonly Dictionary<string, float> _lavaOverlayRemainingSeconds = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActiveBurnEffect> _burnEffects = new(StringComparer.Ordinal);
         private readonly Dictionary<string, float> _electrifiedOverlayRemainingSeconds = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActiveRepairEffect> _repairEffects = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, int> _repairJammerTurns = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActiveDisorientation> _disorientations = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActivePoisonEffect> _poisonEffects = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActiveDisorientation> _freezes = new(StringComparer.Ordinal);
@@ -167,8 +219,10 @@ namespace Game.Gameplay.Battle.Simulation
         private bool _activeShotEndsTurn = true;
         private int _blasterShotsThisTurn;
         private int _minesDeployedThisTurn;
+        private int _laserFenceNodesDeployedThisTurn;
         private int _nextProjectileId;
         private float _simulationAccumulator;
+        private float _electricHarpoonDamageAccumulator;
         private int _walkIntentDirection;
         private int _controlledProjectileId = -1;
         private Vector2 _controlledProjectileInput;
@@ -177,6 +231,9 @@ namespace Game.Gameplay.Battle.Simulation
         private bool _playerTurnTimerPaused;
         private int _turnSequence;
         private RopeTraversal _ropeTraversal;
+        private ElectricHarpoonTraversal _electricHarpoonTraversal;
+        private Vector2? _orbitalTargetMarker;
+        private PendingOrbitalStrike _pendingOrbitalStrike;
 
         public static BattleSimulation CreatePlayerFirst(
             BattleState state,
@@ -243,6 +300,16 @@ namespace Game.Gameplay.Battle.Simulation
             _playerArchetype = playerArchetype;
             _opponentArchetype = opponentArchetype;
             _playerMovement = new TurnMovementState(settings.PlayerTurnDurationSeconds);
+            CapMineStock(_playerInventory);
+            CapMineStock(_opponentInventory);
+        }
+
+        private static void CapMineStock(WeaponInventoryRuntime inventory)
+        {
+            if (inventory == null) return;
+            foreach (var weapon in inventory.Weapons)
+                if (weapon.WeaponId == MineWeaponId && inventory.GetRemainingAmmo(weapon) > 4)
+                    inventory.SetRemainingAmmo(weapon, 4);
         }
 
         public event Action<BattleTeamId, WeaponDefinition, bool> ShotFired;
@@ -266,11 +333,15 @@ namespace Game.Gameplay.Battle.Simulation
         public event Action<SimProjectile> ProjectileSpawned;
         public event Action<int, ProjectileImpact> ProjectileExploded;
         public event Action<MineDeployedEvent> MineDeployed;
+        public event Action<GrounderDeployedEvent> GrounderDeployed;
+        public event Action<int> GrounderRemoved;
+        public event Action<LaserFenceNodeDeployedEvent> LaserFenceNodeDeployed;
         public event Action<int> MineTriggered;
         public event Action<ChargeDeployedEvent> ChargeDeployed;
         public event Action<GroundObjectRepositionedEvent> GroundObjectRepositioned;
         public event Action<LinearWeaponEffectEvent> LinearWeaponEffectStarted;
         public event Action<FireBlobEvent> FireBlobSpawned;
+        public event Action<SwordSwingEvent> SwordSwingStarted;
         public event Action<int, Vector2> FirePuddleMoved;
         public event Action<int> FirePuddleExtinguished;
         public event Action UnitsMoved;
@@ -282,14 +353,23 @@ namespace Game.Gameplay.Battle.Simulation
         public int ProjectilesInFlight => _projectiles.Count;
         public bool HasProjectilesInFlight => _projectiles.Count > 0;
         public bool HasActiveWeaponEffect => _activeTimedEffects.Count > 0
+            || _activeMines.Exists(mine => mine.IsGuardian && mine.Triggered)
             || _scheduledProjectileSpawns.Count > 0
-            || _ropeTraversal != null && !_ropeTraversal.IsAttached;
+            || _ropeTraversal != null && !_ropeTraversal.IsAttached
+            || _electricHarpoonTraversal != null;
         public bool HasPlayerRopeTraversal => _ropeTraversal != null
             && _ropeTraversal.OwnerUnitId == _state.Turn.ActiveUnitId;
         public bool IsPlayerRopeAttached => HasPlayerRopeTraversal && _ropeTraversal.IsAttached;
         public Vector2 RopeHookPosition => _ropeTraversal?.HookPosition ?? Vector2.zero;
         public Vector2 RopeHookDirection => _ropeTraversal?.Direction ?? Vector2.up;
         public Vector2 RopeAnchor => _ropeTraversal?.Anchor ?? Vector2.zero;
+        public bool HasPlayerElectricHarpoon => _electricHarpoonTraversal != null
+            && _electricHarpoonTraversal.OwnerUnitId == _state.Turn.ActiveUnitId;
+        public bool IsPlayerElectricHarpoonAttached => HasPlayerElectricHarpoon
+            && _electricHarpoonTraversal.IsAttached;
+        public Vector2 ElectricHarpoonHookPosition => _electricHarpoonTraversal?.HookPosition ?? Vector2.zero;
+        public Vector2 ElectricHarpoonOrigin => _electricHarpoonTraversal?.Origin ?? Vector2.zero;
+        public Vector2 ElectricHarpoonDirection => _electricHarpoonTraversal?.Direction ?? Vector2.right;
         public bool HasPendingGroundAction => _activeCharges.Count > 0;
         public bool HasActiveControlledProjectile => _controlledProjectileId >= 0;
         public bool CanContinueBlasterBurst => _state.Turn.ActiveTeam == BattleTeamId.Player
@@ -314,12 +394,56 @@ namespace Game.Gameplay.Battle.Simulation
             && _state.Turn.ActiveTeam == BattleTeamId.Player;
 
         /// <summary>
-        /// The turn's attack is already committed, unless the active player can
-        /// still place another mine granted by the workshop evolution.
+        /// The turn's attack is committed only after a turn-ending action. Mine
+        /// placement deliberately keeps the action open so the player can place
+        /// all available mines and then choose another weapon.
         /// </summary>
-        public bool IsAttackCommitted => _state.Turn.ActionSpent || !CanContinueMineDeploymentThisTurn();
+        public bool IsAttackCommitted => _state.Turn.ActionSpent;
 
         public WeaponInventoryRuntime ActiveInventory => GetInventoryFor(_state.Turn.ActiveTeam);
+
+        /// <summary>
+        /// Whether a player's arsenal item can be selected and used in the current
+        /// turn. The HUD uses the same rule as TryFire so unavailable weapons stay
+        /// visible without looking selectable.
+        /// </summary>
+        public bool CanUsePlayerWeapon(WeaponDefinition weapon)
+        {
+            if (weapon == null
+                || !IsBattleMechanicAvailable(weapon)
+                || weapon.HasLimitedAmmo && _playerInventory.GetRemainingAmmo(weapon) <= 0)
+            {
+                return false;
+            }
+
+            // A multi-shot cassette blaster owns the rest of the turn once its
+            // first round has been fired. Other weapons remain selectable after
+            // any number of mine placements.
+            return !CanContinueBlasterBurst || weapon.WeaponId == BlasterWeaponId;
+        }
+
+        /// <summary>
+        /// Catalog entries with only a generic fallback must stay unavailable until
+        /// their distinct combat action exists. A false action can heal, teleport,
+        /// or explode when the weapon's specification calls for something else.
+        /// </summary>
+        public static bool IsBattleMechanicAvailable(WeaponDefinition weapon)
+        {
+            if (weapon == null)
+            {
+                return false;
+            }
+
+            return weapon.WeaponId switch
+            {
+                "weapon.turn-transfer"
+                    or "weapon.force-field"
+                    or "weapon.boost" or "weapon.sky-hook" or "weapon.virus"
+                    or "weapon.bomber" or "weapon.ufo-carrier" or "weapon.self-destruct"
+                    or "weapon.nuclear-charge" => false,
+                _ => true
+            };
+        }
 
         public static bool RequiresAim(WeaponDefinition weapon)
         {
@@ -328,9 +452,43 @@ namespace Game.Gameplay.Battle.Simulation
                 return false;
             }
 
-            return weapon.WeaponId != MineWeaponId
+            return weapon.WeaponId != PlasmaSwordWeaponId
+                && weapon.WeaponId != MineWeaponId
+                && weapon.WeaponId != SpiderMineWeaponId
                 && weapon.WeaponId != C4WeaponId
+                && weapon.WeaponId != RepairJammerWeaponId
+                && weapon.WeaponId != OrbitalRocketWeaponId
                 && weapon.WeaponId != FpvWeaponId;
+        }
+
+        public bool HasOrbitalTargetMarker => _orbitalTargetMarker.HasValue;
+
+        public Vector2 OrbitalTargetMarker => _orbitalTargetMarker.GetValueOrDefault();
+
+        /// <summary>
+        /// Arms the player-selected orbital rocket at an arena point. Marking is
+        /// intentionally free: ammo and the action are committed only by the
+        /// subsequent fire-button confirmation.
+        /// </summary>
+        public bool TrySetOrbitalTarget(Vector2 target)
+        {
+            if (Result.IsFinished || HasProjectilesInFlight || HasActiveMotion || HasActiveWeaponEffect
+                || HasPendingGroundAction || _state.Turn.ActionSpent
+                || _state.Turn.ActiveTeam != BattleTeamId.Player
+                || _playerInventory.Selected?.WeaponId != OrbitalRocketWeaponId
+                || !CanUsePlayerWeapon(_playerInventory.Selected))
+            {
+                return false;
+            }
+
+            _orbitalTargetMarker = target;
+            return true;
+        }
+
+        /// <summary>Discards an unconfirmed orbital marker when the player changes intent.</summary>
+        public void ClearOrbitalTarget()
+        {
+            _orbitalTargetMarker = null;
         }
 
         public bool HasActiveMotion
@@ -409,6 +567,22 @@ namespace Game.Gameplay.Battle.Simulation
             };
         }
 
+        public void ConfigureTitaniumBarrier(Texture2D texture, float referenceCameraSize)
+        {
+            _titaniumBarrierTexture = texture;
+            TitaniumBarrierBaseSize = texture != null
+                ? TitaniumBarrierRules.BaseSize(referenceCameraSize, (float)texture.width / texture.height)
+                : Vector2.zero;
+        }
+
+        public float ResolveTitaniumBarrierScale(float requested, BattleTeamId team)
+        {
+            var progression = ProgressionFor(team);
+            return TitaniumBarrierRules.ClampScale(requested,
+                progression.HasPurchasedEvolution(TitaniumBarrierRules.WeaponId, 5, TitaniumBarrierRules.SizeFeatureId),
+                progression.ResolveUpgradeCount(TitaniumBarrierRules.WeaponId, WeaponUpgradePath.Radius));
+        }
+
         public BattleFireResult TryFire(AimState aim)
         {
             if (_ropeTraversal != null && _ropeTraversal.IsAttached
@@ -420,7 +594,16 @@ namespace Game.Gameplay.Battle.Simulation
                 return new BattleFireResult(BattleFireOutcome.Fired, _state.Turn.ActiveTeam, _weaponsById[RopeWeaponId]);
             }
 
-            if (Result.IsFinished || HasProjectilesInFlight || HasActiveMotion || HasActiveWeaponEffect
+            var canQueuePlacementWhileProjectileIsInFlight = _state.Turn.ActiveTeam == BattleTeamId.Player
+                && ((_playerInventory.Selected?.WeaponId == MineWeaponId
+                        && _minesDeployedThisTurn > 0
+                        && CanContinueMineDeploymentThisTurn())
+                    || (_playerInventory.Selected?.WeaponId == LaserFenceWeaponId
+                        && _laserFenceNodesDeployedThisTurn > 0
+                        && CanContinueLaserFenceDeploymentThisTurn())
+                    || CanContinueHoppingGrenade());
+            if (Result.IsFinished || HasActiveMotion || HasActiveWeaponEffect
+                || HasProjectilesInFlight && !canQueuePlacementWhileProjectileIsInFlight
                 || HasPendingGroundAction || _state.Turn.ActionSpent)
             {
                 return new BattleFireResult(BattleFireOutcome.Blocked, BattleTeamId.None, null);
@@ -452,15 +635,14 @@ namespace Game.Gameplay.Battle.Simulation
                 return new BattleFireResult(BattleFireOutcome.NoWeaponSelected, unit.TeamId, null);
             }
 
-            if (_minesDeployedThisTurn > 0 && weapon.WeaponId != MineWeaponId)
+            if (!IsBattleMechanicAvailable(weapon))
             {
                 return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
             }
 
-            if (weapon.WeaponId == MineWeaponId
-                && _minesDeployedThisTurn >= GetMineDeployLimitPerTurn(unit.TeamId, weapon))
+            if (weapon.WeaponId == OrbitalRocketWeaponId)
             {
-                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+                return ConfirmOrbitalStrike(unit, activeInventory, weapon);
             }
 
             if (!aim.HasInput && RequiresAim(weapon))
@@ -470,20 +652,35 @@ namespace Game.Gameplay.Battle.Simulation
 
             var effectiveAim = aim.HasInput ? aim : CreateImmediateActionAim(unit);
 
+            if (weapon.WeaponId == HoppingGrenadeWeaponId
+                && TryHopRestingGrenade(unit, weapon, effectiveAim, out var hopResult))
+            {
+                return hopResult;
+            }
+
             if (weapon.WeaponId == RopeWeaponId)
             {
                 var rank = ResolveRankFor(unit.TeamId, weapon);
+                var radiusPurchases = ProgressionFor(unit.TeamId).ResolveUpgradeCount(
+                    weapon.WeaponId, WeaponUpgradePath.Radius);
+                var aimPurchases = ProgressionFor(unit.TeamId).ResolveUpgradeCount(
+                    weapon.WeaponId, WeaponUpgradePath.Aim);
                 _ropeTraversal = new RopeTraversal(
                     unit.UnitId,
                     effectiveAim.Origin,
                     effectiveAim.Direction,
-                    RopeBaseLength + (rank - 1) * 0.75f,
+                    WeaponUpgradeChoiceResolver.ResolveRopeLength(radiusPurchases),
                     RopeHookSpeed,
-                    RopeBaseSectorDegrees + (rank - 1) * 2f,
+                    WeaponUpgradeChoiceResolver.ResolveRopeAimSectorDegrees(aimPurchases),
                     RopeBaseSwingAcceleration + (rank - 1) * 0.65f);
                 ShotFired?.Invoke(unit.TeamId, weapon, false);
                 UnitsMoved?.Invoke();
                 return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon);
+            }
+
+            if (weapon.WeaponId == ElectricHarpoonWeaponId)
+            {
+                return StartElectricHarpoon(unit, activeInventory, weapon, effectiveAim);
             }
 
             if (weapon.WeaponId == BlasterWeaponId)
@@ -496,12 +693,32 @@ namespace Game.Gameplay.Battle.Simulation
                 return DeployMine(unit, activeInventory, weapon);
             }
 
+            if (weapon.WeaponId == GuardianDroneWeaponId)
+            {
+                return DeployGuardianDrone(unit, activeInventory, weapon);
+            }
+
+            if (weapon.WeaponId == GrounderWeaponId)
+            {
+                return DeployGrounder(unit, activeInventory, weapon);
+            }
+
+            if (weapon.WeaponId == SpiderMineWeaponId)
+            {
+                return DeploySpiderMine(unit, activeInventory, weapon);
+            }
+
+            if (weapon.WeaponId == LaserFenceWeaponId)
+            {
+                return DeployLaserFenceNode(unit, activeInventory, weapon, effectiveAim);
+            }
+
             if (weapon.WeaponId == C4WeaponId)
             {
                 return DeployC4(unit, activeInventory, weapon);
             }
 
-            if (weapon.WeaponId == FpvWeaponId)
+            if (IsControlledDroneWeapon(weapon))
             {
                 return LaunchControlledDrone(unit, activeInventory, weapon);
             }
@@ -516,6 +733,11 @@ namespace Game.Gameplay.Battle.Simulation
                 return StartFireStream(unit, activeInventory, weapon, effectiveAim);
             }
 
+            if (IsAttachmentDevice(weapon))
+            {
+                return LaunchAttachmentDevice(unit, activeInventory, weapon);
+            }
+
             if (weapon.Role == WeaponRole.ShortRangeBurst)
             {
                 return UseCloseRangeBurst(unit, activeInventory, weapon, effectiveAim);
@@ -523,15 +745,21 @@ namespace Game.Gameplay.Battle.Simulation
 
             if (IsInstantUtility(weapon.Role))
             {
+                if (weapon.WeaponId == TitaniumBarrierRules.WeaponId)
+                    return PlaceTitaniumBarrier(unit, activeInventory, weapon, effectiveAim);
                 return UseInstantUtility(unit, activeInventory, weapon, effectiveAim);
             }
 
+            var projectilesBeforeFire = _projectiles.Count;
+            var launchSpeed = Mathf.Approximately(weapon.MinPower, weapon.MaxPower)
+                ? weapon.MinPower
+                : effectiveAim.Power;
             var context = new WeaponFireContext(
                 weapon,
                 unit.UnitId,
                 effectiveAim.Origin,
                 effectiveAim.Direction,
-                effectiveAim.Power,
+                launchSpeed,
                 this,
                 ResolveEvolutionFor(unit.TeamId, weapon),
                 ResolveModifiersFor(unit.TeamId, weapon));
@@ -543,10 +771,77 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             _activeShotWeapon = weapon;
-            _activeShotEndsTurn = weapon.WeaponId != TeleportWeaponId;
+            var isHoppingGrenade = weapon.WeaponId == HoppingGrenadeWeaponId;
+            _activeShotEndsTurn = !isHoppingGrenade;
+            if (_activeShotEndsTurn)
+            {
+                _turnService.SpendAction(_state);
+            }
+            if (isHoppingGrenade && _projectiles.Count > projectilesBeforeFire)
+            {
+                _hoppingGrenadeProjectileId = _projectiles[_projectiles.Count - 1].Id;
+            }
+            ShotFired?.Invoke(unit.TeamId, weapon, _activeShotEndsTurn);
+            return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon);
+        }
+
+        private BattleFireResult ConfirmOrbitalStrike(
+            BattleUnitState unit,
+            WeaponInventoryRuntime inventory,
+            WeaponDefinition weapon)
+        {
+            if (!_orbitalTargetMarker.HasValue)
+            {
+                return new BattleFireResult(BattleFireOutcome.AimRequired, unit.TeamId, weapon);
+            }
+
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            _pendingOrbitalStrike = new PendingOrbitalStrike(unit.TeamId, unit.UnitId, weapon, _orbitalTargetMarker.Value);
+            _orbitalTargetMarker = null;
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = false;
             _turnService.SpendAction(_state);
             ShotFired?.Invoke(unit.TeamId, weapon, true);
-            return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon);
+            AdvanceTurnNow(TurnAdvanceReason.InstantActionCompleted);
+            return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon);
+        }
+
+        public bool CanContinueHoppingGrenade()
+        {
+            return _hoppingGrenadeProjectileId >= 0
+                && _projectiles.Exists(projectile => projectile.Id == _hoppingGrenadeProjectileId
+                    && projectile.IsRestingFuse);
+        }
+
+        private bool TryHopRestingGrenade(
+            BattleUnitState unit,
+            WeaponDefinition weapon,
+            AimState aim,
+            out BattleFireResult result)
+        {
+            var projectile = _projectiles.Find(value => value.Id == _hoppingGrenadeProjectileId);
+            if (projectile == null || !projectile.IsRestingFuse)
+            {
+                result = default;
+                return false;
+            }
+
+            var direction = aim.Direction.sqrMagnitude > 0.01f
+                ? aim.Direction.normalized
+                : new Vector2(unit.FacingDirectionX >= 0 ? 1f : -1f, 0f);
+            var horizontal = Mathf.Sign(direction.x == 0f ? unit.FacingDirectionX : direction.x);
+            projectile.ResumeFromRestingFuse(new Vector2(
+                horizontal * HoppingGrenadeLaunchSpeed,
+                HoppingGrenadeVerticalSpeed));
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = false;
+            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            result = new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, projectile.Position);
+            return true;
         }
 
         public void SetControlledProjectileInput(Vector2 direction)
@@ -554,6 +849,18 @@ namespace Game.Gameplay.Battle.Simulation
             _controlledProjectileInput = direction.sqrMagnitude > 0.01f
                 ? direction.normalized
                 : Vector2.zero;
+        }
+
+        private static bool IsControlledDroneWeapon(WeaponDefinition weapon)
+        {
+            return weapon?.WeaponId == FpvWeaponId
+                || weapon?.WeaponId == BomberWeaponId
+                || weapon?.WeaponId == CarrierWeaponId;
+        }
+
+        private static bool IsAttachmentDevice(WeaponDefinition weapon)
+        {
+            return weapon?.WeaponId == RepairJammerWeaponId || weapon?.WeaponId == VirusWeaponId;
         }
 
         public void SetRopeTraversalInput(int horizontalDirection, int verticalDirection)
@@ -718,16 +1025,19 @@ namespace Game.Gameplay.Battle.Simulation
 
         public void AdvanceTurnDueToNoUsableWeapon()
         {
+            ProcessPoisonForEndingActiveTurn();
+            ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
             ConsumeEmpStunForActiveTurn();
+            ExpireGroundersForEndingTurn();
             _turnService.AdvanceTurn(_state);
             _turnSequence++;
             ResetMotionForNewTurn();
             ProcessRepairEffectsForActiveTurn();
-            ProcessPoisonForActiveTurn();
             ProcessBurnForActiveTurn();
             ProcessEmpWeakenForActiveTurn();
+            LaunchPendingOrbitalStrikeIfDue();
             TurnAdvanced?.Invoke(_state.Turn.ActiveTeam, TurnAdvanceReason.OpponentSkippedNoUsableWeapon);
             UnitsMoved?.Invoke();
         }
@@ -742,6 +1052,7 @@ namespace Game.Gameplay.Battle.Simulation
                 StepRetreat(_settings.SimulationTickSeconds);
                 StepWalkIntent(_settings.SimulationTickSeconds);
                 StepRopeTraversal(_settings.SimulationTickSeconds);
+                StepElectricHarpoon(_settings.SimulationTickSeconds);
                 StepScheduledProjectileSpawns(_settings.SimulationTickSeconds);
                 StepProjectiles(_settings.SimulationTickSeconds);
                 StepTimedWeaponEffects(_settings.SimulationTickSeconds);
@@ -751,6 +1062,7 @@ namespace Game.Gameplay.Battle.Simulation
                 StepMines(_settings.SimulationTickSeconds);
                 StepCharges(_settings.SimulationTickSeconds);
                 StepUnits();
+                StepLaserFenceLinks();
                 StepPoisonMovementDamage(_settings.SimulationTickSeconds);
             }
 
@@ -764,7 +1076,8 @@ namespace Game.Gameplay.Battle.Simulation
             ResolveBattleAfterMotion();
         }
 
-        private void ResolveProjectileImpact(ProjectileImpact impact)
+        private void ResolveProjectileImpact(ProjectileImpact impact, bool suppressTurnAdvance = false,
+            BattleUnitState directHit = null, float pelletTerrainCraterRadius = 0f)
         {
             var impactWeapon = ResolveImpactWeapon(impact);
             var impactForResolution = impact;
@@ -772,11 +1085,9 @@ namespace Game.Gameplay.Battle.Simulation
                 && impact.ProjectileId == "projectile.weapon.mortira")
             {
                 var evolution = ResolveEvolutionFor(ResolveTeamForOwner(impact.OwnerUnitId), impactWeapon);
-                if (evolution.MortarFragmentCount > 0)
-                {
-                    SpawnMortarFragments(impact, impactWeapon, evolution.MortarFragmentCount);
-                }
-                else if (evolution.MortarCascadeCount > 0)
+                SpawnMortarFragments(impact, impactWeapon,
+                    Mathf.Max(5, evolution.MortarFragmentCount));
+                if (evolution.MortarCascadeCount > 0)
                 {
                     SpawnMortarCascade(impact, impactWeapon, 1);
                 }
@@ -816,12 +1127,47 @@ namespace Game.Gameplay.Battle.Simulation
                     impactWeapon.ImpactRadius);
             }
 
-            var terrainChanged = ResolveImpact(impactForResolution, impactWeapon);
+            var terrainChanged = false;
+            if (impactWeapon?.WeaponId == IonShotgunWeaponId)
+            {
+                if (directHit != null)
+                {
+                    ApplyDamage(directHit,
+                        ResolveOutgoingDamage(impact.OwnerUnitId, impact.Damage),
+                        impact.ProjectileId, ResolveTeamForOwner(impact.OwnerUnitId));
+                }
+                else if (pelletTerrainCraterRadius > 0f)
+                {
+                    terrainChanged = ApplyTerrainCrater(impact.Point, pelletTerrainCraterRadius,
+                        ResolveTeamForOwner(impact.OwnerUnitId));
+                }
+            }
+            else
+            {
+                terrainChanged = ResolveImpact(impactForResolution, impactWeapon);
+            }
+            if (impactWeapon?.WeaponId == IncendiaryGrenadeWeaponId)
+            {
+                SpawnIncendiaryPuddles(impactForResolution, impactWeapon);
+            }
             ImpactResolved?.Invoke(new ImpactResolvedEvent(impact.Point, impactWeapon, terrainChanged));
             UnitsMoved?.Invoke();
 
             if (HasProjectilesInFlight)
             {
+                return;
+            }
+
+            if (suppressTurnAdvance)
+            {
+                Result = BattleResultEvaluator.Evaluate(_state);
+                if (Result.IsFinished)
+                {
+                    UnitDefeated?.Invoke(new UnitDefeatedEvent(string.Empty, "battle-finished"));
+                    BattleFinished?.Invoke(Result, BattleFinishReason.ProjectileImpactResolved);
+                }
+
+                _activeShotEndsTurn = true;
                 return;
             }
 
@@ -840,6 +1186,103 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             AdvanceTurnOrStartRetreat(TurnAdvanceReason.ProjectileImpactResolved);
+        }
+
+        private void StepLaserFenceLinks()
+        {
+            if (_activeLaserFenceNodes.Count < 2 || Result.IsFinished)
+            {
+                return;
+            }
+
+            var deployedNodes = new List<LaserFenceNodeDeployedEvent>(_activeLaserFenceNodes.Count);
+            for (var index = 0; index < _activeLaserFenceNodes.Count; index++)
+            {
+                var node = _activeLaserFenceNodes[index];
+                deployedNodes.Add(new LaserFenceNodeDeployedEvent(
+                    node.Id,
+                    node.OwnerUnitId,
+                    node.Position,
+                    node.Weapon,
+                    node.TeamId));
+            }
+
+            var links = LaserFenceLinkResolver.Resolve(deployedNodes, LaserFenceLinkRange);
+            for (var linkIndex = 0; linkIndex < links.Count; linkIndex++)
+            {
+                var link = links[linkIndex];
+                var linkId = GetLaserFenceLinkId(link.FirstNodeId, link.SecondNodeId);
+                if (_spentLaserFenceLinks.Contains(linkId)
+                    || !TryGetLaserFenceNode(link.FirstNodeId, out var firstNode)
+                    || !TryGetLaserFenceNode(link.SecondNodeId, out var secondNode))
+                {
+                    continue;
+                }
+
+                for (var teamIndex = 0; teamIndex < _state.Teams.Count; teamIndex++)
+                {
+                    var team = _state.Teams[teamIndex];
+                    if (team.TeamId == firstNode.TeamId)
+                    {
+                        continue;
+                    }
+
+                    for (var unitIndex = 0; unitIndex < team.Units.Count; unitIndex++)
+                    {
+                        var unit = team.Units[unitIndex];
+                        if (unit.IsDefeated
+                            || !IsPointWithinLaserFenceLink(unit.Position, firstNode.Position, secondNode.Position))
+                        {
+                            continue;
+                        }
+
+                        _spentLaserFenceLinks.Add(linkId);
+                        ApplyDamage(unit, firstNode.Weapon.Damage, LaserFenceWeaponId, firstNode.TeamId);
+                        if (unit.UnitId == _state.Turn.ActiveUnitId)
+                        {
+                            AdvanceTurnNow(TurnAdvanceReason.LaserFenceTriggered);
+                        }
+
+                        return;
+                    }
+                }
+            }
+        }
+
+        private bool TryGetLaserFenceNode(int nodeId, out ActiveLaserFenceNode node)
+        {
+            for (var index = 0; index < _activeLaserFenceNodes.Count; index++)
+            {
+                if (_activeLaserFenceNodes[index].Id == nodeId)
+                {
+                    node = _activeLaserFenceNodes[index];
+                    return true;
+                }
+            }
+
+            node = null;
+            return false;
+        }
+
+        private static ulong GetLaserFenceLinkId(int firstNodeId, int secondNodeId)
+        {
+            var low = (uint)Mathf.Min(firstNodeId, secondNodeId);
+            var high = (uint)Mathf.Max(firstNodeId, secondNodeId);
+            return ((ulong)high << 32) | low;
+        }
+
+        private static bool IsPointWithinLaserFenceLink(Vector2 point, Vector2 first, Vector2 second)
+        {
+            var link = second - first;
+            var linkLengthSquared = link.sqrMagnitude;
+            if (linkLengthSquared <= 0.0001f)
+            {
+                return (point - first).sqrMagnitude <= LaserFenceContactRadius * LaserFenceContactRadius;
+            }
+
+            var projection = Mathf.Clamp01(Vector2.Dot(point - first, link) / linkLengthSquared);
+            var nearestPoint = first + link * projection;
+            return (point - nearestPoint).sqrMagnitude <= LaserFenceContactRadius * LaserFenceContactRadius;
         }
 
         /// <summary>
@@ -870,18 +1313,53 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void AdvanceTurnNow(TurnAdvanceReason reason)
         {
+            ProcessPoisonForEndingActiveTurn();
+            ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
             ConsumeEmpStunForActiveTurn();
+            ExpireGroundersForEndingTurn();
             _turnService.AdvanceTurn(_state);
             _turnSequence++;
             ResetMotionForNewTurn();
             ProcessRepairEffectsForActiveTurn();
-            ProcessPoisonForActiveTurn();
             ProcessBurnForActiveTurn();
             ProcessEmpWeakenForActiveTurn();
+            LaunchPendingOrbitalStrikeIfDue();
             TurnAdvanced?.Invoke(_state.Turn.ActiveTeam, reason);
             UnitsMoved?.Invoke();
+        }
+
+        private void LaunchPendingOrbitalStrikeIfDue()
+        {
+            if (_pendingOrbitalStrike == null
+                || _state.Turn.ActiveTeam != _pendingOrbitalStrike.OwnerTeam)
+            {
+                return;
+            }
+
+            var strike = _pendingOrbitalStrike;
+            _pendingOrbitalStrike = null;
+            var target = strike.Target;
+            var terrainTop = _terrain != null
+                ? _terrain.Grid.WorldMaxY - 0.25f
+                : target.y + OrbitalRocketMinimumSpawnHeight;
+            var spawnY = Mathf.Max(target.y + OrbitalRocketMinimumSpawnHeight, terrainTop);
+            var definition = strike.Weapon.CreateProjectileDefinition(
+                strike.Weapon.Damage,
+                knockbackMultiplier: 1f,
+                terrainBounceLimit: 0,
+                timeoutSecondsOverride: Mathf.Max(2f, strike.Weapon.TimeoutSeconds));
+            var projectile = new SimProjectile(
+                ++_nextProjectileId,
+                definition,
+                strike.OwnerUnitId,
+                new Vector2(target.x, spawnY),
+                Vector2.down * OrbitalRocketFallSpeed,
+                definition.TimeoutSeconds,
+                suppressTurnAdvanceOnImpact: true);
+            _projectiles.Add(projectile);
+            ProjectileSpawned?.Invoke(projectile);
         }
 
         private void StepRetreat(float deltaTime)
@@ -1157,6 +1635,7 @@ namespace Game.Gameplay.Battle.Simulation
             }
             _blasterShotsThisTurn = 0;
             _minesDeployedThisTurn = 0;
+            _laserFenceNodesDeployedThisTurn = 0;
             _activeShotEndsTurn = true;
             foreach (var motor in _motors.Values)
             {
@@ -1214,11 +1693,6 @@ namespace Game.Gameplay.Battle.Simulation
                 ResolveEvolutionFor(teamId, _playerInventory.Selected).BlasterBurstShotCount);
         }
 
-        private int GetMineDeployLimitPerTurn(BattleTeamId teamId, WeaponDefinition weapon)
-        {
-            return Mathf.Max(1, ResolveEvolutionFor(teamId, weapon).MineDeployLimitPerTurn);
-        }
-
         private bool CanContinueMineDeploymentThisTurn()
         {
             if (_minesDeployedThisTurn == 0)
@@ -1233,18 +1707,22 @@ namespace Game.Gameplay.Battle.Simulation
 
             var activeTeam = _state.Turn.ActiveTeam;
             var inventory = GetInventoryFor(activeTeam);
-            return _minesDeployedThisTurn < GetMineDeployLimitPerTurn(activeTeam, mineWeapon)
-                && inventory.GetRemainingAmmo(mineWeapon) > 0;
+            return inventory.GetRemainingAmmo(mineWeapon) > 0;
+        }
+
+        private bool CanContinueLaserFenceDeploymentThisTurn()
+        {
+            if (_laserFenceNodesDeployedThisTurn >= MaxLaserFenceNodesPerTurn
+                || !_weaponsById.TryGetValue(LaserFenceWeaponId, out var laserFence))
+            {
+                return false;
+            }
+
+            return GetInventoryFor(_state.Turn.ActiveTeam).GetRemainingAmmo(laserFence) > 0;
         }
 
         private BattleFireResult DeployMine(BattleUnitState unit, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
         {
-            if (_minesDeployedThisTurn >= GetMineDeployLimitPerTurn(unit.TeamId, weapon))
-            {
-                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
-            }
-
-            PrepareMineAmmoForPlacement(unit.TeamId, inventory, weapon);
             if (!inventory.TryConsumeSelectedAmmo())
             {
                 return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
@@ -1273,18 +1751,136 @@ namespace Game.Gameplay.Battle.Simulation
             return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, origin);
         }
 
-        private void PrepareMineAmmoForPlacement(
-            BattleTeamId teamId,
+        private BattleFireResult DeployGuardianDrone(BattleUnitState unit, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
+        {
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            var facing = unit.FacingDirectionX >= 0 ? 1f : -1f;
+            var origin = unit.Position + new Vector2(facing * 0.28f, 0.46f);
+            var definition = ProjectileDefinition.CreateRuntime(
+                GuardianDroneDeployProjectileId,
+                weapon.ProjectileRadius,
+                // A placed trap must fall even when a compact runtime test
+                // definition omits gravity; the grenade arc is not its aim mode.
+                Mathf.Max(1f, weapon.GravityScale),
+                weapon.TimeoutSeconds,
+                0,
+                weapon.ImpactRadius);
+            Spawn(new ProjectileSpawnRequest(
+                definition,
+                unit.UnitId,
+                origin,
+                new Vector2(facing * MineThrowHorizontalSpeed, MineThrowVerticalSpeed),
+                weapon.ProjectileRadius * 2f,
+                ProjectileWeaponEffect.GetProjectileColor(weapon.Role)));
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = false;
+            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, origin);
+        }
+
+        private BattleFireResult DeployGrounder(
+            BattleUnitState unit,
             WeaponInventoryRuntime inventory,
             WeaponDefinition weapon)
         {
-            var placementsRemaining = GetMineDeployLimitPerTurn(teamId, weapon) - _minesDeployedThisTurn;
-            if (placementsRemaining <= 1 || inventory.GetRemainingAmmo(weapon) >= placementsRemaining)
+            if (!inventory.TryConsumeSelectedAmmo())
             {
-                return;
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
             }
 
-            inventory.SetRemainingAmmo(weapon, placementsRemaining);
+            // The placed device owns its later interception behavior. Placement itself
+            // is an action, not a defensive heal through the generic utility path.
+            var facing = unit.FacingDirectionX >= 0 ? 1f : -1f;
+            var position = ResolveGroundDeployPoint(
+                unit.Position + new Vector2(facing * 0.46f, 0.12f), unit.TeamId);
+            var coreUpgrades = Mathf.Clamp(
+                ProgressionFor(unit.TeamId).ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Core), 0, 4);
+            var radiusUpgrades = Mathf.Clamp(
+                ProgressionFor(unit.TeamId).ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Radius), 0, 4);
+            var grounder = new ActiveGrounder(
+                ++_nextProjectileId, unit.TeamId, position, weapon,
+                remainingTurns: 2 + coreUpgrades, health: GrounderBaseHealth,
+                detectionRadius: weapon.ImpactRadius * (1f + radiusUpgrades * 0.10f));
+            _activeGrounders.Add(grounder);
+            GrounderDeployed?.Invoke(new GrounderDeployedEvent(
+                grounder.Id, grounder.Position, weapon, unit.TeamId));
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = false;
+            ShotFired?.Invoke(unit.TeamId, weapon, true);
+            _turnService.SpendAction(_state);
+            AdvanceTurnNow(TurnAdvanceReason.InstantActionCompleted);
+            return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, position);
+        }
+
+        private BattleFireResult DeployLaserFenceNode(
+            BattleUnitState unit,
+            WeaponInventoryRuntime inventory,
+            WeaponDefinition weapon,
+            AimState aim)
+        {
+            if (_laserFenceNodesDeployedThisTurn >= MaxLaserFenceNodesPerTurn)
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+            }
+
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            var direction = aim.Direction.sqrMagnitude > 0.01f ? aim.Direction.normalized : Vector2.right;
+            var definition = ProjectileDefinition.CreateRuntime(
+                LaserFenceDeployProjectileId,
+                weapon.ProjectileRadius,
+                LaserFenceGravityScale,
+                weapon.TimeoutSeconds,
+                0,
+                weapon.ImpactRadius);
+            var origin = aim.Origin + direction * 0.45f;
+            Spawn(new ProjectileSpawnRequest(
+                definition,
+                unit.UnitId,
+                origin,
+                direction * aim.Power,
+                weapon.ProjectileRadius * 2f,
+                ProjectileWeaponEffect.GetProjectileColor(weapon.Role)));
+
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = false;
+            _laserFenceNodesDeployedThisTurn++;
+            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, origin);
+        }
+
+        private BattleFireResult DeploySpiderMine(BattleUnitState unit, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
+        {
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            var facing = unit.FacingDirectionX >= 0 ? 1 : -1;
+            var placement = ResolveGroundDeployPoint(unit.Position + new Vector2(facing * 0.46f, 0.12f), unit.TeamId);
+            var mine = new ActiveMine(
+                ++_nextProjectileId,
+                unit.UnitId,
+                unit.TeamId,
+                weapon,
+                placement + Vector2.up * 0.04f,
+                triggersEnemiesOnly: true,
+                alliesImmuneToExplosion: true,
+                isSpider: true,
+                crawlDirection: facing);
+            _activeMines.Add(mine);
+            MineDeployed?.Invoke(new MineDeployedEvent(mine.Id, mine.Position, weapon, unit.TeamId));
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = false;
+            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, mine.Position);
         }
 
         private BattleFireResult LaunchControlledDrone(
@@ -1318,6 +1914,43 @@ namespace Game.Gameplay.Battle.Simulation
             return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, spawnPoint);
         }
 
+        private BattleFireResult LaunchAttachmentDevice(
+            BattleUnitState unit,
+            WeaponInventoryRuntime inventory,
+            WeaponDefinition weapon)
+        {
+            if (!TryFindTargetFor(unit.UnitId, out var target)
+                || (target.Position - unit.Position).sqrMagnitude > AttachmentDeviceRange * AttachmentDeviceRange)
+            {
+                // The device is not consumed and the turn stays unchanged until a
+                // nearby hostile target exists. This avoids firing a visible
+                // effect into empty space.
+                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+            }
+
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            var origin = unit.Position + Vector2.up * 0.38f;
+            var direction = (target.Position - origin).normalized;
+            var impactDamage = weapon.WeaponId == RepairJammerWeaponId ? 0 : weapon.Damage;
+            var definition = weapon.CreateProjectileDefinition(impactDamage, 0f, 0, StickyGrenadeFuseSeconds);
+            Spawn(new ProjectileSpawnRequest(
+                definition,
+                unit.UnitId,
+                origin,
+                direction * AttachmentDeviceSpeed,
+                weapon.ProjectileRadius * 2f,
+                ProjectileWeaponEffect.GetProjectileColor(weapon.Role)));
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = true;
+            _turnService.SpendAction(_state);
+            ShotFired?.Invoke(unit.TeamId, weapon, true);
+            return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, target.Position);
+        }
+
         private BattleFireResult DeployC4(BattleUnitState unit, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
         {
             if (!inventory.TryConsumeSelectedAmmo())
@@ -1346,7 +1979,7 @@ namespace Game.Gameplay.Battle.Simulation
                 evolvedWeapon,
                 deployPoint,
                 C4FuseSeconds,
-                evolution.KnockbackMultiplier);
+                1.5f * evolution.KnockbackMultiplier);
             _activeCharges.Add(charge);
             var dropDistance = Mathf.Max(0f, origin.y - deployPoint.y);
             var dropDuration = Mathf.Clamp(C4DropDurationSeconds + dropDistance * 0.08f, C4DropDurationSeconds, 0.75f);
@@ -1369,8 +2002,9 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var direction = aim.Direction.sqrMagnitude > 0.01f ? aim.Direction.normalized : Vector2.right;
-            var evolution = ResolveEvolutionFor(unit.TeamId, weapon);
-            var drillRange = evolution.DrillRange > 0f ? evolution.DrillRange : DrillMaxRange;
+            var rangeUpgrades = ProgressionFor(unit.TeamId).ResolveUpgradeCount(
+                weapon.WeaponId, WeaponUpgradePath.Radius);
+            var drillRange = WeaponUpgradeChoiceResolver.ResolveDrillLaserRange(rangeUpgrades);
             _activeShotWeapon = weapon;
             _activeShotEndsTurn = true;
             _turnService.SpendAction(_state);
@@ -1381,7 +2015,7 @@ namespace Game.Gameplay.Battle.Simulation
                 aim.Origin,
                 direction,
                 drillRange,
-                evolution.DrillPenetration));
+                TerrainMaterial.Titanium));
             LinearWeaponEffectStarted?.Invoke(new LinearWeaponEffectEvent(
                 weapon,
                 unit.TeamId,
@@ -1412,6 +2046,36 @@ namespace Game.Gameplay.Battle.Simulation
             return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, aim.Origin + direction * FireStreamRange);
         }
 
+        private BattleFireResult StartElectricHarpoon(
+            BattleUnitState unit,
+            WeaponInventoryRuntime inventory,
+            WeaponDefinition weapon,
+            AimState aim)
+        {
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            var rank = ResolveRankFor(unit.TeamId, weapon);
+            var direction = aim.Direction.sqrMagnitude > 0.01f ? aim.Direction.normalized : Vector2.right;
+            _electricHarpoonTraversal = new ElectricHarpoonTraversal(
+                unit.UnitId,
+                aim.Origin,
+                direction,
+                ElectricHarpoonBaseLength + (rank - 1) * 0.55f,
+                ElectricHarpoonHookSpeed,
+                ElectricHarpoonPullSpeed + (rank - 1) * 0.08f,
+                Mathf.Max(1f, Mathf.RoundToInt(weapon.Damage * 0.15f)));
+            _electricHarpoonDamageAccumulator = 0f;
+            _activeShotWeapon = weapon;
+            _activeShotEndsTurn = true;
+            _turnService.SpendAction(_state);
+            ShotFired?.Invoke(unit.TeamId, weapon, true);
+            UnitsMoved?.Invoke();
+            return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon);
+        }
+
         private BattleFireResult UseCloseRangeBurst(BattleUnitState unit, WeaponInventoryRuntime inventory, WeaponDefinition weapon, AimState aim)
         {
             if (!inventory.TryConsumeSelectedAmmo())
@@ -1424,6 +2088,57 @@ namespace Game.Gameplay.Battle.Simulation
 
             var origin = aim.Origin;
             var direction = aim.Direction.sqrMagnitude > 0.01f ? aim.Direction.normalized : Vector2.right;
+            if (weapon.WeaponId == PlasmaSwordWeaponId)
+            {
+                SwordSwingStarted?.Invoke(new SwordSwingEvent(weapon, unit.TeamId, origin, direction));
+                var swordRange = Mathf.Max(1.75f, weapon.ImpactRadius * 1.75f);
+                BattleUnitState nearestTarget = null;
+                var nearestDistance = float.PositiveInfinity;
+                foreach (var team in _state.Teams)
+                {
+                    if (team.TeamId == unit.TeamId)
+                    {
+                        continue;
+                    }
+
+                    foreach (var target in team.Units)
+                    {
+                        if (target == null || target.IsDefeated)
+                        {
+                            continue;
+                        }
+
+                        var toTarget = target.Position - origin;
+                        var distance = toTarget.magnitude;
+                        if (distance > swordRange || distance >= nearestDistance
+                            || Vector2.Dot(direction, toTarget.normalized) < 0.25f)
+                        {
+                            continue;
+                        }
+
+                        nearestTarget = target;
+                        nearestDistance = distance;
+                    }
+                }
+
+                if (nearestTarget != null)
+                {
+                    ApplyExplosionKnockback(nearestTarget.Position - direction * 0.15f,
+                        direction, weapon, false, ignoredTeam: unit.TeamId,
+                        onlyTarget: nearestTarget,
+                        radiusOverride: PrototypeWeaponLibrary.SharedExplosionRadius);
+                    var modifiers = ResolveModifiersFor(unit.TeamId, weapon);
+                    ApplyDamage(nearestTarget,
+                        Mathf.RoundToInt(weapon.Damage * modifiers.DamageMultiplier),
+                        weapon.WeaponId, unit.TeamId);
+                }
+
+                ShotFired?.Invoke(unit.TeamId, weapon, true);
+                CompleteInstantAction();
+                return new BattleFireResult(BattleFireOutcome.BurstFired, unit.TeamId, weapon,
+                    nearestTarget?.Position ?? origin + direction * swordRange,
+                    nearestTarget == null ? 0 : 1);
+            }
             var range = Mathf.Max(1.2f, weapon.ImpactRadius * 1.75f);
             var hitCount = 0;
 
@@ -1467,7 +2182,7 @@ namespace Game.Gameplay.Battle.Simulation
             if (weapon.Role == WeaponRole.CoverTool)
             {
                 _turnService.SpendAction(_state);
-                DeployCover(GetCoverPlacementPoint(aim, weapon), weapon);
+                DeployCover(GetCoverPlacementPoint(aim, weapon), weapon, aim.Direction);
             }
             else if (weapon.Role == WeaponRole.DefensiveTool)
             {
@@ -1705,14 +2420,28 @@ namespace Game.Gameplay.Battle.Simulation
             for (var i = _activeMines.Count - 1; i >= 0; i--)
             {
                 var mine = _activeMines[i];
-                DropGroundObjectIfUnsupported(mine, mine.Id);
-                mine.ArmTimeRemaining = Mathf.Max(0f, mine.ArmTimeRemaining - deltaTime);
+                if (mine.IsSpider)
+                {
+                    StepSpiderMine(mine, deltaTime);
+                }
+                else
+                {
+                    DropGroundObjectIfUnsupported(mine, mine.Id);
+                    mine.ArmTimeRemaining = Mathf.Max(0f, mine.ArmTimeRemaining - deltaTime);
+                }
+
                 if (mine.ArmTimeRemaining > 0f)
                 {
                     continue;
                 }
 
-                if (!mine.Triggered && IsMineTriggerTargetInside(mine))
+                if (mine.IsGuardian)
+                {
+                    StepGuardianDrone(mine, deltaTime, i);
+                    continue;
+                }
+
+                if (!mine.Triggered && !mine.IsSpider && IsMineTriggerTargetInside(mine))
                 {
                     mine.Triggered = true;
                     mine.TriggerTimeRemaining = MineTriggerDelaySeconds;
@@ -1733,6 +2462,127 @@ namespace Game.Gameplay.Battle.Simulation
                 _activeMines.RemoveAt(i);
                 ResolveMineExplosion(mine);
             }
+        }
+
+        private void StepGuardianDrone(ActiveMine guardian, float deltaTime, int guardianIndex)
+        {
+            if (!guardian.Triggered && TryFindMineTriggerTarget(guardian, out var target))
+            {
+                guardian.Triggered = true;
+                guardian.TriggerTargetUnitId = target.UnitId;
+                guardian.TriggerTimeRemaining = GuardianDroneRiseSeconds;
+                MineTriggered?.Invoke(guardian.Id);
+            }
+
+            if (!guardian.Triggered)
+            {
+                return;
+            }
+
+            guardian.TriggerTimeRemaining = Mathf.Max(0f, guardian.TriggerTimeRemaining - deltaTime);
+            if (guardian.TriggerTimeRemaining > 0f)
+            {
+                return;
+            }
+
+            _activeMines.RemoveAt(guardianIndex);
+            SpawnGuardianDroneShot(guardian);
+        }
+
+        private void SpawnGuardianDroneShot(ActiveMine guardian)
+        {
+            var target = _state.GetUnit(guardian.TriggerTargetUnitId);
+            if (target == null || target.IsDefeated)
+            {
+                return;
+            }
+
+            var origin = guardian.Position + Vector2.up * GuardianDroneRiseHeight;
+            var direction = (target.Position - origin).normalized;
+            if (direction.sqrMagnitude < 0.001f)
+            {
+                direction = Vector2.right;
+            }
+
+            var definition = ProjectileDefinition.CreateRuntime(
+                GuardianDroneShotProjectileId,
+                Mathf.Max(0.04f, guardian.Weapon.ProjectileRadius * 0.38f),
+                0f,
+                2f,
+                guardian.Weapon.Damage,
+                0f);
+            var projectile = new SimProjectile(
+                ++_nextProjectileId,
+                definition,
+                guardian.OwnerUnitId,
+                origin,
+                direction * GuardianDroneShotSpeed,
+                definition.TimeoutSeconds,
+                suppressTurnAdvanceOnImpact: true,
+                guaranteedTargetUnitId: target.UnitId);
+            _projectiles.Add(projectile);
+            ProjectileSpawned?.Invoke(projectile);
+        }
+
+        private void StepSpiderMine(ActiveMine spider, float deltaTime)
+        {
+            if (spider.Triggered)
+            {
+                return;
+            }
+
+            spider.SearchTimeRemaining = Mathf.Max(0f, spider.SearchTimeRemaining - deltaTime);
+            if (TryFindSpiderTarget(spider, out var target))
+            {
+                spider.MoveTo(target.Position);
+                spider.Triggered = true;
+                spider.TriggerTimeRemaining = SpiderAttachFuseSeconds;
+                GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(spider.Id, spider.Position));
+                MineTriggered?.Invoke(spider.Id);
+                return;
+            }
+
+            var nextPosition = spider.Position + Vector2.right * (spider.CrawlDirection * SpiderCrawlSpeed * deltaTime);
+            if (!TryFindGroundObjectLanding(nextPosition, out var groundedPosition))
+            {
+                // No supporting surface means the crawler has crossed the map
+                // edge. It detonates at the point where it leaves the arena.
+                spider.MoveTo(nextPosition);
+                spider.Triggered = true;
+                spider.TriggerTimeRemaining = 0f;
+                GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(spider.Id, spider.Position));
+                MineTriggered?.Invoke(spider.Id);
+                return;
+            }
+
+            spider.MoveTo(groundedPosition);
+            GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(spider.Id, spider.Position));
+            if (spider.SearchTimeRemaining <= 0f)
+            {
+                spider.Triggered = true;
+                spider.TriggerTimeRemaining = 0f;
+                MineTriggered?.Invoke(spider.Id);
+            }
+        }
+
+        private bool TryFindSpiderTarget(ActiveMine spider, out BattleUnitState target)
+        {
+            target = null;
+            var targetTeam = spider.TeamId == BattleTeamId.Player ? BattleTeamId.Opponent : BattleTeamId.Player;
+            var maxDistanceSquared = SpiderAttachDistance * SpiderAttachDistance;
+            foreach (var candidate in _state.GetTeam(targetTeam).Units)
+            {
+                if (candidate == null || candidate.IsDefeated
+                    || (candidate.Position - spider.Position).sqrMagnitude > maxDistanceSquared)
+                {
+                    continue;
+                }
+
+                target = candidate;
+                return true;
+            }
+
+            return false;
         }
 
         private void StepCharges(float deltaTime)
@@ -1821,6 +2671,40 @@ namespace Game.Gameplay.Battle.Simulation
 
             landingPosition = new Vector2(position.x, surfaceY + 0.04f);
             return landingPosition.y < position.y - 0.06f;
+        }
+
+        private void SpawnIncendiaryPuddles(ProjectileImpact impact, WeaponDefinition weapon)
+        {
+            var ownerTeam = ResolveTeamForOwner(impact.OwnerUnitId);
+            var totalDamage = Mathf.Max(1, Mathf.RoundToInt(weapon.Damage * 0.25f));
+            var baseDamage = totalDamage / IncendiaryPuddleCount;
+            var remainder = totalDamage % IncendiaryPuddleCount;
+
+            for (var index = 0; index < IncendiaryPuddleCount; index++)
+            {
+                var angle = index * Mathf.PI * 2f / IncendiaryPuddleCount + Mathf.PI * 0.25f;
+                var distance = IncendiaryPuddleSpreadRadius * (index % 2 == 0 ? 0.55f : 1f);
+                var endpoint = impact.Point + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
+                var puddleId = ++_nextProjectileId;
+                FireBlobSpawned?.Invoke(new FireBlobEvent(
+                    puddleId,
+                    weapon,
+                    ownerTeam,
+                    impact.Point,
+                    Vector2.zero,
+                    Vector2.zero,
+                    endpoint,
+                    0f,
+                    IncendiaryPuddleLifetimeSeconds));
+                _activeFirePuddles.Add(new ActiveFirePuddle(
+                    puddleId,
+                    impact.OwnerUnitId,
+                    weapon,
+                    endpoint,
+                    0f,
+                    IncendiaryPuddleLifetimeSeconds,
+                    baseDamage + (index < remainder ? 1 : 0)));
+            }
         }
 
         private void SpawnFireBlob(ActiveTimedEffect effect)
@@ -2033,13 +2917,16 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void ResolveMineExplosion(ActiveMine mine)
         {
+            var activeTarget = FindUnit(_state.Turn.ActiveUnitId);
+            var healthBefore = activeTarget?.Health ?? 0;
+            var modifiers = ResolveModifiersFor(mine.TeamId, mine.Weapon);
             var impact = new ProjectileImpact(
                 $"projectile.{mine.Weapon.WeaponId}",
                 mine.OwnerUnitId,
                 mine.Position,
                 Vector2.up,
-                mine.Weapon.Damage,
-                mine.Weapon.ImpactRadius);
+                Mathf.RoundToInt(mine.Weapon.Damage * modifiers.DamageMultiplier),
+                mine.Weapon.ImpactRadius * modifiers.ImpactRadiusMultiplier);
 
             ProjectileExploded?.Invoke(mine.Id, impact);
             var terrainChanged = ResolveDamageImpact(
@@ -2052,6 +2939,11 @@ namespace Game.Gameplay.Battle.Simulation
             if (Result.IsFinished)
             {
                 BattleFinished?.Invoke(Result, BattleFinishReason.ProjectileImpactResolved);
+            }
+            else if (activeTarget != null && activeTarget.Health < healthBefore)
+            {
+                // Arming alone is harmless; an actual hit interrupts either side.
+                AdvanceTurnNow(TurnAdvanceReason.MineTriggered);
             }
         }
 
@@ -2068,13 +2960,66 @@ namespace Game.Gameplay.Battle.Simulation
             return Vector2.Distance(point, segmentStart + segment * t);
         }
 
-        private void DeployCover(Vector2 impactPoint, WeaponDefinition impactWeapon)
+        private BattleFireResult PlaceTitaniumBarrier(BattleUnitState unit, WeaponInventoryRuntime inventory,
+            WeaponDefinition weapon, AimState placement)
+        {
+            if (_terrain == null || _titaniumBarrierTexture == null || !_titaniumBarrierTexture.isReadable
+                || !float.IsFinite(placement.Origin.x) || !float.IsFinite(placement.Origin.y)
+                || !float.IsFinite(placement.Direction.x) || !float.IsFinite(placement.Direction.y))
+                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+            var scale = ResolveTitaniumBarrierScale(placement.Power, unit.TeamId);
+            var angle = Mathf.Atan2(placement.Direction.y, placement.Direction.x) * Mathf.Rad2Deg;
+            var surface = new PlacedTerrainSpriteSurface(_titaniumBarrierTexture, placement.Origin,
+                TitaniumBarrierBaseSize * scale, angle);
+            if (!CanPlaceTitaniumBarrier(surface))
+            {
+                surface.Dispose();
+                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+            }
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                surface.Dispose();
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+            _terrain.AddPlacedSurface(surface);
+            _activeShotWeapon = weapon;
+            _turnService.SpendAction(_state);
+            CoverDeployed?.Invoke(new CoverDeployedEvent(surface.Center, surface.Size, weapon, angle, surface));
+            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            CompleteInstantAction();
+            return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon);
+        }
+
+        private bool CanPlaceTitaniumBarrier(PlacedTerrainSpriteSurface surface)
+        {
+            var grid = _terrain.Grid;
+            var bounds = surface.WorldBounds;
+            if (bounds.xMin < grid.WorldMinX || bounds.xMax > grid.WorldMaxX
+                || bounds.yMin < grid.WorldMinY || bounds.yMax > grid.WorldMaxY) return false;
+            var min = grid.WorldToCell(bounds.min);
+            var max = grid.WorldToCell(bounds.max);
+            for (var y = min.y; y <= max.y; y++)
+                for (var x = min.x; x <= max.x; x++)
+                {
+                    var point = grid.CellToWorld(x, y);
+                    if (!surface.IsSolidWorld(point)) continue;
+                    if (grid.IsSolidCell(x, y)) return false;
+                    foreach (var motor in _motors.Values)
+                        if (motor.BodyBounds.Contains(point)) return false;
+                }
+            return true;
+        }
+
+        private void DeployCover(Vector2 impactPoint, WeaponDefinition impactWeapon, Vector2 direction = default)
         {
             var width = Mathf.Clamp(impactWeapon.ImpactRadius * 1.2f, 1.15f, 2.1f);
             const float height = 0.6f;
             var position = impactPoint + Vector2.up * (height * 0.5f);
             _terrain?.StampSolidRect(position, new Vector2(width, height));
-            CoverDeployed?.Invoke(new CoverDeployedEvent(position, new Vector2(width, height), impactWeapon));
+            var rotationDegrees = direction.sqrMagnitude > 0.0001f
+                ? Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg
+                : 0f;
+            CoverDeployed?.Invoke(new CoverDeployedEvent(position, new Vector2(width, height), impactWeapon, rotationDegrees));
         }
 
         private void RestoreFriendlyHealth(Vector2 impactPoint, string ownerUnitId, WeaponDefinition impactWeapon)
@@ -2085,28 +3030,17 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var owner = _state.GetUnit(ownerUnitId);
-            var restoredHealth = 0;
-            foreach (var unit in _state.GetTeam(owner.TeamId).Units)
-            {
-                if (unit == null || unit.IsDefeated)
-                {
-                    continue;
-                }
+            if (owner == null || owner.IsDefeated || IsUnitRepairJammed(owner.UnitId)) return;
+            var restored = owner.RestoreHealth(ResolveRepairHealAmount(owner, impactWeapon));
+            ApplyRepairAftereffect(owner, owner.TeamId, impactWeapon);
+            HealthRestored?.Invoke(new HealthRestoredEvent(owner.Position, restored, owner.TeamId));
+        }
 
-                if (Vector2.Distance(unit.Position, impactPoint) > impactWeapon.ImpactRadius)
-                {
-                    continue;
-                }
-
-                var restored = unit.RestoreHealth(impactWeapon.Damage);
-                restoredHealth += restored;
-                if (restored > 0)
-                {
-                    ApplyRepairAftereffect(unit, owner.TeamId, impactWeapon);
-                }
-            }
-
-            HealthRestored?.Invoke(new HealthRestoredEvent(impactPoint, restoredHealth, owner.TeamId));
+        private int ResolveRepairHealAmount(BattleUnitState unit, WeaponDefinition weapon)
+        {
+            if (weapon.WeaponId != "weapon.heal") return weapon.Damage;
+            var purchases = ProgressionFor(unit.TeamId).ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Core);
+            return Mathf.RoundToInt(unit.MaxHealth * WeaponUpgradeChoiceResolver.ResolveRepairHealPercent(purchases) / 100f);
         }
 
         private void RepositionOwner(
@@ -2481,7 +3415,7 @@ namespace Game.Gameplay.Battle.Simulation
             var terrainChanged = ApplyTerrainDestruction(
                 impact.Point,
                 impactWeapon,
-                ResolveTeamForOwner(impact.OwnerUnitId));
+                ResolveTeamForOwner(impact.OwnerUnitId), impact.ImpactRadius);
 
             var allUnits = new List<BattleUnitState>();
             foreach (var team in _state.Teams)
@@ -2495,17 +3429,14 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var sourceTeam = ResolveTeamForOwner(impact.OwnerUnitId);
-            var effectiveDamage = impact.Damage;
-            if (_empWeakens.TryGetValue(impact.OwnerUnitId, out var empWeaken) && empWeaken.DamagePercent > 0)
-            {
-                effectiveDamage = Mathf.Max(0, Mathf.FloorToInt(effectiveDamage * (1f - empWeaken.DamagePercent / 100f)));
-            }
+            var effectiveDamage = ResolveOutgoingDamage(impact.OwnerUnitId, impact.Damage);
 
             var appliesPoison = impactWeapon.WeaponId == ToxicWeaponId;
             var poisonEvolution = appliesPoison ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
             var appliesEmpStun = impactWeapon.WeaponId == EmpWeaponId;
             var empEvolution = appliesEmpStun ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
-            var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId;
+            var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId
+                || impactWeapon.WeaponId == CryoGrenadeWeaponId;
             var freezeEvolution = appliesFreeze ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
 
             const float selfDamageMultiplier = 1f;
@@ -2523,7 +3454,7 @@ namespace Game.Gameplay.Battle.Simulation
                 var target = FindUnit(damageEvent.TargetUnitId);
                 if (appliesPoison)
                 {
-                    ApplyPoison(target, sourceTeam, poisonEvolution);
+                    ApplyPoison(target, sourceTeam, damageEvent.Damage, poisonEvolution);
                 }
 
                 if (appliesEmpStun)
@@ -2546,7 +3477,9 @@ namespace Game.Gameplay.Battle.Simulation
 
                 if (appliesFreeze)
                 {
-                    var freezeTurns = freezeEvolution.CryoFreezeTurns > 0f
+                    var freezeTurns = impactWeapon.WeaponId == CryoGrenadeWeaponId
+                        ? 1
+                        : freezeEvolution.CryoFreezeTurns > 0f
                         ? Mathf.RoundToInt(freezeEvolution.CryoFreezeTurns)
                         : CryoBaseFreezeTurns;
                     ApplyFreeze(target?.UnitId, freezeTurns);
@@ -2580,7 +3513,7 @@ namespace Game.Gameplay.Battle.Simulation
             _repairEffects[unit.UnitId] = new ActiveRepairEffect(
                 unit.UnitId,
                 teamId,
-                repairWeapon.Damage,
+                ResolveRepairHealAmount(unit, repairWeapon),
                 evolution.RepairProtectionTurns,
                 evolution.RepairRegenerationTurns);
         }
@@ -2638,19 +3571,24 @@ namespace Game.Gameplay.Battle.Simulation
             return Mathf.Max(0, resolvedAmount);
         }
 
-        private void ApplyPoison(BattleUnitState unit, BattleTeamId sourceTeam, WeaponEvolutionProfile evolution)
+        private void ApplyPoison(
+            BattleUnitState unit,
+            BattleTeamId sourceTeam,
+            int resolvedDirectDamage,
+            WeaponEvolutionProfile evolution)
         {
-            if (unit == null || unit.IsDefeated)
+            if (unit == null || unit.IsDefeated || resolvedDirectDamage <= 0)
             {
                 return;
             }
 
-            var duration = ToxicBaseDurationTurns + evolution.ToxicDurationBonusTurns;
+            var duration = ToxicBaseDurationTurns;
+            var damagePerTurn = Mathf.Max(1, Mathf.RoundToInt(resolvedDirectDamage * ElementalStatusDamageRatio));
             if (_poisonEffects.TryGetValue(unit.UnitId, out var existing))
             {
                 existing.SourceTeam = sourceTeam;
-                existing.DamagePerTurn = Mathf.Max(existing.DamagePerTurn, ToxicBaseDamagePerTurn);
-                existing.TurnsRemaining = Mathf.Max(existing.TurnsRemaining, duration);
+                existing.DamagePerTurn = damagePerTurn;
+                existing.TurnsRemaining = duration;
                 existing.ArmorWeakenPercent = Mathf.Max(existing.ArmorWeakenPercent, evolution.ToxicArmorWeakenPercent);
                 existing.ArmorWeakenTurnsRemaining = Mathf.Max(existing.ArmorWeakenTurnsRemaining, evolution.ToxicArmorWeakenTurns);
                 existing.MovementDamagePerSecond = Mathf.Max(existing.MovementDamagePerSecond, evolution.ToxicMovementDamagePerSecond);
@@ -2660,14 +3598,14 @@ namespace Game.Gameplay.Battle.Simulation
             _poisonEffects[unit.UnitId] = new ActivePoisonEffect(
                 unit.UnitId,
                 sourceTeam,
-                ToxicBaseDamagePerTurn,
+                damagePerTurn,
                 duration,
                 evolution.ToxicArmorWeakenPercent,
                 evolution.ToxicArmorWeakenTurns,
                 evolution.ToxicMovementDamagePerSecond);
         }
 
-        private void ProcessPoisonForActiveTurn()
+        private void ProcessPoisonForEndingActiveTurn()
         {
             if (_poisonEffects.Count == 0)
             {
@@ -2785,7 +3723,7 @@ namespace Game.Gameplay.Battle.Simulation
 
                 if (effect.RegenerationChecksRemaining > 0)
                 {
-                    if (!effect.DamageTakenSinceLastCheck)
+                    if (!effect.DamageTakenSinceLastCheck && !IsUnitRepairJammed(unit.UnitId))
                     {
                         var restored = unit.RestoreHealth(effect.HealAmount);
                         if (restored > 0)
@@ -2926,16 +3864,18 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var expiredUnitIds = new List<string>();
-            foreach (var pair in _electrifiedOverlayRemainingSeconds)
+            var unitIds = new List<string>(_electrifiedOverlayRemainingSeconds.Keys);
+            foreach (var unitId in unitIds)
             {
-                var secondsRemaining = pair.Value - Mathf.Max(0f, deltaTime);
+                var secondsRemaining = _electrifiedOverlayRemainingSeconds[unitId]
+                    - Mathf.Max(0f, deltaTime);
                 if (secondsRemaining <= 0f)
                 {
-                    expiredUnitIds.Add(pair.Key);
+                    expiredUnitIds.Add(unitId);
                 }
                 else
                 {
-                    _electrifiedOverlayRemainingSeconds[pair.Key] = secondsRemaining;
+                    _electrifiedOverlayRemainingSeconds[unitId] = secondsRemaining;
                 }
             }
 
@@ -3030,16 +3970,18 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var expiredUnitIds = new List<string>();
-            foreach (var pair in _lavaOverlayRemainingSeconds)
+            var unitIds = new List<string>(_lavaOverlayRemainingSeconds.Keys);
+            foreach (var unitId in unitIds)
             {
-                var secondsRemaining = pair.Value - Mathf.Max(0f, deltaTime);
+                var secondsRemaining = _lavaOverlayRemainingSeconds[unitId]
+                    - Mathf.Max(0f, deltaTime);
                 if (secondsRemaining <= 0f)
                 {
-                    expiredUnitIds.Add(pair.Key);
+                    expiredUnitIds.Add(unitId);
                 }
                 else
                 {
-                    _lavaOverlayRemainingSeconds[pair.Key] = secondsRemaining;
+                    _lavaOverlayRemainingSeconds[unitId] = secondsRemaining;
                 }
             }
 
@@ -3220,14 +4162,30 @@ namespace Game.Gameplay.Battle.Simulation
             DamageApplied?.Invoke(sourceTeam, damageEvent);
         }
 
-        private bool ApplyTerrainDestruction(Vector2 impactPoint, WeaponDefinition impactWeapon, BattleTeamId sourceTeam)
+        private int ResolveOutgoingDamage(string ownerUnitId, int damage)
+        {
+            if (_empWeakens.TryGetValue(ownerUnitId, out var empWeaken)
+                && empWeaken.DamagePercent > 0)
+            {
+                return Mathf.Max(0, Mathf.FloorToInt(
+                    damage * (1f - empWeaken.DamagePercent / 100f)));
+            }
+
+            return damage;
+        }
+
+        private bool ApplyTerrainDestruction(Vector2 impactPoint, WeaponDefinition impactWeapon,
+            BattleTeamId sourceTeam, float radiusOverride = -1f)
         {
             if (_terrain == null || impactWeapon == null)
             {
                 return false;
             }
 
-            var craterRadius = Mathf.Clamp(impactWeapon.ImpactRadius * 0.62f, 0.38f, 1.55f);
+            var blastRadius = radiusOverride > 0f ? radiusOverride : impactWeapon.ImpactRadius;
+            var craterRadius = impactWeapon.WeaponId == C4WeaponId
+                ? blastRadius * 0.62f
+                : Mathf.Clamp(blastRadius * 0.62f, 0.38f, 1.55f);
             return ApplyTerrainCrater(impactPoint, craterRadius, sourceTeam);
         }
 
@@ -3280,15 +4238,18 @@ namespace Game.Gameplay.Battle.Simulation
             WeaponDefinition impactWeapon,
             bool terrainChanged,
             float knockbackMultiplier = 1f,
-            BattleTeamId ignoredTeam = BattleTeamId.None)
+            BattleTeamId ignoredTeam = BattleTeamId.None,
+            BattleUnitState onlyTarget = null,
+            float radiusOverride = -1f)
         {
             if (impactWeapon == null)
             {
                 return;
             }
 
-            var radius = Mathf.Max(0.65f, impactWeapon.ImpactRadius + _settings.KnockbackLandingSearchPadding);
-            var radiusScale = Mathf.InverseLerp(0.75f, 2.4f, impactWeapon.ImpactRadius);
+            var blastRadius = radiusOverride > 0f ? radiusOverride : impactWeapon.ImpactRadius;
+            var radius = Mathf.Max(0.65f, blastRadius + _settings.KnockbackLandingSearchPadding);
+            var radiusScale = Mathf.InverseLerp(0.75f, 2.4f, blastRadius);
             var incoming = impactVelocity.sqrMagnitude > 0.01f ? impactVelocity.normalized : Vector2.zero;
             var downwardImpact01 = Mathf.InverseLerp(-0.15f, -0.85f, incoming.y);
 
@@ -3299,6 +4260,7 @@ namespace Game.Gameplay.Battle.Simulation
                     if (team.TeamId == ignoredTeam
                         || unit == null
                         || unit.IsDefeated
+                        || (onlyTarget != null && unit != onlyTarget)
                         || Mathf.Abs(unit.Position.x - impactPoint.x) > radius)
                     {
                         continue;
@@ -3399,14 +4361,17 @@ namespace Game.Gameplay.Battle.Simulation
         private void EndPlayerTurnFromTimer()
         {
             _walkIntentDirection = 0;
+            _orbitalTargetMarker = null;
+            ProcessPoisonForEndingActiveTurn();
+            ProcessRepairJammerForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
             ConsumeEmpStunForActiveTurn();
+            ExpireGroundersForEndingTurn();
             _turnService.AdvanceTurn(_state);
             _turnSequence++;
             ResetMotionForNewTurn();
             ProcessRepairEffectsForActiveTurn();
-            ProcessPoisonForActiveTurn();
             ProcessBurnForActiveTurn();
             ProcessEmpWeakenForActiveTurn();
             TurnAdvanced?.Invoke(_state.Turn.ActiveTeam, TurnAdvanceReason.PlayerTimerExpired);
@@ -3490,8 +4455,18 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
+            var hookStart = _ropeTraversal.HookPosition;
             if (!_ropeTraversal.StepHook(_terrain, tickSeconds))
             {
+                _ropeTraversal = null;
+                return;
+            }
+
+            var ropeOwner = FindUnit(_ropeTraversal.OwnerUnitId);
+            if (ropeOwner != null && TryFindGrounderForHook(
+                    ropeOwner.TeamId, hookStart, _ropeTraversal.HookPosition, out var ropeGrounder))
+            {
+                DamageGrounder(ropeGrounder, 1);
                 _ropeTraversal = null;
                 return;
             }
@@ -3499,6 +4474,100 @@ namespace Game.Gameplay.Battle.Simulation
             if (_ropeTraversal.IsAttached)
             {
                 _ropeTraversal.Attach(GetMotor(_ropeTraversal.OwnerUnitId));
+            }
+        }
+
+        private void StepElectricHarpoon(float tickSeconds)
+        {
+            var traversal = _electricHarpoonTraversal;
+            if (traversal == null)
+            {
+                return;
+            }
+
+            var owner = FindUnit(traversal.OwnerUnitId);
+            if (owner == null || owner.IsDefeated)
+            {
+                _electricHarpoonTraversal = null;
+                return;
+            }
+
+            if (!traversal.IsAttached)
+            {
+                var hookStart = traversal.HookPosition;
+                if (!traversal.StepHook(tickSeconds))
+                {
+                    _electricHarpoonTraversal = null;
+                    CompleteInstantAction();
+                    return;
+                }
+
+                if (TryFindGrounderForHook(owner.TeamId, hookStart,
+                        traversal.HookPosition, out var harpoonGrounder))
+                {
+                    DamageGrounder(harpoonGrounder, 1);
+                    _electricHarpoonTraversal = null;
+                    CompleteInstantAction();
+                    return;
+                }
+
+                foreach (var team in _state.Teams)
+                {
+                    if (team.TeamId == owner.TeamId)
+                    {
+                        continue;
+                    }
+
+                    foreach (var target in team.Units)
+                    {
+                        if (target == null || target.IsDefeated
+                            || !IsTouchingUnitHitbox(traversal.HookPosition, ElectricHarpoonTargetRadius, target))
+                        {
+                            continue;
+                        }
+
+                        traversal.Attach(target.UnitId, target.Position);
+                        break;
+                    }
+
+                    if (traversal.IsAttached)
+                    {
+                        break;
+                    }
+                }
+
+                return;
+            }
+
+            var targetUnit = FindUnit(traversal.TargetUnitId);
+            if (targetUnit == null || targetUnit.IsDefeated)
+            {
+                _electricHarpoonTraversal = null;
+                CompleteInstantAction();
+                return;
+            }
+
+            var destination = Vector2.MoveTowards(
+                targetUnit.Position,
+                owner.Position,
+                traversal.PullSpeed * Mathf.Max(0f, tickSeconds));
+            targetUnit.MoveTo(destination);
+            GetMotor(targetUnit.UnitId)?.Teleport(destination);
+            traversal.Attach(targetUnit.UnitId, destination);
+
+            _electricHarpoonDamageAccumulator += Mathf.Max(0f, tickSeconds);
+            while (_electricHarpoonDamageAccumulator >= ElectricHarpoonDamageTickSeconds)
+            {
+                _electricHarpoonDamageAccumulator -= ElectricHarpoonDamageTickSeconds;
+                ApplyDamage(targetUnit, Mathf.Max(1, Mathf.RoundToInt(traversal.DamagePerSecond)), ElectricHarpoonWeaponId, owner.TeamId);
+                ApplyElectrifiedOverlay(targetUnit.UnitId);
+            }
+
+            UnitsMoved?.Invoke();
+            if (Vector2.Distance(owner.Position, targetUnit.Position) <= ElectricHarpoonReleaseDistance)
+            {
+                _electricHarpoonTraversal = null;
+                CompleteInstantAction();
             }
         }
 
@@ -3523,11 +4592,12 @@ namespace Game.Gameplay.Battle.Simulation
                 sourceOrigin: sourceOrigin);
             if (spawnedWeapon?.WeaponId == BurRocketWeaponId)
             {
-                var evolution = ResolveEvolutionFor(ResolveTeamForOwner(request.OwnerUnitId), spawnedWeapon);
-                var duration = evolution.RocketDrillDurationSeconds > 0f
-                    ? evolution.RocketDrillDurationSeconds
-                    : DrillRocketTerrainDurationSeconds;
-                projectile.ConfigureTerrainDrill(duration, evolution.RocketDrillPenetration);
+                var team = ResolveTeamForOwner(request.OwnerUnitId);
+                var radiusPurchases = ProgressionFor(team).ResolveUpgradeCount(
+                    spawnedWeapon.WeaponId, WeaponUpgradePath.Radius);
+                projectile.ConfigureTerrainDrill(
+                    WeaponUpgradeChoiceResolver.ResolveDrillRocketTerrainSeconds(radiusPurchases),
+                    TerrainMaterial.Titanium);
             }
             else if (spawnedWeapon?.WeaponId == MissileWeaponId
                 && !IsMissileCluster(request.Definition.ProjectileId))
@@ -3579,13 +4649,23 @@ namespace Game.Gameplay.Battle.Simulation
             for (var i = _projectiles.Count - 1; i >= 0; i--)
             {
                 var projectile = _projectiles[i];
+                if (!string.IsNullOrEmpty(projectile.GuaranteedTargetUnitId))
+                {
+                    StepGuaranteedTargetProjectile(i, projectile, deltaTime);
+                    continue;
+                }
+
                 var projectileWeapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
                 var isDrillRocket = projectileWeapon?.WeaponId == BurRocketWeaponId;
                 var isControlledDrone = projectile.Id == _controlledProjectileId;
+                var isLaserFenceDeploy = projectile.Definition.ProjectileId == LaserFenceDeployProjectileId;
                 var grenadeEvolution = projectileWeapon?.WeaponId == GrenadeWeaponId
                     ? ResolveEvolutionFor(ResolveTeamForOwner(projectile.OwnerUnitId), projectileWeapon)
                     : WeaponEvolutionProfile.Base;
-                var isStickyGrenade = grenadeEvolution.GrenadeSticks;
+                var isStickyGrenade = projectileWeapon?.WeaponId == StickyGrenadeWeaponId
+                    || grenadeEvolution.GrenadeSticks;
+                var isHoppingGrenade = projectileWeapon?.WeaponId == HoppingGrenadeWeaponId;
+                var isAttachmentDevice = IsAttachmentDevice(projectileWeapon);
 
                 if (projectile.IsRestingFuse)
                 {
@@ -3615,6 +4695,12 @@ namespace Game.Gameplay.Battle.Simulation
                     projectile.ReduceLifetime(deltaTime);
                     if (projectile.RemainingLifetime <= 0f)
                     {
+                        if (isLaserFenceDeploy)
+                        {
+                            DiscardProjectile(i, projectile);
+                            continue;
+                        }
+
                         ResolveProjectileAt(i, projectile.Position);
                         continue;
                     }
@@ -3653,6 +4739,19 @@ namespace Game.Gameplay.Battle.Simulation
                         ? ApplyBallisticMissileGuidance(projectile, velocity, deltaTime)
                         : ApplyProjectileSteering(projectile, velocity, deltaTime);
                 }
+
+                if (TryFindGrounderForProjectile(projectile, projectileWeapon,
+                        projectile.Position, out var attractor))
+                {
+                    var toGrounder = attractor.Position - projectile.Position;
+                    if (toGrounder.sqrMagnitude > 0.0001f)
+                    {
+                        velocity = Vector2.MoveTowards(
+                            velocity,
+                            toGrounder.normalized * Mathf.Max(5f, velocity.magnitude),
+                            35f * deltaTime);
+                    }
+                }
                 projectile.SetVelocity(velocity);
                 if (isControlledDrone)
                 {
@@ -3668,8 +4767,24 @@ namespace Game.Gameplay.Battle.Simulation
                 {
                     position += step;
 
+                    if (TryFindGrounderForProjectile(projectile, projectileWeapon,
+                            position, out var grounder)
+                        && Vector2.Distance(position, grounder.Position)
+                            <= Mathf.Max(0.35f, projectile.Definition.Radius + 0.18f))
+                    {
+                        ResolveGrounderProjectileContact(i, projectile, projectileWeapon,
+                            grounder, position);
+                        break;
+                    }
+
                     if (position.y < _settings.FallDeathY - 2f)
                     {
+                        if (isLaserFenceDeploy)
+                        {
+                            DiscardProjectile(i, projectile);
+                            break;
+                        }
+
                         ResolveProjectileAt(i, position);
                         break;
                     }
@@ -3685,7 +4800,7 @@ namespace Game.Gameplay.Battle.Simulation
 
                     var ignoredUnitId = projectile.HasClearedOwner ? null : projectile.OwnerUnitId;
 
-                    if (isStickyGrenade
+                    if ((isStickyGrenade || isAttachmentDevice)
                         && TryFindHitUnit(
                             position,
                             projectile.Definition.Radius,
@@ -3694,7 +4809,7 @@ namespace Game.Gameplay.Battle.Simulation
                             out var stickyHitPoint))
                     {
                         projectile.MoveTo(stickyHitPoint);
-                        projectile.StartRestingFuse(stickyHitPoint, projectile.RemainingLifetime);
+                        projectile.StartRestingFuse(stickyHitPoint, StickyGrenadeFuseSeconds);
                         projectile.AttachToUnit(stuckUnit.UnitId, stuckUnit.Position);
                         break;
                     }
@@ -3751,13 +4866,33 @@ namespace Game.Gameplay.Battle.Simulation
 
                     if (touchesTerrain)
                     {
+                        if (isLaserFenceDeploy)
+                        {
+                            ResolveProjectileAt(i, position - step);
+                            break;
+                        }
+
                         if (isStickyGrenade)
+                        {
+                            projectile.StartRestingFuse(position - step, StickyGrenadeFuseSeconds);
+                            break;
+                        }
+
+                        if (isHoppingGrenade)
                         {
                             projectile.StartRestingFuse(position - step, projectile.RemainingLifetime);
                             break;
                         }
 
-                        if (TryBounceProjectile(projectile, position - step, velocity))
+                        if (isAttachmentDevice)
+                        {
+                            // Attachment devices are only allowed to affect a
+                            // nearby enemy, never terrain or empty space.
+                            DiscardProjectile(i, projectile);
+                            break;
+                        }
+
+                        if (TryBounceProjectile(projectile, position - step, position, velocity))
                         {
                             break;
                         }
@@ -3772,7 +4907,7 @@ namespace Game.Gameplay.Battle.Simulation
                         // reference which explodes at the pre-collision position:
                         // craters bite the surface and radial damage is not
                         // attenuated by originating inside solid ground.
-                        ResolveProjectileAt(i, position - step);
+                        ResolveProjectileAt(i, position - step, hitTerrain: true);
                         break;
                     }
 
@@ -3784,12 +4919,14 @@ namespace Game.Gameplay.Battle.Simulation
                     var ignoresUnitsInFlight = projectileWeapon?.WeaponId == GrenadeWeaponId
                         || projectileWeapon?.WeaponId == TeleportWeaponId
                         || projectileWeapon?.WeaponId == SwapJumpWeaponId
-                        || projectile.Definition.ProjectileId == MineDeployProjectileId;
+                        || projectile.Definition.ProjectileId == MineDeployProjectileId
+                        || isLaserFenceDeploy;
                     if (!isDrillRocket
                         && !ignoresUnitsInFlight
-                        && TryHitUnit(position, projectile.Definition.Radius, ignoredUnitId, out var hitPoint))
+                        && TryFindHitUnit(position, projectile.Definition.Radius, ignoredUnitId,
+                            out var directHit, out var hitPoint))
                     {
-                        ResolveProjectileAt(i, hitPoint);
+                        ResolveProjectileAt(i, hitPoint, directHit: directHit);
                         break;
                     }
 
@@ -3797,6 +4934,64 @@ namespace Game.Gameplay.Battle.Simulation
                     {
                         projectile.MoveTo(position);
                     }
+                }
+            }
+        }
+
+        private void StepGuaranteedTargetProjectile(int projectileIndex, SimProjectile projectile, float deltaTime)
+        {
+            var target = _state.GetUnit(projectile.GuaranteedTargetUnitId);
+            if (target == null || target.IsDefeated)
+            {
+                DiscardProjectile(projectileIndex, projectile);
+                return;
+            }
+
+            projectile.ReduceLifetime(deltaTime);
+            var targetPoint = target.Position;
+            var offset = targetPoint - projectile.Position;
+            var distance = offset.magnitude;
+            var speed = Mathf.Max(0.1f, projectile.Velocity.magnitude);
+            if (distance <= speed * deltaTime + projectile.Definition.Radius || projectile.RemainingLifetime <= 0f)
+            {
+                ResolveGuardianDroneShot(projectileIndex, projectile, target);
+                return;
+            }
+
+            var velocity = offset / distance * speed;
+            projectile.SetVelocity(velocity);
+            projectile.MoveTo(projectile.Position + velocity * deltaTime);
+        }
+
+        private void ResolveGuardianDroneShot(int projectileIndex, SimProjectile projectile, BattleUnitState target)
+        {
+            _projectiles.RemoveAt(projectileIndex);
+            var point = target.Position;
+            var impact = new ProjectileImpact(
+                projectile.Definition.ProjectileId,
+                projectile.OwnerUnitId,
+                point,
+                projectile.Velocity,
+                projectile.Definition.Damage,
+                0f);
+            ProjectileExploded?.Invoke(projectile.Id, impact);
+            ApplyDamage(target, projectile.Definition.Damage, GuardianDroneWeaponId, ResolveTeamForOwner(projectile.OwnerUnitId));
+            ImpactResolved?.Invoke(new ImpactResolvedEvent(point, ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId), false));
+            UnitsMoved?.Invoke();
+
+            // A trap interrupts the turn it has actually damaged, rather than
+            // the earlier visual wake-up. The short rise still locks controls
+            // through HasActiveWeaponEffect, so the original target cannot evade.
+            if (target.UnitId == _state.Turn.ActiveUnitId)
+            {
+                Result = BattleResultEvaluator.Evaluate(_state);
+                if (Result.IsFinished)
+                {
+                    BattleFinished?.Invoke(Result, BattleFinishReason.ProjectileImpactResolved);
+                }
+                else
+                {
+                    AdvanceTurnNow(TurnAdvanceReason.GuardianDroneTriggered);
                 }
             }
         }
@@ -3832,17 +5027,31 @@ namespace Game.Gameplay.Battle.Simulation
                 && _terrain.Grid.GetMaterialWorld(position) <= penetration;
         }
 
-        private void ResolveProjectileAt(int projectileIndex, Vector2 point)
+        private void ResolveProjectileAt(int projectileIndex, Vector2 point,
+            bool interceptedMine = false, BattleUnitState directHit = null,
+            bool hitTerrain = false)
         {
             var projectile = _projectiles[projectileIndex];
             _projectiles.RemoveAt(projectileIndex);
+
+            var impactDamage = projectile.Definition.Damage;
+            var impactWeapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
+            if (interceptedMine && impactWeapon != null)
+            {
+                impactDamage = impactWeapon.Damage;
+            }
+            if (impactWeapon?.WeaponId == TitaniumDiscWeaponId && projectile.BounceCount > 0)
+            {
+                impactDamage = Mathf.RoundToInt(
+                    impactDamage * (1f + TitaniumDiscDamageBonusPerBounce * projectile.BounceCount));
+            }
 
             var impact = new ProjectileImpact(
                 projectile.Definition.ProjectileId,
                 projectile.OwnerUnitId,
                 point,
                 projectile.Velocity,
-                projectile.Definition.Damage,
+                impactDamage,
                 projectile.Definition.ImpactRadius,
                 projectile.Definition.KnockbackMultiplier,
                 projectile.SourceOrigin);
@@ -3853,14 +5062,73 @@ namespace Game.Gameplay.Battle.Simulation
                 _controlledProjectileId = -1;
                 _controlledProjectileInput = Vector2.zero;
             }
+            if (projectile.Id == _hoppingGrenadeProjectileId)
+            {
+                _hoppingGrenadeProjectileId = -1;
+                _activeShotEndsTurn = true;
+            }
 
-            if (projectile.Definition.ProjectileId == MineDeployProjectileId)
+            if (projectile.Definition.ProjectileId == MineDeployProjectileId && !interceptedMine)
             {
                 LandMine(projectile, point);
                 return;
             }
 
-            ResolveProjectileImpact(impact);
+            if (projectile.Definition.ProjectileId == LaserFenceDeployProjectileId)
+            {
+                LandLaserFenceNode(projectile, point);
+                return;
+            }
+
+            if (projectile.Definition.ProjectileId == GuardianDroneDeployProjectileId)
+            {
+                LandGuardianDrone(projectile, point);
+                return;
+            }
+
+            if (impactWeapon?.WeaponId == RepairJammerWeaponId)
+            {
+                if (!string.IsNullOrWhiteSpace(projectile.AttachedUnitId))
+                {
+                    var ownerTeam = ResolveTeamForOwner(projectile.OwnerUnitId);
+                    var duration = RepairJammerBaseDurationTurns
+                        + ResolveEvolutionFor(ownerTeam, impactWeapon).RepairJammerDurationBonusTurns;
+                    _repairJammerTurns[projectile.AttachedUnitId] = duration;
+                }
+
+                ImpactResolved?.Invoke(new ImpactResolvedEvent(point, impactWeapon, false));
+                UnitsMoved?.Invoke();
+                AdvanceTurnOrStartRetreat(TurnAdvanceReason.ProjectileImpactResolved);
+                return;
+            }
+
+            ResolveProjectileImpact(impact, projectile.SuppressesTurnAdvanceOnImpact, directHit,
+                hitTerrain ? projectile.Definition.Radius * 2f : 0f);
+        }
+
+        public bool IsUnitRepairJammed(string unitId)
+        {
+            return !string.IsNullOrWhiteSpace(unitId)
+                && _repairJammerTurns.TryGetValue(unitId, out var turns)
+                && turns > 0;
+        }
+
+        private void ProcessRepairJammerForEndingActiveTurn()
+        {
+            var unitId = _state.Turn.ActiveUnitId;
+            if (!IsUnitRepairJammed(unitId))
+            {
+                return;
+            }
+
+            var turns = _repairJammerTurns[unitId] - 1;
+            if (turns <= 0)
+            {
+                _repairJammerTurns.Remove(unitId);
+                return;
+            }
+
+            _repairJammerTurns[unitId] = turns;
         }
 
         private void LandMine(SimProjectile projectile, Vector2 point)
@@ -3886,22 +5154,97 @@ namespace Game.Gameplay.Battle.Simulation
             MineDeployed?.Invoke(new MineDeployedEvent(mine.Id, mine.Position, weapon, teamId));
             ImpactResolved?.Invoke(new ImpactResolvedEvent(point, weapon, false));
             UnitsMoved?.Invoke();
-            if (!HasProjectilesInFlight)
+            // Mine placement never commits an action. This keeps the
+            // turn open for more mines and for a later normal weapon shot.
+        }
+
+        private void LandGuardianDrone(SimProjectile projectile, Vector2 point)
+        {
+            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
+            if (weapon == null)
             {
-                _activeShotEndsTurn = true;
+                return;
             }
 
-            // The mine sequence remains open only for the multi-mine evolution.
-            if (_state.Turn.ActiveUnitId == projectile.OwnerUnitId && !_state.Turn.ActionSpent)
+            var owner = _state.GetUnit(projectile.OwnerUnitId);
+            var teamId = owner?.TeamId ?? BattleTeamId.None;
+            var guardian = new ActiveMine(
+                projectile.Id,
+                projectile.OwnerUnitId,
+                teamId,
+                weapon,
+                point + Vector2.up * 0.04f,
+                triggersEnemiesOnly: true,
+                alliesImmuneToExplosion: true,
+                isGuardian: true);
+            _activeMines.Add(guardian);
+            MineDeployed?.Invoke(new MineDeployedEvent(guardian.Id, guardian.Position, weapon, teamId));
+            ImpactResolved?.Invoke(new ImpactResolvedEvent(point, weapon, false));
+            UnitsMoved?.Invoke();
+
+            if (teamId == BattleTeamId.Opponent
+                && _state.Turn.ActiveUnitId == projectile.OwnerUnitId
+                && !_state.Turn.ActionSpent)
             {
-                if (teamId == BattleTeamId.Opponent)
-                {
-                    CompleteInstantAction();
-                }
-                else if (!CanContinueMineDeploymentThisTurn())
-                {
-                    _playerMovement.CapRemaining(RetreatSeconds);
-                }
+                CompleteInstantAction();
+            }
+        }
+
+        private void LandLaserFenceNode(SimProjectile projectile, Vector2 point)
+        {
+            var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
+            if (weapon == null)
+            {
+                return;
+            }
+
+            var owner = _state.GetUnit(projectile.OwnerUnitId);
+            var teamId = owner?.TeamId ?? BattleTeamId.None;
+            var node = new ActiveLaserFenceNode(
+                projectile.Id,
+                projectile.OwnerUnitId,
+                teamId,
+                weapon,
+                point + Vector2.up * 0.04f);
+            _activeLaserFenceNodes.Add(node);
+            LaserFenceNodeDeployed?.Invoke(new LaserFenceNodeDeployedEvent(
+                node.Id,
+                node.OwnerUnitId,
+                node.Position,
+                node.Weapon,
+                node.TeamId));
+            ImpactResolved?.Invoke(new ImpactResolvedEvent(point, weapon, false));
+            UnitsMoved?.Invoke();
+
+            if (teamId == BattleTeamId.Opponent
+                && _state.Turn.ActiveUnitId == projectile.OwnerUnitId
+                && !_state.Turn.ActionSpent)
+            {
+                CompleteInstantAction();
+            }
+        }
+
+        private void DiscardProjectile(int projectileIndex, SimProjectile projectile)
+        {
+            _projectiles.RemoveAt(projectileIndex);
+            if (projectile.Id == _hoppingGrenadeProjectileId)
+            {
+                _hoppingGrenadeProjectileId = -1;
+                _activeShotEndsTurn = true;
+            }
+            ProjectileExploded?.Invoke(projectile.Id, new ProjectileImpact(
+                projectile.Definition.ProjectileId,
+                projectile.OwnerUnitId,
+                projectile.Position,
+                projectile.Velocity,
+                0,
+                0f));
+
+            if (ResolveTeamForOwner(projectile.OwnerUnitId) == BattleTeamId.Opponent
+                && _state.Turn.ActiveUnitId == projectile.OwnerUnitId
+                && !_state.Turn.ActionSpent)
+            {
+                CompleteInstantAction();
             }
         }
 
@@ -4046,6 +5389,12 @@ namespace Game.Gameplay.Battle.Simulation
 
         private bool IsMineTriggerTargetInside(ActiveMine mine)
         {
+            return TryFindMineTriggerTarget(mine, out _);
+        }
+
+        private bool TryFindMineTriggerTarget(ActiveMine mine, out BattleUnitState target)
+        {
+            target = null;
             foreach (var team in _state.Teams)
             {
                 if (mine.TriggersEnemiesOnly && team.TeamId == mine.TeamId)
@@ -4057,8 +5406,11 @@ namespace Game.Gameplay.Battle.Simulation
                 {
                     if (unit != null
                         && !unit.IsDefeated
-                        && Vector2.Distance(unit.Position, mine.Position) <= mine.Weapon.ImpactRadius)
+                        && Vector2.Distance(unit.Position, mine.Position) <=
+                            (mine.Weapon.WeaponId == MineWeaponId
+                                ? PrototypeWeaponLibrary.SharedNearbyRadius : mine.Weapon.ImpactRadius))
                     {
+                        target = unit;
                         return true;
                     }
                 }
@@ -4104,7 +5456,11 @@ namespace Game.Gameplay.Battle.Simulation
             return false;
         }
 
-        private bool TryBounceProjectile(SimProjectile projectile, Vector2 safePosition, Vector2 velocity)
+        private bool TryBounceProjectile(
+            SimProjectile projectile,
+            Vector2 safePosition,
+            Vector2 collisionPosition,
+            Vector2 velocity)
         {
             var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
             var terrainBounceLimit = projectile.Definition.TerrainBounceLimit;
@@ -4115,69 +5471,25 @@ namespace Game.Gameplay.Battle.Simulation
                 return false;
             }
 
-            var maxBounces = terrainBounceLimit > 0 ? terrainBounceLimit : MaxBounces;
-            if (projectile.BounceCount >= maxBounces || velocity.magnitude < RestingFuseMinSpeed)
+            var maxBounces = terrainBounceLimit > 0
+                ? terrainBounceLimit
+                : ProjectileBounceRules.MaxBounces;
+            if (projectile.BounceCount >= maxBounces
+                || velocity.magnitude < ProjectileBounceRules.RestingFuseMinSpeed)
             {
                 return false;
             }
 
-            var reflected = ReflectOffTerrain(safePosition, velocity, projectile.Definition.Radius);
+            var reflected = ProjectileBounceRules.ReflectOffTerrain(
+                _terrain?.Grid,
+                collisionPosition,
+                velocity,
+                projectile.Definition.Radius,
+                ProjectileSubStepLength);
             projectile.RegisterBounce();
             projectile.MoveTo(safePosition);
-            projectile.SetVelocity(reflected * BounceSpeedRetain);
+            projectile.SetVelocity(reflected * ProjectileBounceRules.SpeedRetain);
             return true;
-        }
-
-        /// <summary>
-        /// Reflects a bouncing projectile by sampling which sides of the contact
-        /// point are solid (left/right/top/bottom), mirroring the reference
-        /// grenade model: each axis is inverted independently based on the hit
-        /// sides, so corner and slope bounces behave naturally instead of
-        /// guessing from the dominant velocity component.
-        /// </summary>
-        private Vector2 ReflectOffTerrain(Vector2 contactPoint, Vector2 velocity, float projectileRadius)
-        {
-            var reflected = velocity;
-            if (_terrain == null)
-            {
-                return new Vector2(velocity.x, -velocity.y);
-            }
-
-            var sample = Mathf.Max(projectileRadius, 0.06f) + ProjectileSubStepLength;
-            var grid = _terrain.Grid;
-            var hitLeft = grid.IsSolidWorld(contactPoint + Vector2.left * sample);
-            var hitRight = grid.IsSolidWorld(contactPoint + Vector2.right * sample);
-            var hitTop = grid.IsSolidWorld(contactPoint + Vector2.up * sample);
-            var hitBottom = grid.IsSolidWorld(contactPoint + Vector2.down * sample);
-
-            if (hitLeft && !hitRight)
-            {
-                reflected.x = Mathf.Abs(reflected.x);
-            }
-            else if (hitRight && !hitLeft)
-            {
-                reflected.x = -Mathf.Abs(reflected.x);
-            }
-
-            if (hitBottom && !hitTop)
-            {
-                reflected.y = Mathf.Abs(reflected.y);
-            }
-            else if (hitTop && !hitBottom)
-            {
-                reflected.y = -Mathf.Abs(reflected.y);
-            }
-
-            if (reflected == velocity)
-            {
-                // Corner or thin sliver the axis probes missed: fall back to a
-                // velocity-based reflection so the projectile never tunnels.
-                reflected = Mathf.Abs(velocity.y) >= Mathf.Abs(velocity.x)
-                    ? new Vector2(velocity.x, -velocity.y)
-                    : new Vector2(-velocity.x, velocity.y);
-            }
-
-            return reflected;
         }
 
         private void UpdateStickyGrenadeAttachment(SimProjectile projectile)
@@ -4270,6 +5582,165 @@ namespace Game.Gameplay.Battle.Simulation
             }
         }
 
+        private bool TryFindGrounderForProjectile(
+            SimProjectile projectile,
+            WeaponDefinition weapon,
+            Vector2 samplePosition,
+            out ActiveGrounder selected)
+        {
+            selected = null;
+            if (!IsGrounderPhysicalCarrier(projectile, weapon))
+            {
+                return false;
+            }
+
+            var projectileTeam = ResolveTeamForOwner(projectile.OwnerUnitId);
+            var nearestDistance = float.PositiveInfinity;
+            foreach (var grounder in _activeGrounders)
+            {
+                if (grounder.TeamId == projectileTeam || grounder.Health <= 0)
+                {
+                    continue;
+                }
+
+                var distance = Vector2.Distance(samplePosition, grounder.Position);
+                if (distance > grounder.DetectionRadius || distance >= nearestDistance)
+                {
+                    continue;
+                }
+
+                selected = grounder;
+                nearestDistance = distance;
+            }
+
+            return selected != null;
+        }
+
+        private void ResolveGrounderProjectileContact(
+            int projectileIndex, SimProjectile projectile, WeaponDefinition weapon,
+            ActiveGrounder grounder, Vector2 contactPoint)
+        {
+            var projectileId = projectile.Definition.ProjectileId;
+            if (projectileId == MineDeployProjectileId)
+            {
+                DamageGrounder(grounder, weapon?.Damage ?? 0);
+                ResolveProjectileAt(projectileIndex, contactPoint, interceptedMine: true);
+                return;
+            }
+
+            // A physical carrier without an explosive payload is destroyed at
+            // the magnet. Its placement or teleport action must not run.
+            if (projectileId == GuardianDroneDeployProjectileId
+                || projectileId == LaserFenceDeployProjectileId
+                || weapon?.WeaponId is TeleportWeaponId or SwapJumpWeaponId
+                    or RepairJammerWeaponId or VirusWeaponId)
+            {
+                DamageGrounder(grounder, 1);
+                projectile.MoveTo(contactPoint);
+                DiscardProjectile(projectileIndex, projectile);
+                return;
+            }
+
+            DamageGrounder(grounder, projectile.Definition.Damage);
+            ResolveProjectileAt(projectileIndex, contactPoint);
+        }
+
+        private bool TryFindGrounderForHook(
+            BattleTeamId ownerTeam, Vector2 start, Vector2 end, out ActiveGrounder selected)
+        {
+            selected = null;
+            var nearestDistance = float.PositiveInfinity;
+            var segment = end - start;
+            var segmentLengthSquared = segment.sqrMagnitude;
+            foreach (var grounder in _activeGrounders)
+            {
+                if (grounder.TeamId == ownerTeam || grounder.Health <= 0)
+                {
+                    continue;
+                }
+
+                var projection = segmentLengthSquared > 0.0001f
+                    ? Mathf.Clamp01(Vector2.Dot(grounder.Position - start, segment) / segmentLengthSquared)
+                    : 0f;
+                var distance = Vector2.Distance(start + segment * projection, grounder.Position);
+                if (distance > grounder.DetectionRadius || distance >= nearestDistance)
+                {
+                    continue;
+                }
+
+                selected = grounder;
+                nearestDistance = distance;
+            }
+
+            return selected != null;
+        }
+
+        private static bool IsGrounderPhysicalCarrier(SimProjectile projectile, WeaponDefinition weapon)
+        {
+            if (projectile == null)
+            {
+                return false;
+            }
+
+            if (projectile.Definition.ProjectileId == MineDeployProjectileId
+                || projectile.Definition.ProjectileId == GuardianDroneDeployProjectileId
+                || projectile.Definition.ProjectileId == GuardianDroneShotProjectileId
+                || projectile.Definition.ProjectileId == LaserFenceDeployProjectileId)
+            {
+                return true;
+            }
+
+            return weapon?.WeaponId is "weapon.granata" or "weapon.blaster-caset"
+                or "weapon.ion-shotgun" or "weapon.c4" or "weapon.mine"
+                or "weapon.titanium-disc" or "weapon.bur-rocket" or "weapon.mortira"
+                or "weapon.sticky-grenade" or "weapon.teleport" or "weapon.rail-rifle"
+                or "weapon.cryo-grenade" or "weapon.hopping-grenade"
+                or "weapon.incendiary-grenade" or "weapon.repair-jammer"
+                or "weapon.missle" or "weapon.orbital-rocket"
+                or "weapon.guardian-drone" or "weapon.electric-harpoon"
+                or "weapon.swap-jump" or "weapon.sky-hook" or "weapon.spider-mine"
+                or "weapon.virus" or "weapon.bomber" or "weapon.ufo-carrier"
+                or "weapon.nuclear-charge" or "weapon.laser-fence";
+        }
+
+        private void DamageGrounder(ActiveGrounder grounder, int damage)
+        {
+            if (!_activeGrounders.Contains(grounder))
+            {
+                return;
+            }
+
+            grounder.Health = Mathf.Max(0, grounder.Health - Mathf.Max(0, damage));
+            if (grounder.Health > 0)
+            {
+                return;
+            }
+
+            _activeGrounders.Remove(grounder);
+            GrounderRemoved?.Invoke(grounder.Id);
+        }
+
+        private void ExpireGroundersForEndingTurn()
+        {
+            for (var index = _activeGrounders.Count - 1; index >= 0; index--)
+            {
+                var grounder = _activeGrounders[index];
+                if (grounder.TeamId == _state.Turn.ActiveTeam)
+                {
+                    continue;
+                }
+
+                grounder.RemainingTurns--;
+                if (grounder.RemainingTurns > 0)
+                {
+                    continue;
+                }
+
+                _activeGrounders.RemoveAt(index);
+                GrounderRemoved?.Invoke(grounder.Id);
+            }
+        }
+
         private Vector2 SteerGrenadeToward(Vector2 velocity, Vector2 position, Vector2 target, float deltaTime)
         {
             var desired = target - position;
@@ -4288,8 +5759,14 @@ namespace Game.Gameplay.Battle.Simulation
         {
             target = default;
             var bestDistanceSquared = radius * radius;
+            var ownerTeam = ResolveTeamForOwner(projectile.OwnerUnitId);
             foreach (var team in _state.Teams)
             {
+                if (team.TeamId == ownerTeam)
+                {
+                    continue;
+                }
+
                 foreach (var unit in team.Units)
                 {
                     if (unit == null || unit.IsDefeated || unit.UnitId == projectile.OwnerUnitId)
@@ -4554,6 +6031,16 @@ namespace Game.Gameplay.Battle.Simulation
                 return _weaponsById.TryGetValue(MineWeaponId, out var mine) ? mine : null;
             }
 
+            if (projectileId == LaserFenceDeployProjectileId)
+            {
+                return _weaponsById.TryGetValue(LaserFenceWeaponId, out var laserFence) ? laserFence : null;
+            }
+
+            if (projectileId == GuardianDroneDeployProjectileId || projectileId == GuardianDroneShotProjectileId)
+            {
+                return _weaponsById.TryGetValue(GuardianDroneWeaponId, out var guardian) ? guardian : null;
+            }
+
             if (projectileId != null
                 && (projectileId.StartsWith("projectile.weapon.mortira.fragment", StringComparison.Ordinal)
                     || projectileId.StartsWith(MortarCascadeProjectilePrefix, StringComparison.Ordinal)))
@@ -4577,6 +6064,45 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             return null;
+        }
+
+        private sealed class PendingOrbitalStrike
+        {
+            public PendingOrbitalStrike(BattleTeamId ownerTeam, string ownerUnitId, WeaponDefinition weapon, Vector2 target)
+            {
+                OwnerTeam = ownerTeam;
+                OwnerUnitId = ownerUnitId;
+                Weapon = weapon;
+                Target = target;
+            }
+
+            public BattleTeamId OwnerTeam { get; }
+            public string OwnerUnitId { get; }
+            public WeaponDefinition Weapon { get; }
+            public Vector2 Target { get; }
+        }
+
+        private sealed class ActiveGrounder
+        {
+            public ActiveGrounder(int id, BattleTeamId teamId, Vector2 position,
+                WeaponDefinition weapon, int remainingTurns, int health, float detectionRadius)
+            {
+                Id = id;
+                TeamId = teamId;
+                Position = position;
+                Weapon = weapon;
+                RemainingTurns = remainingTurns;
+                Health = health;
+                DetectionRadius = detectionRadius;
+            }
+
+            public int Id { get; }
+            public BattleTeamId TeamId { get; }
+            public Vector2 Position { get; }
+            public WeaponDefinition Weapon { get; }
+            public int RemainingTurns { get; set; }
+            public int Health { get; set; }
+            public float DetectionRadius { get; }
         }
 
         private sealed class ScheduledProjectileSpawn
@@ -4682,7 +6208,10 @@ namespace Game.Gameplay.Battle.Simulation
                 WeaponDefinition weapon,
                 Vector2 position,
                 bool triggersEnemiesOnly,
-                bool alliesImmuneToExplosion)
+                bool alliesImmuneToExplosion,
+                bool isSpider = false,
+                int crawlDirection = 1,
+                bool isGuardian = false)
             {
                 Id = id;
                 OwnerUnitId = ownerUnitId;
@@ -4691,7 +6220,11 @@ namespace Game.Gameplay.Battle.Simulation
                 Position = position;
                 TriggersEnemiesOnly = triggersEnemiesOnly;
                 AlliesImmuneToExplosion = alliesImmuneToExplosion;
-                ArmTimeRemaining = MineActivationDelaySeconds;
+                IsSpider = isSpider;
+                IsGuardian = isGuardian;
+                CrawlDirection = crawlDirection >= 0 ? 1 : -1;
+                ArmTimeRemaining = isSpider || isGuardian ? 0f : MineActivationDelaySeconds;
+                SearchTimeRemaining = isSpider ? SpiderSearchDurationSeconds : 0f;
             }
 
             public int Id { get; }
@@ -4701,14 +6234,42 @@ namespace Game.Gameplay.Battle.Simulation
             public Vector2 Position { get; private set; }
             public bool TriggersEnemiesOnly { get; }
             public bool AlliesImmuneToExplosion { get; }
+            public bool IsSpider { get; }
+            public bool IsGuardian { get; }
+            public int CrawlDirection { get; }
             public float ArmTimeRemaining { get; set; }
+            public float SearchTimeRemaining { get; set; }
             public bool Triggered { get; set; }
             public float TriggerTimeRemaining { get; set; }
+            public string TriggerTargetUnitId { get; set; }
 
             public void MoveTo(Vector2 position)
             {
                 Position = position;
             }
+        }
+
+        private sealed class ActiveLaserFenceNode
+        {
+            public ActiveLaserFenceNode(
+                int id,
+                string ownerUnitId,
+                BattleTeamId teamId,
+                WeaponDefinition weapon,
+                Vector2 position)
+            {
+                Id = id;
+                OwnerUnitId = ownerUnitId;
+                TeamId = teamId;
+                Weapon = weapon;
+                Position = position;
+            }
+
+            public int Id { get; }
+            public string OwnerUnitId { get; }
+            public BattleTeamId TeamId { get; }
+            public WeaponDefinition Weapon { get; }
+            public Vector2 Position { get; }
         }
 
         private sealed class ActiveRepairEffect

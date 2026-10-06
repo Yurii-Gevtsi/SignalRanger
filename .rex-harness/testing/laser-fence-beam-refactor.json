@@ -1,0 +1,6 @@
+{
+  "decision": "No refactor required. The simulation owns collision, damage and turn flow; LaserFenceLinkResolver remains the shared pairing rule used by presentation and runtime.",
+  "testDiffReview": "The focused test remains a public combat scenario. It still requires two real shots, observes HP and active team state, and asserts that a consumed link cannot deal a second hit.",
+  "remainingCoverage": "Ally safety and out-of-range pairs are documented acceptance cases but need their own behavior tests before laser_fence can be reported fully verified.",
+  "testReceiptRef": "receipt:a97d4d15-cc70-40b5-8ee1-4d35c5e790f2"
+}

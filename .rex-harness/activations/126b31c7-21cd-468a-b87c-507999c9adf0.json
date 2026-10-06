@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "126b31c7-21cd-468a-b87c-507999c9adf0",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-11-drill-rocket-closure",
+  "profile": "default",
+  "request": {
+    "message": "Перевірити та довести до відповідності бойовій специфікації бурову ракету №11: проникнення через усі руйнівні текстури лише з витратою в землі, ТТХ +10%, вибух, корпус і реактивний хвіст, Unity EditMode/PlayMode.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-28T08:43:23.272Z",
+  "updatedAt": "2026-09-28T08:43:23.272Z"
+}

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "f6bc7361-496d-45ac-8a44-b323fcd5ead2",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "workshop-carousel-and-upgrade-card-polish",
+  "profile": "default",
+  "request": {
+    "message": "Make the Workshop carousel dynamic, hide unavailable unpurchasable base-stat cards, update special-card layout, reset selection to Core after a base stat upgrade, and localize the impulse special description.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 1,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "3406d6da-4fec-4741-a87a-d5c6e251c204",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-carousel-and-upgrade-card-polish-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-carousel-and-upgrade-card-polish-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-carousel-and-upgrade-card-polish-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-carousel-and-upgrade-card-polish-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:docs/architecture/workshop-carousel-and-upgrade-card-polish-testability.json",
+    "reason": "The focused Unity EditMode command cannot acquire the project while three Unity editor processes are already open. It exits with code 1 before compilation or tests, so there is no honest RED or baseline for the new visibility assertion. The carousel, retained card selection, and layout coordinates likewise require the active Unity canvas for observation.",
+    "missingAcceptance": "Close or release the existing Unity editor project session, then run Game.Tests.EditMode.App.WorkshopBaseStatCardStateResolverTests and visually smoke the Workshop carousel, special-card layout, and retained selection after purchase."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-19T13:14:48.953Z",
+  "updatedAt": "2026-09-19T13:18:59.775Z"
+}

@@ -55,6 +55,18 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void TitaniumDisc_StartsWithTwoTerrainRicochets()
+        {
+            var weapon = Weapon("weapon.titanium-disc", 1);
+            var spawner = new RecordingSpawner();
+
+            new ProjectileWeaponEffect().Fire(Context(weapon, spawner));
+
+            Assert.That(spawner.SpawnCount, Is.EqualTo(1));
+            Assert.That(spawner.LastRequest.Definition.TerrainBounceLimit, Is.EqualTo(2));
+        }
+
+        [Test]
         public void TryFireSelected_StopsWhenAmmoDepleted()
         {
             var weapon = Weapon("weapon.exec.single", 1);

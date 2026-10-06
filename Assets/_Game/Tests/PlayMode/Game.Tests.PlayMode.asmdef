@@ -13,7 +13,8 @@
         "Game.Audio",
         "Game.Economy",
         "Game.Tutorial",
-        "UnityEngine.TestRunner"
+        "UnityEngine.TestRunner",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

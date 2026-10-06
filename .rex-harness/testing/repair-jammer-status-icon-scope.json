@@ -1,0 +1,15 @@
+{
+  "workItem": "weapon-combat-repair-jammer-status-icon",
+  "userGoal": "Show the owner-provided no-repair-2 icon beside a jammed droid's HP for exactly the jammer-status lifetime.",
+  "inScope": [
+    "Validated RGBA PNG import into the existing UI Resources family.",
+    "BattleUnitView creates one world-space sprite child, positions it beside HP, and toggles it.",
+    "BattleSceneController refreshes it from BattleSimulation.IsUnitRepairJammed."
+  ],
+  "outOfScope": ["Other status icons", "HUD redesign", "Changes to jammer timing or damage"],
+  "completionCriteria": [
+    "The UI resource exists with real transparent pixels.",
+    "The view's public method visibly enables and disables the status icon.",
+    "The controller applies the state query during normal presentation refresh."
+  ]
+}

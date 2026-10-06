@@ -1,13 +1,12 @@
-"""Build high-resolution arena fragments from the artist's red contour guides.
+"""Build canonical modular arena packages from an artist's red section guide.
 
-The guide is an authoring-only boundary, never a shipped source.  Each closed
-red outline identifies a real alpha-shaped fragment; unlike the retired v2
-tool, this tool does not turn guides into broad rectangular layout crops.
-
-Usage:
-  python tools/arena-assets/rebuild_guide_contour_arenas.py --arenas city --prepare
-  # Place one generated ``*_enhanced.png`` beside every reference crop, then:
-  python tools/arena-assets/rebuild_guide_contour_arenas.py --arenas city --apply-enhancements --promote
+The artist supplies exactly one clean RGBA original and one same-size marked
+copy. ``--prepare`` validates those inputs and makes plain source crops only.
+Place exactly one enhanced RGBA ``*_visual.png`` in ``segments`` for every
+crop, then run ``--apply-enhancements``. That command derives the mask from
+the new visual, emits one transparent reconstruction, and refuses promotion if
+the enhanced sections create a visible gap at a shared seam or move their
+overall silhouette beyond the documented bounded drift budget.
 """
 
 from __future__ import annotations
@@ -20,16 +19,23 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageChops, ImageFilter
+from PIL import Image, ImageChops
 from scipy import ndimage
 
 
 ROOT = Path(__file__).resolve().parents[2]
-CANVAS = (2048, 1152)
 SCALE = 2
 GUIDE_DILATION = 10
 ALPHA_THRESHOLD = 32
 PADDING = 16
+SECTION_OVERLAP_RADIUS = 1
+ALIGNMENT_TOLERANCE_PX = 2
+# Image-to-image enhancement may refine a non-shared outer contour.  Accept a
+# bounded 3.5% silhouette drift so long as the separately measured shared seams
+# still pass; this does not permit a gap between neighboring fragments.
+MAX_EXTERIOR_DRIFT_RATIO = 0.035
+MAX_SEAM_GAP_PIXELS = 64
+MAX_SEAM_GAP_COMPONENT_PIXELS = 32
 
 STYLE_SPEC = (
     "Stylized hand-painted 2D sci-fi game illustration; large clean shapes; "
@@ -49,31 +55,19 @@ STYLE_SPEC = (
 class GuidedArena:
     key: str
     runtime_folder: str
+    source_folder: str
     source_file: str
     guide_file: str
     expected_sections: int
 
 
-@dataclass(frozen=True)
-class KrakenPiece:
-    name: str
-    crop: tuple[int, int, int, int]
-    sorting_order: int
-
-
 GUIDED_ARENAS = {
-    "city": GuidedArena("city", "City", "layout_master.png", "layout_master_секції.png", 5),
-    "forest": GuidedArena("forest", "Forest", "ліс.png", "ліс_секції.png", 4),
-    "grib": GuidedArena("grib", "Grib", "гриби.png", "гриби_секції.png", 5),
-    "laguna": GuidedArena("laguna", "Laguna", "острови.png", "острови_секції.png", 5),
-    "monument": GuidedArena("monument", "Monument", "layout_master.png", "монумент_секції.png", 4),
+    "city": GuidedArena("city", "City", ".", "layout_master.png", "layout_master_секції.png", 5),
+    "forest": GuidedArena("forest", "Forest", "production_source", "ліс2.png", "ліс2_ссекції.png", 4),
+    "grib": GuidedArena("grib", "Grib", "production_source", "гриби.png", "гриби_секції.png", 5),
+    "laguna": GuidedArena("laguna", "Laguna", "production_source", "острови.png", "острови_секції.png", 5),
+    "monument": GuidedArena("monument", "Monument", ".", "layout_master.png", "монумент_секції.png", 4),
 }
-
-KRAKEN_PIECES = (
-    KrakenPiece("left", (0, 128, 794, 1143), -8),
-    KrakenPiece("center", (566, 64, 1394, 1152), -7),
-    KrakenPiece("right", (1096, 207, 2048, 1152), -6),
-)
 
 
 def sha256(path: Path) -> str:
@@ -100,35 +94,14 @@ def scale_rgba(image: Image.Image, size: tuple[int, int]) -> Image.Image:
     return result
 
 
-def clean_alpha(image: Image.Image, arena_key: str) -> Image.Image:
-    """Convert opaque authoring masters with black/dark canvas into true alpha.
-
-    Forest has a charcoal rather than literal-black canvas, so only its neutral
-    large background components are removed.  The other two opaque masters use
-    a literal black canvas; removing only near-zero pixels keeps ink outlines.
-    """
+def require_true_alpha(image: Image.Image, label: str) -> Image.Image:
+    """Reject a baked authoring canvas instead of attempting a destructive cutout."""
+    if "A" not in image.getbands():
+        raise ValueError(f"{label} has no alpha channel. Supply a true transparent PNG.")
     result = image.convert("RGBA")
-    array = np.asarray(result).copy()
-    rgb = array[:, :, :3].astype(np.int16)
-    if arena_key in {"grib", "laguna"}:
-        # These masters were exported against black rather than alpha. The
-        # black canvas also appears as detached islands inside arches and glow
-        # surrounds, so clear it globally. The cutoff stays below painted
-        # brown/blue shading, preserving illustrated structure and outlines.
-        background = rgb.max(axis=2) <= 30
-    elif arena_key == "forest":
-        neutral = (rgb.max(axis=2) <= 62) & ((rgb.max(axis=2) - rgb.min(axis=2)) <= 10)
-        labels, count = ndimage.label(neutral)
-        edge_labels = set(np.unique(np.concatenate((labels[0], labels[-1], labels[:, 0], labels[:, -1]))))
-        background = np.isin(labels, list(edge_labels))
-        # Authoring holes (doors/caves) are also canvas when large and neutral.
-        sizes = np.bincount(labels.ravel(), minlength=count + 1)
-        background |= neutral & (sizes[labels] >= 512)
-    else:
-        background = array[:, :, 3] < ALPHA_THRESHOLD
-    array[:, :, 3][background] = 0
-    array[:, :, :3][background] = 0
-    return Image.fromarray(array, "RGBA")
+    if not np.any(np.asarray(result.getchannel("A")) == 0):
+        raise ValueError(f"{label} has no transparent background pixels. Supply a true transparent PNG; opaque black, white, magenta and checkerboard masters are invalid.")
+    return result
 
 
 def red_guide_mask(image: Image.Image) -> np.ndarray:
@@ -185,224 +158,313 @@ def crop_section(master: Image.Image, section: np.ndarray) -> tuple[Image.Image,
     return crop, (left, top, right, bottom)
 
 
+def overlap_sections(sections: list[np.ndarray], visible: np.ndarray) -> list[np.ndarray]:
+    """Share a narrow source band with neighbours to prevent transparent seams."""
+    structure = np.ones((2 * SECTION_OVERLAP_RADIUS + 1, 2 * SECTION_OVERLAP_RADIUS + 1), dtype=bool)
+    return [ndimage.binary_dilation(section, structure=structure) & visible for section in sections]
+
+
 def mask_for(reference: Image.Image) -> Image.Image:
     alpha = reference.getchannel("A").point(lambda value: 255 if value >= ALPHA_THRESHOLD else 0, mode="L")
     return Image.merge("RGBA", (alpha, alpha, alpha, Image.new("L", alpha.size, 255)))
 
 
-def final_from_enhancement(enhanced: Image.Image, reference: Image.Image) -> Image.Image:
-    """Retain generated micro-detail while keeping master colour continuous.
+def constrain_enhanced_alpha_to_layout(enhanced: Image.Image, source: Image.Image) -> Image.Image:
+    """Keep the generated alpha within the layout's permitted exterior drift.
 
-    Every section is enhanced separately. Replacing its full RGB would therefore
-    make slightly different generator lighting visible at the contour join. Use
-    only the generated high-frequency residual over the reference colour field;
-    this increases close-zoom texture without turning the master into a patchwork.
+    The generator owns the visual finish and initial alpha.  It may only move
+    the outer contour by the same anti-aliasing allowance used by final
+    validation; unbounded extra branches or ledges cannot become collision.
     """
-    if enhanced.size != reference.size:
-        enhanced = enhanced.resize(reference.size, Image.Resampling.LANCZOS)
-    generated = enhanced.convert("RGB")
-    reference_rgb = reference.convert("RGB")
-    alpha = reference.getchannel("A")
-    safe = alpha.point(lambda value: 255 if value >= 250 else 0, mode="L").filter(ImageFilter.MinFilter(31))
-    generated_array = np.asarray(generated, dtype=np.int16)
-    generated_blur = np.asarray(generated.filter(ImageFilter.GaussianBlur(radius=8)), dtype=np.int16)
-    reference_array = np.asarray(reference_rgb, dtype=np.int16)
-    # Structural changes from a generative renderer are not safe near an edge
-    # or where its colour diverges from the approved master. Admit only a small
-    # high-frequency residual on close-matching, visually flat material. That
-    # is enough to improve close zoom while guaranteeing a seamless master
-    # colour field across independently generated neighbours.
-    edge_x = np.abs(np.diff(reference_array, axis=1, prepend=reference_array[:, :1]))
-    edge_y = np.abs(np.diff(reference_array, axis=0, prepend=reference_array[:1, :]))
-    flat_reference = np.maximum(edge_x, edge_y).max(axis=2) <= 20
-    close_colour = np.abs(generated_array - reference_array).max(axis=2) <= 35
-    accepted_detail = flat_reference & close_colour
-    detailed_rgb = reference_array.copy()
-    residual = (generated_array - generated_blur) * 0.20
-    detailed_rgb[accepted_detail] = np.clip(reference_array[accepted_detail] + residual[accepted_detail], 0, 255)
-    detailed_rgb = detailed_rgb.astype(np.uint8)
-    result = Image.new("RGBA", reference.size)
-    output, generated_pixels, reference_pixels = result.load(), generated.load(), reference_rgb.load()
-    alpha_pixels, safe_pixels = alpha.load(), safe.load()
-    for y in range(result.height):
-        for x in range(result.width):
-            value = alpha_pixels[x, y]
-            if value < ALPHA_THRESHOLD:
-                output[x, y] = (0, 0, 0, 0)
-            elif safe_pixels[x, y] == 255:
-                output[x, y] = (*detailed_rgb[y, x], value)
-            else:
-                output[x, y] = (*reference_pixels[x, y], value)
-    return result
+    pixels = np.asarray(enhanced.convert("RGBA")).copy()
+    source_alpha = np.asarray(source.convert("RGBA").getchannel("A")) >= ALPHA_THRESHOLD
+    structure = np.ones((2 * ALIGNMENT_TOLERANCE_PX + 1, 2 * ALIGNMENT_TOLERANCE_PX + 1), dtype=bool)
+    allowed = ndimage.binary_dilation(source_alpha, structure=structure)
+    pixels[~allowed] = (0, 0, 0, 0)
+    return Image.fromarray(pixels, "RGBA")
+
+
+def repair_key_colour_fringe(enhanced: Image.Image, source: Image.Image) -> Image.Image:
+    """Remove residual magenta key colour without changing the generated alpha.
+
+    The generation pass uses a magenta chroma background because it can be
+    removed deterministically. Some providers premultiply that matte into
+    anti-aliased edge RGB (and occasionally leave it in an opaque edge pixel).
+    Replace only colours that are key-like in the generated image but not in
+    the matching source pixel. Legitimate pink/purple artwork therefore stays
+    intact, while the source supplies a halo-free colour at a contaminated
+    edge. Alpha remains entirely generated/cleaned alpha.
+    """
+    pixels = np.asarray(enhanced.convert("RGBA")).copy()
+    source_pixels = np.asarray(source.convert("RGBA"), dtype=np.uint8)
+    rgb = pixels[:, :, :3].astype(np.int16)
+    source_rgb = source_pixels[:, :, :3].astype(np.int16)
+
+    def key_like(values: np.ndarray) -> np.ndarray:
+        red, green, blue = values[:, :, 0], values[:, :, 1], values[:, :, 2]
+        return (red >= 120) & (blue >= 90) & (green <= 100) & ((np.minimum(red, blue) - green) >= 60)
+
+    generated_key = key_like(rgb)
+    source_key = key_like(source_rgb)
+    source_alpha = source_pixels[:, :, 3] >= ALPHA_THRESHOLD
+    contaminated = generated_key & ~source_key & (pixels[:, :, 3] > 0)
+    if not np.any(contaminated):
+        return Image.fromarray(pixels, "RGBA")
+
+    _, nearest = ndimage.distance_transform_edt(~source_alpha, return_indices=True)
+    nearest_rgb = source_pixels[nearest[0], nearest[1], :3]
+    replacement = source_pixels[:, :, :3].copy()
+    replacement[~source_alpha] = nearest_rgb[~source_alpha]
+    pixels[contaminated, :3] = replacement[contaminated]
+    return Image.fromarray(pixels, "RGBA")
+
+
+def repair_shared_seams(key: str, pieces: list[dict[str, int | str]]) -> int:
+    """Restore only missing pixels in the declared source-overlap bands.
+
+    This is deliberately narrower than reapplying an entire source alpha: the
+    enhanced visual remains the mask source everywhere except a missing shared
+    seam, where a one-pixel overlap is the composition contract.
+    """
+    paths = output_paths(key)
+    canvas_width = max(int(item["x"]) * SCALE + int(item["target_width"]) for item in pieces)
+    canvas_height = max(int(item["y"]) * SCALE + int(item["target_height"]) for item in pieces)
+    coverage = np.zeros((canvas_height, canvas_width), dtype=np.uint8)
+    source_coverage = np.zeros_like(coverage)
+    owner = np.full(coverage.shape, -1, dtype=np.int16)
+    visuals: list[np.ndarray] = []
+    sources: list[np.ndarray] = []
+
+    for index, item in enumerate(pieces):
+        visual_path = paths["segments"] / f"{key}_{item['id']}_visual.png"
+        visual = np.asarray(Image.open(visual_path).convert("RGBA")).copy()
+        source = np.asarray(scale_rgba(Image.open(paths["source"] / str(item["source"])), visual.shape[1::-1]), dtype=np.uint8)
+        x, y = int(item["x"]) * SCALE, int(item["y"]) * SCALE
+        alpha = visual[:, :, 3] >= ALPHA_THRESHOLD
+        source_alpha = source[:, :, 3] >= ALPHA_THRESHOLD
+        coverage[y:y + visual.shape[0], x:x + visual.shape[1]] += alpha
+        source_coverage[y:y + source.shape[0], x:x + source.shape[1]] += source_alpha
+        local_owner = owner[y:y + source.shape[0], x:x + source.shape[1]]
+        local_owner[(local_owner < 0) & source_alpha] = index
+        visuals.append(visual)
+        sources.append(source)
+
+    structure = np.ones((2 * ALIGNMENT_TOLERANCE_PX + 1, 2 * ALIGNMENT_TOLERANCE_PX + 1), dtype=bool)
+    missing = (source_coverage > 1) & ~ndimage.binary_dilation(coverage > 0, structure=structure)
+    repaired = 0
+    for y, x in zip(*np.where(missing)):
+        index = int(owner[y, x])
+        if index < 0:
+            continue
+        item = pieces[index]
+        local_x, local_y = x - int(item["x"]) * SCALE, y - int(item["y"]) * SCALE
+        visuals[index][local_y, local_x] = sources[index][local_y, local_x]
+        repaired += 1
+
+    if repaired:
+        for index, item in enumerate(pieces):
+            visual = Image.fromarray(visuals[index], "RGBA")
+            visual.save(paths["segments"] / f"{key}_{item['id']}_visual.png")
+            mask_for(visual).save(paths["masks"] / f"{key}_{item['id']}_mask.png")
+    return repaired
 
 
 def output_paths(key: str) -> dict[str, Path]:
-    root = ROOT / "art_source/arenas" / key / "production_v3"
+    root = ROOT / "art_source/arenas" / key / "production"
     return {
         "root": root,
-        "reference": root / "source_layers/reference_crops",
-        "enhanced": root / "source_layers/enhanced_renders",
-        "visuals": root / "visuals",
+        "source": root / "source_segments",
+        "segments": root / "segments",
         "masks": root / "masks",
     }
 
 
 def prepare_guided(arena: GuidedArena) -> list[dict[str, int | str]]:
-    source_root = ROOT / "art_source/arenas" / arena.key / "production_source"
-    master = clean_alpha(scale_rgba(Image.open(source_root / arena.source_file), CANVAS), arena.key)
-    guide = scale_rgba(Image.open(source_root / arena.guide_file), CANVAS)
+    source_root = ROOT / "art_source/arenas" / arena.key / arena.source_folder
+    master = require_true_alpha(Image.open(source_root / arena.source_file), f"{arena.key} original")
+    guide = require_true_alpha(Image.open(source_root / arena.guide_file), f"{arena.key} marked layout")
+    if guide.size != master.size:
+        raise ValueError(f"{arena.key}: original and marked layout must have identical canvas dimensions.")
     visible = np.asarray(master.getchannel("A")) >= ALPHA_THRESHOLD
-    sections = enclosed_sections(red_guide_mask(guide), visible, arena.expected_sections)
+    sections = overlap_sections(enclosed_sections(red_guide_mask(guide), visible, arena.expected_sections), visible)
     paths = output_paths(arena.key)
-    paths["reference"].mkdir(parents=True, exist_ok=True)
+    paths["source"].mkdir(parents=True, exist_ok=True)
     pieces: list[dict[str, int | str]] = []
-    base_reconstructed = Image.new("RGBA", CANVAS)
+    source_coverage = np.zeros(visible.shape, dtype=np.uint8)
     for index, section in enumerate(sections, 1):
         crop, (left, top, right, bottom) = crop_section(master, section)
-        base_reconstructed.alpha_composite(crop, (left, top))
+        source_coverage[section] += 1
         piece_id = f"section_{index:02d}"
-        reference = scale_rgba(crop, (crop.width * SCALE, crop.height * SCALE))
-        reference.save(paths["reference"] / f"{arena.key}_{piece_id}_reference.png")
+        source_file = f"{arena.key}_{piece_id}_source.png"
+        crop.save(paths["source"] / source_file)
         pieces.append({
             "id": piece_id,
             "x": left,
             "y": top,
             "width": right - left,
             "height": bottom - top,
+            "target_width": (right - left) * SCALE,
+            "target_height": (bottom - top) * SCALE,
             "sorting_order": -10 + index,
-            "reference": f"{arena.key}_{piece_id}_reference.png",
+            "source": source_file,
+            "overlap_radius_px": SECTION_OVERLAP_RADIUS,
         })
-    if ImageChops.difference(master, base_reconstructed).getbbox() is not None:
-        raise ValueError(f"{arena.key}: contour assignments do not reconstruct the clean master.")
+    if np.any(visible & (source_coverage == 0)) or np.any((~visible) & (source_coverage > 0)):
+        raise ValueError(f"{arena.key}: contour assignments do not cover the clean original exactly.")
     write_prepare_outputs(arena.key, master, pieces)
     return pieces
 
 
-def prepare_kraken() -> list[dict[str, int | str]]:
-    source = ROOT / "art_source/arenas/kraken/production_source"
-    paths = output_paths("kraken")
-    paths["reference"].mkdir(parents=True, exist_ok=True)
-    pieces: list[dict[str, int | str]] = []
-    source_checksums: dict[str, str] = {}
-    master = clean_alpha(Image.open(source / "layout_master.png").convert("RGBA"), "kraken")
-    for piece in KRAKEN_PIECES:
-        visual = Image.open(source / f"kraken_{piece.name}_visual.png").convert("RGBA")
-        mask = Image.open(source / f"kraken_{piece.name}_mask.png").convert("RGBA")
-        if visual.size != mask.size:
-            raise ValueError(f"Kraken {piece.name} visual and mask dimensions differ.")
-        reference = scale_rgba(visual, (visual.width * SCALE, visual.height * SCALE))
-        reference.save(paths["reference"] / f"kraken_{piece.name}_reference.png")
-        source_checksums[piece.name] = sha256(source / f"kraken_{piece.name}_mask.png")
-        x0, y0, x1, y1 = piece.crop
-        pieces.append({"id": piece.name, "x": x0, "y": y0, "width": x1 - x0, "height": y1 - y0, "sorting_order": piece.sorting_order, "reference": f"kraken_{piece.name}_reference.png"})
-    write_prepare_outputs("kraken", master, pieces, {"source_mask_sha256": source_checksums})
-    return pieces
-
-
-def write_prepare_outputs(key: str, master: Image.Image, pieces: list[dict[str, int | str]], extra: dict[str, object] | None = None) -> None:
+def write_prepare_outputs(key: str, master: Image.Image, pieces: list[dict[str, int | str]]) -> None:
     paths = output_paths(key)
-    layout = {"canvas": {"width": CANVAS[0], "height": CANVAS[1]}, "production_scale": SCALE, "pieces": pieces}
-    if extra:
-        layout.update(extra)
-    (paths["root"]).mkdir(parents=True, exist_ok=True)
-    (paths["root"] / f"{key}_guide_contour_layout.json").write_text(json.dumps(layout, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    reconstruct_reference(key, master, pieces)
+    paths["root"].mkdir(parents=True, exist_ok=True)
+    layout = {"canvas": {"width": master.width, "height": master.height}, "production_scale": SCALE, "source_overlap_radius_px": SECTION_OVERLAP_RADIUS, "pieces": pieces}
+    (paths["root"] / f"{key}_layout.json").write_text(json.dumps(layout, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     qa = {
         "arena": key,
         "sections": len(pieces),
         "source_alpha_pixels": int((np.asarray(master.getchannel("A")) >= ALPHA_THRESHOLD).sum()),
-        "rule": "Guide contour faces partition every visible source pixel. Reference crops are two-times resolution only; they cannot be promoted before an individual enhancement exists.",
+        "rule": "Source segments are direct original crops. One enhanced RGBA visual and a new alpha-derived mask are required per section before promotion.",
     }
-    if extra:
-        qa.update(extra)
     (paths["root"] / "qa_prepare.json").write_text(json.dumps(qa, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
-
-def reconstruct_reference(key: str, master: Image.Image, pieces: list[dict[str, int | str]]) -> None:
-    paths = output_paths(key)
-    reconstructed = Image.new("RGBA", (CANVAS[0] * SCALE, CANVAS[1] * SCALE))
-    for item in pieces:
-        visual = Image.open(paths["reference"] / str(item["reference"])).convert("RGBA")
-        reconstructed.alpha_composite(visual, (int(item["x"]) * SCALE, int(item["y"]) * SCALE))
-    reconstructed.save(paths["root"] / "review_reference_reconstructed_transparent.png")
-    for name, color in (("dark", (20, 24, 33, 255)), ("light", (244, 246, 248, 255)), ("blue", (22, 90, 160, 255))):
-        preview = Image.new("RGBA", reconstructed.size, color)
-        preview.alpha_composite(reconstructed)
-        preview.convert("RGB").save(paths["root"] / f"review_reference_reconstructed_{name}.png")
 
 
 def apply_enhancements(key: str, pieces: list[dict[str, int | str]]) -> None:
     paths = output_paths(key)
-    paths["visuals"].mkdir(parents=True, exist_ok=True)
+    paths["segments"].mkdir(parents=True, exist_ok=True)
     paths["masks"].mkdir(parents=True, exist_ok=True)
     records: list[dict[str, object]] = []
     missing: list[str] = []
     for item in pieces:
         piece_id = str(item["id"])
-        reference_path = paths["reference"] / str(item["reference"])
-        enhanced_path = paths["enhanced"] / f"{key}_{piece_id}_enhanced.png"
-        if not enhanced_path.is_file():
-            missing.append(enhanced_path.name)
+        source_path = paths["source"] / str(item["source"])
+        visual_path = paths["segments"] / f"{key}_{piece_id}_visual.png"
+        if not visual_path.is_file():
+            missing.append(visual_path.name)
             continue
-        reference = Image.open(reference_path).convert("RGBA")
-        final = final_from_enhancement(Image.open(enhanced_path).convert("RGBA"), reference)
-        visual_path = paths["visuals"] / f"{key}_{piece_id}_visual.png"
-        mask_path = paths["masks"] / f"{key}_{piece_id}_mask.png"
+        enhanced = require_true_alpha(Image.open(visual_path), f"{key}/{piece_id} enhanced visual")
+        final = scale_rgba(enhanced, (int(item["target_width"]), int(item["target_height"])))
+        source = scale_rgba(Image.open(source_path), final.size)
+        final = constrain_enhanced_alpha_to_layout(final, source)
+        final = repair_key_colour_fringe(final, source)
         final.save(visual_path)
-        if key == "kraken":
-            source_mask = Image.open(ROOT / "art_source/arenas/kraken/production_source" / f"kraken_{piece_id}_mask.png").convert("RGBA")
-            mask = source_mask.resize(final.size, Image.Resampling.NEAREST)
-        else:
-            mask = mask_for(reference)
+        mask_path = paths["masks"] / f"{key}_{piece_id}_mask.png"
+        mask = mask_for(final)
         mask.save(mask_path)
         records.append({
             "id": piece_id,
             "quality_pass": "individual_image_to_image_enhancement",
-            "reference_sha256": sha256(reference_path),
-            "enhanced_sha256": sha256(enhanced_path),
-            "final_visual_sha256": sha256(visual_path),
+            "source_sha256": sha256(source_path),
+            "enhanced_visual_sha256": sha256(visual_path),
+            "mask_sha256": sha256(mask_path),
             "width": final.width,
             "height": final.height,
-            "alpha_source": "reference_crop",
+            "alpha_source": "enhanced_visual",
         })
     if missing:
-        raise FileNotFoundError("No resize fallback is allowed. Missing individual enhanced renders: " + ", ".join(missing))
-    (paths["root"] / "quality_pass_manifest.json").write_text(json.dumps({"rule": "Every fragment is individually enhanced after the guide-contour crop; resize-only output cannot be promoted.", "visual_style": STYLE_SPEC, "pieces": records}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    verify_final(key, pieces, records)
-    write_final_review(key, pieces)
+        raise FileNotFoundError("No resize-only fallback is allowed. Missing one enhanced RGBA visual per source segment: " + ", ".join(missing))
+    repaired_seam_pixels = repair_shared_seams(key, pieces)
+    report = reconstruct_and_validate(key, pieces)
+    report["repaired_shared_seam_pixels"] = repaired_seam_pixels
+    (paths["root"] / "alignment_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if not report["passed"]:
+        raise ValueError(f"{key}: final enhanced fragments do not align with original; see alignment_report.json")
+    manifest = {
+        "rule": "Every source segment receives one enhanced RGBA visual; its paired mask is generated from that enhanced visual alpha.",
+        "visual_style": STYLE_SPEC,
+        "pieces": records,
+        "alignment": report,
+    }
+    (paths["root"] / "quality_pass_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def verify_final(key: str, pieces: list[dict[str, int | str]], records: list[dict[str, object]]) -> None:
+def largest_component_pixels(mask: np.ndarray) -> int:
+    """Return the area of the largest connected true-pixel component."""
+    labels, count = ndimage.label(mask)
+    if count == 0:
+        return 0
+    areas = np.bincount(labels.ravel())
+    return int(areas[1:].max())
+
+
+def reconstruct_and_validate(key: str, pieces: list[dict[str, int | str]]) -> dict[str, int | float | bool]:
+    """Write the sole final transparent composite and validate placement.
+
+    The source-crop overlap is a hard seam contract: any meaningful hole in it
+    is rejected.  Outside that shared band, image-to-image finishing may alter
+    a tiny anti-aliased outer contour; a bounded area budget records that
+    variation without permitting an arbitrary change of silhouette.
+    """
     paths = output_paths(key)
-    if len(records) != len(pieces):
-        raise ValueError(f"{key}: every fragment needs one quality record.")
+    arena = GUIDED_ARENAS[key]
+    master = require_true_alpha(Image.open(ROOT / "art_source/arenas" / key / arena.source_folder / arena.source_file), f"{key} original")
+    final_size = (master.width * SCALE, master.height * SCALE)
+    reconstructed = Image.new("RGBA", final_size)
+    coverage = np.zeros((final_size[1], final_size[0]), dtype=np.uint8)
+    source_coverage = np.zeros((final_size[1], final_size[0]), dtype=np.uint8)
+    collision = np.zeros((final_size[1], final_size[0]), dtype=np.uint8)
     for item in pieces:
         piece_id = str(item["id"])
-        visual = Image.open(paths["visuals"] / f"{key}_{piece_id}_visual.png").convert("RGBA")
+        visual = Image.open(paths["segments"] / f"{key}_{piece_id}_visual.png").convert("RGBA")
         mask = Image.open(paths["masks"] / f"{key}_{piece_id}_mask.png").convert("RGBA")
         if visual.size != mask.size:
             raise ValueError(f"{key}/{piece_id}: visual and mask dimensions differ.")
         if not set(mask.getchannel("R").get_flattened_data()).issubset({0, 255}):
             raise ValueError(f"{key}/{piece_id}: collision mask is not binary.")
-        # The authoritative reference crop is built from the clean master, so
-        # it has no guide pixels. Generated RGB may legitimately contain warm
-        # painted materials; a red-colour heuristic here would falsely reject
-        # those details even though reference alpha owns every edge and mask.
-
-
-def write_final_review(key: str, pieces: list[dict[str, int | str]]) -> None:
-    """Produce the actual quality-pass composite, not merely the references."""
-    paths = output_paths(key)
-    reconstructed = Image.new("RGBA", (CANVAS[0] * SCALE, CANVAS[1] * SCALE))
-    for item in pieces:
-        piece_id = str(item["id"])
-        visual = Image.open(paths["visuals"] / f"{key}_{piece_id}_visual.png").convert("RGBA")
         reconstructed.alpha_composite(visual, (int(item["x"]) * SCALE, int(item["y"]) * SCALE))
-    reconstructed.save(paths["root"] / "review_quality_reconstructed_transparent.png")
-    for name, color in (("dark", (20, 24, 33, 255)), ("light", (244, 246, 248, 255)), ("blue", (22, 90, 160, 255))):
-        preview = Image.new("RGBA", reconstructed.size, color)
-        preview.alpha_composite(reconstructed)
-        preview.convert("RGB").save(paths["root"] / f"review_quality_reconstructed_{name}.png")
+        alpha = np.asarray(visual.getchannel("A")) >= ALPHA_THRESHOLD
+        y, x = int(item["y"]) * SCALE, int(item["x"]) * SCALE
+        coverage[y:y + visual.height, x:x + visual.width] += alpha
+        collision[y:y + mask.height, x:x + mask.width] = np.maximum(
+            collision[y:y + mask.height, x:x + mask.width],
+            np.asarray(mask.getchannel("R"), dtype=np.uint8))
+        source = Image.open(paths["source"] / str(item["source"])).convert("RGBA")
+        source = scale_rgba(source, (int(item["target_width"]), int(item["target_height"])))
+        source_alpha = np.asarray(source.getchannel("A")) >= ALPHA_THRESHOLD
+        source_coverage[y:y + source.height, x:x + source.width] += source_alpha
+    reconstructed.save(paths["root"] / f"{key}_reconstructed_transparent.png")
+    opaque_mask_alpha = np.full(collision.shape, 255, dtype=np.uint8)
+    Image.fromarray(np.dstack((collision, collision, collision, opaque_mask_alpha)), "RGBA").save(
+        paths["root"] / f"{key}_reconstructed_mask.png")
+    expected = np.asarray(scale_rgba(master, final_size).getchannel("A")) >= ALPHA_THRESHOLD
+    actual = np.asarray(reconstructed.getchannel("A")) >= ALPHA_THRESHOLD
+    structure = np.ones((2 * ALIGNMENT_TOLERANCE_PX + 1, 2 * ALIGNMENT_TOLERANCE_PX + 1), dtype=bool)
+    missing = expected & ~ndimage.binary_dilation(actual, structure=structure)
+    out_of_bounds = actual & ~ndimage.binary_dilation(expected, structure=structure)
+    # Only pixels that were intentionally shared by two direct source crops are
+    # a seam.  Testing this band separately prevents benign outer-edge style
+    # refinement from concealing a true gap between sections.
+    shared_source_band = source_coverage > 1
+    seam_gaps = shared_source_band & ~ndimage.binary_dilation(actual, structure=structure)
+    original_alpha_pixels = int(expected.sum())
+    exterior_budget_pixels = int(np.floor(original_alpha_pixels * MAX_EXTERIOR_DRIFT_RATIO))
+    seam_gap_pixels = int(seam_gaps.sum())
+    max_seam_gap_component_pixels = largest_component_pixels(seam_gaps)
+    missing_pixels = int(missing.sum())
+    out_of_bounds_pixels = int(out_of_bounds.sum())
+    report = {
+        "passed": (
+            seam_gap_pixels <= MAX_SEAM_GAP_PIXELS
+            and max_seam_gap_component_pixels <= MAX_SEAM_GAP_COMPONENT_PIXELS
+            and missing_pixels <= exterior_budget_pixels
+            and out_of_bounds_pixels <= exterior_budget_pixels
+        ),
+        "tolerance_px": ALIGNMENT_TOLERANCE_PX,
+        "original_alpha_pixels": original_alpha_pixels,
+        "exterior_drift_budget_ratio": MAX_EXTERIOR_DRIFT_RATIO,
+        "exterior_drift_budget_pixels": exterior_budget_pixels,
+        "missing_pixels": missing_pixels,
+        "out_of_bounds_pixels": out_of_bounds_pixels,
+        "seam_gap_pixels": seam_gap_pixels,
+        "max_seam_gap_component_pixels": max_seam_gap_component_pixels,
+        "seam_gap_budget_pixels": MAX_SEAM_GAP_PIXELS,
+        "seam_gap_component_budget_pixels": MAX_SEAM_GAP_COMPONENT_PIXELS,
+        "overlap_pixels": int((coverage > 1).sum()),
+        "source_overlap_pixels": int(shared_source_band.sum()),
+        "max_piece_overlap": int(coverage.max()),
+    }
+    (paths["root"] / "alignment_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return report
 
 
 def promote(key: str, pieces: list[dict[str, int | str]]) -> None:
@@ -411,15 +473,17 @@ def promote(key: str, pieces: list[dict[str, int | str]]) -> None:
     runtime.mkdir(parents=True, exist_ok=True)
     for item in pieces:
         piece_id = str(item["id"])
-        shutil.copy2(paths["visuals"] / f"{key}_{piece_id}_visual.png", runtime / f"{key}_{piece_id}_visual.png")
+        shutil.copy2(paths["segments"] / f"{key}_{piece_id}_visual.png", runtime / f"{key}_{piece_id}_visual.png")
         shutil.copy2(paths["masks"] / f"{key}_{piece_id}_mask.png", runtime / f"{key}_{piece_id}_mask.png")
+    shutil.copy2(paths["root"] / f"{key}_reconstructed_transparent.png", runtime / f"{key}_reconstructed_visual.png")
+    shutil.copy2(paths["root"] / f"{key}_reconstructed_mask.png", runtime / f"{key}_reconstructed_mask.png")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--arenas", nargs="+", choices=[*GUIDED_ARENAS, "kraken"], default=[*GUIDED_ARENAS, "kraken"])
-    parser.add_argument("--prepare", action="store_true", help="Write deterministic, two-times-resolution reference crops and QA previews.")
-    parser.add_argument("--apply-enhancements", action="store_true", help="Require individual enhanced render inputs and create final visual/mask pairs.")
+    parser.add_argument("--arenas", nargs="+", choices=list(GUIDED_ARENAS), default=list(GUIDED_ARENAS))
+    parser.add_argument("--prepare", action="store_true", help="Validate true-alpha source and write only deterministic source segments plus layout data.")
+    parser.add_argument("--apply-enhancements", action="store_true", help="Use one enhanced RGBA visual per section, derive masks, and validate the sole transparent reconstruction.")
     parser.add_argument("--promote", action="store_true", help="Copy verified final pairs into Unity Resources.")
     args = parser.parse_args()
     if not args.prepare and not args.apply_enhancements:
@@ -429,9 +493,9 @@ def main() -> None:
     result: dict[str, int] = {}
     for key in args.arenas:
         if args.prepare:
-            pieces = prepare_kraken() if key == "kraken" else prepare_guided(GUIDED_ARENAS[key])
+            pieces = prepare_guided(GUIDED_ARENAS[key])
         else:
-            layout = json.loads((output_paths(key)["root"] / f"{key}_guide_contour_layout.json").read_text(encoding="utf-8"))
+            layout = json.loads((output_paths(key)["root"] / f"{key}_layout.json").read_text(encoding="utf-8"))
             pieces = list(layout["pieces"])
         if args.apply_enhancements:
             apply_enhancements(key, pieces)

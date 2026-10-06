@@ -1,0 +1,22 @@
+{
+  "canvas_width_px": 4096,
+  "canvas_height_px": 2304,
+  "production_scale": 2,
+  "source_canvas_width_px": 2048,
+  "source_canvas_height_px": 1152,
+  "alignment_reference": "previous_vines_runtime_layout",
+  "draw_order": ["left", "upper", "lower", "right"],
+  "runtime_full_canvas": {
+    "visual": "vines_reconstructed_transparent.png",
+    "mask": "vines_reconstructed_mask.png",
+    "unity_resource_root": "Visuals/Arenas/Vines/",
+    "unity_surface_scale": 2.25,
+    "processing_notes": "AI-enhanced RGB interiors rebuilt with the original alpha silhouettes; a 12px source-colour edge band was restored to suppress generated-background halos before final composition."
+  },
+  "pieces": [
+    { "id": "left", "source": "enhanced_renders/vines_section_01_visual.png", "affine_to_production_canvas": [2.4788, 0.0148, 16.9652, 0.0100, 2.4356, 213.8156] },
+    { "id": "upper", "source": "enhanced_renders/vines_section_02_visual.png", "affine_to_production_canvas": [2.4664, -0.0200, 1484.9564, -0.0056, 2.4072, 206.1640] },
+    { "id": "lower", "source": "enhanced_renders/vines_section_04_visual.png", "affine_to_production_canvas": [2.4355, 0.0711, 1300.5416, -0.0300, 2.4439, 1056.0159] },
+    { "id": "right", "source": "enhanced_renders/vines_section_03_visual.png", "affine_to_production_canvas": [2.4828, -0.0056, 3096.3548, 0.0292, 2.3908, 397.7392] }
+  ]
+}

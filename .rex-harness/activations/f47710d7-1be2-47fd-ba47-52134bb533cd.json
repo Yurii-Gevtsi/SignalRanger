@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "f47710d7-1be2-47fd-ba47-52134bb533cd",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "localization-base-stat-descriptions",
+  "profile": "default",
+  "request": {
+    "message": "Update localized basic-stat descriptions and weapon-specific Radius upgrade descriptions across all dictionaries.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 1,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "90e88714-2beb-4b7b-82f3-63bcb21a5836",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-upgrade-description-localization-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-upgrade-description-localization-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-upgrade-description-localization-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-upgrade-description-localization-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:docs/architecture/workshop-upgrade-description-localization-testability.json",
+    "reason": "The focused Unity MCP EditMode runner is unavailable at 127.0.0.1:8080, so the new isolated resolver test cannot be executed as a real RED in this session.",
+    "missingAcceptance": "Run Game.Tests.EditMode.App.WorkshopUpgradeDescriptionResolverTests in Unity after the local test runner is available."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-19T13:01:02.351Z",
+  "updatedAt": "2026-09-19T13:04:16.098Z"
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "9ad4954c-44b6-484a-a93b-df681acce818",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "8415efb13ed700db20d5e7ee956d5606fa80b59b15025f4b9306d7ca3619f848",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-22T17:23:20.414Z"
+}

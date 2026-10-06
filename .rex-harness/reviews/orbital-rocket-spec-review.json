@@ -1,0 +1,15 @@
+{
+  "spec": "docs/design/weapon-combat-specification.md, card 22",
+  "implemented": [
+    "Fire confirmation ends the current player turn.",
+    "The strike is deferred until the opponent turn ends.",
+    "The strike uses a falling projectile and applies the configured weapon's blast damage and radius.",
+    "The impact leaves the next player turn open."
+  ],
+  "missing": [
+    "Double tap on arena to place a red cross marker.",
+    "Marker cancellation when another weapon is selected in the scene.",
+    "Approved falling missile skin in BattleSceneController."
+  ],
+  "verdict": "change-required"
+}

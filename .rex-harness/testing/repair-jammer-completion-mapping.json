@@ -1,0 +1,20 @@
+{
+  "acceptanceMapping": [
+    {
+      "behavior": "Timed regeneration is blocked by a jammer",
+      "publicEntry": "BattleSimulation.TryFire and EndActiveTurn",
+      "observable": "BattleUnitState.Health remains unchanged during jammed target turns, then restores after expiry"
+    },
+    {
+      "behavior": "Two duration upgrades produce four target turns",
+      "publicEntry": "BattleSimulation.TryFire with player WeaponEvolutionProfile",
+      "observable": "BattleSimulation.IsUnitRepairJammed remains true through four completed target turns and false afterwards"
+    },
+    {
+      "behavior": "Presentation can query state",
+      "publicEntry": "BattleSimulation.IsUnitRepairJammed",
+      "observable": "The query tracks the same active/expired lifecycle observed by the combat test"
+    }
+  ],
+  "antiGaming": "Tests retain exact health and turn-count assertions; they do not inspect private dictionaries or relax an assertion to accept a blocked branch."
+}

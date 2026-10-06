@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "994fcb00-fdcf-4d0e-bf09-cc7bc48efc06",
+  "command": {
+    "executable": "node",
+    "args": [
+      "-e",
+      "const r=await fetch(http://127.0.0.1:8080/mcp,{method:POST,headers:{content-type:application/json,accept:application/json,",
+      "text/event-stream,mcp-session-id:d4a1a88457bb42ddbe4510005eb80a20},body:JSON.stringify({jsonrpc:2.0,id:12,method:tools/call,params:{name:get_test_job,arguments:{job_id:4b7b48a7d6ad4572a147c6b7504c7c64,include_failed_tests:true,include_details:true}}})});const t=await r.text();console.log(t);process.exit(t.includes(\"status\":\"failed\")?1:2)"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "3ae80b8ad3161c12471e264b2c18d2354574f8ec6220a474f4425fa25502b31b",
+  "observedAt": "2026-09-17T05:22:13.269Z"
+}

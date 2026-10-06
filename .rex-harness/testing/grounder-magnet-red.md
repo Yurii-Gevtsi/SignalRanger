@@ -1,0 +1,3 @@
+# Grounder magnet RED
+
+Input: real Unity EditMode simulation places grounder, clears owner, spawns opposing `weapon.blaster-caset` projectile at device position + (1.4, 1) with leftward velocity, then ticks 120 frames. Public observation: `ProjectileExploded` point. Expected distance to grounder <0.55; observed 2.78568029, exit 1. Exact command `node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PullsHostilePhysicalShotIntoDevice`; fresh RED receipt `bef9b634-10b3-4fea-83f2-d62d3ec03cd1`. Failure matches missing attraction/interception, not a test fixture or infrastructure failure. The earlier placement GREEN remains `receipt:0086bbce-4cf8-4420-b23e-b97e974ee9b9`.

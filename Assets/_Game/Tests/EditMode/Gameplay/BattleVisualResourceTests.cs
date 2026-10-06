@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using Game.App;
 using Game.Core;
@@ -18,19 +19,15 @@ namespace Game.Tests.EditMode.Gameplay
     public sealed class BattleVisualResourceTests
     {
         [Test]
-        public void TrainingArena_UsesReadableDestructibleLayersAndReusableAnimatedBackground()
+        public void TrainingArena_UsesOneImportedDestructibleSurfaceAndReusableAnimatedBackground()
         {
-            var ground = Resources.Load<Sprite>("Visuals/Arenas/Training/ground");
-            var ship = Resources.Load<Sprite>("Visuals/Arenas/Training/ship");
-            var boxes = Resources.Load<Sprite>("Visuals/Arenas/Training/boxes");
-            var rock = Resources.Load<Sprite>("Visuals/Arenas/Training/rock");
+            var trainingVisual = Resources.Load<Sprite>("Visuals/Arenas/Training/training_reconstructed_visual");
+            var trainingMask = Resources.Load<Texture2D>("Visuals/Arenas/Training/training_reconstructed_mask");
             var laserKillZone = Resources.Load<Sprite>("Visuals/Arenas/KillZones/LaserLine/laser_line");
             var backgroundPrefab = Resources.Load<GameObject>("Visuals/Arenas/Backgrounds/Sky1/AnimatedSkyBackground");
 
-            Assert.IsNotNull(ground);
-            Assert.IsNotNull(ship);
-            Assert.IsNotNull(boxes);
-            Assert.IsNotNull(rock);
+            Assert.IsNotNull(trainingVisual);
+            Assert.IsNotNull(trainingMask);
             Assert.IsNotNull(laserKillZone);
             Assert.IsNotNull(backgroundPrefab);
             Assert.IsNotNull(backgroundPrefab.GetComponent<AnimatedSkyBackground>());
@@ -59,15 +56,42 @@ namespace Game.Tests.EditMode.Gameplay
                 Object.DestroyImmediate(backgroundInstance);
             }
 
-            Assert.IsTrue(ground.texture.isReadable);
-            Assert.IsTrue(ship.texture.isReadable);
-            Assert.IsTrue(boxes.texture.isReadable);
-            Assert.IsTrue(rock.texture.isReadable);
-            Assert.AreEqual(2172, ground.texture.width);
-            Assert.AreEqual(724, ground.texture.height);
-            Assert.That(ground.pixelsPerUnit, Is.EqualTo(256f).Within(0.01f));
-            Assert.AreEqual(0, ground.texture.GetPixel(0, 0).a);
+            Assert.IsTrue(trainingVisual.texture.isReadable);
+            Assert.AreEqual(4013, trainingVisual.texture.width);
+            Assert.AreEqual(2258, trainingVisual.texture.height);
+            Assert.That(trainingVisual.pixelsPerUnit, Is.EqualTo(256f).Within(0.01f));
+            Assert.IsTrue(trainingMask.isReadable);
+            Assert.AreEqual(4013, trainingMask.width);
+            Assert.AreEqual(2258, trainingMask.height);
+            Assert.AreEqual(Color.black, trainingMask.GetPixel(0, 0));
+
             Assert.AreEqual(0, laserKillZone.texture.GetPixel(0, 0).a);
+        }
+
+        [Test]
+        public void ImportedTrainingAndBonesSurfacesHaveMatchingReadableMasks()
+        {
+            foreach (var id in new[] { "training_reconstructed" })
+            {
+                var visual = Resources.Load<Sprite>($"Visuals/Arenas/Training/{id}_visual");
+                var mask = Resources.Load<Texture2D>($"Visuals/Arenas/Training/{id}_mask");
+                Assert.IsNotNull(visual, id + " visual");
+                Assert.IsNotNull(mask, id + " mask");
+                Assert.IsTrue(visual.texture.isReadable, id + " visual readable");
+                Assert.IsTrue(mask.isReadable, id + " mask readable");
+                Assert.AreEqual(visual.texture.width, mask.width, id + " width");
+                Assert.AreEqual(visual.texture.height, mask.height, id + " height");
+                Assert.AreEqual(256f, visual.pixelsPerUnit, 0.01f, id + " PPU");
+            }
+
+            var bonesVisual = Resources.Load<Sprite>("Visuals/Arenas/Bones/bones_reconstructed_visual");
+            var bonesMask = Resources.Load<Texture2D>("Visuals/Arenas/Bones/bones_reconstructed_mask");
+            Assert.IsNotNull(bonesVisual);
+            Assert.IsNotNull(bonesMask);
+            Assert.IsTrue(bonesVisual.texture.isReadable);
+            Assert.IsTrue(bonesMask.isReadable);
+            Assert.AreEqual(bonesVisual.texture.width, bonesMask.width);
+            Assert.AreEqual(bonesVisual.texture.height, bonesMask.height);
         }
 
         [Test]
@@ -126,6 +150,15 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void RepairJammerStatus_UsesTheApprovedTransparentIconResource()
+        {
+            var icon = Resources.Load<Texture2D>("UI/Common/no-repair-2");
+            Assert.IsNotNull(icon);
+            Assert.That(icon.width, Is.EqualTo(512));
+            Assert.That(icon.height, Is.EqualTo(512));
+        }
+
+        [Test]
         public void WeaponsScreenResources_ContainShelfBackgroundAndOwnedWeaponIcons()
         {
             Assert.IsNotNull(Resources.Load<Texture2D>("UI/Menu/weapons_menu"));
@@ -133,7 +166,8 @@ namespace Game.Tests.EditMode.Gameplay
 
             foreach (var weapon in PrototypeWeaponLibrary.CreateAll())
             {
-                if (weapon == null || WeaponPresentationText.IsDropOnly(weapon))
+                if (weapon == null || WeaponPresentationText.IsDropOnly(weapon)
+                    || string.IsNullOrWhiteSpace(weapon.IconId))
                 {
                     continue;
                 }
@@ -163,6 +197,574 @@ namespace Game.Tests.EditMode.Gameplay
             foreach (var spriteId in projectileSpriteIds)
             {
                 Assert.IsNotNull(Resources.Load<Texture2D>($"UI/Weapons/{spriteId}"), spriteId);
+            }
+        }
+
+        [Test]
+        public void DrillLaser_FiringShowsTheTransparentBeamSprite()
+        {
+            var root = new GameObject("Drill Laser Presentation Test");
+            GameObject beam = null;
+            try
+            {
+                var controller = root.AddComponent<BattleSceneController>();
+                var handler = typeof(BattleSceneController).GetMethod(
+                    "OnSimulationLinearWeaponEffectStarted",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                var arenaObjects = typeof(BattleSceneController).GetField(
+                    "_arenaObjects",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                Assert.That(handler, Is.Not.Null);
+                Assert.That(arenaObjects, Is.Not.Null);
+                var drill = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                    weapon => weapon.WeaponId == "weapon.bur");
+                UnityEngine.TestTools.LogAssert.Expect(LogType.Error,
+                    new System.Text.RegularExpressions.Regex("Destroy may not be called from edit mode"));
+                handler.Invoke(controller, new object[]
+                {
+                    new LinearWeaponEffectEvent(drill, BattleTeamId.Player,
+                        Vector2.zero, Vector2.right, 3.25f, 0.4f, 1f)
+                });
+
+                var visuals = (List<GameObject>)arenaObjects.GetValue(controller);
+                beam = visuals[visuals.Count - 1];
+                var sprite = beam.GetComponent<SpriteRenderer>().sprite;
+                Assert.That(sprite, Is.Not.Null);
+                Assert.That(sprite.texture,
+                    Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/bur_lazer")));
+                Assert.That(beam.GetComponent<LinearWeaponEffectVisual>(), Is.Not.Null);
+            }
+            finally
+            {
+                if (beam != null)
+                {
+                    Object.DestroyImmediate(beam);
+                }
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [Test]
+        public void Grenade_FlightUsesItsThrownBodyAndPurchasedSkin()
+        {
+            var root = new GameObject("Grenade Flight Art Test");
+            try
+            {
+                var controller = root.AddComponent<BattleSceneController>();
+                var grenade = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                    weapon => weapon.WeaponId == "weapon.granata");
+                var projectile = new SimProjectile(1, grenade.CreateProjectileDefinition(),
+                    "player.test.01", Vector2.zero, Vector2.right, 3f);
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var resolve = typeof(BattleSceneController).GetMethod("ResolveProjectileSprite", flags);
+                var progressionField = typeof(BattleSceneController).GetField("_playerProgression", flags);
+                Assert.That(resolve, Is.Not.Null);
+                Assert.That(progressionField, Is.Not.Null);
+
+                var baseSprite = (Sprite)resolve.Invoke(controller, new object[] { projectile, grenade });
+                Assert.That(baseSprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/granata")));
+
+                var progress = new Game.Data.Save.SaveWeaponProgressData
+                {
+                    weaponId = grenade.WeaponId,
+                    rank = 5,
+                    evolutionChoices = new List<Game.Data.Save.SaveWeaponEvolutionChoiceData>
+                    {
+                        new() { rank = 5, optionId = "target-pull" }
+                    }
+                };
+                progressionField.SetValue(controller, BattleWeaponProgression.FromResolver(
+                    new[] { grenade }, weaponId => weaponId == grenade.WeaponId ? progress : null));
+                var upgradedSprite = (Sprite)resolve.Invoke(controller, new object[] { projectile, grenade });
+                Assert.That(upgradedSprite.texture,
+                    Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/granata_5_10_B")));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [TestCase(0, 67.5f)]
+        [TestCase(4, 59.5f)]
+        public void Rope_AimPurchasesExpandTheSameSectorShownAndUsedInBattle(
+            int purchases, float expectedAngle)
+        {
+            var root = new GameObject("Rope Aim Sector Test");
+            try
+            {
+                var rope = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                    weapon => weapon.WeaponId == "weapon.rope");
+                var progress = new Game.Data.Save.SaveWeaponProgressData
+                {
+                    weaponId = rope.WeaponId,
+                    rank = purchases + 1,
+                    upgradeChoices = new List<Game.Data.Save.SaveWeaponUpgradeChoiceData>()
+                };
+                for (var rank = 2; rank <= progress.rank; rank++)
+                {
+                    progress.upgradeChoices.Add(new Game.Data.Save.SaveWeaponUpgradeChoiceData
+                    {
+                        rank = rank,
+                        path = (int)Game.Data.Progression.WeaponUpgradePath.Aim
+                    });
+                }
+
+                var controller = root.AddComponent<BattleSceneController>();
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                typeof(BattleSceneController).GetField("_inventory", flags)
+                    .SetValue(controller, new WeaponInventoryRuntime(new[] { rope }));
+                typeof(BattleSceneController).GetField("_playerProgression", flags)
+                    .SetValue(controller, BattleWeaponProgression.FromResolver(
+                        new[] { rope }, id => id == rope.WeaponId ? progress : null));
+                var method = typeof(BattleSceneController).GetMethod(
+                    "ClampRopeAimToUpwardSector", flags);
+                Assert.That(method, Is.Not.Null);
+                var result = (AimState)method.Invoke(controller, new object[]
+                {
+                    new AimState(Vector2.zero, Vector2.right, 1f, true)
+                });
+                Assert.That(Mathf.Atan2(result.Direction.y, result.Direction.x) * Mathf.Rad2Deg,
+                    Is.EqualTo(expectedAngle).Within(0.001f));
+                Assert.That(WeaponUpgradeChoiceResolver.ResolveRopeAimSectorDegrees(purchases),
+                    Is.EqualTo(180f - expectedAngle * 2f).Within(0.001f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [TestCase(0, 3)]
+        [TestCase(1, 4)]
+        [TestCase(4, 7)]
+        public void Grenade_LoadoutPurchasesIncreaseBattleAmmo(int purchases, int expectedAmmo)
+        {
+            var grenade = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                weapon => weapon.WeaponId == "weapon.granata");
+            var progress = new Game.Data.Save.SaveWeaponProgressData
+            {
+                weaponId = grenade.WeaponId,
+                rank = 1 + purchases,
+                upgradeChoices = new List<Game.Data.Save.SaveWeaponUpgradeChoiceData>()
+            };
+            for (var rank = 2; rank <= progress.rank; rank++)
+            {
+                progress.upgradeChoices.Add(new Game.Data.Save.SaveWeaponUpgradeChoiceData
+                {
+                    rank = rank,
+                    path = (int)Game.Data.Progression.WeaponUpgradePath.Loadout
+                });
+            }
+
+            var progression = BattleWeaponProgression.FromResolver(new[] { grenade },
+                weaponId => weaponId == grenade.WeaponId ? progress : null);
+            var inventory = new WeaponInventoryRuntime(new[] { grenade });
+            var apply = typeof(BattleSceneController).GetMethod("ApplyProgressionAmmo",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            Assert.That(apply, Is.Not.Null);
+            apply.Invoke(null, new object[] { inventory, progression });
+
+            Assert.That(inventory.GetRemainingAmmo(grenade), Is.EqualTo(expectedAmmo));
+            for (var shot = 0; shot < expectedAmmo; shot++)
+            {
+                Assert.That(inventory.TryConsumeSelectedAmmo(), Is.True);
+            }
+            Assert.That(inventory.TryConsumeSelectedAmmo(), Is.False);
+        }
+
+        [TestCase("weapon.granata", 0, 3.5f)]
+        [TestCase("weapon.granata", 1, 3.7f)]
+        [TestCase("weapon.granata", 4, 4.3f)]
+        [TestCase("weapon.impulse", 0, 3.5f)]
+        [TestCase("weapon.impulse", 1, 3.7f)]
+        [TestCase("weapon.impulse", 4, 4.3f)]
+        public void AimedStarter_AimPurchasesExtendOnlyItsTrajectoryPreview(
+            string weaponId, int purchases, float expectedLength)
+        {
+            var root = new GameObject("Starter Aim Preview Test");
+            try
+            {
+                var grenade = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                    weapon => weapon.WeaponId == "weapon.granata");
+                var impulse = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                    weapon => weapon.WeaponId == "weapon.impulse");
+                var selected = weaponId == grenade.WeaponId ? grenade : impulse;
+                var other = weaponId == grenade.WeaponId ? impulse : grenade;
+                var progress = new Game.Data.Save.SaveWeaponProgressData
+                {
+                    weaponId = selected.WeaponId,
+                    rank = 1 + purchases,
+                    upgradeChoices = new List<Game.Data.Save.SaveWeaponUpgradeChoiceData>()
+                };
+                for (var rank = 2; rank <= progress.rank; rank++)
+                {
+                    progress.upgradeChoices.Add(new Game.Data.Save.SaveWeaponUpgradeChoiceData
+                    {
+                        rank = rank,
+                        path = (int)Game.Data.Progression.WeaponUpgradePath.Aim
+                    });
+                }
+
+                var controller = root.AddComponent<BattleSceneController>();
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var progressionField = typeof(BattleSceneController).GetField("_playerProgression", flags);
+                var resolve = typeof(BattleSceneController).GetMethod("ResolveTrajectoryPreviewLength", flags);
+                Assert.That(progressionField, Is.Not.Null);
+                Assert.That(resolve, Is.Not.Null);
+                progressionField.SetValue(controller, BattleWeaponProgression.FromResolver(
+                    new[] { selected }, id => id == selected.WeaponId ? progress : null));
+
+                Assert.That((float)resolve.Invoke(controller, new object[] { selected, 3.5f }),
+                    Is.EqualTo(expectedLength).Within(0.001f));
+                Assert.That((float)resolve.Invoke(controller, new object[] { other, 3.5f }),
+                    Is.EqualTo(3.5f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [TestCase(0, 3)]
+        [TestCase(4, 7)]
+        public void IonShotgun_LoadoutPurchasesIncreaseBattleAmmo(int purchases, int expectedAmmo)
+        {
+            var shotgun = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                weapon => weapon.WeaponId == "weapon.ion-shotgun");
+            var progress = new Game.Data.Save.SaveWeaponProgressData
+            {
+                weaponId = shotgun.WeaponId,
+                rank = 1 + purchases,
+                upgradeChoices = new List<Game.Data.Save.SaveWeaponUpgradeChoiceData>()
+            };
+            for (var rank = 2; rank <= progress.rank; rank++)
+            {
+                progress.upgradeChoices.Add(new Game.Data.Save.SaveWeaponUpgradeChoiceData
+                {
+                    rank = rank,
+                    path = (int)Game.Data.Progression.WeaponUpgradePath.Loadout
+                });
+            }
+
+            var progression = BattleWeaponProgression.FromResolver(new[] { shotgun },
+                weaponId => weaponId == shotgun.WeaponId ? progress : null);
+            var inventory = new WeaponInventoryRuntime(new[] { shotgun });
+            var apply = typeof(BattleSceneController).GetMethod("ApplyProgressionAmmo",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            Assert.That(apply, Is.Not.Null);
+            apply.Invoke(null, new object[] { inventory, progression });
+
+            Assert.That(inventory.GetRemainingAmmo(shotgun), Is.EqualTo(expectedAmmo));
+        }
+
+        [Test]
+        public void IonShotgun_FlyingPelletsAreTinyBlackCirclesWithoutShotArt()
+        {
+            var root = new GameObject("Ion Shotgun Pellet Visual Test");
+            try
+            {
+                var controller = root.AddComponent<BattleSceneController>();
+                var shotgun = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                    weapon => weapon.WeaponId == "weapon.ion-shotgun");
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var spriteMethod = typeof(BattleSceneController).GetMethod("ResolveProjectileSprite", flags);
+                var colorMethod = typeof(BattleSceneController).GetMethod("ResolveProjectileVisualColor", flags);
+                var scaleMethod = typeof(BattleSceneController).GetMethod("ResolveProjectileVisualScale",
+                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+                Assert.That(spriteMethod, Is.Not.Null);
+                Assert.That(colorMethod, Is.Not.Null);
+                Assert.That(scaleMethod, Is.Not.Null);
+
+                Assert.That(spriteMethod.Invoke(controller, new object[] { null, shotgun }), Is.Null);
+                Assert.That((Color)colorMethod.Invoke(controller, new object[] { shotgun }), Is.EqualTo(Color.black));
+                Assert.That((Vector3)scaleMethod.Invoke(null,
+                    new object[] { shotgun, shotgun.ProjectileRadius * 2f }),
+                    Is.EqualTo(Vector3.one * 0.02f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [TestCase(0, 1)]
+        [TestCase(1, 2)]
+        [TestCase(2, 3)]
+        public void C4_LoadoutPurchasesIncreaseBattleSupply(int purchases, int expectedAmmo)
+        {
+            var c4 = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                weapon => weapon.WeaponId == "weapon.c4");
+            var progress = new Game.Data.Save.SaveWeaponProgressData
+            {
+                weaponId = c4.WeaponId,
+                rank = 1 + purchases,
+                upgradeChoices = new List<Game.Data.Save.SaveWeaponUpgradeChoiceData>()
+            };
+            for (var rank = 2; rank <= progress.rank; rank++)
+            {
+                progress.upgradeChoices.Add(new Game.Data.Save.SaveWeaponUpgradeChoiceData
+                {
+                    rank = rank,
+                    path = (int)Game.Data.Progression.WeaponUpgradePath.Loadout
+                });
+            }
+
+            var progression = BattleWeaponProgression.FromResolver(new[] { c4 },
+                weaponId => weaponId == c4.WeaponId ? progress : null);
+            var inventory = new WeaponInventoryRuntime(new[] { c4 });
+            var apply = typeof(BattleSceneController).GetMethod("ApplyProgressionAmmo",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            Assert.That(apply, Is.Not.Null);
+            apply.Invoke(null, new object[] { inventory, progression });
+            Assert.That(inventory.GetRemainingAmmo(c4), Is.EqualTo(expectedAmmo));
+        }
+
+        [Test]
+        public void C4_DroppedChargeUsesTheWeaponBodySprite()
+        {
+            var root = new GameObject("C4 Ground Visual Test");
+            GameObject chargeVisual = null;
+            try
+            {
+                var controller = root.AddComponent<BattleSceneController>();
+                var c4 = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                    weapon => weapon.WeaponId == "weapon.c4");
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var handler = typeof(BattleSceneController).GetMethod("OnSimulationChargeDeployed", flags);
+                var visualsField = typeof(BattleSceneController).GetField("_mineVisuals", flags);
+                Assert.That(handler, Is.Not.Null);
+                Assert.That(visualsField, Is.Not.Null);
+                handler.Invoke(controller, new object[]
+                {
+                    new ChargeDeployedEvent(7, Vector2.up, Vector2.zero, 0.4f,
+                        c4, BattleTeamId.Opponent)
+                });
+
+                var visuals = (Dictionary<int, GameObject>)visualsField.GetValue(controller);
+                chargeVisual = visuals[7];
+                var sprite = chargeVisual.GetComponent<SpriteRenderer>().sprite;
+                Assert.That(sprite, Is.Not.Null);
+                Assert.That(sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/C4")));
+                Assert.That(chargeVisual.GetComponent<GroundDropVisual>(), Is.Not.Null);
+            }
+            finally
+            {
+                if (chargeVisual != null)
+                {
+                    Object.DestroyImmediate(chargeVisual);
+                }
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [Test]
+        public void OrbitalRocket_TimerExpiryInvalidatesTheVisibleDraftMarker()
+        {
+            var method = typeof(BattleSceneController).GetMethod(
+                "ShouldClearOrbitalTargetMarkerOnTurnAdvanced",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+
+            Assert.IsNotNull(method, "the scene requires an explicit turn-boundary rule for orbital marker cleanup");
+            Assert.That((bool)method.Invoke(null, new object[] { TurnAdvanceReason.PlayerTimerExpired }), Is.True);
+            Assert.That((bool)method.Invoke(null, new object[] { TurnAdvanceReason.InstantActionCompleted }), Is.False);
+        }
+
+        [Test]
+        public void Grounder_DeploymentShowsItsSkinAndRemovalClearsIt()
+        {
+            var root = new GameObject("Grounder Presentation Test");
+            GameObject visual = null;
+            try
+            {
+                var controller = root.AddComponent<BattleSceneController>();
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var deployed = typeof(BattleSceneController).GetMethod("OnSimulationGrounderDeployed", flags);
+                var removed = typeof(BattleSceneController).GetMethod("OnSimulationGrounderRemoved", flags);
+                var visualsField = typeof(BattleSceneController).GetField("_grounderVisuals", flags);
+                Assert.IsNotNull(deployed);
+                Assert.IsNotNull(removed);
+                Assert.IsNotNull(visualsField);
+
+                var weapon = WeaponDefinition.CreateRuntime(
+                    "weapon.grounder", "weapon.grounder.name", WeaponRole.DefensiveTool,
+                    0, 1.4f, 0.1f, 0f, 5f, 4f, 8f, 1, null, null, iconId: "grounder");
+                var point = new Vector2(2f, -1f);
+                deployed.Invoke(controller, new object[]
+                {
+                    new GrounderDeployedEvent(47, point, weapon, BattleTeamId.Player)
+                });
+
+                var visuals = (Dictionary<int, GameObject>)visualsField.GetValue(controller);
+                Assert.That(visuals.TryGetValue(47, out visual), Is.True);
+                Assert.That(visual.transform.position, Is.EqualTo((Vector3)point));
+                var renderer = visual.GetComponent<SpriteRenderer>();
+                Assert.IsNotNull(renderer);
+                Assert.That(renderer.enabled, Is.True);
+                Assert.IsNotNull(renderer.sprite);
+                Assert.That(renderer.sprite.texture,
+                    Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/grounder")));
+
+                UnityEngine.TestTools.LogAssert.Expect(LogType.Error,
+                    new System.Text.RegularExpressions.Regex("Destroy may not be called from edit mode"));
+                removed.Invoke(controller, new object[] { 47 });
+                Assert.That(visuals.ContainsKey(47), Is.False);
+            }
+            finally
+            {
+                if (visual != null)
+                {
+                    Object.DestroyImmediate(visual);
+                }
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [Test]
+        public void OrbitalRocket_UsesMissileFlightResource()
+        {
+            var root = new GameObject("Orbital Rocket Presentation Test");
+            try
+            {
+                var controller = root.AddComponent<BattleSceneController>();
+                var weapon = WeaponDefinition.CreateRuntime(
+                    "weapon.orbital-rocket",
+                    "weapon.orbital-rocket.name",
+                    WeaponRole.ArcingExplosive,
+                    65,
+                    2.1f,
+                    0.16f,
+                    1.1f,
+                    6f,
+                    5f,
+                    14f,
+                    2,
+                    null,
+                    new[] { "arc", "orbital" },
+                    iconId: "missle_5_10_A");
+                var projectile = new SimProjectile(
+                    1,
+                    weapon.CreateProjectileDefinition(),
+                    "player.test.01",
+                    Vector2.zero,
+                    Vector2.down,
+                    2f);
+                var resolver = typeof(BattleSceneController).GetMethod(
+                    "ResolveProjectileSprite",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+                Assert.IsNotNull(resolver, "projectile sprite selection must remain an explicit battle-scene seam");
+                var sprite = resolver.Invoke(controller, new object[] { projectile, weapon }) as Sprite;
+
+                Assert.IsNotNull(sprite, "orbital rocket requires an explicit flight sprite");
+                Assert.That(sprite.texture.name, Is.EqualTo("missle_fly"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [Test]
+        public void GuardianDrone_UsesSmallMortarShotSprite()
+        {
+            var root = new GameObject("Guardian Drone Presentation Test");
+            try
+            {
+                var controller = root.AddComponent<BattleSceneController>();
+                var weapon = WeaponDefinition.CreateRuntime(
+                    "weapon.guardian-drone",
+                    "weapon.guardian-drone.name",
+                    WeaponRole.DefensiveTool,
+                    42,
+                    1.6f,
+                    0.12f,
+                    1f,
+                    3f,
+                    0f,
+                    0f,
+                    2,
+                    null,
+                    new[] { "ground", "drone" },
+                    iconId: "guardian_drone");
+                var projectile = new SimProjectile(
+                    1,
+                    weapon.CreateProjectileDefinition(),
+                    "player.test.01",
+                    Vector2.zero,
+                    Vector2.right,
+                    2f);
+                var resolver = typeof(BattleSceneController).GetMethod(
+                    "ResolveProjectileSprite",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+                Assert.IsNotNull(resolver);
+                var sprite = resolver.Invoke(controller, new object[] { projectile, weapon }) as Sprite;
+
+                Assert.IsNotNull(sprite, "the guardian's guaranteed shot needs a real projectile skin");
+                Assert.That(sprite.texture.name, Is.EqualTo("mortira_shot"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [Test]
+        public void SwapJump_UsesTeleportProjectileSprite()
+        {
+            var root = new GameObject("Swap Jump Presentation Test");
+            try
+            {
+                var controller = root.AddComponent<BattleSceneController>();
+                var weapon = WeaponDefinition.CreateRuntime(
+                    "weapon.swap-jump",
+                    "weapon.swap-jump.name",
+                    WeaponRole.MovementTool,
+                    0,
+                    1.4f,
+                    0.12f,
+                    1f,
+                    3f,
+                    0f,
+                    0f,
+                    1,
+                    null,
+                    new[] { "movement", "teleport" },
+                    iconId: "teleport_5_10_A");
+                var projectile = new SimProjectile(
+                    1,
+                    weapon.CreateProjectileDefinition(),
+                    "player.test.01",
+                    Vector2.zero,
+                    Vector2.right,
+                    2f);
+                var resolver = typeof(BattleSceneController).GetMethod(
+                    "ResolveProjectileSprite",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+                Assert.IsNotNull(resolver);
+                var sprite = resolver.Invoke(controller, new object[] { projectile, weapon }) as Sprite;
+
+                Assert.IsNotNull(sprite, "swap-jump requires an in-flight teleport skin");
+                Assert.That(sprite.texture.name, Is.EqualTo("teleport_5_10_A"));
+
+                var ordinaryTeleport = WeaponDefinition.CreateRuntime(
+                    "weapon.teleport", "weapon.teleport.name", WeaponRole.MovementTool,
+                    0, 1.4f, 0.12f, 1f, 3f, 0f, 0f, 1, null,
+                    new[] { "movement", "teleport" }, iconId: "teleport_5_10_A");
+                var scaleResolver = typeof(BattleSceneController).GetMethod(
+                    "ResolveProjectileVisualScale",
+                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+                Assert.IsNotNull(scaleResolver);
+                var swapScale = (Vector3)scaleResolver.Invoke(null, new object[] { weapon, 0.24f });
+                var teleportScale = (Vector3)scaleResolver.Invoke(null, new object[] { ordinaryTeleport, 0.24f });
+                Assert.That(swapScale, Is.EqualTo(teleportScale),
+                    "the two teleport spheres must have the same in-flight size");
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
             }
         }
 
@@ -205,63 +807,6 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void SwapJump_UsesTeleportProjectileSprite()
-        {
-            var root = new GameObject("Swap Jump Presentation Test");
-            try
-            {
-                var controller = root.AddComponent<BattleSceneController>();
-                var weapon = WeaponDefinition.CreateRuntime(
-                    "weapon.swap-jump",
-                    "weapon.swap-jump.name",
-                    WeaponRole.MovementTool,
-                    0,
-                    1.4f,
-                    0.12f,
-                    1f,
-                    3f,
-                    0f,
-                    0f,
-                    1,
-                    null,
-                    new[] { "movement", "teleport" },
-                    iconId: "teleport_5_10_A");
-                var projectile = new SimProjectile(
-                    1,
-                    weapon.CreateProjectileDefinition(),
-                    "player.test.01",
-                    Vector2.zero,
-                    Vector2.right,
-                    2f);
-                var resolver = typeof(BattleSceneController).GetMethod(
-                    "ResolveProjectileSprite",
-                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-
-                Assert.IsNotNull(resolver);
-                var sprite = resolver.Invoke(controller, new object[] { projectile, weapon }) as Sprite;
-
-                Assert.IsNotNull(sprite, "swap-jump requires an in-flight teleport skin");
-                Assert.That(sprite.texture.name, Is.EqualTo("teleport_5_10_A"));
-                var ordinaryTeleport = WeaponDefinition.CreateRuntime(
-                    "weapon.teleport", "weapon.teleport.name", WeaponRole.MovementTool,
-                    0, 1.4f, 0.12f, 1f, 3f, 0f, 0f, 1, null,
-                    new[] { "movement", "teleport" }, iconId: "teleport_5_10_A");
-                var scaleResolver = typeof(BattleSceneController).GetMethod(
-                    "ResolveProjectileVisualScale",
-                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-                Assert.IsNotNull(scaleResolver);
-                var swapScale = (Vector3)scaleResolver.Invoke(null, new object[] { weapon, 0.24f });
-                var teleportScale = (Vector3)scaleResolver.Invoke(null, new object[] { ordinaryTeleport, 0.24f });
-                Assert.That(swapScale, Is.EqualTo(teleportScale),
-                    "the two teleport spheres must have the same in-flight size");
-            }
-            finally
-            {
-                Object.DestroyImmediate(root);
-            }
-        }
-
-        [Test]
         public void LoadingScreenPreview_BuildsMissionTextSpinnerAndPercent()
         {
             var root = new GameObject("Loading Screen Test");
@@ -283,7 +828,7 @@ namespace Game.Tests.EditMode.Gameplay
                 var ring = RequireRect(canvas, "Loading Ring");
                 Assert.AreEqual(new Vector2(224f, 224f), ring.sizeDelta);
                 Assert.AreEqual(new Vector2(0f, -400f), ring.anchoredPosition);
-                Assert.AreEqual(new Vector3(-1f, 1f, 1f), ring.localScale);
+                Assert.AreEqual(Vector3.one, ring.localScale);
                 Assert.AreEqual("loader3", ring.GetComponent<Image>().sprite.texture.name);
 
                 var percent = RequireRect(canvas, "Loading Percent");
@@ -332,32 +877,41 @@ namespace Game.Tests.EditMode.Gameplay
                 firstWeapon.GetComponent<Button>().onClick.Invoke();
                 Assert.IsTrue(detailsOverlay.gameObject.activeSelf);
                 var details = RequireRect(detailsOverlay, "Weapon Details");
-                Assert.AreEqual(new Vector2(1400f, 940f), details.sizeDelta);
-                Assert.That(details.anchoredPosition.x, Is.EqualTo(400f).Within(0.01f));
-                Assert.IsFalse(details.GetComponent<Image>().raycastTarget);
+                Assert.AreEqual(new Vector2(580f, 720f), details.sizeDelta);
+                Assert.That(details.anchoredPosition, Is.EqualTo(Vector2.zero));
+                var detailsFrame = RequireRect(details, "Weapon Details Frame");
+                Assert.AreEqual(new Vector2(560f, 720f), detailsFrame.sizeDelta);
                 var detailsHitArea = RequireRect(details, "Weapon Details Hit Area");
-                Assert.AreEqual(new Vector2(1240f, 760f), detailsHitArea.sizeDelta);
+                Assert.AreEqual(new Vector2(580f, 720f), detailsHitArea.sizeDelta);
                 Assert.IsTrue(detailsHitArea.GetComponent<Image>().raycastTarget);
                 var detailChildren = detailsOverlay.GetComponentsInChildren<Transform>(true);
                 Assert.IsFalse(System.Array.Exists(detailChildren, child => child.name == "Buy Coins"));
                 Assert.IsFalse(System.Array.Exists(detailChildren, child => child.name == "Buy Crystals"));
                 Assert.IsFalse(System.Array.Exists(detailChildren, child => child.name == "Weapon Details Icon"));
-                Assert.IsFalse(System.Array.Exists(detailChildren, child => child.name == "Weapon Details Level"));
-                Assert.IsTrue(System.Array.Exists(detailChildren, child => child.name == "Close Weapon Details"));
-                var close = RequireRect(details, "Close Weapon Details");
-                Assert.AreEqual(new Vector2(-260f, -250f), close.anchoredPosition);
+                Assert.IsTrue(System.Array.Exists(detailChildren, child => child.name == "Weapon Details Level"));
+                Assert.IsFalse(System.Array.Exists(detailChildren, child => child.name == "Close Weapon Details"));
                 var name = RequireRect(details, "Weapon Details Name");
-                Assert.That(name.anchoredPosition.y, Is.EqualTo(-250f).Within(0.01f));
-                Assert.That(name.anchorMin.x, Is.EqualTo(0.20f).Within(0.01f));
-                Assert.That(name.anchorMax.x, Is.EqualTo(0.82f).Within(0.01f));
+                Assert.That(name.anchorMin.x, Is.EqualTo(0.08f).Within(0.01f));
+                Assert.That(name.anchorMax.x, Is.EqualTo(0.92f).Within(0.01f));
                 var description = RequireRect(details, "Weapon Details Description");
-                Assert.That(description.offsetMax.y, Is.EqualTo(-20f).Within(0.01f));
+                Assert.That(description.anchoredPosition.y, Is.EqualTo(-20f).Within(0.01f));
                 Assert.That(description.anchorMin.x, Is.EqualTo(0.20f).Within(0.01f));
                 Assert.That(description.anchorMax.x, Is.EqualTo(0.80f).Within(0.01f));
+                for (var i = 0; i < 4; i++)
+                {
+                    var stat = RequireRect(details, i switch
+                    {
+                        0 => "Weapon Details Damage",
+                        1 => "Weapon Details Accuracy",
+                        2 => "Weapon Details Ammo",
+                        _ => "Weapon Details Radius"
+                    });
+                    Assert.AreEqual(new Vector2(70f, 70f), RequireRect(stat, stat.name + " Icon").sizeDelta);
+                }
 
                 var rightSideWeapon = RequireRect(canvas, "Shelf Weapon 5");
                 rightSideWeapon.GetComponent<Button>().onClick.Invoke();
-                Assert.That(details.anchoredPosition.x, Is.EqualTo(-550f).Within(0.01f));
+                Assert.That(details.anchoredPosition, Is.EqualTo(Vector2.zero));
             }
             finally
             {
@@ -612,6 +1166,57 @@ namespace Game.Tests.EditMode.Gameplay
             }
         }
 
+        [Test]
+        public void BattleHud_RopeControlsSeparateHorizontalInputAndHideWeaponReset()
+        {
+            var root = new GameObject("Battle HUD Rope Layout Test");
+            GameObject createdEventSystem = null;
+            try
+            {
+                var view = root.AddComponent<BattleHudView>();
+                createdEventSystem = GameObject.Find("Battle EventSystem");
+                var activeField = typeof(BattleHudView).GetField(
+                    "_ropeControlsActive",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var layoutMethod = typeof(BattleHudView).GetMethod(
+                    "ApplyMovementControlLayout",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var resetMethod = typeof(BattleHudView).GetMethod(
+                    "ShouldShowWeaponReset",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                Assert.IsNotNull(activeField);
+                Assert.IsNotNull(layoutMethod);
+                Assert.IsNotNull(resetMethod);
+
+                activeField.SetValue(view, true);
+                layoutMethod.Invoke(view, null);
+
+                var canvas = root.transform.Find("Battle HUD Canvas");
+                var moveLeft = RequireRect(canvas, "Move Left");
+                var moveRight = RequireRect(canvas, "Move Right");
+                var ropeUp = RequireRect(canvas, "Jump Left");
+                var ropeDown = RequireRect(canvas, "Jump Right");
+
+                Assert.That(moveLeft.anchoredPosition.y, Is.EqualTo(moveRight.anchoredPosition.y).Within(0.01f));
+                Assert.That(moveRight.anchoredPosition.x - moveLeft.anchoredPosition.x, Is.EqualTo(254f).Within(0.01f));
+                Assert.That(moveRight.anchoredPosition.x - moveLeft.anchoredPosition.x, Is.GreaterThan(moveLeft.sizeDelta.x));
+                Assert.That(ropeUp.anchoredPosition.x, Is.EqualTo(ropeDown.anchoredPosition.x).Within(0.01f));
+                Assert.That(ropeUp.anchoredPosition.y, Is.GreaterThan(ropeDown.anchoredPosition.y));
+                Assert.That(ropeUp.localEulerAngles.z, Is.EqualTo(270f).Within(0.01f));
+                Assert.That(ropeDown.localEulerAngles.z, Is.EqualTo(270f).Within(0.01f));
+                Assert.IsFalse((bool)resetMethod.Invoke(null, new object[] { true, true }));
+                Assert.IsTrue((bool)resetMethod.Invoke(null, new object[] { true, false }));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+                if (createdEventSystem != null)
+                {
+                    Object.DestroyImmediate(createdEventSystem);
+                }
+            }
+        }
+
         private static RectTransform RequireRect(Transform parent, string name)
         {
             var child = parent.Find(name) as RectTransform;
@@ -635,13 +1240,25 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.IsFalse(theme.Background.HasSprite);
             Assert.IsTrue(theme.HasBackgroundPrefab);
             Assert.AreEqual("Visuals/Arenas/Backgrounds/Sky1/AnimatedSkyBackground", theme.BackgroundPrefabResourcePath);
-            Assert.AreEqual("Visuals/Arenas/Training/ground", theme.Foreground.ResourcePath);
-            Assert.AreEqual(3, theme.AdditionalDestructibleLayers.Count);
-            Assert.AreEqual("Visuals/Arenas/Training/ship", theme.AdditionalDestructibleLayers[0].ResourcePath);
-            Assert.AreEqual("Visuals/Arenas/Training/boxes", theme.AdditionalDestructibleLayers[1].ResourcePath);
-            Assert.AreEqual("Visuals/Arenas/Training/rock", theme.AdditionalDestructibleLayers[2].ResourcePath);
+            Assert.IsFalse(theme.Foreground.HasSprite);
+            Assert.AreEqual(0, theme.AdditionalDestructibleLayers.Count);
             Assert.AreEqual(0, theme.OverlayLayers.Count);
             Assert.IsTrue(theme.CameraFrame.HasValue);
+        }
+
+        [Test]
+        public void TrainingArenaCameraFrame_ShowsTheWholeReconstructedSurfaceAtEightyPercentWidth()
+        {
+            var arena = PrototypeArenaLibrary.CreateAll()[0];
+            var theme = BattleVisualThemeLibrary.ForArena(arena);
+            var surface = arena.SpriteSurfaces[0];
+
+            Assert.IsTrue(theme.CameraFrame.HasValue);
+            var visual = Resources.Load<Sprite>(surface.VisualResourcePath);
+            Assert.IsNotNull(visual);
+
+            var terrainWidth = visual.texture.width / visual.pixelsPerUnit * surface.Scale;
+            Assert.That(terrainWidth / theme.CameraFrame.Value.width, Is.EqualTo(0.837f).Within(0.01f));
         }
 
         [Test]
@@ -689,11 +1306,276 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void ForestTheme_LowersArenaContentWithoutMovingItsBackground()
+        {
+            var forest = System.Array.Find(PrototypeArenaLibrary.CreateAll(), arena => arena.ArenaId == "arena.forest");
+            var theme = BattleVisualThemeLibrary.ForArena(forest);
+
+            Assert.That(theme.WorldOffset, Is.EqualTo(Vector2.zero));
+            Assert.That(theme.ArenaContentOffset, Is.EqualTo(new Vector2(0f, -3.16f)));
+            Assert.That(theme.CameraBottomPanAllowance, Is.EqualTo(3.2f).Within(0.001f));
+        }
+
+        [Test]
+        public void ForestArena_UsesAuthoredTreeBranchOpponentSpawn()
+        {
+            var forest = System.Array.Find(PrototypeArenaLibrary.CreateAll(), arena => arena.ArenaId == "arena.forest");
+
+            Assert.That(forest.OpponentSpawn.x, Is.EqualTo(4.8f).Within(0.001f));
+            Assert.That(forest.OpponentSpawn.y, Is.EqualTo(2.5f).Within(0.001f));
+        }
+
+        [Test]
+        public void RobotsAndMonumentThemes_UseTheirStaticBackgrounds()
+        {
+            var expectedBackgrounds = new Dictionary<string, string>
+            {
+                ["arena.robots"] = "Visuals/Arenas/Backgrounds/Robots/robots",
+                ["arena.monument"] = "Visuals/Arenas/Backgrounds/Monument/monument"
+            };
+
+            foreach (var pair in expectedBackgrounds)
+            {
+                var arena = System.Array.Find(PrototypeArenaLibrary.CreateAll(), item => item.ArenaId == pair.Key);
+                var theme = BattleVisualThemeLibrary.ForArena(arena);
+
+                Assert.That(theme.Background.ResourcePath, Is.EqualTo(pair.Value), pair.Key);
+                Assert.IsFalse(theme.HasBackgroundPrefab, pair.Key);
+            }
+        }
+
+        [Test]
+        public void BonesTheme_UsesASlightlyDimmedArenaTint()
+        {
+            var bones = System.Array.Find(PrototypeArenaLibrary.CreateAll(), arena => arena.ArenaId == "arena.bones");
+            var theme = BattleVisualThemeLibrary.ForArena(bones);
+
+            Assert.That(theme.ArenaTint.r, Is.EqualTo(0.84f).Within(0.001f));
+            Assert.That(theme.ArenaTint.g, Is.EqualTo(0.84f).Within(0.001f));
+            Assert.That(theme.ArenaTint.b, Is.EqualTo(0.84f).Within(0.001f));
+            Assert.That(theme.ArenaTint.a, Is.EqualTo(1f).Within(0.001f));
+        }
+
+        [Test]
+        public void ForestTheme_UsesASlightlyDimmedArenaTint()
+        {
+            var forest = System.Array.Find(PrototypeArenaLibrary.CreateAll(), arena => arena.ArenaId == "arena.forest");
+            var theme = BattleVisualThemeLibrary.ForArena(forest);
+
+            Assert.That(theme.ArenaTint.r, Is.EqualTo(0.84f).Within(0.001f));
+            Assert.That(theme.ArenaTint.g, Is.EqualTo(0.84f).Within(0.001f));
+            Assert.That(theme.ArenaTint.b, Is.EqualTo(0.84f).Within(0.001f));
+            Assert.That(theme.ArenaTint.a, Is.EqualTo(1f).Within(0.001f));
+        }
+
+        [Test]
+        public void GribTheme_DisablesKillZoneButKeepsTerrainFallBoundary()
+        {
+            var grib = System.Array.Find(PrototypeArenaLibrary.CreateAll(), arena => arena.ArenaId == "arena.grib");
+            var theme = BattleVisualThemeLibrary.ForArena(grib);
+
+            Assert.IsNotNull(theme);
+            Assert.IsFalse(theme.HasKillZone);
+        }
+
+        [Test]
+        public void LagunaTheme_LowersOnlyBattleContentByFiftyPixels()
+        {
+            var laguna = System.Array.Find(PrototypeArenaLibrary.CreateAll(), arena => arena.ArenaId == "arena.laguna");
+            var theme = BattleVisualThemeLibrary.ForArena(laguna);
+
+            Assert.That(theme.WorldOffset, Is.EqualTo(Vector2.zero));
+            Assert.That(theme.ArenaContentOffset, Is.EqualTo(new Vector2(0f, -50f / 256f)));
+        }
+
+        [Test]
+        public void MonumentTheme_LowersOnlyBattleContentByFiftyPixels()
+        {
+            var monument = System.Array.Find(PrototypeArenaLibrary.CreateAll(), arena => arena.ArenaId == "arena.monument");
+            var theme = BattleVisualThemeLibrary.ForArena(monument);
+
+            Assert.That(theme.WorldOffset, Is.EqualTo(Vector2.zero));
+            Assert.That(theme.ArenaContentOffset, Is.EqualTo(new Vector2(0f, -50f / 256f)));
+        }
+
+        [Test]
+        public void VinesTheme_DisablesKillZoneButKeepsTerrainFallBoundary()
+        {
+            var vines = System.Array.Find(PrototypeArenaLibrary.CreateAll(), arena => arena.ArenaId == "arena.vines");
+            var theme = BattleVisualThemeLibrary.ForArena(vines);
+
+            Assert.IsNotNull(theme);
+            Assert.IsFalse(theme.HasKillZone);
+        }
+
+        [Test]
+        public void RobotsTheme_LowersOnlyBattleContentByFiftyPixels()
+        {
+            var robots = System.Array.Find(PrototypeArenaLibrary.CreateAll(), arena => arena.ArenaId == "arena.robots");
+            var theme = BattleVisualThemeLibrary.ForArena(robots);
+
+            Assert.That(theme.WorldOffset, Is.EqualTo(Vector2.zero));
+            Assert.That(theme.ArenaContentOffset, Is.EqualTo(new Vector2(0f, -50f / 256f)));
+        }
+
+        [Test]
+        public void KillZoneVisual_IsTwiceItsPreviousHeight()
+        {
+            var field = typeof(BattleSceneController).GetField(
+                "KillZoneVisualHeightScale",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+            Assert.IsNotNull(field);
+            Assert.That((float)field.GetRawConstantValue(), Is.EqualTo(0.9f).Within(0.001f));
+        }
+
+        [Test]
+        public void ForestArena_ReconstructedFullCanvasHasTheRuntimeVisualAndCollisionMask()
+        {
+            var visual = Resources.Load<Sprite>("Visuals/Arenas/Forest/forest_reconstructed_visual");
+            var mask = Resources.Load<Texture2D>("Visuals/Arenas/Forest/forest_reconstructed_mask");
+
+            Assert.IsNotNull(visual);
+            Assert.IsNotNull(mask);
+            Assert.That(visual.texture.width, Is.EqualTo(3344));
+            Assert.That(visual.texture.height, Is.EqualTo(1882));
+            Assert.That(visual.pixelsPerUnit, Is.EqualTo(256f));
+            Assert.That(mask.width, Is.EqualTo(visual.texture.width));
+            Assert.That(mask.height, Is.EqualTo(visual.texture.height));
+            Assert.IsTrue(mask.isReadable);
+        }
+
+        [Test]
+        public void GribArena_ReconstructedFullCanvasHasTheRuntimeVisualAndCollisionMask()
+        {
+            var visual = Resources.Load<Sprite>("Visuals/Arenas/Grib/grib_reconstructed_visual");
+            var mask = Resources.Load<Texture2D>("Visuals/Arenas/Grib/grib_reconstructed_mask");
+
+            Assert.IsNotNull(visual);
+            Assert.IsNotNull(mask);
+            Assert.That(visual.texture.width, Is.EqualTo(3344));
+            Assert.That(visual.texture.height, Is.EqualTo(1880));
+            Assert.That(visual.pixelsPerUnit, Is.EqualTo(256f));
+            Assert.That(mask.width, Is.EqualTo(visual.texture.width));
+            Assert.That(mask.height, Is.EqualTo(visual.texture.height));
+            Assert.IsTrue(mask.isReadable);
+        }
+
+        [Test]
+        public void LagunaArena_ReconstructedFullCanvasHasTheRuntimeVisualAndCollisionMask()
+        {
+            var visual = Resources.Load<Sprite>("Visuals/Arenas/Laguna/laguna_reconstructed_visual");
+            var mask = Resources.Load<Texture2D>("Visuals/Arenas/Laguna/laguna_reconstructed_mask");
+
+            Assert.IsNotNull(visual);
+            Assert.IsNotNull(mask);
+            Assert.That(visual.texture.width, Is.EqualTo(4096));
+            Assert.That(visual.texture.height, Is.EqualTo(2304));
+            Assert.That(visual.pixelsPerUnit, Is.EqualTo(256f));
+            Assert.That(mask.width, Is.EqualTo(visual.texture.width));
+            Assert.That(mask.height, Is.EqualTo(visual.texture.height));
+            Assert.IsTrue(mask.isReadable);
+        }
+
+        [Test]
+        public void KrakenArena_ReconstructedFullCanvasHasTheRuntimeVisualAndCollisionMask()
+        {
+            var visual = Resources.Load<Sprite>("Visuals/Arenas/Kraken/kraken_reconstructed_visual");
+            var mask = Resources.Load<Texture2D>("Visuals/Arenas/Kraken/kraken_reconstructed_mask");
+
+            Assert.IsNotNull(visual);
+            Assert.IsNotNull(mask);
+            Assert.That(visual.texture.width, Is.EqualTo(4096));
+            Assert.That(visual.texture.height, Is.EqualTo(2304));
+            Assert.That(visual.pixelsPerUnit, Is.EqualTo(256f));
+            Assert.That(mask.width, Is.EqualTo(visual.texture.width));
+            Assert.That(mask.height, Is.EqualTo(visual.texture.height));
+            Assert.IsTrue(mask.isReadable);
+        }
+
+        [Test]
+        public void MonumentArena_ReconstructedFullCanvasHasTheRuntimeVisualAndCollisionMask()
+        {
+            var visual = Resources.Load<Sprite>("Visuals/Arenas/Monument/monument_reconstructed_visual");
+            var mask = Resources.Load<Texture2D>("Visuals/Arenas/Monument/monument_reconstructed_mask");
+
+            Assert.IsNotNull(visual);
+            Assert.IsNotNull(mask);
+            Assert.That(visual.texture.width, Is.EqualTo(4096));
+            Assert.That(visual.texture.height, Is.EqualTo(2304));
+            Assert.That(visual.pixelsPerUnit, Is.EqualTo(256f));
+            Assert.That(mask.width, Is.EqualTo(visual.texture.width));
+            Assert.That(mask.height, Is.EqualTo(visual.texture.height));
+            Assert.IsTrue(mask.isReadable);
+        }
+
+        [Test]
+        public void RobotsArena_ReconstructedFullCanvasHasTheRuntimeVisualAndCollisionMask()
+        {
+            var visual = Resources.Load<Sprite>("Visuals/Arenas/Robots/robots_reconstructed_visual");
+            var mask = Resources.Load<Texture2D>("Visuals/Arenas/Robots/robots_reconstructed_mask");
+
+            Assert.IsNotNull(visual);
+            Assert.IsNotNull(mask);
+            Assert.That(visual.texture.width, Is.EqualTo(4096));
+            Assert.That(visual.texture.height, Is.EqualTo(2304));
+            Assert.That(visual.pixelsPerUnit, Is.EqualTo(256f));
+            Assert.That(mask.width, Is.EqualTo(visual.texture.width));
+            Assert.That(mask.height, Is.EqualTo(visual.texture.height));
+            Assert.IsTrue(mask.isReadable);
+        }
+
+        [Test]
+        public void VinesArena_ReconstructedFullCanvasHasTheRuntimeVisualAndCollisionMask()
+        {
+            var visual = Resources.Load<Sprite>("Visuals/Arenas/Vines/vines_reconstructed_visual");
+            var mask = Resources.Load<Texture2D>("Visuals/Arenas/Vines/vines_reconstructed_mask");
+
+            Assert.IsNotNull(visual);
+            Assert.IsNotNull(mask);
+            Assert.That(visual.texture.width, Is.EqualTo(4096));
+            Assert.That(visual.texture.height, Is.EqualTo(2304));
+            Assert.That(visual.pixelsPerUnit, Is.EqualTo(256f));
+            Assert.That(mask.width, Is.EqualTo(visual.texture.width));
+            Assert.That(mask.height, Is.EqualTo(visual.texture.height));
+            Assert.IsTrue(mask.isReadable);
+        }
+
+        [Test]
+        public void ForestCamera_UsesLowerPanSpaceUntilTheFullyZoomedOutFrame()
+        {
+            var expandMethod = typeof(BattleSceneController).GetMethod(
+                "ExpandCameraPanBounds",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var clampBoundsMethod = typeof(BattleSceneController).GetMethod(
+                "SelectCameraClampBounds",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            Assert.IsNotNull(expandMethod);
+            Assert.IsNotNull(clampBoundsMethod);
+
+            var frame = Rect.MinMaxRect(-15.925f, -7.61f, 15.925f, 10.31f);
+            var panBounds = (Rect)expandMethod.Invoke(null, new object[] { frame, 0f, 3.2f });
+            Assert.That(panBounds.yMin, Is.EqualTo(-10.81f).Within(0.001f));
+            Assert.That(panBounds.yMax, Is.EqualTo(frame.yMax).Within(0.001f));
+
+            var intermediateBounds = (Rect)clampBoundsMethod.Invoke(null, new object[]
+            {
+                frame, panBounds, true, 7.7f, 8.96f
+            });
+            var zoomOutBounds = (Rect)clampBoundsMethod.Invoke(null, new object[]
+            {
+                frame, panBounds, true, 8.96f, 8.96f
+            });
+            Assert.That(intermediateBounds.yMin, Is.EqualTo(panBounds.yMin).Within(0.001f));
+            Assert.That(zoomOutBounds.yMin, Is.EqualTo(frame.yMin).Within(0.001f));
+        }
+
+        [Test]
         public void CameraFrameBottoms_AlignWithTheirArenaCanvasBottoms()
         {
             var expectedBottoms = new System.Collections.Generic.Dictionary<string, float>
             {
-                ["arena.training-meadow"] = -5.05f,
+                ["arena.training-meadow"] = -11.265f,
                 ["arena.desert-sci-fi"] = -11.25f,
                 ["arena.forest"] = -7.61f,
                 ["arena.city"] = -8.1f,

@@ -1,0 +1,95 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "c4ae479b13da4f19bb703ef149c238d9",
+    "status": "succeeded",
+    "mode": "PlayMode",
+    "started_unix_ms": 1791292510582,
+    "finished_unix_ms": 1791292534351,
+    "last_update_unix_ms": 1791292534351,
+    "progress": {
+      "completed": 6,
+      "total": 3,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791292529989,
+      "last_finished_test_full_name": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)",
+      "last_finished_unix_ms": 1791292534319,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "PlayMode",
+      "summary": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 13.685536,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)",
+          "state": "Passed",
+          "durationSeconds": 4.8458062,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)",
+          "state": "Passed",
+          "durationSeconds": 4.8458062,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)",
+          "state": "Passed",
+          "durationSeconds": 4.4437856,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)",
+          "state": "Passed",
+          "durationSeconds": 4.4437856,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)",
+          "state": "Passed",
+          "durationSeconds": 4.3299841,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)",
+          "state": "Passed",
+          "durationSeconds": 4.3299841,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}

@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "c15c0084-4164-42c8-8746-9ee207ed7a7e",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "architect-workshop-card-presentation-seam",
+  "profile": "default",
+  "request": {
+    "message": "Add a narrow pure presentation-state seam for Architect Workshop card interactivity and progress-scale visibility, then use it to implement the authorized Architect panel, confirmation-button icon, and disabled-card behaviors.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "active",
+  "stepIndex": 2,
+  "phaseId": "delivery",
+  "currentCapabilityId": "software.testing.tdd",
+  "completedCapabilities": [
+    "software.implementation.minimize",
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "0558f07e-8f32-4110-aba4-83772ba01ad9",
+      "capabilityId": "software.implementation.minimize",
+      "recipeId": "software.implementation.minimize.recipe",
+      "reasonCode": "new-construct-proposed",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "minimize"
+      ],
+      "evidence": [
+        {
+          "kind": "reuse-ladder-evaluated",
+          "refs": [
+            "file:docs/architecture/architect-workshop-card-presentation-seam.md"
+          ]
+        },
+        {
+          "kind": "minimal-option-recorded",
+          "refs": [
+            "file:docs/architecture/architect-workshop-card-presentation-seam.md"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "139d86f2-62fe-475b-a2a9-b18c8d223b16",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/architect-panel-payment-and-disabled-card-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/architect-panel-payment-and-disabled-card-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/architect-panel-payment-and-disabled-card-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/architect-workshop-card-presentation-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": {
+    "schemaVersion": 1,
+    "activationId": "f3e1a6bc-7370-42f1-a77a-4311f77f989b",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/architect-workshop-card-presentation-testability.json",
+      "receipt:0ab9fba6-f674-450c-8fcb-e6ad0b1c44c2"
+    ],
+    "status": "active",
+    "stageIndex": 1,
+    "stageId": "green",
+    "completedStages": [
+      "red"
+    ],
+    "evidence": [
+      {
+        "kind": "failing-test-observed",
+        "refs": [
+          "receipt:0ab9fba6-f674-450c-8fcb-e6ad0b1c44c2"
+        ]
+      },
+      {
+        "kind": "red-failure-reason-recorded",
+        "refs": [
+          "file:docs/architecture/architect-workshop-card-presentation-testability.json"
+        ]
+      }
+    ]
+  },
+  "currentCommand": {
+    "schemaVersion": 1,
+    "type": "provider.invoke",
+    "activationId": "f3e1a6bc-7370-42f1-a77a-4311f77f989b",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "stageId": "green",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/architect-workshop-card-presentation-testability.json",
+      "receipt:0ab9fba6-f674-450c-8fcb-e6ad0b1c44c2"
+    ],
+    "provider": {
+      "kind": "skill",
+      "id": "rex-tdd",
+      "source": "bundled",
+      "instructionsRef": "skill-sources/rex-tdd/SKILL.md"
+    },
+    "objective": "实施使目标测试通过的最小代码变更，并记录有边界的实现差异。",
+    "expectedEvidence": [
+      "passing-test-observed",
+      "implementation-diff-recorded"
+    ],
+    "executionToken": "12833aa2-d73b-4264-8b5c-db13d524fe37"
+  },
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "new-construct-proposed",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:docs/architecture/architect-workshop-card-presentation-testability.json",
+        "receipt:0ab9fba6-f674-450c-8fcb-e6ad0b1c44c2"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:docs/architecture/architect-workshop-card-presentation-testability.json",
+    "redCandidate": {
+      "publicEntry": "Unity EditMode test Game.Tests.EditMode.App.WorkshopCardPresentationStateResolverTests",
+      "setup": "Compile the focused test fixture with an existing Game.App resolver source, before the new presentation resolver is implemented.",
+      "command": {
+        "executable": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "& 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\DotNetSdk\\dotnet.exe' 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\DotNetSdk\\sdk\\8.0.318\\Roslyn\\bincore\\csc.dll' /noconfig /nostdlib /target:library /out:Temp\\WorkshopCardPresentationStateResolverTests.red.dll /reference:'C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\MonoBleedingEdge\\lib\\mono\\4.7.1-api\\mscorlib.dll' /reference:'C:\\Projects\\Game\\Library\\PackageCache\\com.unity.ext.nunit@44f7d31723bd\\net472\\unity-custom\\nunit.framework.dll' Assets\\_Game\\Runtime\\App\\WorkshopSpecialCardStateResolver.cs Assets\\_Game\\Tests\\EditMode\\App\\WorkshopCardPresentationStateResolverTests.cs"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "The presentation policy exposes an unavailable base-card explanation tap and a purchased one-time-special state with no progress scale.",
+      "observed": "Compilation fails with CS0103 because WorkshopCardPresentationStateResolver does not exist.",
+      "receiptRef": "receipt:0ab9fba6-f674-450c-8fcb-e6ad0b1c44c2",
+      "failureReason": "The requested rendering policy has no isolated presentation seam yet."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.implementation.minimize",
+      "software.testing.design",
+      "software.testing.tdd"
+    ]
+  },
+  "createdAt": "2026-09-19T15:20:30.632Z",
+  "updatedAt": "2026-09-19T15:24:02.122Z"
+}

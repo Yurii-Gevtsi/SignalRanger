@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "00d07419-b0c9-4e57-8e51-32c5ab17620a",
+  "command": {
+    "executable": "cmd",
+    "args": [
+      "/c",
+      "\\",
+      "C:\\Program",
+      "Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\DotNetSdk\\dotnet.exe\\ build Game.App.csproj --no-restore -v:q"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "d8d118de5b1023645feb363aad629f7e7581fb58903fe54b8eabc77b6d79d096",
+  "observedAt": "2026-09-18T11:25:15.315Z"
+}

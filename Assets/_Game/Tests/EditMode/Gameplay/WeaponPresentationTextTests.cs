@@ -1,3 +1,4 @@
+using Game.Core.Localization;
 using Game.Gameplay.Battle.Weapons;
 using NUnit.Framework;
 
@@ -5,6 +6,21 @@ namespace Game.Tests.EditMode.Gameplay
 {
     public sealed class WeaponPresentationTextTests
     {
+        private ILocalizationService _previousLocalization;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _previousLocalization = LocalizationRuntime.Service;
+            LocalizationRuntime.Service = new JsonLocalizationService("uk");
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            LocalizationRuntime.Service = _previousLocalization;
+        }
+
         [Test]
         public void PrototypeWeapons_HaveReadableRoleAndHintPresentation()
         {
@@ -21,11 +37,13 @@ namespace Game.Tests.EditMode.Gameplay
             var weapons = PrototypeWeaponLibrary.CreateAll();
 
             Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.impulse")), Is.EqualTo("навісна"));
-            Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.blaster-caset")), Is.EqualTo("пряма далека"));
             Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.bur")), Is.EqualTo("пряма ближня / інженерна"));
+            Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.granata")), Is.EqualTo("навісна"));
+            Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.rope")), Is.EqualTo("пряма ближня / інженерна"));
+            Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.plasma-sword")), Is.EqualTo("пряма ближня"));
+            Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.ion-shotgun")), Is.EqualTo("пряма ближня"));
             Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.c4")), Is.EqualTo("наземна"));
-            Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.fpv-drone")), Is.EqualTo("керована"));
-            Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.bonus-box")), Is.EqualTo("дроп на карті"));
+            Assert.That(WeaponPresentationText.DescribeCategory(Find(weapons, "weapon.bomber")), Is.EqualTo("керована"));
         }
 
         private static WeaponDefinition Find(WeaponDefinition[] weapons, string weaponId)

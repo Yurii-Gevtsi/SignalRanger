@@ -123,6 +123,45 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void Probe_Grenade_ReplaysBounceBeforeFuseResolution()
+        {
+            var harness = CreateHarness(gravityScale: 1f, weaponId: "weapon.granata");
+            var origin = new Vector2(-3f, 0f);
+            var direction = new Vector2(1f, 0.15f).normalized;
+            var power = harness.Weapon.MinPower;
+            var probe = CreateProbe(harness);
+            var report = probe.Simulate(
+                origin + direction * MuzzleOffset,
+                direction * power,
+                gravityScale: harness.Weapon.GravityScale,
+                projectileRadius: harness.Weapon.ProjectileRadius,
+                timeoutSeconds: harness.Weapon.TimeoutSeconds,
+                TrajectoryObstacles.TerrainOnly(harness.OpponentPosition),
+                harness.Weapon);
+
+            var impactPoint = Vector2.zero;
+            var exploded = false;
+            harness.Simulation.ProjectileExploded += (id, impact) =>
+            {
+                impactPoint = impact.Point;
+                exploded = true;
+            };
+
+            var fireResult = harness.Simulation.TryFire(new AimState(origin, direction, power, true));
+            Assert.AreEqual(BattleFireOutcome.Fired, fireResult.Outcome);
+            for (var i = 0; i < 2400 && !exploded; i++)
+            {
+                harness.Simulation.Tick(TickSeconds);
+            }
+
+            Assert.IsTrue(exploded, "the grenade resolves after its fuse");
+            Assert.AreEqual(TrajectoryEndKind.Terrain, report.EndKind);
+            Assert.Greater(report.BounceCount, 0, "the bot probe accounts for the terrain bounce");
+            Assert.AreEqual(impactPoint.x, report.EndPoint.x, 0.15f, "predicted bounced impact X matches the simulation");
+            Assert.AreEqual(impactPoint.y, report.EndPoint.y, 0.15f, "predicted bounced impact Y matches the simulation");
+        }
+
+        [Test]
         public void Probe_UnitShot_HitsTargetWhereTheRealShotLands()
         {
             var harness = CreateHarness(gravityScale: 1f);
@@ -213,7 +252,7 @@ namespace Game.Tests.EditMode.Gameplay
             return new TrajectoryProbe(harness.Terrain.Grid, Physics2D.gravity, TickSeconds, SubStepLength, FallDeathY);
         }
 
-        private static ProbeHarness CreateHarness(float gravityScale)
+        private static ProbeHarness CreateHarness(float gravityScale, string weaponId = "weapon.test.ballistics")
         {
             var bounds = new Rect(-10f, -8f, 20f, 16f);
             var terrain = BattleTerrain.CreateProcedural(bounds);
@@ -237,9 +276,12 @@ namespace Game.Tests.EditMode.Gameplay
                 [opponentUnit.UnitId] = new UnitMotor(terrain.Grid, profile, opponentUnit.Position, FallDeathY)
             };
 
-            var weapon = WeaponDefinition.CreateRuntime(
-                "weapon.test.ballistics", "weapon.test.ballistics.name", WeaponRole.ArcingExplosive,
-                60, 2.5f, 0.14f, gravityScale, 8f, 6f, 20f, -1, null, null);
+            var weapon = weaponId == "weapon.granata"
+                ? System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                    candidate => candidate.WeaponId == weaponId)
+                : WeaponDefinition.CreateRuntime(
+                    weaponId, $"{weaponId}.name", WeaponRole.ArcingExplosive,
+                    60, 2.5f, 0.14f, gravityScale, 8f, 6f, 20f, -1, null, null);
             var playerInventory = new WeaponInventoryRuntime(new[] { weapon });
             var opponentInventory = new WeaponInventoryRuntime(new[] { weapon });
             var executor = new WeaponExecutor();

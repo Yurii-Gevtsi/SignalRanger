@@ -1,0 +1,18 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/grounder-magnet-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire, Spawn, Tick, ProjectileExploded",
+    "setup": "Place one grounder, move its owner clear, then spawn an opposing physical shot that crosses N0 one world unit above the device.",
+    "command": {
+      "executable": "node",
+      "args": ["tools/run-unity-mcp-editmode-test.mjs", "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PullsHostilePhysicalShotIntoDevice"],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "Projectile detonates less than 0.55 world units from the grounder.",
+    "observed": "Unity EditMode failure: the projectile detonated 2.78568029 world units from the grounder.",
+    "failureReason": "The placed grounder currently has no projectile attraction or contact interception step.",
+    "receiptRef": "receipt:a5c6333f-3447-42be-8cd7-d4e9a257e22d"
+  }
+}

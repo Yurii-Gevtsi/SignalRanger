@@ -1,0 +1,5 @@
+{
+  "seam": "Instantiate a real BattleUnitView GameObject in an EditMode test, invoke its public SetRepairJammerActive state entry, and inspect its visible child SpriteRenderer. The real Resources asset remains part of the assertion.",
+  "focusedCommand": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleUnitViewTests.RepairJammerStatusIcon_TracksActiveState",
+  "whySufficient": "The test crosses the actual presentation boundary and verifies both lifecycle states without duplicating BattleSceneController's broad battle fixture."
+}

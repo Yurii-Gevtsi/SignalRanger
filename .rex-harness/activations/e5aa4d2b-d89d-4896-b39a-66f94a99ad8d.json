@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "e5aa4d2b-d89d-4896-b39a-66f94a99ad8d",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "workshop-disabled-base-stat-cards",
+  "profile": "default",
+  "request": {
+    "message": "Keep all four Workshop base-stat cards visible. Render unavailable stats as opaque dark gray disabled cards with no progress bars or lock, show a procedural crossed-circle marker, and prevent interaction without adding raster art assets.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-19T14:59:53.618Z",
+  "updatedAt": "2026-09-19T14:59:53.618Z"
+}

@@ -1,0 +1,53 @@
+{
+  "kind": "rex.standards-spec-review.v1",
+  "fixedPoint": "HEAD b0fae5d7cbd55cb603258d830d9c2900bc351107; this shared dirty worktree was reviewed only at the laser-fence runtime hunk, event addition, scoped tests and related documentation.",
+  "diffRef": "git diff HEAD -- Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulationEvents.cs Assets/_Game/Tests/EditMode/Gameplay/BattleSimulationTests.cs",
+  "specSources": [
+    "docs/design/weapon-combat-specification.md:209-213",
+    "docs/architecture/laser-fence-beam-test-scope.md"
+  ],
+  "standards": {
+    "checked": [
+      "Mysterious Name",
+      "Duplicated Code",
+      "Feature Envy",
+      "Data Clumps",
+      "Primitive Obsession",
+      "Repeated Switches",
+      "Shotgun Surgery",
+      "Divergent Change",
+      "Speculative Generality",
+      "Message Chains",
+      "Middle Man",
+      "Refused Bequest"
+    ],
+    "findings": []
+  },
+  "spec": {
+    "findings": [
+      {
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Assembly/BattleSceneController.cs:84,2247",
+        "evidence": "The canonical specification sets the link range to 5.4, while presentation still rebuilds its visible links with 1.8. Runtime can damage through a beam the player cannot see.",
+        "severity": "hard",
+        "recommendation": "Move the shared range to one runtime/presentation source or update the presentation constant and add a visual-link regression test."
+      },
+      {
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs:480-540",
+        "evidence": "The specification requires own-team safety. The implementation excludes the node team, but no focused test covers the behavior, and the test contract marks it as an acceptance scenario.",
+        "severity": "hard",
+        "recommendation": "Add an EditMode public-scenario test that places an owner-team droid on the link and verifies unchanged HP."
+      },
+      {
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs:480-540",
+        "evidence": "The specification requires transport and projectile destruction of nodes, but active nodes are not yet collision targets or portable ground objects.",
+        "severity": "hard",
+        "recommendation": "Implement node lifecycle and presentation events in a separate behavior cycle; keep this weapon reported as partial until then."
+      }
+    ]
+  },
+  "verdict": "changes-requested",
+  "evidenceRefs": [
+    "receipt:7590e10a-846d-4e3d-b10c-a3d918b655e2",
+    "receipt:a97d4d15-cc70-40b5-8ee1-4d35c5e790f2"
+  ]
+}

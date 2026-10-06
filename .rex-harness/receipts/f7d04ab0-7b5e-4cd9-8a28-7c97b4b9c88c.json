@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "f7d04ab0-7b5e-4cd9-8a28-7c97b4b9c88c",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "023cc8c0c84650eb29c96e1163d2ec6580c9cdf0d9115eeec8d942bb7686f57a",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-23T01:06:29.493Z"
+}

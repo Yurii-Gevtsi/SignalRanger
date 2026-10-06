@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "7c5cf46d-49eb-46c7-91be-7ccc53a46daf",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeapon_AppliesTwoEndOfVictimTurnTicksEqualToTwentyPercentOfImpactDamage"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "a5ca3017296d9737a8d54044cd9a44d95819154b19dcec29eb7cd2ccd0b218a9",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-22T16:39:07.594Z"
+}

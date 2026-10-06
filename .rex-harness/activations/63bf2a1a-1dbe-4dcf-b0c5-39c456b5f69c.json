@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "63bf2a1a-1dbe-4dcf-b0c5-39c456b5f69c",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "grounder-physical-hook-interception-20260926",
+  "profile": "default",
+  "request": {
+    "message": "Make placed grounder intercept hostile physical rope and electric harpoon hooks during flight, preserving own hooks and existing hook behavior",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-26T14:45:14.344Z",
+  "updatedAt": "2026-09-26T14:45:14.344Z"
+}

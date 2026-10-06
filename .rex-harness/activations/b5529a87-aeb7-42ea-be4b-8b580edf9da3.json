@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "b5529a87-aeb7-42ea-be4b-8b580edf9da3",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-shop-workshop-layout-fixes",
+  "profile": "default",
+  "request": {
+    "message": "Виправити обрізане вікно підтвердження покупки, повноцінну картку Особливість у майстерні та модальний вибір двох особливостей зі скінами.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-16T17:18:51.314Z",
+  "updatedAt": "2026-09-16T17:18:51.314Z"
+}

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "rex.standards-spec-review.v1",
+  "workItem": "weapon-combat-repair-jammer-status",
+  "baseline": "HEAD",
+  "targetFiles": [
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs",
+    "Assets/_Game/Tests/EditMode/Gameplay/BattleSimulationTests.cs",
+    ".rex-harness/testing/repair-jammer-status-refactor.json"
+  ],
+  "diffRef": "git diff HEAD -- targetFiles (non-empty)",
+  "specSources": [
+    "docs/design/weapon-combat-specification.md:121",
+    "docs/design/weapon-catalog-canonical.md:147",
+    "docs/design/weapon-catalog-canonical.md:203",
+    "AGENTS.md"
+  ],
+  "standards": {
+    "findings": [],
+    "checked": {
+      "mysteriousName": "not found",
+      "duplicatedCode": "not found; all three turn exits call the same helper",
+      "featureEnvy": "not found",
+      "dataClumps": "not found",
+      "primitiveObsession": "not found for this bounded status counter",
+      "repeatedSwitches": "not found",
+      "shotgunSurgery": "not found; changes follow existing turn and healing seams",
+      "divergentChange": "not found",
+      "speculativeGenerality": "not found",
+      "messageChains": "not found",
+      "middleMan": "not found",
+      "refusedBequest": "not found"
+    },
+    "verdict": "pass"
+  },
+  "spec": {
+    "findings": [
+      {
+        "severity": "hard",
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs:3296",
+        "evidence": "weapon-combat-specification.md:75 and weapon-catalog-canonical.md:147 require the jammer to block all healing sources, but ProcessRepairEffectsForActiveTurn calls RestoreHealth without checking IsRepairJammed.",
+        "recommendation": "Guard timed regeneration with IsRepairJammed(unit.UnitId), then add a test proving it remains blocked while the status is active and resumes after expiry."
+      },
+      {
+        "severity": "hard",
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs:4519",
+        "evidence": "weapon-combat-specification.md:121 and weapon-catalog-canonical.md:203 require an upgrade-driven 2→3→4 turn duration and visible no-repair-2 status icon; the code assigns a fixed literal 2 and has no presentation event/state.",
+        "recommendation": "Resolve duration from the weapon evolution profile and expose a status event/state for the battle scene to render the icon."
+      }
+    ],
+    "verdict": "changes-required"
+  },
+  "finalVerdict": "changes-required",
+  "evidence": [
+    "receipt:f816d84c-272c-49cd-954c-18c151fedbb8",
+    ".rex-harness/testing/repair-jammer-status-refactor.json"
+  ]
+}

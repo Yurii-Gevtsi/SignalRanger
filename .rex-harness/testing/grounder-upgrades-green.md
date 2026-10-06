@@ -1,0 +1,3 @@
+# Grounder upgrade GREEN
+
+Changed canonical grounder progression from zero to four Core purchases. `BattleWeaponProgression` exposes saved choice counts, and placement fixes duration at `2 + Core` opposing turns and detection radius at `base N0 × (1 + 0.10 × Radius)`, each capped at four choices. The upgrade value resolver also shows grounder duration and its 10% radius step. Unity EditMode receipts: catalog limit `receipt:dd71fb3d-77de-4cda-be76-df71c80b774a`, six-turn combat lifetime `receipt:deff3bdb-71bd-4063-bbcc-49a3c98f212e`, 40% radius value `receipt:1d1a3e1e-78e3-4ce5-b416-ce08c5097b64`, and actual capture outside base N0 `receipt:2d87d737-818f-498b-8563-8bfa82c61930`.

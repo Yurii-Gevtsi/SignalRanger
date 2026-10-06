@@ -14,6 +14,8 @@ namespace Game.Gameplay.Battle.Simulation
             Vector2 position,
             Vector2 velocity,
             float remainingLifetime,
+            bool suppressTurnAdvanceOnImpact = false,
+            string guaranteedTargetUnitId = null,
             Vector2? sourceOrigin = null)
         {
             Id = id;
@@ -22,6 +24,8 @@ namespace Game.Gameplay.Battle.Simulation
             Position = position;
             Velocity = velocity;
             RemainingLifetime = remainingLifetime;
+            SuppressesTurnAdvanceOnImpact = suppressTurnAdvanceOnImpact;
+            GuaranteedTargetUnitId = guaranteedTargetUnitId;
             SourceOrigin = sourceOrigin;
         }
 
@@ -31,8 +35,11 @@ namespace Game.Gameplay.Battle.Simulation
         public Vector2 Position { get; private set; }
         public Vector2 Velocity { get; private set; }
         public float RemainingLifetime { get; private set; }
-        /// <summary>Throw-time origin for swap-jump's enemy destination.</summary>
-        public Vector2? SourceOrigin { get; }
+        public bool SuppressesTurnAdvanceOnImpact { get; }
+        /// <summary>A trap-fired round remains committed to this target until impact.</summary>
+        public string GuaranteedTargetUnitId { get; }
+        /// <summary>Throw-time origin captured by swap-jump for the enemy return destination.</summary>
+        public Vector2? SourceOrigin { get; } // Captured before the owner can move.
         public int BounceCount { get; private set; }
         public float TerrainDrillTimeRemaining { get; private set; }
         public float TerrainDrillSpeed { get; private set; }
@@ -105,6 +112,13 @@ namespace Game.Gameplay.Battle.Simulation
             Velocity = Vector2.zero;
             IsRestingFuse = true;
             RestingFuseRemaining = Mathf.Max(0f, durationSeconds);
+        }
+
+        internal void ResumeFromRestingFuse(Vector2 velocity)
+        {
+            IsRestingFuse = false;
+            RestingFuseRemaining = 0f;
+            Velocity = velocity;
         }
 
         internal void ReduceRestingFuse(float deltaTime)

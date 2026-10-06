@@ -67,6 +67,15 @@ namespace Game.App
             if (!_initialSceneResolved)
             {
                 _initialSceneResolved = true;
+#if UNITY_INCLUDE_TESTS
+                // Preserve the framework's temporary runner scene until its tests
+                // load an application scene themselves. Normal launches still boot.
+                if (scene.name.StartsWith("InitTestScene", System.StringComparison.Ordinal)
+                    && System.Guid.TryParse(scene.name.Substring("InitTestScene".Length), out _))
+                {
+                    return;
+                }
+#endif
                 if (scene.name != GameSceneNames.Boot)
                 {
                     // Every application launch has one route: Boot -> loading -> menu.

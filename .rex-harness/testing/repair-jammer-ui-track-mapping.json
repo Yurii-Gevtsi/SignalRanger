@@ -1,0 +1,20 @@
+{
+  "acceptanceMapping": [
+    {
+      "behavior": "Only two duration upgrades are purchasable",
+      "entry": "WeaponProgressionCatalog.TryGet",
+      "observable": "WeaponProgressionDefinition.RadiusUpgradeCount is 2"
+    },
+    {
+      "behavior": "Active jammer state shows its icon at the unit",
+      "entry": "BattleUnitView.SetRepairJammerActive",
+      "observable": "A child SpriteRenderer is enabled with Resources UI/Common/no-repair-2"
+    },
+    {
+      "behavior": "Expired jammer state removes its icon",
+      "entry": "BattleUnitView.SetRepairJammerActive(false)",
+      "observable": "The same renderer is disabled"
+    }
+  ],
+  "antiGaming": "Tests assert rendered state and catalog limits rather than checking a private flag or an internal call count."
+}

@@ -1,0 +1,70 @@
+{
+  "canvas": {
+    "width": 1672,
+    "height": 940
+  },
+  "production_scale": 2,
+  "source_overlap_radius_px": 1,
+  "pieces": [
+    {
+      "id": "section_01",
+      "x": 49,
+      "y": 4,
+      "width": 616,
+      "height": 429,
+      "target_width": 1232,
+      "target_height": 858,
+      "sorting_order": -9,
+      "source": "grib_section_01_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_02",
+      "x": 571,
+      "y": 98,
+      "width": 853,
+      "height": 457,
+      "target_width": 1706,
+      "target_height": 914,
+      "sorting_order": -8,
+      "source": "grib_section_02_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_03",
+      "x": 0,
+      "y": 352,
+      "width": 588,
+      "height": 503,
+      "target_width": 1176,
+      "target_height": 1006,
+      "sorting_order": -7,
+      "source": "grib_section_03_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_04",
+      "x": 924,
+      "y": 363,
+      "width": 741,
+      "height": 544,
+      "target_width": 1482,
+      "target_height": 1088,
+      "sorting_order": -6,
+      "source": "grib_section_04_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_05",
+      "x": 316,
+      "y": 497,
+      "width": 678,
+      "height": 417,
+      "target_width": 1356,
+      "target_height": 834,
+      "sorting_order": -5,
+      "source": "grib_section_05_source.png",
+      "overlap_radius_px": 1
+    }
+  ]
+}

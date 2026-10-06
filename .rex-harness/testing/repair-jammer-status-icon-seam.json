@@ -1,0 +1,4 @@
+{
+  "seam": "A focused EditMode BattleUnitView fixture instantiates the real view and calls its public visual state method; the controller integration is checked from its scoped source diff and runtime query use.",
+  "focusedCommand": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleUnitViewTests.RepairJammerStatusIcon_TracksActiveState"
+}

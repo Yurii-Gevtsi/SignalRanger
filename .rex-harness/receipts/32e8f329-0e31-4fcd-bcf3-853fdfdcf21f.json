@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "32e8f329-0e31-4fcd-bcf3-853fdfdcf21f",
+  "command": {
+    "executable": "powershell.exe",
+    "args": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "Temp\\run-workshop-card-presentation-tests.ps1"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "bf40dae32fac9c5322df8e0ca78d320439e2cec909a0f5c505ea54e148df373b",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-19T15:28:44.091Z"
+}

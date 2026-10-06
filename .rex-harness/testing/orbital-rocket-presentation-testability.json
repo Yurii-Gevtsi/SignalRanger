@@ -1,0 +1,18 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/orbital-rocket-presentation-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSceneController projectile presentation seam",
+    "setup": "A runtime orbital-rocket definition and falling SimProjectile.",
+    "command": {
+      "executable": "node",
+      "args": ["tools/run-unity-mcp-editmode-test.mjs", "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.OrbitalRocket_UsesMissileFlightResource"],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "The resolver returns the missle_fly sprite.",
+    "observed": "Focused Unity EditMode test failed because the resolver has no orbital-rocket branch and returns no explicit sprite.",
+    "failureReason": "The projectile visual falls back to the generic circle instead of the approved missile asset.",
+    "receiptRef": "receipt:673c4f15-c700-41d6-bf0a-376c4eb51a71"
+  }
+}

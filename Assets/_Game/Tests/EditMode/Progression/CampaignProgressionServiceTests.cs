@@ -16,7 +16,7 @@ namespace Game.Tests.EditMode.Progression
 
             Assert.That(result.Applied, Is.True);
             Assert.That(saveData.campaign.completedMissionIds, Contains.Item("mission.training.01"));
-            Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.EqualTo(1));
+            Assert.That(saveData.campaign.highestUnlockedMissionIndex, Is.EqualTo(3));
             Assert.That(saveData.economy.softCurrency, Is.EqualTo(250));
             Assert.That(saveData.profile.commanderExperience, Is.EqualTo(80));
             Assert.That(saveData.inventory.GetOrCreateWeaponProgress("weapon.impulse").blueprints, Is.EqualTo(25));
@@ -76,7 +76,22 @@ namespace Game.Tests.EditMode.Progression
 
             var mission = service.GetNextMission();
 
-            Assert.That(mission.MissionId, Is.EqualTo("mission.training.04"));
+            Assert.That(mission.MissionId, Is.EqualTo("mission.training.06"));
+        }
+
+        [Test]
+        public void CompletingEasyMission_OpensNextPlanetsEasyMissionAndKeepsOptionalMissionsOpen()
+        {
+            var saveData = SaveData.CreateNew();
+            var missions = MvpMissionLibrary.CreateAll();
+            var service = new CampaignProgressionService(saveData, missions);
+
+            service.CompleteMission(0);
+
+            Assert.That(service.IsUnlocked(1), Is.True, "Current planet medium mission should remain available.");
+            Assert.That(service.IsUnlocked(2), Is.True, "Current planet hard mission should remain available.");
+            Assert.That(service.IsUnlocked(3), Is.True, "Next planet easy mission should become available.");
+            Assert.That(service.IsUnlocked(4), Is.False, "Next planet medium mission should wait for its easy mission.");
         }
 
         [Test]

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "47e668b2-7b9b-4c6f-af11-3a5b2aa46c2b",
+  "command": {
+    "executable": "cmd.exe",
+    "args": [
+      "/d",
+      "/c",
+      "\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Unity.exe",
+      "-batchmode",
+      "-nographics",
+      "-quit",
+      "-projectPath",
+      "C:\\Projects\\Game",
+      "-runTests",
+      "-testPlatform",
+      "EditMode",
+      "-testFilter",
+      "Game.Tests.EditMode.App.WorkshopSpecialCardStateResolverTests",
+      "-testResults",
+      "Temp\\workshop-special-card-red.xml",
+      "-logFile",
+      "Temp\\workshop-special-card-red.log\""
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "b243e3431cf3fd2da74278615caa676ad4f4f806e23b19fcd398e83a7b02390d",
+  "observedAt": "2026-09-19T14:32:46.087Z"
+}

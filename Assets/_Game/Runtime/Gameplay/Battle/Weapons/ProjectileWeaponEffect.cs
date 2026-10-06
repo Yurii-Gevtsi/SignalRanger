@@ -12,7 +12,6 @@ namespace Game.Gameplay.Battle.Weapons
         private const float MuzzleOffset = 0.45f;
         private const int IonShotgunPelletCount = 5;
         private const float IonShotgunSpreadDegrees = 8f;
-        private const float IonShotgunTerrainImpactRadiusMultiplier = 1f / 3f;
 
         public void Fire(in WeaponFireContext context)
         {
@@ -32,7 +31,7 @@ namespace Game.Gameplay.Battle.Weapons
             var terrainBounceLimit = context.Evolution.TerrainBounceLimit;
             if (weapon.WeaponId == "weapon.titanium-disc")
             {
-                terrainBounceLimit = Mathf.Max(3, terrainBounceLimit);
+                terrainBounceLimit = Mathf.Max(2, terrainBounceLimit);
             }
 
             var request = new ProjectileSpawnRequest(
@@ -56,9 +55,7 @@ namespace Game.Gameplay.Battle.Weapons
             var totalDamage = Mathf.RoundToInt(weapon.Damage * modifiers.DamageMultiplier);
             var baseDamage = totalDamage / IonShotgunPelletCount;
             var remainder = totalDamage % IonShotgunPelletCount;
-            var impactRadius = weapon.ImpactRadius
-                * modifiers.ImpactRadiusMultiplier
-                * IonShotgunTerrainImpactRadiusMultiplier;
+            var pelletCollisionRadius = weapon.ProjectileRadius * modifiers.ImpactRadiusMultiplier;
             var baseAngle = Mathf.Atan2(context.Direction.y, context.Direction.x) * Mathf.Rad2Deg;
             var step = IonShotgunSpreadDegrees / (IonShotgunPelletCount - 1);
 
@@ -69,12 +66,13 @@ namespace Game.Gameplay.Battle.Weapons
                 var direction = new Vector2(Mathf.Cos(angleRadians), Mathf.Sin(angleRadians));
                 var damage = baseDamage + (pelletIndex < remainder ? 1 : 0);
                 var request = new ProjectileSpawnRequest(
-                    weapon.CreateProjectileDefinition(damage, impactRadiusOverride: impactRadius),
+                    weapon.CreateProjectileDefinition(damage,
+                        projectileRadiusOverride: pelletCollisionRadius),
                     context.OwnerUnitId,
                     context.Origin + direction * MuzzleOffset,
                     direction * context.Power,
-                    weapon.ProjectileRadius * 2f,
-                    GetProjectileColor(weapon.Role));
+                    pelletCollisionRadius * 2f,
+                    Color.black);
                 context.Spawner.Spawn(request);
             }
         }

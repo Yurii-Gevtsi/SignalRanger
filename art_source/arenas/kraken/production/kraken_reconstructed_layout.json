@@ -1,0 +1,11 @@
+{
+  "canvas_width_px": 4096,
+  "canvas_height_px": 2304,
+  "production_scale": 2,
+  "draw_order": ["section_01", "section_02", "section_03"],
+  "pieces": [
+    { "id": "section_01", "source": "production_source/1.png", "transform": [1.603224, 0.006634, 24.582168, -0.001550, 1.616986, 93.048210] },
+    { "id": "section_02", "source": "production_source/2.png", "transform": [1.253754, -0.006214, 1547.822072, 0.005084, 1.257264, 125.371202] },
+    { "id": "section_03", "source": "production_source/3.png", "transform": [1.329836, 0.009578, 2492.907436, -0.004476, 1.349922, 372.240834] }
+  ]
+}

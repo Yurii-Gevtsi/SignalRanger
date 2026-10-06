@@ -118,6 +118,21 @@ namespace Game.Progression.Missions
             }
 
             var nextIndex = Math.Min(missionIndex + 1, _missions.Length - 1);
+            // Easy is the campaign route mission for a planet. Completing it opens
+            // the next planet's easy mission while leaving this planet's medium and
+            // hard missions available as optional challenges.
+            if (_missions[missionIndex].Difficulty == 0)
+            {
+                for (var i = missionIndex + 1; i < _missions.Length; i++)
+                {
+                    if (_missions[i].Difficulty == 0)
+                    {
+                        nextIndex = i;
+                        break;
+                    }
+                }
+            }
+
             if (nextIndex > _saveData.campaign.highestUnlockedMissionIndex)
             {
                 _saveData.campaign.highestUnlockedMissionIndex = nextIndex;

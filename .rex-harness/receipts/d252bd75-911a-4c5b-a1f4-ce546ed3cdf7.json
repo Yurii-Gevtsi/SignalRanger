@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "d252bd75-911a-4c5b-a1f4-ce546ed3cdf7",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_TwoDurationUpgradesKeepTheTargetJammedForFourOwnTurns"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "95f804740af0182b4b97990cb7a952fa4761c4e9102b9256fbe2c41d55177034",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-23T01:42:53.837Z"
+}

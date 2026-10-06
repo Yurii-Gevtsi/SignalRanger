@@ -128,7 +128,8 @@ namespace Game.Tests.EditMode.Gameplay
                 weapon.GravityScale,
                 weapon.ProjectileRadius,
                 weapon.TimeoutSeconds,
-                new TrajectoryObstacles(bodies, target));
+                new TrajectoryObstacles(bodies, target),
+                weapon);
         }
     }
 }

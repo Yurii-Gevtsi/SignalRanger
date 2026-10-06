@@ -8,15 +8,19 @@ namespace Game.Gameplay.Battle.Visuals
         private const string FirstArenaId = "arena.training-meadow";
         private const string DesertArenaId = "arena.desert-sci-fi";
         private const string ForestArenaId = "arena.forest";
+        private const string LagunaArenaId = "arena.laguna";
         private const string AnimatedSkyBackgroundPrefab = "Visuals/Arenas/Backgrounds/Sky1/AnimatedSkyBackground";
-        private const string ForestCosmosBackground = "Visuals/Arenas/Backgrounds/Cosmos/cosmos";
+        private const string BonesBackground = "Visuals/Arenas/Backgrounds/Bones/bones";
+        private static readonly Color BonesArenaTint = new(0.84f, 0.84f, 0.84f, 1f);
+        private static readonly Color ForestArenaTint = new(0.84f, 0.84f, 0.84f, 1f);
+        private const string ForestBackground = "Visuals/Arenas/Backgrounds/Forest/forest";
         private const string CityBackground = "Visuals/Arenas/Backgrounds/City/city";
-        private const string GribBackground = "Visuals/Arenas/Backgrounds/Grib/grib";
-        private const string LagunaBackground = "Visuals/Arenas/Backgrounds/Laguna/laguna";
-        private const string TrainingGround = "Visuals/Arenas/Training/ground";
-        private const string TrainingShip = "Visuals/Arenas/Training/ship";
-        private const string TrainingBoxes = "Visuals/Arenas/Training/boxes";
-        private const string TrainingRock = "Visuals/Arenas/Training/rock";
+        private const string GribBackground = "Visuals/Arenas/Backgrounds/Grib/grib_new";
+        private const string LagunaBackground = "Visuals/Arenas/Backgrounds/Laguna/laguna_new";
+        private const string KrakenBackground = "Visuals/Arenas/Backgrounds/Kraken/kraken";
+        private const string MonumentBackground = "Visuals/Arenas/Backgrounds/Monument/monument";
+        private const string RobotsBackground = "Visuals/Arenas/Backgrounds/Robots/robots";
+        private const string VinesBackground = "Visuals/Arenas/Backgrounds/Vines/vines";
         private const string PlayerCharacter = "";
         private const string OpponentCharacter = "";
         private const string PlayerRig = "Visuals/Characters/DroidRig";
@@ -31,7 +35,12 @@ namespace Game.Gameplay.Battle.Visuals
         private static readonly Vector2 DesertArenaScalePivot = new(0f, DesertCameraFrame.yMin);
         private static readonly Rect ForestCameraFrame = Rect.MinMaxRect(-15.925f, -7.61f, 15.925f, 10.31f);
         private static readonly Rect SceneCameraFrame = Rect.MinMaxRect(-17.25f, -8.1f, 17.25f, 11.31f);
-        private static readonly Rect TrainingCameraFrame = Rect.MinMaxRect(-10.665f, -5.05f, 10.665f, 6.95f);
+        // The imported training arena is intentionally left at its authored world scale.
+        // This frame exposes the whole terrain at about 80% of a standard battle viewport.
+        private static readonly Rect TrainingCameraFrame = Rect.MinMaxRect(-26.2f, -11.265f, 26.2f, 13.165f);
+        private static readonly Vector2 LagunaArenaContentOffset = new(0f, -150f / 256f);
+        private static readonly Vector2 MonumentArenaContentOffset = new(0f, -200f / 256f);
+        private static readonly Vector2 RobotsArenaContentOffset = new(0f, -50f / 256f);
 
         public static BattleVisualTheme ForArena(ArenaDefinition arena)
         {
@@ -67,7 +76,7 @@ namespace Game.Gameplay.Battle.Visuals
             if (arena.ArenaId == ForestArenaId)
             {
                 return new BattleVisualTheme(
-                    StaticBackground(ForestCosmosBackground, ForestCameraFrame),
+                    StaticBackground(ForestBackground, ForestCameraFrame),
                     default,
                     PlayerCharacter,
                     OpponentCharacter,
@@ -79,23 +88,60 @@ namespace Game.Gameplay.Battle.Visuals
                     opponentSkinFacingDirectionX: 1,
                     playerRigResourcePath: PlayerRig,
                     opponentRigResourcePath: OpponentRig,
-                    cameraFrame: ForestCameraFrame);
+                    cameraFrame: ForestCameraFrame,
+                    arenaContentOffset: new Vector2(0f, -3.16f),
+                    // The rebuilt Forest terrain extends lower than its authored
+                    // camera frame. Keep its current artwork untouched, but let
+                    // intermediate zoom levels pan down to the lower roots.
+                    cameraBottomPanAllowance: 3.2f,
+                    arenaTint: ForestArenaTint);
+            }
+
+            if (arena.ArenaId == "arena.bones")
+            {
+                return StaticSceneTheme(BonesBackground, arenaTint: BonesArenaTint);
             }
 
             var background = arena.ArenaId switch { "arena.city" => CityBackground, "arena.grib" => GribBackground, "arena.laguna" => LagunaBackground, _ => string.Empty };
             if (!string.IsNullOrEmpty(background))
             {
-                return new BattleVisualTheme(StaticBackground(background, SceneCameraFrame), default, PlayerCharacter, OpponentCharacter, new Vector2(0.18f, 0.18f), new Vector2(0f, -0.08f), true, false, playerRigResourcePath: PlayerRig, opponentRigResourcePath: OpponentRig, cameraFrame: SceneCameraFrame);
+                var arenaContentOffset = arena.ArenaId == LagunaArenaId
+                    ? LagunaArenaContentOffset
+                    : Vector2.zero;
+                return new BattleVisualTheme(
+                    StaticBackground(background, SceneCameraFrame),
+                    default,
+                    PlayerCharacter,
+                    OpponentCharacter,
+                    new Vector2(0.18f, 0.18f),
+                    new Vector2(0f, -0.08f),
+                    true,
+                    false,
+                    playerRigResourcePath: PlayerRig,
+                    opponentRigResourcePath: OpponentRig,
+                    cameraFrame: SceneCameraFrame,
+                    arenaContentOffset: arenaContentOffset,
+                    hasKillZone: arena.ArenaId != "arena.grib");
             }
 
             if (arena.ArenaId == "arena.vines")
             {
-                return new BattleVisualTheme(StaticBackground(ForestCosmosBackground, SceneCameraFrame), default, PlayerCharacter, OpponentCharacter, new Vector2(0.18f, 0.18f), new Vector2(0f, -0.08f), true, false, playerRigResourcePath: PlayerRig, opponentRigResourcePath: OpponentRig, cameraFrame: SceneCameraFrame);
+                return StaticSceneTheme(VinesBackground, hasKillZone: false);
             }
 
-            if (arena.ArenaId == "arena.monument" || arena.ArenaId == "arena.kraken" || arena.ArenaId == "arena.robots")
+            if (arena.ArenaId == "arena.monument")
             {
-                return new BattleVisualTheme(default, default, PlayerCharacter, OpponentCharacter, new Vector2(0.18f, 0.18f), new Vector2(0f, -0.08f), true, false, playerRigResourcePath: PlayerRig, opponentRigResourcePath: OpponentRig, backgroundPrefabResourcePath: AnimatedSkyBackgroundPrefab, cameraFrame: SceneCameraFrame);
+                return StaticSceneTheme(MonumentBackground, MonumentArenaContentOffset);
+            }
+
+            if (arena.ArenaId == "arena.robots")
+            {
+                return StaticSceneTheme(RobotsBackground, RobotsArenaContentOffset);
+            }
+
+            if (arena.ArenaId == "arena.kraken")
+            {
+                return StaticSceneTheme(KrakenBackground);
             }
 
             if (arena.ArenaId != FirstArenaId)
@@ -105,7 +151,7 @@ namespace Game.Gameplay.Battle.Visuals
 
             return new BattleVisualTheme(
                 default,
-                new BattleVisualLayer(TrainingGround, new Vector2(-0.09862f, -4.93959f), new Vector2(3.47552f, 3.91558f), -8, true),
+                default,
                 PlayerCharacter,
                 OpponentCharacter,
                 new Vector2(0.18f, 0.18f),
@@ -117,18 +163,35 @@ namespace Game.Gameplay.Battle.Visuals
                     playerRigResourcePath: PlayerRig,
                     opponentRigResourcePath: OpponentRig,
                     backgroundPrefabResourcePath: AnimatedSkyBackgroundPrefab,
-                    cameraFrame: TrainingCameraFrame,
-                    additionalDestructibleLayers: new[]
-                {
-                    new BattleVisualLayer(TrainingShip, new Vector2(-9.66498f, -0.53610f), new Vector2(2.05578f, 1.88287f), -7, true),
-                    new BattleVisualLayer(TrainingBoxes, new Vector2(0.83379f, -2.39658f), new Vector2(0.97620f, 1.00449f), -7, true),
-                    new BattleVisualLayer(TrainingRock, new Vector2(9.25f, -2.35f), new Vector2(1.85961f, 1.80162f), -7, true)
-                    });
+                    cameraFrame: TrainingCameraFrame);
         }
 
         private static BattleVisualLayer StaticBackground(string resourcePath, Rect frame)
         {
             return new BattleVisualLayer(resourcePath, frame.center, Vector2.one, -30);
+        }
+
+        private static BattleVisualTheme StaticSceneTheme(
+            string backgroundResource,
+            Vector2? arenaContentOffset = null,
+            bool hasKillZone = true,
+            Color? arenaTint = null)
+        {
+            return new BattleVisualTheme(
+                StaticBackground(backgroundResource, SceneCameraFrame),
+                default,
+                PlayerCharacter,
+                OpponentCharacter,
+                new Vector2(0.18f, 0.18f),
+                new Vector2(0f, -0.08f),
+                true,
+                false,
+                playerRigResourcePath: PlayerRig,
+                opponentRigResourcePath: OpponentRig,
+                cameraFrame: SceneCameraFrame,
+                arenaContentOffset: arenaContentOffset,
+                hasKillZone: hasKillZone,
+                arenaTint: arenaTint);
         }
     }
 }

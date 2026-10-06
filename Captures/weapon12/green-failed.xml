@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="40" result="Failed(Child)" total="40" passed="32" failed="8" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:48Z" duration="1,7022562">
+  <test-suite type="TestSuite" id="1000" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:48Z" duration="1.702256" total="40" passed="32" failed="8" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1816" name="Game.Tests.EditMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.EditMode.dll" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:48Z" duration="1.590252" total="40" passed="32" failed="8" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1817" name="Game" fullname="Game" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:48Z" duration="1.584806" total="40" passed="32" failed="8" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1818" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:48Z" duration="1.580845" total="40" passed="32" failed="8" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1819" name="EditMode" fullname="Game.Tests.EditMode" runstate="Runnable" testcasecount="698" result="Failed" site="Child" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:48Z" duration="1.464854" total="40" passed="32" failed="8" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestSuite" id="1826" name="Gameplay" fullname="Game.Tests.EditMode.Gameplay" runstate="Runnable" testcasecount="423" result="Failed" site="Child" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:48Z" duration="1.348439" total="31" passed="24" failed="7" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1256" name="BattleSimulationTests" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="160" result="Failed" site="Child" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:48Z" duration="1.175386" total="16" passed="9" failed="7" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-suite type="ParameterizedMethod" id="1331" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:47Z" duration="0.571382" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1327" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)" methodname="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1512398217" result="Passed" start-time="2026-10-06 12:57:46Z" end-time="2026-10-06 12:57:47Z" duration="0.242180" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1328" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)" methodname="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="264955131" result="Passed" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.101757" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1329" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)" methodname="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="287369121" result="Passed" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.102116" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1330" name="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)" methodname="CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1710537816" result="Passed" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.102534" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1317" name="CanonicalBarrier_FireUsesThePreviewCenter" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.162253" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1315" name="CanonicalBarrier_FireUsesThePreviewCenter(0.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(0.0f)" methodname="CanonicalBarrier_FireUsesThePreviewCenter" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="4419001" result="Passed" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.084079" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1316" name="CanonicalBarrier_FireUsesThePreviewCenter(90.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(90.0f)" methodname="CanonicalBarrier_FireUsesThePreviewCenter" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1807714563" result="Passed" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.074340" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1318" name="CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive" methodname="CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1734830488" result="Passed" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.011404" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1332" name="CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction" methodname="CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="223752258" result="Passed" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.235686" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1326" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" testcasecount="7" result="Failed" site="Child" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.035006" total="7" passed="0" failed="7" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <failure>
+                    <message><![CDATA[One or more child tests had errors]]></message>
+                  </failure>
+                  <test-case id="1319" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1723986593" result="Failed" label="Error" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.017222" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <failure>
+                      <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+                      <stack-trace><![CDATA[  at Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep (System.Boolean unlocked, System.Int32 radius, System.Single expected) [0x00050] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Gameplay\BattleSimulationTests.cs:1132 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 ]]></stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case id="1320" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="504138004" result="Failed" label="Error" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.003253" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <failure>
+                      <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+                      <stack-trace><![CDATA[  at Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep (System.Boolean unlocked, System.Int32 radius, System.Single expected) [0x00050] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Gameplay\BattleSimulationTests.cs:1132 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 ]]></stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case id="1321" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1488887179" result="Failed" label="Error" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.003005" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <failure>
+                      <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+                      <stack-trace><![CDATA[  at Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep (System.Boolean unlocked, System.Int32 radius, System.Single expected) [0x00050] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Gameplay\BattleSimulationTests.cs:1132 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 ]]></stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case id="1322" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="405465677" result="Failed" label="Error" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.002414" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <failure>
+                      <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+                      <stack-trace><![CDATA[  at Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep (System.Boolean unlocked, System.Int32 radius, System.Single expected) [0x00050] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Gameplay\BattleSimulationTests.cs:1132 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 ]]></stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case id="1323" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1972622832" result="Failed" label="Error" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.001792" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <failure>
+                      <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+                      <stack-trace><![CDATA[  at Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep (System.Boolean unlocked, System.Int32 radius, System.Single expected) [0x00050] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Gameplay\BattleSimulationTests.cs:1132 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 ]]></stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case id="1324" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="292156828" result="Failed" label="Error" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.001687" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <failure>
+                      <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+                      <stack-trace><![CDATA[  at Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep (System.Boolean unlocked, System.Int32 radius, System.Single expected) [0x00050] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Gameplay\BattleSimulationTests.cs:1132 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 ]]></stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case id="1325" name="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)" methodname="CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1021680360" result="Failed" label="Error" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:47Z" duration="0.001682" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <failure>
+                      <message><![CDATA[System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+                      <stack-trace><![CDATA[  at Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep (System.Boolean unlocked, System.Int32 radius, System.Single expected) [0x00050] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Gameplay\BattleSimulationTests.cs:1132 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 ]]></stack-trace>
+                    </failure>
+                  </test-case>
+                </test-suite>
+                <test-case id="1314" name="CoverWeapon_Fired_StampsTerrainMask" fullname="Game.Tests.EditMode.Gameplay.BattleSimulationTests.CoverWeapon_Fired_StampsTerrainMask" methodname="CoverWeapon_Fired_StampsTerrainMask" classname="Game.Tests.EditMode.Gameplay.BattleSimulationTests" runstate="Runnable" seed="1666213932" result="Passed" start-time="2026-10-06 12:57:47Z" end-time="2026-10-06 12:57:48Z" duration="0.045928" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1644" name="TerrainGridTests" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" testcasecount="15" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.121258" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1648" name="CarveCircle_OnEmptyArea_ReportsNoChange" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.CarveCircle_OnEmptyArea_ReportsNoChange" methodname="CarveCircle_OnEmptyArea_ReportsNoChange" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="2070650217" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.003995" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1647" name="CarveCircle_RemovesGroundAndReportsDirtyRegion" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.CarveCircle_RemovesGroundAndReportsDirtyRegion" methodname="CarveCircle_RemovesGroundAndReportsDirtyRegion" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="1516632395" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.004981" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1649" name="CarveCircle_RespectsMaterialPenetration" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.CarveCircle_RespectsMaterialPenetration" methodname="CarveCircle_RespectsMaterialPenetration" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="1927456895" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.001552" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1646" name="IsSolidWorld_OutsideBounds_IsNotSolid" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.IsSolidWorld_OutsideBounds_IsNotSolid" methodname="IsSolidWorld_OutsideBounds_IsNotSolid" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="1312194072" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.002653" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1657" name="MaskBackedTerrain_UsesExactMaskWithoutFillingEmptySpaceBelowPlatform" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.MaskBackedTerrain_UsesExactMaskWithoutFillingEmptySpaceBelowPlatform" methodname="MaskBackedTerrain_UsesExactMaskWithoutFillingEmptySpaceBelowPlatform" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="1368583241" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.035721" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1655" name="MultiSpriteTerrain_CarvesEverySurfaceCrossedByOneCrater" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.MultiSpriteTerrain_CarvesEverySurfaceCrossedByOneCrater" methodname="MultiSpriteTerrain_CarvesEverySurfaceCrossedByOneCrater" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="1272406201" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.007167" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1653" name="Raycast_DoesNotTunnelThroughThinWall" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.Raycast_DoesNotTunnelThroughThinWall" methodname="Raycast_DoesNotTunnelThroughThinWall" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="412058028" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.002185" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1652" name="Raycast_HitsGroundBetweenPoints" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.Raycast_HitsGroundBetweenPoints" methodname="Raycast_HitsGroundBetweenPoints" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="795811806" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.006329" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1658" name="RefreshMovingSpriteSurfaces_RebuildsCollisionAtTheNewPosition" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.RefreshMovingSpriteSurfaces_RebuildsCollisionAtTheNewPosition" methodname="RefreshMovingSpriteSurfaces_RebuildsCollisionAtTheNewPosition" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="360920894" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.005821" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1659" name="ReusedMaskedAsset_CreatesIndependentRuntimeVisuals" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.ReusedMaskedAsset_CreatesIndependentRuntimeVisuals" methodname="ReusedMaskedAsset_CreatesIndependentRuntimeVisuals" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="1355709387" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.005337" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1656" name="SpriteTerrain_FillsSolidBelowVisibleSurface" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.SpriteTerrain_FillsSolidBelowVisibleSurface" methodname="SpriteTerrain_FillsSolidBelowVisibleSurface" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="1882799437" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.005396" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1654" name="SpriteTerrain_UsesStableCollisionDensityAndClearsCraterFringe" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.SpriteTerrain_UsesStableCollisionDensityAndClearsCraterFringe" methodname="SpriteTerrain_UsesStableCollisionDensityAndClearsCraterFringe" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="263573469" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.014064" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1645" name="StampRect_MarksCellsSolid" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.StampRect_MarksCellsSolid" methodname="StampRect_MarksCellsSolid" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="822376491" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.003171" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1651" name="TryFindSurfaceBelow_FindsCraterFloor_UnderOverhang" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.TryFindSurfaceBelow_FindsCraterFloor_UnderOverhang" methodname="TryFindSurfaceBelow_FindsCraterFloor_UnderOverhang" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="1737097543" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.004095" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1650" name="TryFindSurfaceBelow_FindsGroundTop" fullname="Game.Tests.EditMode.Gameplay.TerrainGridTests.TryFindSurfaceBelow_FindsGroundTop" methodname="TryFindSurfaceBelow_FindsGroundTop" classname="Game.Tests.EditMode.Gameplay.TerrainGridTests" runstate="Runnable" seed="1359070423" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.004131" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="1821" name="Progression" fullname="Game.Tests.EditMode.Progression" runstate="Runnable" testcasecount="49" result="Failed" site="Child" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.073705" total="9" passed="8" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1055" name="WeaponProgressionCatalogTests" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" testcasecount="9" result="Failed" site="Child" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.059845" total="9" passed="8" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1061" name="BaseTthCannotBePurchasedBeyondItsCanonicalLimit" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.BaseTthCannotBePurchasedBeyondItsCanonicalLimit" methodname="BaseTthCannotBePurchasedBeyondItsCanonicalLimit" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="281621896" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.020714" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1056" name="CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" methodname="CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1554843229" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.008935" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1058" name="Grounder_AllowsFourCoreAndFourRadiusUpgrades" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_AllowsFourCoreAndFourRadiusUpgrades" methodname="Grounder_AllowsFourCoreAndFourRadiusUpgrades" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="2017784947" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.000477" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1059" name="Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" methodname="Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1229000600" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.002774" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1057" name="RepairJammer_AllowsExactlyTwoDurationUpgrades" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades" methodname="RepairJammer_AllowsExactlyTwoDurationUpgrades" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1053152073" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.000659" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1063" name="ResetClearsBothBaseAndSpecialPurchaseHistory" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.ResetClearsBothBaseAndSpecialPurchaseHistory" methodname="ResetClearsBothBaseAndSpecialPurchaseHistory" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1846555727" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.004564" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1062" name="SelectedMortarSpecialCanBePurchasedFourTimesAndThenStops" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.SelectedMortarSpecialCanBePurchasedFourTimesAndThenStops" methodname="SelectedMortarSpecialCanBePurchasedFourTimesAndThenStops" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="430448624" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.007745" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1064" name="TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService" methodname="TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="548214315" result="Failed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.004983" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: True
+  But was:  False
+]]></message>
+                    <stack-trace><![CDATA[at Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService () [0x0015e] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Progression\WeaponProgressionCatalogTests.cs:192
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1060" name="UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" methodname="UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1776994803" result="Passed" start-time="2026-10-06 12:57:48Z" end-time="2026-10-06 12:57:48Z" duration="0.001004" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

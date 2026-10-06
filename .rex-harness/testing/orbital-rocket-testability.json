@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/orbital-rocket-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TrySetOrbitalTarget followed by TryFire",
+    "setup": "A player turn has weapon.orbital-rocket selected and a live opponent at the marked point.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "The public marker action accepts a target, confirmation ends the player's turn, and the impact is deferred until the opponent's turn ends.",
+    "observed": "The focused Unity EditMode test failed because BattleSimulation exposes no TrySetOrbitalTarget(Vector2) action.",
+    "failureReason": "Orbital target state and deferred-strike lifecycle do not exist in the simulation.",
+    "receiptRef": "receipt:65088892-f1bb-42dd-9562-915137aea494"
+  }
+}

@@ -10,7 +10,7 @@ namespace Game.Tests.EditMode.Progression
         {
             var missions = MvpMissionLibrary.CreateAll();
 
-            Assert.That(missions.Length, Is.EqualTo(18));
+            Assert.That(missions.Length, Is.EqualTo(27));
             foreach (var mission in missions)
             {
                 Assert.That(mission.IsValid(), Is.True);
@@ -19,21 +19,42 @@ namespace Game.Tests.EditMode.Progression
                 Assert.That(mission.EnemyLoadoutId, Is.Not.Empty);
                 Assert.That(mission.DifficultyProfileId, Is.Not.Empty);
                 Assert.That(mission.SupportDropsEnabled, Is.True);
+                Assert.That(mission.Objective.Kind, Is.EqualTo(MissionObjectiveKind.None));
             }
         }
 
         [Test]
-        public void CreateAll_DifficultyEscalatesAcrossCampaign()
+        public void CreateAll_EachPlanetHasFixedEasyNormalHardSequence()
         {
             var missions = MvpMissionLibrary.CreateAll();
 
-            Assert.That(missions[0].Difficulty, Is.EqualTo(0), "First mission should be easy.");
-            Assert.That(missions[^1].Difficulty, Is.EqualTo(2), "Final mission should be hard.");
-
-            for (var i = 1; i < missions.Length; i++)
+            for (var i = 0; i < missions.Length; i += 3)
             {
-                Assert.That(missions[i].Difficulty, Is.GreaterThanOrEqualTo(missions[i - 1].Difficulty),
-                    "Difficulty must not drop as the campaign advances.");
+                Assert.That(missions[i].Difficulty, Is.EqualTo(0));
+                Assert.That(missions[i + 1].Difficulty, Is.EqualTo(1));
+                Assert.That(missions[i + 2].Difficulty, Is.EqualTo(2));
+                Assert.That(missions[i].ChapterId, Is.EqualTo(missions[i + 1].ChapterId));
+                Assert.That(missions[i].ChapterId, Is.EqualTo(missions[i + 2].ChapterId));
+            }
+        }
+
+        [Test]
+        public void CreateAll_UsesOnlyLocalizedDifficultyMissionText()
+        {
+            var missions = MvpMissionLibrary.CreateAll();
+            var expectedKeys = new[]
+            {
+                "campaign.mission.easy",
+                "campaign.mission.medium",
+                "campaign.mission.hard"
+            };
+
+            for (var i = 0; i < missions.Length; i++)
+            {
+                var expectedKey = expectedKeys[i % 3];
+                Assert.That(missions[i].DisplayNameKey, Is.EqualTo(expectedKey));
+                Assert.That(missions[i].DescriptionKey, Is.EqualTo(expectedKey));
+                Assert.That(missions[i].Description, Is.Not.Empty);
             }
         }
 
@@ -45,8 +66,6 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(missions[0].ChapterId, Is.EqualTo("chapter.basics"));
             Assert.That(missions[1].ChapterId, Is.EqualTo("chapter.basics"));
             Assert.That(missions[2].ChapterId, Is.EqualTo("chapter.basics"));
-            Assert.That(missions[3].ChapterId, Is.EqualTo("chapter.basics"));
-            Assert.That(missions[4].ChapterId, Is.EqualTo("chapter.basics"));
 
             Assert.That(missions[0].TutorialStepIds, Is.EquivalentTo(new[] { "tutorial.aim", "tutorial.fire", "tutorial.impact", "tutorial.turn", "tutorial.win" }));
             Assert.That(missions[1].TutorialStepIds, Contains.Item("tutorial.arc"));
@@ -54,7 +73,6 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(missions[1].TutorialStepIds, Contains.Item("tutorial.arc-review"));
             Assert.That(missions[2].TutorialStepIds, Contains.Item("tutorial.cover-target"));
             Assert.That(missions[2].TutorialStepIds, Contains.Item("tutorial.radius"));
-            Assert.That(missions[4].TutorialStepIds, Contains.Item("tutorial.weapon-switch"));
         }
 
         [TestCase("mission.placeholder.monument", "chapter.monument", "arena.monument")]
@@ -68,8 +86,8 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(mission, Is.Not.Null);
             Assert.That(mission.ChapterId, Is.EqualTo(chapterId));
             Assert.That(mission.ArenaId, Is.EqualTo(arenaId));
-            Assert.That(mission.Title, Is.Empty);
-            Assert.That(mission.Description, Is.Empty);
+            Assert.That(mission.DisplayNameKey, Is.Not.Empty);
+            Assert.That(mission.DescriptionKey, Is.Not.Empty);
         }
     }
 }

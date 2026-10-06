@@ -1,0 +1,7 @@
+{
+  "phase": "green",
+  "test": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.RepairJammerStatus_UsesTheApprovedTransparentIconResource",
+  "receiptRef": "receipt:26425070-404b-4dc6-a315-6e2456def31a",
+  "implementation": "Imported the owner-provided RGBA PNG at Assets/_Game/Content/Resources/UI/Common/no-repair-2.png. Unity generated its import metadata and Resources.Load now resolves the texture.",
+  "scope": "Only the approved repair-jammer UI resource was added; no presentation runtime behavior was implemented in this slice."
+}

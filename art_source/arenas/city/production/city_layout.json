@@ -1,0 +1,70 @@
+{
+  "canvas": {
+    "width": 2048,
+    "height": 1152
+  },
+  "production_scale": 2,
+  "source_overlap_radius_px": 1,
+  "pieces": [
+    {
+      "id": "section_01",
+      "x": 29,
+      "y": 68,
+      "width": 804,
+      "height": 621,
+      "target_width": 1608,
+      "target_height": 1242,
+      "sorting_order": -9,
+      "source": "city_section_01_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_02",
+      "x": 1183,
+      "y": 167,
+      "width": 865,
+      "height": 646,
+      "target_width": 1730,
+      "target_height": 1292,
+      "sorting_order": -8,
+      "source": "city_section_02_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_03",
+      "x": 544,
+      "y": 584,
+      "width": 771,
+      "height": 539,
+      "target_width": 1542,
+      "target_height": 1078,
+      "sorting_order": -7,
+      "source": "city_section_03_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_04",
+      "x": 0,
+      "y": 626,
+      "width": 618,
+      "height": 490,
+      "target_width": 1236,
+      "target_height": 980,
+      "sorting_order": -6,
+      "source": "city_section_04_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_05",
+      "x": 1241,
+      "y": 742,
+      "width": 807,
+      "height": 387,
+      "target_width": 1614,
+      "target_height": 774,
+      "sorting_order": -5,
+      "source": "city_section_05_source.png",
+      "overlap_radius_px": 1
+    }
+  ]
+}

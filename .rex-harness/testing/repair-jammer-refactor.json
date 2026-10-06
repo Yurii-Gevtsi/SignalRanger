@@ -1,0 +1,6 @@
+{
+  "decision": "No refactor needed in this slice. The attachment launcher already owns target range, projectile travel and fuse behavior; the new weapon-specific policy is limited to aim and damage configuration.",
+  "testDiffReview": "The scenario retains its public input and HP assertion. It does not inspect private projectile state or relax its no-direct-damage expectation.",
+  "remainingCoverage": "Repair-prevention duration, healing interception and the UI marker remain separate required behavior and are not claimed by this test.",
+  "testReceiptRef": "receipt:eff94d82-b183-4d95-a473-28c4df387223"
+}

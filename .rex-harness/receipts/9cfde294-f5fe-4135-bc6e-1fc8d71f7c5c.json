@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "9cfde294-f5fe-4135-bc6e-1fc8d71f7c5c",
+  "command": {
+    "executable": "python",
+    "args": [
+      "tools/arena-assets/rebuild_guide_contour_arenas.py",
+      "--arenas",
+      "city",
+      "--prepare"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "e0edad643caf9ba1938158e04c1c5b576dbba1d116905bb3485176298e32016e",
+  "observedAt": "2026-09-06T17:58:45.253Z"
+}

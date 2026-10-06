@@ -1,0 +1,11 @@
+{
+  "behavior": "A grounded pair of laser-fence nodes within 5.4 world units damages a crossing enemy exactly once and immediately advances that enemy's active turn.",
+  "implementation": "BattleSimulation now reuses LaserFenceLinkResolver on active node state each simulation tick, records each triggered pair by its stable node-id key, applies the originating weapon's configured base damage to the opposing team only, and advances an affected active unit through the new LaserFenceTriggered turn reason.",
+  "changedFiles": [
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs",
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulationEvents.cs"
+  ],
+  "test": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn",
+  "result": "Passed: 42 HP damage, enemy turn advanced to player, and no second damage on the next ticks.",
+  "receiptRef": "receipt:7590e10a-846d-4e3d-b10c-a3d918b655e2"
+}

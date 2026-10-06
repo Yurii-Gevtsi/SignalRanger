@@ -1,0 +1,8 @@
+{
+  "test": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_BlocksTimedRegenerationUntilItsBaseDurationExpires",
+  "receipt": "receipt:4db4261b-b586-49af-b726-107ad8303230",
+  "input": "An evolved repair-kit regeneration is active on the player before an opponent attaches a repair jammer.",
+  "expected": "Player health stays at 60 for the jammer duration.",
+  "observed": "Player health becomes 80 on the first regeneration check.",
+  "failureClassification": "Expected behavioral RED: the active repair-effect path does not enforce the jammer status."
+}

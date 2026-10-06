@@ -1,25 +1,25 @@
 # Weapon acquisition and upgrade canonical sheet
 
-Status: editable balance baseline. Runtime values are extracted from `WeaponProgressionCatalog`, `PrototypeWeaponLibrary` and `ShopScreenController`; this document defines the target economy and the rules for future changes.
+Status: historical economy/runtime reference, superseded for target balance on 2026-09-16 by [the canonical arsenal, progression and economy catalog](weapon-catalog-canonical.md). Edit all target prices, rewards, level gates and upgrade rules there, not here. The old rank-10 cap, price modifiers and pacing tables below are not implementation requirements.
 
-For weapon names, branch text/mechanics, the full arsenal roster (starter/shop/unique/campaign-reward), and per-weapon level/price, see `weapon-arsenal-consolidated-proposal.md` — it is now the canonical source for those. The general rules below (rank cost curve, historical power score, monetization guardrails) still apply and are not superseded.
+For current names, mechanics, roster, per-weapon level/price and all mode rewards, see `weapon-catalog-canonical.md`. Older values remain below only to explain existing implementation and migration needs. Monetization safety principles remain relevant where they do not conflict with the canonical catalog.
 
 ## Ownership rules
 
-- Commander level unlocks eligibility; credits or the listed crystal alternative purchase the weapon.
+- Commander level unlocks eligibility; credits plus weapon-specific chips are the normal upgrade payment, while the listed crystal amount is an alternative payment path.
 - Starting weapons are available immediately and do not require purchase.
-- Blueprints are weapon-specific progression materials and never replace the purchase price.
+- Blueprints are the persisted weapon-specific chip balance used by upgrades.
 - Every purchase and upgrade is ledger-idempotent and must be safe to retry.
 - Premium can reduce waiting or provide convenience, but may not create a weapon or combat mechanic unavailable to Free-to-Play players.
 
 ## Upgrade rules
 
 - Ranks 1–10 per weapon.
-- Costs to advance ranks 2–10: 300/500/800/1,200/1,800/2,500/3,500/5,000/7,000 credits and 10/15/25/40/60/80/110/150/220 blueprints.
+- The rank baseline for advances 2–10 is 300/500/800/1,200/1,800/2,500/3,500/5,000/7,000 credits and 10/15/25/40/60/80/110/150/220 chips. The selected TTH applies its own multiplier: Core 1.25x, Loadout 1.20x, Aim 1.00x, Radius 0.85x.
 - Total from rank 1 to rank 10: 22,600 credits and 710 blueprints.
-- Rank 5 selects branch A or B; rank 10 is the capstone of the selected branch.
+- Every commander level after a weapon's unlock level banks one additional weapon rank. The player chooses one of Core, Aim, Loadout, or Radius for each rank.
 - Rank nodes should normally improve one axis at a time: damage, radius, range, ammo, projectile count, control, terrain damage, healing, accuracy, homing or utility duration.
-- Do not stack multiple large damage increases on one branch. A branch should trade damage for control, reliability or terrain interaction.
+- Keep Core and Loadout as the strongest and most expensive choices; Aim and Radius should remain cheaper and weaker so the four paths have a meaningful budget trade-off.
 
 ## Initial time-to-rank targets
 
@@ -65,4 +65,3 @@ Matchmaking starts within ±10% of historical power and expands to ±20% after 2
 ## Change checklist
 
 When adding a weapon, update: base definition, unlock level/price, blueprint source, upgrade nodes, branch text, historical-power contribution, shop presentation, localization keys, tests and this sheet.
-

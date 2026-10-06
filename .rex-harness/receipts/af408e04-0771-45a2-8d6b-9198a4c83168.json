@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "af408e04-0771-45a2-8d6b-9198a4c83168",
+  "command": {
+    "executable": "powershell",
+    "args": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "Temp/weapon12-run.ps1",
+      "red",
+      "EditMode",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "403e68d5dcf167d09b9c09cf79be8d06eeb33945c934dd1e449598c93ecba2bb",
+  "stderrSha256": "10aaac55c27d664c569b6e281bc94528bfaf857190607da5955136bb5f55c899",
+  "observedAt": "2026-10-06T13:08:07.152Z"
+}

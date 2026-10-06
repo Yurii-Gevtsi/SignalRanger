@@ -1,0 +1,3 @@
+# Grounder turn lifetime refactor check
+
+No cleanup beyond the small shared expiry method is needed. It covers all three direct turn transitions (`AdvanceTurnDueToNoUsableWeapon`, `AdvanceTurnNow`, and player timer expiry) without changing the turn service. The new test keeps its placement assertion and checks no early removal after each preceding turn; no assertion was deleted or weakened. Unity EditMode receipts: duration `receipt:b37e2e47-2ee9-49dd-baa2-224acfaac090`, placement `receipt:1d7df387-f3fc-4360-a2a7-e549a904b5fd`, physical attraction `receipt:d7ba515c-fe5b-4bf2-9a11-7622bf34f3cb`.

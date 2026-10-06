@@ -1,0 +1,18 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/grounder-health-turns-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire, AdvanceTurnDueToNoUsableWeapon, GrounderRemoved",
+    "setup": "Place a grounder, complete one opponent turn, complete the owner's next turn, then complete a second opponent turn.",
+    "command": {
+      "executable": "node",
+      "args": ["tools/run-unity-mcp-editmode-test.mjs", "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_ExpiresAfterTwoOpposingTurns"],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "GrounderRemoved fires once after the second opponent turn, not earlier.",
+    "observed": "Unity EditMode failure at BattleSimulationTests.cs:306: expected one GrounderRemoved event, observed zero.",
+    "failureReason": "Grounder lifetime is stored but never reduced on opponent turn completion.",
+    "receiptRef": "receipt:de31cf51-6e9d-4fb3-a58a-492e0d03a5a0"
+  }
+}

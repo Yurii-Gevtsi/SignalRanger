@@ -68,6 +68,8 @@ namespace Game.Gameplay.Battle.Motion
 
         /// <summary>Body center in world units.</summary>
         public Vector2 Position { get; private set; }
+        public Rect BodyBounds => new(Position - new Vector2(_profile.HalfWidth, _profile.HalfHeight),
+            new Vector2(_profile.HalfWidth, _profile.HalfHeight) * 2f);
         public Vector2 Velocity { get; private set; }
 
         /// <summary>Stable units rest on ground and skip integration.</summary>

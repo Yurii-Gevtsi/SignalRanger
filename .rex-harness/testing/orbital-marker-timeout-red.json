@@ -1,0 +1,1 @@
+{"test":"BattleVisualResourceTests.OrbitalRocket_TimerExpiryInvalidatesTheVisibleDraftMarker","receiptRef":"receipt:9d1c0bdb-f550-4453-b49d-77e3e65e8e58","failure":"BattleSceneController does not expose the required turn-boundary cleanup rule.","source":"Assets/_Game/Tests/EditMode/Gameplay/BattleVisualResourceTests.cs"}

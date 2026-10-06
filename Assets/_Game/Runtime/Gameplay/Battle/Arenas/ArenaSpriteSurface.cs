@@ -12,6 +12,8 @@ namespace Game.Gameplay.Battle.Arenas
         [SerializeField] private Vector2 _position;
         [SerializeField] private float _scale;
         [SerializeField] private int _sortingOrder;
+        [SerializeField] private float _horizontalMotionRange;
+        [SerializeField] private float _horizontalMotionSpeed;
 
         public ArenaSpriteSurface(
             string instanceId,
@@ -19,7 +21,9 @@ namespace Game.Gameplay.Battle.Arenas
             string maskResourcePath,
             Vector2 position,
             float scale,
-            int sortingOrder)
+            int sortingOrder,
+            float horizontalMotionRange = 0f,
+            float horizontalMotionSpeed = 0f)
         {
             _instanceId = instanceId;
             _visualResourcePath = visualResourcePath;
@@ -27,6 +31,8 @@ namespace Game.Gameplay.Battle.Arenas
             _position = position;
             _scale = scale;
             _sortingOrder = sortingOrder;
+            _horizontalMotionRange = Mathf.Max(0f, horizontalMotionRange);
+            _horizontalMotionSpeed = Mathf.Max(0f, horizontalMotionSpeed);
         }
 
         public string InstanceId => _instanceId;
@@ -35,5 +41,8 @@ namespace Game.Gameplay.Battle.Arenas
         public Vector2 Position => _position;
         public float Scale => _scale;
         public int SortingOrder => _sortingOrder;
+        public bool HasHorizontalMotion => _horizontalMotionRange > 0f && _horizontalMotionSpeed > 0f;
+        public float HorizontalMotionRange => _horizontalMotionRange;
+        public float HorizontalMotionSpeed => _horizontalMotionSpeed;
     }
 }

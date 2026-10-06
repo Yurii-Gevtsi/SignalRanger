@@ -70,11 +70,12 @@ namespace Game.Gameplay.Battle.Weapons
             float knockbackMultiplier = 1f,
             int terrainBounceLimit = 0,
             float timeoutSecondsOverride = -1f,
-            float impactRadiusOverride = -1f)
+            float impactRadiusOverride = -1f,
+            float projectileRadiusOverride = -1f)
         {
             return ProjectileDefinition.CreateRuntime(
                 $"projectile.{_weaponId}",
-                ProjectileRadius,
+                projectileRadiusOverride > 0f ? projectileRadiusOverride : ProjectileRadius,
                 GravityScale,
                 timeoutSecondsOverride > 0f ? timeoutSecondsOverride : TimeoutSeconds,
                 UnityEngine.Mathf.Max(0, damageOverride),

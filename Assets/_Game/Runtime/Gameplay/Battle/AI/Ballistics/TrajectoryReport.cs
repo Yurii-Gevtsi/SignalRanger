@@ -30,7 +30,8 @@ namespace Game.Gameplay.Battle.AI.Ballistics
             float clearPathRatio,
             float flightTime,
             bool endedOnTargetUnit,
-            bool endedOnAllyUnit)
+            bool endedOnAllyUnit,
+            int bounceCount)
         {
             EndKind = endKind;
             EndPoint = endPoint;
@@ -39,6 +40,7 @@ namespace Game.Gameplay.Battle.AI.Ballistics
             FlightTime = flightTime;
             EndedOnTargetUnit = endedOnTargetUnit;
             EndedOnAllyUnit = endedOnAllyUnit;
+            BounceCount = Mathf.Max(0, bounceCount);
         }
 
         public TrajectoryEndKind EndKind { get; }
@@ -63,5 +65,8 @@ namespace Game.Gameplay.Battle.AI.Ballistics
 
         /// <summary>The arc ended by striking a friendly unit (self-fire risk).</summary>
         public bool EndedOnAllyUnit { get; }
+
+        /// <summary>Number of terrain bounces before the projectile resolved.</summary>
+        public int BounceCount { get; }
     }
 }

@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/laser-fence-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire followed by Tick through the Unity EditMode battle harness",
+    "setup": "A player owns weapon.laser-fence with four rounds. The test fires two aimed deployment projectiles at terrain and observes LaserFenceNodeDeployed events.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_DeploysTwoGroundNodesFromRealCombatShots"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "Both real shots return Fired and result in two grounded nodes no farther than 5.4 world units apart.",
+    "observed": "The first public TryFire result is Blocked.",
+    "failureReason": "BattleSimulation.IsBattleMechanicAvailable explicitly blocks weapon.laser-fence before its existing deployment path can execute.",
+    "receiptRef": "receipt:33c500ec-0bb9-45a3-b036-1698d886bd88"
+  }
+}

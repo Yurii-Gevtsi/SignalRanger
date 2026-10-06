@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "27fc3699-5f15-4740-ba29-02eeaee29ab9",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-guardian-drone",
+  "profile": "default",
+  "request": {
+    "message": "Implement and Unity-verify guardian drone combat behavior: ground deployment, stealth from enemies after landing while remaining visible to its owner, mine-range enemy detection that ends the triggering turn, rise then a guaranteed fast blaster-shot at the target, and despawn. Use the approved projectile skin path where available.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 3,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design",
+    "software.testing.tdd",
+    "software.review.standards-spec"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "cc79836f-991c-402a-9e02-bcc0532955b8",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:.rex-harness/testing/guardian-drone-scope.json"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:.rex-harness/testing/guardian-drone-mapping.json"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:.rex-harness/testing/guardian-drone-seam.json"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:.rex-harness/testing/guardian-drone-testability.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "19e7d9b4-b1ec-43ab-846f-09ea61407d7f",
+      "capabilityId": "software.testing.tdd",
+      "recipeId": "software.testing.tdd.recipe",
+      "reasonCode": "honest-red-candidate",
+      "triggerEvidenceRefs": [
+        "request:current",
+        "activation:software.testing.design:completed",
+        "file:.rex-harness/testing/guardian-drone-testability.json",
+        "receipt:cbcbf58a-f009-4ffa-acdd-ee795985bced"
+      ],
+      "status": "completed",
+      "stageIndex": 3,
+      "stageId": "",
+      "completedStages": [
+        "red",
+        "green",
+        "refactor"
+      ],
+      "evidence": [
+        {
+          "kind": "failing-test-observed",
+          "refs": [
+            "receipt:cbcbf58a-f009-4ffa-acdd-ee795985bced"
+          ]
+        },
+        {
+          "kind": "red-failure-reason-recorded",
+          "refs": [
+            "file:.rex-harness/testing/guardian-drone-red.json"
+          ]
+        },
+        {
+          "kind": "passing-test-observed",
+          "refs": [
+            "receipt:03cc81b4-163a-477c-9b77-29ff5ddcb205"
+          ]
+        },
+        {
+          "kind": "implementation-diff-recorded",
+          "refs": [
+            "file:.rex-harness/testing/guardian-drone-green.json"
+          ]
+        },
+        {
+          "kind": "refactor-check-recorded",
+          "refs": [
+            "receipt:4b229c06-5d1c-483f-b290-6d0f733297fb"
+          ]
+        },
+        {
+          "kind": "test-diff-review-recorded",
+          "refs": [
+            "file:.rex-harness/testing/guardian-drone-refactor-review.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "6cef6b98-766d-405a-b83a-bbe09f4b4333",
+      "capabilityId": "software.review.standards-spec",
+      "recipeId": "software.review.standards-spec.recipe",
+      "reasonCode": "diff-ready",
+      "triggerEvidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "review"
+      ],
+      "evidence": [
+        {
+          "kind": "standards-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/guardian-drone-standards-spec.json"
+          ]
+        },
+        {
+          "kind": "spec-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/guardian-drone-standards-spec.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:.rex-harness/testing/guardian-drone-testability.json",
+        "receipt:cbcbf58a-f009-4ffa-acdd-ee795985bced"
+      ]
+    },
+    {
+      "kind": "diff-ready",
+      "evidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:.rex-harness/testing/guardian-drone-testability.json",
+    "redCandidate": {
+      "publicEntry": "BattleSimulation.TryFire, EndActiveTurn and Tick through the Unity EditMode battle harness",
+      "setup": "A player deploys weapon.guardian-drone, then the opponent moves into its 1.6-unit detection range during its active turn.",
+      "command": {
+        "executable": "node",
+        "args": [
+          "tools/run-unity-mcp-editmode-test.mjs",
+          "Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_DeploysAndGuaranteedShotEndsTriggeredTurn"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "The combat action returns Fired; the deployed drone fires once at its original target, damages it, and ends that target's active turn.",
+      "observed": "The combat action returns Blocked before any guardian deployment can occur.",
+      "receiptRef": "receipt:cbcbf58a-f009-4ffa-acdd-ee795985bced",
+      "failureReason": "IsBattleMechanicAvailable explicitly rejects weapon.guardian-drone."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design",
+      "software.testing.tdd",
+      "software.review.standards-spec"
+    ]
+  },
+  "createdAt": "2026-09-23T07:49:34.865Z",
+  "updatedAt": "2026-09-23T09:54:22.854Z"
+}

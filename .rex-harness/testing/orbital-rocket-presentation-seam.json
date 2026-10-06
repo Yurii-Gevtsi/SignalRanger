@@ -1,0 +1,8 @@
+{
+  "seam": "BattleSceneController private presentation methods are covered through reflection in BattleVisualResourceTests for deterministic asset selection; the existing public BattleSimulation seam covers target state and full turn lifecycle.",
+  "focusedCommands": [
+    "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.OrbitalRocket_UsesMissileFlightResource",
+    "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds"
+  ],
+  "limitation": "Touchscreen double-tap synthesis is not available in the current EditMode harness, so controller routing is source-reviewed against the real public simulation API."
+}

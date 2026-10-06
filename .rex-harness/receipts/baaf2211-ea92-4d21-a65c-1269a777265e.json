@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "baaf2211-ea92-4d21-a65c-1269a777265e",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlasmaSword_HitsOneNearbyEnemyForConfiguredFixedDamage"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "a80284d449459f14bd83360efc879c2d1014f8df46bc032838b4b957be3fc11f",
+  "observedAt": "2026-09-22T15:46:32.051Z"
+}

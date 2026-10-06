@@ -100,6 +100,7 @@ namespace Game.Gameplay.Battle.Weapons
                 "impulse" => "impulse_5_10_B",
                 "granata" => "granata_5_10_B",
                 "mine_off" => "mine_off_5_10_A",
+                "mine_on" => "mine_on_5_10_A",
                 "heal" => branch == WeaponUpgradeBranch.B ? "heal_5_10_B" : "heal_5_10_A",
                 "mortira" => branch == WeaponUpgradeBranch.B ? "mortira_5_10_B" : "mortira_5_10_A",
                 "emp" => "emp_5_10_B",

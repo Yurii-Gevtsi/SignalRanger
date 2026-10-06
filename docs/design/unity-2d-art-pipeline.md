@@ -64,17 +64,44 @@ authority.
 
 ### Fragment quality contract
 
-When a layout master is decomposed into runtime arena fragments, resizing a
-crop is allowed only to prepare the image-to-image reference. It is forbidden
-to promote that resize directly to Unity. Each fragment must receive an
-individual high-detail image-to-image enhancement at its target production
-canvas before it becomes a runtime visual.
+The canonical source package is deliberately small and has only these stages:
 
-The accepted reference alpha is reapplied after the quality pass. This keeps
-the approved fragment bounds, transparent padding, mask alignment and
-neighbouring-fragment seams deterministic while the enhanced RGB supplies the
-close-zoom detail. The source package must retain the reference crop, enhanced
-render, per-fragment quality manifest and dark/light/colour composite QA.
+1. One approved original PNG with a true alpha channel. If it has no
+   alpha-zero pixels, stop and report an invalid opaque source; never infer a
+   black, white, magenta, or checkerboard background.
+2. One same-canvas copy marked by the artist with red section boundaries.
+3. One direct, ungenerated source crop per marked section. These crops retain
+   a narrow shared edge band with adjacent sections so Unity never exposes a
+   transparent seam.
+4. One high-quality RGBA image-to-image enhancement per source section. A
+   resize alone is never promotable.
+5. One binary collision mask derived from each *new enhanced visual alpha*.
+   Do not reuse a source-crop mask. The enhanced alpha may move an outer edge
+   only within the two-pixel layout tolerance; trim only alpha beyond that
+   limit. If the enhancement leaves a genuine hole in a declared shared crop
+   overlap, restore only those missing overlap pixels from the direct crop
+   before deriving the mask. This is a seam repair, not a replacement of the
+   full enhanced contour. When chroma-key generation premultiplies its key
+   colour into an edge, replace only that contaminated RGB with the matching
+   source-edge colour; never preserve key-colour RGB in a final visual.
+6. One reconstructed full-arena PNG with a true transparent background.
+7. One alignment report that first validates each shared source-overlap band:
+   after a two-production-pixel antialiasing allowance it accepts at most 64
+   missing pixels, with no connected gap larger than 32 pixels. It also compares
+   the complete reconstruction to the original. Image-to-image finish may alter
+   a non-shared outer contour by at most 3.5% of the original opaque area; any
+   larger drift, out-of-bounds growth, or seam defect blocks promotion. The
+   report records all drift even when it remains within this bounded allowance.
+
+Do not generate or retain dark, light, blue, black, or other colour-background
+full-arena QA variants. They waste generation budget and are not runtime
+assets. A separately supplied arena background remains an independent,
+non-destructible Unity layer.
+
+When an artist supplies an enhanced section manually, it is ingested directly
+as `segments/<arena>_section_XX_visual.png`. Do not retain a second
+numerically named input copy after normalizing it to the documented production
+canvas; `source_segments` remains only for the required direct original crops.
 
 ### Approved arena visual style
 

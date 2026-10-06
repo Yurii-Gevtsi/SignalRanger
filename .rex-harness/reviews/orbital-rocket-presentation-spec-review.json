@@ -1,0 +1,6 @@
+{
+  "spec":"docs/design/weapon-combat-specification.md card 22",
+  "implemented":["double-tap target API", "red cross visual", "confirmation clear", "no held weapon", "missle_fly mapping"],
+  "missing":["scene marker cleanup after player turn timer expires"],
+  "verdict":"change-required"
+}

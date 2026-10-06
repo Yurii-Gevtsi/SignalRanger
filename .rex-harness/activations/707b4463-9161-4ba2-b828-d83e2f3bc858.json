@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "707b4463-9161-4ba2-b828-d83e2f3bc858",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-runtime-catalog-41-v2",
+  "profile": "default",
+  "request": {
+    "message": "Migrate all 41 canonical weapons into runtime progression and acquisition data. Base shop must expose only coreShop weapons; arenaShop, dungeonShop, and bossReward must remain hidden there. Verify current workshop UI changes and preserve all localization.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-16T18:56:46.020Z",
+  "updatedAt": "2026-09-16T18:56:46.020Z"
+}

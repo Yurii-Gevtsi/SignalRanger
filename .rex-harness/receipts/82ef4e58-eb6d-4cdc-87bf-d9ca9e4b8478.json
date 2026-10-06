@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "82ef4e58-eb6d-4cdc-87bf-d9ca9e4b8478",
+  "command": {
+    "executable": "C:\\Users\\Yurii\\AppData\\Local\\Unity\\bin\\unity.exe",
+    "args": [
+      "-batchmode",
+      "-nographics",
+      "-quit",
+      "-projectPath",
+      "C:\\Projects\\Game",
+      "-runTests",
+      "-testPlatform",
+      "EditMode",
+      "-testFilter",
+      "Game.Tests.EditMode.App.WorkshopUpgradeDescriptionResolverTests",
+      "-testResults",
+      "C:\\Projects\\Game\\Temp\\workshop-upgrade-description-tests.xml",
+      "-logFile",
+      "-"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 2,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "2ec87a9cd707b5715c069476db8643e374ede50cba4617dfd5e39760762d7b1a",
+  "observedAt": "2026-09-19T13:03:25.008Z"
+}

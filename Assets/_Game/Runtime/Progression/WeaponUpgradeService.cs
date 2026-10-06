@@ -52,7 +52,7 @@ namespace Game.Progression
             }
 
             var progress = _saveData.inventory.GetOrCreateWeaponProgress(weaponId);
-            if (definition.CountBaseUpgrades(progress, path) >= definition.GetBaseUpgradeLimit(path))
+            if (!definition.CanPurchaseBaseUpgrade(progress, path))
             {
                 return new WeaponUpgradeResult(false, progress.rank, (WeaponUpgradeBranch)progress.branch, default,
                     path: path);

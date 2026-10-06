@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "cd6d8603-7c1f-4b0d-8850-5f33cf41251a",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-repair-jammer",
+  "profile": "default",
+  "request": {
+    "message": "Implement and verify repair-jammer combat behavior from the canonical specification: close-range attachment to an enemy, 1.5-second non-damaging detonation, repair prevention for its configured duration, and correct turn interaction.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 3,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design",
+    "software.testing.tdd",
+    "software.review.standards-spec"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "cb9d21fd-114b-4422-851e-83d230a93fe8",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "doc:docs/architecture/repair-jammer-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "doc:docs/architecture/repair-jammer-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "doc:docs/architecture/repair-jammer-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-testability.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "4a2a0694-e8e9-4aee-a1f2-a41ed0654db9",
+      "capabilityId": "software.testing.tdd",
+      "recipeId": "software.testing.tdd.recipe",
+      "reasonCode": "honest-red-candidate",
+      "triggerEvidenceRefs": [
+        "request:current",
+        "activation:software.testing.design:completed",
+        "file:.rex-harness/testing/repair-jammer-testability.json",
+        "receipt:ef851c0c-2c8a-42c4-bcbe-0df37cf151df"
+      ],
+      "status": "completed",
+      "stageIndex": 3,
+      "stageId": "",
+      "completedStages": [
+        "red",
+        "green",
+        "refactor"
+      ],
+      "evidence": [
+        {
+          "kind": "failing-test-observed",
+          "refs": [
+            "receipt:ef851c0c-2c8a-42c4-bcbe-0df37cf151df"
+          ]
+        },
+        {
+          "kind": "red-failure-reason-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-red.json"
+          ]
+        },
+        {
+          "kind": "passing-test-observed",
+          "refs": [
+            "receipt:f58a7ec4-aae0-46d2-be8d-6052fac662b8"
+          ]
+        },
+        {
+          "kind": "implementation-diff-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-green.json"
+          ]
+        },
+        {
+          "kind": "refactor-check-recorded",
+          "refs": [
+            "receipt:eff94d82-b183-4d95-a473-28c4df387223"
+          ]
+        },
+        {
+          "kind": "test-diff-review-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-refactor.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "3987c164-4b77-460a-a716-7abfe821612e",
+      "capabilityId": "software.review.standards-spec",
+      "recipeId": "software.review.standards-spec.recipe",
+      "reasonCode": "diff-ready",
+      "triggerEvidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "review"
+      ],
+      "evidence": [
+        {
+          "kind": "standards-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/repair-jammer-review.json"
+          ]
+        },
+        {
+          "kind": "spec-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/repair-jammer-review.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:.rex-harness/testing/repair-jammer-testability.json",
+        "receipt:ef851c0c-2c8a-42c4-bcbe-0df37cf151df"
+      ]
+    },
+    {
+      "kind": "diff-ready",
+      "evidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:.rex-harness/testing/repair-jammer-testability.json",
+    "redCandidate": {
+      "publicEntry": "BattleSimulation.TryFire and Tick through the Unity EditMode battle harness",
+      "setup": "A player equips weapon.repair-jammer and a hostile droid is placed 1.6 world units away.",
+      "command": {
+        "executable": "node",
+        "args": [
+          "tools/run-unity-mcp-editmode-test.mjs",
+          "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "The combat action returns Fired and then applies a non-damaging attachment behavior.",
+      "observed": "TryFire returned Blocked before the dedicated attachment code could execute.",
+      "receiptRef": "receipt:ef851c0c-2c8a-42c4-bcbe-0df37cf151df",
+      "failureReason": "IsBattleMechanicAvailable explicitly rejects weapon.repair-jammer."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design",
+      "software.testing.tdd",
+      "software.review.standards-spec"
+    ]
+  },
+  "createdAt": "2026-09-22T20:01:02.061Z",
+  "updatedAt": "2026-09-23T01:16:54.809Z"
+}

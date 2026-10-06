@@ -8,9 +8,12 @@ namespace Game.Gameplay.Battle.Simulation
     public enum TurnAdvanceReason
     {
         ProjectileImpactResolved,
+        LaserFenceTriggered,
+        GuardianDroneTriggered,
         InstantActionCompleted,
         PlayerTimerExpired,
-        OpponentSkippedNoUsableWeapon
+        OpponentSkippedNoUsableWeapon,
+        MineTriggered
     }
 
     /// <summary>Why a <see cref="BattleSimulation.BattleFinished"/> notification fired.</summary>
@@ -103,16 +106,21 @@ namespace Game.Gameplay.Battle.Simulation
 
     public readonly struct CoverDeployedEvent
     {
-        public CoverDeployedEvent(Vector2 position, Vector2 size, WeaponDefinition weapon)
+        public CoverDeployedEvent(Vector2 position, Vector2 size, WeaponDefinition weapon, float rotationDegrees = 0f,
+            Game.Gameplay.Battle.Terrain.PlacedTerrainSpriteSurface surface = null)
         {
             Position = position;
             Size = size;
             Weapon = weapon;
+            RotationDegrees = rotationDegrees;
+            Surface = surface;
         }
 
         public Vector2 Position { get; }
         public Vector2 Size { get; }
+        public Game.Gameplay.Battle.Terrain.PlacedTerrainSpriteSurface Surface { get; }
         public WeaponDefinition Weapon { get; }
+        public float RotationDegrees { get; }
     }
 
     public readonly struct HealthRestoredEvent
@@ -141,6 +149,47 @@ namespace Game.Gameplay.Battle.Simulation
 
         public int MineId { get; }
         public Vector2 Point { get; }
+        public WeaponDefinition Weapon { get; }
+        public BattleTeamId Team { get; }
+    }
+
+    public readonly struct GrounderDeployedEvent
+    {
+        public GrounderDeployedEvent(int id, Vector2 point, WeaponDefinition weapon, BattleTeamId team)
+        {
+            Id = id;
+            Point = point;
+            Weapon = weapon;
+            Team = team;
+        }
+
+        public int Id { get; }
+        public Vector2 Point { get; }
+        public WeaponDefinition Weapon { get; }
+        public BattleTeamId Team { get; }
+    }
+
+    /// <summary>A laser-fence projectile reached terrain and became a stationary beam node.</summary>
+    public readonly struct LaserFenceNodeDeployedEvent
+    {
+        public LaserFenceNodeDeployedEvent(
+            int nodeId,
+            string ownerUnitId,
+            Vector2 point,
+            WeaponDefinition weapon,
+            BattleTeamId team)
+        {
+            NodeId = nodeId;
+            OwnerUnitId = ownerUnitId;
+            Point = point;
+            Weapon = weapon;
+            Team = team;
+        }
+
+        public int NodeId { get; }
+        public string OwnerUnitId { get; }
+        public Vector2 Point { get; }
+        public Vector2 Position => Point;
         public WeaponDefinition Weapon { get; }
         public BattleTeamId Team { get; }
     }
@@ -242,5 +291,21 @@ namespace Game.Gameplay.Battle.Simulation
         public Vector2 ImpactPoint { get; }
         public float TravelSeconds { get; }
         public float LifetimeSeconds { get; }
+    }
+
+    public readonly struct SwordSwingEvent
+    {
+        public SwordSwingEvent(WeaponDefinition weapon, BattleTeamId team, Vector2 origin, Vector2 direction)
+        {
+            Weapon = weapon;
+            Team = team;
+            Origin = origin;
+            Direction = direction;
+        }
+
+        public WeaponDefinition Weapon { get; }
+        public BattleTeamId Team { get; }
+        public Vector2 Origin { get; }
+        public Vector2 Direction { get; }
     }
 }

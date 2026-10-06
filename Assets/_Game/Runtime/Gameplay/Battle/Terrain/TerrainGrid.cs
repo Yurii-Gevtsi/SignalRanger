@@ -58,6 +58,34 @@ namespace Game.Gameplay.Battle.Terrain
             }
         }
 
+        public void ClearSolidCells()
+        {
+            System.Array.Clear(_solid, 0, _solid.Length);
+            System.Array.Clear(_materials, 0, _materials.Length);
+        }
+
+        public void ClearSolidCells(RectInt region)
+        {
+            var minX = Mathf.Clamp(region.xMin, 0, Width - 1);
+            var maxX = Mathf.Clamp(region.xMax - 1, 0, Width - 1);
+            var minY = Mathf.Clamp(region.yMin, 0, Height - 1);
+            var maxY = Mathf.Clamp(region.yMax - 1, 0, Height - 1);
+            if (minX > maxX || minY > maxY)
+            {
+                return;
+            }
+
+            for (var y = minY; y <= maxY; y++)
+            {
+                var row = y * Width;
+                for (var x = minX; x <= maxX; x++)
+                {
+                    _solid[row + x] = false;
+                    _materials[row + x] = TerrainMaterial.Soil;
+                }
+            }
+        }
+
         public TerrainMaterial GetMaterialCell(int x, int y)
         {
             if (x < 0 || x >= Width || y < 0 || y >= Height)

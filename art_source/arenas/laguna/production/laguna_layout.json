@@ -1,0 +1,31 @@
+{
+  "canvas_width_px": 4096,
+  "canvas_height_px": 2304,
+  "production_scale": 2,
+  "source_canvas_width_px": 2048,
+  "source_canvas_height_px": 1152,
+  "source_policy": "artist_supplied_rgba_segments_normalized_to_marked_layout",
+  "runtime_full_canvas": {
+    "geometry_reference": "../production_source/острови.png",
+    "visual_sources": [
+      "segments/laguna_section_01_visual.png",
+      "segments/laguna_section_02_visual.png",
+      "segments/laguna_section_03_visual.png",
+      "segments/laguna_section_04_visual.png",
+      "segments/laguna_section_05_visual.png"
+    ],
+    "visual": "laguna_reconstructed_transparent.png",
+    "mask": "laguna_reconstructed_mask.png",
+    "source_to_production_transform": [[2.333676, -0.001314, -20.243338], [0.001314, 2.333676, 123.740286]],
+    "unity_surface_position": [0.0, -0.45],
+    "unity_surface_scale": 2.25,
+    "notes": "High-quality enhanced segments are registered to their matching clean source fragments and assembled without a full-canvas RGB underlay. Section_04 has a 72px upward overlap to eliminate the left join gap; Section_02 is shifted 48px left and Section_01 14px left to align the marked palm joins without duplicating foliage."
+  },
+  "pieces": [
+    { "id": "section_01", "source": "production_source/4.png", "visual": "segments/laguna_section_01_visual.png", "mask": "segments/laguna_section_01_mask.png", "x_px": 2510, "y_px": 304, "width_px": 1586, "height_px": 1116, "sorting_order": -9 },
+    { "id": "section_02", "source": "production_source/1.png", "visual": "segments/laguna_section_02_visual.png", "mask": "segments/laguna_section_02_mask.png", "x_px": 0, "y_px": 374, "width_px": 1372, "height_px": 1018, "sorting_order": -8 },
+    { "id": "section_03", "source": "production_source/3.png", "visual": "segments/laguna_section_03_visual.png", "mask": "segments/laguna_section_03_mask.png", "x_px": 932, "y_px": 686, "width_px": 1280, "height_px": 1392, "sorting_order": -7 },
+    { "id": "section_04", "source": "production_source/2.png", "visual": "segments/laguna_section_04_visual.png", "mask": "segments/laguna_section_04_mask.png", "x_px": 0, "y_px": 1248, "width_px": 1178, "height_px": 822, "sorting_order": -6 },
+    { "id": "section_05", "source": "production_source/5.png", "visual": "segments/laguna_section_05_visual.png", "mask": "segments/laguna_section_05_mask.png", "x_px": 2142, "y_px": 1356, "width_px": 1954, "height_px": 738, "sorting_order": -5 }
+  ]
+}

@@ -1,0 +1,5 @@
+# Grounder magnet attraction GREEN
+
+Before implementation the opposing physical shot passed the device and exploded 2.78568029 world units away (`receipt:bef9b634-10b3-4fea-83f2-d62d3ec03cd1`). The scoped change in `BattleSimulation.StepProjectiles` selects a living hostile grounder for a physical carrier inside the device radius, steers its velocity toward the device, detects contact in projectile substeps, deducts device HP, and calls the normal projectile impact path so the shot still explodes. `IsGrounderPhysicalCarrier` follows the source weapon's carrier group and excludes energy weapons. On zero HP `GrounderRemoved` fires.
+
+Exact Unity command: `node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PullsHostilePhysicalShotIntoDevice`. Observed: `ProjectileExploded` within 0.55 world units of the placed magnet, exit 0, `receipt:6badcef9-9c67-402d-8e69-4b3186f348e5`. The test uses actual simulation flight and event observation. Additional cases for team filtering, health, lifetime, upgrades, and visual remain pending under the full scope contract.

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Game.Data.Progression;
 using Game.Data.Save;
+using Game.Gameplay.Battle.Weapons;
 using Game.Economy;
 using Game.Progression;
 using NUnit.Framework;
@@ -34,6 +35,48 @@ namespace Game.Tests.EditMode.Progression
             Assert.That(WeaponProgressionCatalog.TryGet("weapon.rope", out var rope), Is.True);
             Assert.That(rope.HasEvolutionOptions, Is.False);
             Assert.That(rope.MaxRank, Is.EqualTo(9));
+        }
+
+        [Test]
+        public void RepairJammer_AllowsExactlyTwoDurationUpgrades()
+        {
+            Assert.That(WeaponProgressionCatalog.TryGet("weapon.repair-jammer", out var jammer), Is.True);
+            Assert.That(jammer.RadiusUpgradeLimit, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Grounder_AllowsFourCoreAndFourRadiusUpgrades()
+        {
+            Assert.That(WeaponProgressionCatalog.TryGet("weapon.grounder", out var grounder), Is.True);
+            Assert.That(grounder.CoreUpgradeLimit, Is.EqualTo(4));
+            Assert.That(grounder.RadiusUpgradeLimit, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange()
+        {
+            var weapon = Game.Gameplay.Battle.Weapons.WeaponDefinition.CreateRuntime(
+                "weapon.grounder", "weapon.grounder.name",
+                Game.Gameplay.Battle.Weapons.WeaponRole.DefensiveTool,
+                0, 1.4f, 0.14f, 0f, 8f, 6f, 20f, 1, null, null);
+            var progress = new SaveWeaponProgressData
+            {
+                weaponId = weapon.WeaponId,
+                rank = 5,
+                upgradeChoices = new System.Collections.Generic.List<SaveWeaponUpgradeChoiceData>
+                {
+                    new() { rank = 2, path = (int)WeaponUpgradePath.Radius },
+                    new() { rank = 3, path = (int)WeaponUpgradePath.Radius },
+                    new() { rank = 4, path = (int)WeaponUpgradePath.Radius },
+                    new() { rank = 5, path = (int)WeaponUpgradePath.Radius }
+                }
+            };
+
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveImpactRadiusPercent(weapon, progress),
+                Is.EqualTo(40));
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(
+                    weapon, null, progress, WeaponUpgradePath.Radius),
+                Is.EqualTo(1.96f).Within(0.0001f));
         }
 
         [Test]
@@ -123,6 +166,39 @@ namespace Game.Tests.EditMode.Progression
             var economy = new EconomyService(saveData);
             economy.Grant(new ProgressionReward(300000, 100000, 10000, "test"), "test", string.Empty, Guid.NewGuid().ToString());
             return economy;
+        }
+
+        [Test]
+        public void TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService()
+        {
+            const string weaponId = "weapon.titanium-barrier";
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(weaponId);
+            var economy = SeedEconomy(save);
+            var progress = save.inventory.GetOrCreateWeaponProgress(weaponId);
+            progress.blueprints = 10000;
+            var service = new WeaponUpgradeService(save, economy);
+            Assert.That(service.TryUpgrade(weaponId, WeaponUpgradePath.Radius).Applied, Is.False);
+            Assert.That(service.TryPurchaseEvolution(weaponId, 5, "size-unlock").Applied, Is.False);
+            Assert.That(progress.rank, Is.EqualTo(1));
+            for (var i = 0; i < 4; i++)
+                Assert.That(service.TryUpgrade(weaponId, WeaponUpgradePath.Loadout).Applied, Is.True);
+            Assert.That(progress.rank, Is.EqualTo(5));
+            Assert.That(service.TryUpgrade(weaponId, WeaponUpgradePath.Radius).Applied, Is.False,
+                "rank five alone does not buy resizing");
+            Assert.That(service.TryPurchaseEvolution(weaponId, 5, "size-unlock").Applied, Is.True);
+            Assert.That(service.TryPurchaseEvolution(weaponId, 5, "size-unlock").Applied, Is.False);
+            for (var i = 0; i < 4; i++)
+                Assert.That(service.TryUpgrade(weaponId, WeaponUpgradePath.Radius).Applied, Is.True);
+            Assert.That(service.TryUpgrade(weaponId, WeaponUpgradePath.Radius).Applied, Is.False);
+            Assert.That(progress.rank, Is.EqualTo(10));
+            Assert.That(WeaponProgressionCatalog.TryGet(weaponId, out var definition), Is.True);
+            Assert.That(definition.CountBaseUpgrades(progress, WeaponUpgradePath.Radius), Is.EqualTo(4));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(item => item.WeaponId == weaponId);
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(weapon, definition, progress, WeaponUpgradePath.Radius),
+                Is.EqualTo(weapon.ImpactRadius * 1.5f).Within(0.001f));
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(weapon, definition, progress, WeaponUpgradePath.Loadout),
+                Is.EqualTo(6f));
         }
     }
 }

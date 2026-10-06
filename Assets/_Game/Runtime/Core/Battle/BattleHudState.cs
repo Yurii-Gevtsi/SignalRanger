@@ -19,7 +19,8 @@ namespace Game.Core.Battle
             float damageValue = 0f,
             float accuracyValue = 0f,
             float ammoValue = -1f,
-            float radiusValue = 0f)
+            float radiusValue = 0f,
+            string coreStatLabelKey = "architect.detail.statDamage")
         {
             Index = index;
             Label = label ?? string.Empty;
@@ -34,6 +35,7 @@ namespace Game.Core.Battle
             AccuracyValue = accuracyValue;
             AmmoValue = ammoValue;
             RadiusValue = radiusValue;
+            CoreStatLabelKey = coreStatLabelKey;
         }
 
         public int Index { get; }
@@ -49,6 +51,7 @@ namespace Game.Core.Battle
         public float AccuracyValue { get; }
         public float AmmoValue { get; }
         public float RadiusValue { get; }
+        public string CoreStatLabelKey { get; }
     }
 
     /// <summary>

@@ -25,6 +25,8 @@ namespace Game.UI.Battle
         private const float ArsenalButtonSize = 264f;
         private const float MovementBottomMargin = 34f;
         private const float MovementButtonGap = 24f;
+        private const float RopeHorizontalButtonGap = 52f;
+        private const float RopeVerticalOffset = 80f;
         private const string BattleResourceRoot = "UI/Battle/";
         private const string WeaponResourceRoot = "UI/Weapons/";
         private const string ResultCardResource = "UI/Common/rect_long_card";
@@ -39,6 +41,12 @@ namespace Game.UI.Battle
         // The card art's decorative frame eats into the visible ~673 width, so the
         // buttons are pulled well inside that rather than merely inside the rect.
         private static readonly Vector2 ResultButtonSize = new(240f, 108f);
+        private static readonly Vector2 WeaponDetailsCardSize = new(580f, 720f);
+        private static readonly Vector2 WeaponDetailsFrameSize = new(560f, 720f);
+        private static readonly Vector2 WeaponDetailsHitAreaSize = new(580f, 720f);
+        private static readonly Color DetailsDividerColor = new Color32(0x8A, 0x95, 0xA2, 0xB8);
+        private static readonly Vector2 DetailsDividerSize = new(340f, 2f);
+        private const string WorkshopStatIconsResource = "UI/Menu/Architect/icons";
 
         private static readonly Color InkSolid = new(0.055f, 0.085f, 0.13f, 0.96f);
         private static readonly Color Fire = new(0.14f, 0.78f, 0.36f, 1f);
@@ -67,6 +75,12 @@ namespace Game.UI.Battle
         private Sprite _settingsButtonSprite;
         private Sprite _weaponsCardSprite;
         private Sprite _weaponMiniCardSprite;
+        private Sprite _roundedBarSprite;
+        private GameObject _weaponDetailsRoot;
+        private TMP_Text _weaponDetailsName;
+        private TMP_Text _weaponDetailsLevel;
+        private TMP_Text _weaponDetailsDescription;
+        private BattleDetailsStatRow[] _weaponDetailsStats;
 
         private TMP_Text _statusTitleText;
         private TMP_Text _statusText;
@@ -86,6 +100,7 @@ namespace Game.UI.Battle
         private GameObject _arsenalRoot;
         private Image _arsenalWindow;
         private Transform _arsenalItemsRoot;
+        private ScrollRect _arsenalScrollRect;
         private Image _tutorialFirstWeaponPanel;
         private IReadOnlyList<BattleWeaponHudItem> _renderedArsenalWeapons;
         private int _renderedSelectedWeaponIndex = -1;
@@ -116,9 +131,6 @@ namespace Game.UI.Battle
         private TMP_Text _resultRewardText;
         private Image _resultMissionMark;
         private TMP_Text _resultMissionCross;
-        private bool _resultOffersRetry;
-        private Button _resultContinueButton;
-        private TMP_Text _resultContinueLabel;
 
         public event Action FireRequested;
         public event Action<int> WeaponSelected;
@@ -145,6 +157,7 @@ namespace Game.UI.Battle
             _whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
             _panelSprite = CreateRoundedSprite(128, 30, 8);
             _pillSprite = CreateRoundedSprite(128, 42, 9);
+            _roundedBarSprite = CreateRoundedRectSprite();
             _buttonSprite = CreateRoundedSprite(128, 28, 9);
             _circleSprite = CreateRoundedSprite(128, 62, 10);
             _fireRingSprite = CreateCircleFrameSprite(256, 7f);
@@ -175,7 +188,9 @@ namespace Game.UI.Battle
             RenderTutorialCopy(state.Status);
             _statusPanel.gameObject.SetActive(state.ShowTutorialCard);
             _turnPanel.gameObject.SetActive(state.ShowTurnTimer);
-            _turnText.text = Mathf.CeilToInt(state.TurnSecondsRemaining).ToString();
+            _turnText.text = state.TurnSecondsRemaining > 0f
+                ? Mathf.CeilToInt(state.TurnSecondsRemaining).ToString()
+                : "--";
             var tutorialTarget = state.TutorialTargetId;
             var movementEnabled = state.CanUseMovement
                 && (!state.TutorialBlocksMovement
@@ -200,8 +215,9 @@ namespace Game.UI.Battle
             _firePanel.color = FireControlVisual;
             _fireIcon.color = Color.white;
 
-            _weaponResetButton.gameObject.SetActive(state.HasSelectedWeapon);
-            _weaponResetButton.interactable = state.HasSelectedWeapon && state.CanOpenArsenal;
+            var showWeaponReset = ShouldShowWeaponReset(state.HasSelectedWeapon, state.RopeControlsActive);
+            _weaponResetButton.gameObject.SetActive(showWeaponReset);
+            _weaponResetButton.interactable = showWeaponReset && state.CanOpenArsenal;
             _tutorialSkipButton.gameObject.SetActive(state.ShowTutorialSkip);
 
             RenderOpponentBar(state);
@@ -221,6 +237,11 @@ namespace Game.UI.Battle
                 "teleport" => 0.55f,
                 _ => 0.8f
             };
+        }
+
+        private static bool ShouldShowWeaponReset(bool hasSelectedWeapon, bool ropeControlsActive)
+        {
+            return hasSelectedWeapon && !ropeControlsActive;
         }
 
         private static void EnsureEventSystem()
@@ -395,15 +416,26 @@ namespace Game.UI.Battle
             }
 
             // Rope controls repurpose the same four input targets: up/down stack on
-            // the left; the unchanged left/right pair shares one row on the right.
+            // the left, while left/right use explicitly centred slots on the right.
+            // Centre pivots avoid a mirrored left arrow inheriting the right button's
+            // edge pivot and visually overlapping it on narrow phone screens.
+            var ropeBottomY = MovementBottomMargin + RopeVerticalOffset;
+            var ropeDownPosition = new Vector2(36f + WalkButtonSize * 0.5f, ropeBottomY);
+            var ropeUpPosition = new Vector2(
+                ropeDownPosition.x,
+                ropeBottomY + WalkButtonSize + MovementButtonGap);
+            var ropeRightPosition = new Vector2(-36f - WalkButtonSize * 0.5f, ropeBottomY);
+            var ropeLeftPosition = new Vector2(
+                ropeRightPosition.x - WalkButtonSize - RopeHorizontalButtonGap,
+                ropeBottomY);
             ConfigureMovementControl(_jumpLeftButton, _moveButtonSprite, WalkButtonSize, new Vector2(0f, 0f),
-                new Vector2(0f, 0f), leftUpperPosition, Vector3.one, 90f);
+                new Vector2(0.5f, 0.5f), ropeUpPosition, Vector3.one, 270f);
             ConfigureMovementControl(_jumpRightButton, _moveButtonSprite, WalkButtonSize, new Vector2(0f, 0f),
-                new Vector2(0f, 0f), leftPosition, Vector3.one, -90f);
+                new Vector2(0.5f, 0.5f), ropeDownPosition, Vector3.one, -90f);
             ConfigureMovementControl(_moveLeftButton, _moveButtonSprite, WalkButtonSize, new Vector2(1f, 0f),
-                new Vector2(1f, 0f), new Vector2(-36f - WalkButtonSize - MovementButtonGap, MovementBottomMargin), new Vector3(-1f, 1f, 1f), 0f);
+                new Vector2(0.5f, 0.5f), ropeLeftPosition, new Vector3(-1f, 1f, 1f), 0f);
             ConfigureMovementControl(_moveRightButton, _moveButtonSprite, WalkButtonSize, new Vector2(1f, 0f),
-                new Vector2(1f, 0f), rightPosition, Vector3.one, 0f);
+                new Vector2(0.5f, 0.5f), ropeRightPosition, Vector3.one, 0f);
         }
 
         private static void ConfigureMovementControl(Button button, Sprite sprite, float size, Vector2 anchor,
@@ -487,9 +519,29 @@ namespace Game.UI.Battle
             _arsenalWindow.preserveAspect = false;
             DisableGraphicEffects(_arsenalWindow);
 
-            _arsenalItemsRoot = CreateRect("Arsenal Items", _arsenalWindow, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), new Vector2(1320f, 820f), new Vector2(0f, 12f));
+            // Keep the weapon shelf deliberately constrained to four rows. The
+            // content grows with the inventory and a swipe reveals later rows.
+            var arsenalViewport = CreateRect("Arsenal Weapon Carousel Viewport", _arsenalWindow,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(1320f, 688f), new Vector2(0f, 12f));
+            var viewportImage = arsenalViewport.gameObject.AddComponent<Image>();
+            viewportImage.sprite = _whiteSprite;
+            viewportImage.color = new Color(1f, 1f, 1f, 0.001f);
+            viewportImage.raycastTarget = true;
+            arsenalViewport.gameObject.AddComponent<RectMask2D>();
+            _arsenalScrollRect = arsenalViewport.gameObject.AddComponent<ScrollRect>();
+            _arsenalScrollRect.horizontal = false;
+            _arsenalScrollRect.vertical = true;
+            _arsenalScrollRect.movementType = ScrollRect.MovementType.Elastic;
+            _arsenalScrollRect.inertia = true;
+            _arsenalScrollRect.decelerationRate = 0.12f;
+            _arsenalScrollRect.viewport = arsenalViewport;
+
+            _arsenalItemsRoot = CreateRect("Arsenal Items", arsenalViewport, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(1320f, 688f), Vector2.zero);
+            _arsenalScrollRect.content = _arsenalItemsRoot as RectTransform;
             CreateArsenalCloseButton(_arsenalWindow.transform);
+            BuildWeaponDetailsCard(_arsenalRoot.transform);
             _arsenalRoot.SetActive(false);
         }
 
@@ -509,7 +561,238 @@ namespace Game.UI.Battle
             }
 
             _arsenalRoot.SetActive(visible);
+            if (!visible)
+            {
+                HideWeaponDetails();
+            }
             ArsenalVisibilityChanged?.Invoke(visible);
+        }
+
+        private void BuildWeaponDetailsCard(Transform parent)
+        {
+            var overlayRect = CreateRect("Battle Weapon Details Overlay", parent, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            var overlay = overlayRect.gameObject.AddComponent<Image>();
+            overlay.sprite = _whiteSprite;
+            overlay.color = new Color(0f, 0f, 0f, 0.35f);
+            overlay.raycastTarget = true;
+            _weaponDetailsRoot = overlay.gameObject;
+
+            var cardRect = CreateRect("Battle Weapon Details", overlayRect, new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), WeaponDetailsCardSize, Vector2.zero);
+            var frame = CreatePanel("Battle Weapon Details Frame", cardRect, new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), WeaponDetailsFrameSize, Vector2.zero,
+                Color.white, LoadResourceSprite("UI/Common/rect_long_card", new Vector4(250f, 250f, 250f, 250f)));
+            frame.type = Image.Type.Simple;
+            frame.preserveAspect = false;
+            frame.raycastTarget = false;
+            DisableGraphicEffects(frame);
+
+            var overlayClick = overlayRect.gameObject.AddComponent<WeaponDetailsOverlayClickHandler>();
+            overlayClick.Configure(cardRect, HideWeaponDetails);
+
+            CreateBattleDetailsDivider(cardRect, "Battle Weapon Details Divider Above Description", new Vector2(0f, 180f));
+            CreateBattleDetailsDivider(cardRect, "Battle Weapon Details Divider Below Description", new Vector2(0f, 45f));
+
+            _weaponDetailsName = CreateText("Battle Weapon Details Name", cardRect,
+                new Vector2(0.08f, 0.80f), new Vector2(0.92f, 0.89f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, 30, TextAlignmentOptions.Center);
+            _weaponDetailsName.fontStyle = FontStyles.Bold;
+            _weaponDetailsLevel = CreateText("Battle Weapon Details Level", cardRect,
+                new Vector2(0.12f, 0.76f), new Vector2(0.88f, 0.81f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, 24, TextAlignmentOptions.Center);
+            _weaponDetailsDescription = CreateText("Battle Weapon Details Description", cardRect,
+                new Vector2(0.20f, 0.60f), new Vector2(0.80f, 0.76f), new Vector2(0.5f, 1f),
+                Vector2.zero, new Vector2(0f, -20f), 20, TextAlignmentOptions.TopLeft);
+            _weaponDetailsDescription.textWrappingMode = TextWrappingModes.Normal;
+            _weaponDetailsDescription.overflowMode = TextOverflowModes.Truncate;
+            _weaponDetailsStats = new[]
+            {
+                CreateBattleDetailsStatRow(cardRect, "Battle Weapon Details Damage", "architect.detail.statDamage", 0.45f, 0),
+                CreateBattleDetailsStatRow(cardRect, "Battle Weapon Details Accuracy", "architect.detail.statAccuracy", 0.36f, 1),
+                CreateBattleDetailsStatRow(cardRect, "Battle Weapon Details Ammo", "architect.detail.statAmmo", 0.27f, 2),
+                CreateBattleDetailsStatRow(cardRect, "Battle Weapon Details Radius", "architect.detail.statRadius", 0.18f, 3)
+            };
+            _weaponDetailsRoot.SetActive(false);
+        }
+
+        private void CreateBattleDetailsDivider(Component parent, string name, Vector2 position)
+        {
+            var divider = CreatePanel(name, parent, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), DetailsDividerSize, position, DetailsDividerColor, _whiteSprite);
+            divider.raycastTarget = false;
+        }
+
+        private BattleDetailsStatRow CreateBattleDetailsStatRow(
+            Component parent,
+            string name,
+            string labelKey,
+            float normalizedY,
+            int iconIndex)
+        {
+            var iconPositionX = iconIndex switch
+            {
+                1 => 105f,
+                2 => 94f,
+                3 => 103f,
+                _ => 98f
+            };
+            var row = CreateRect(name, parent, new Vector2(0.08f, normalizedY),
+                new Vector2(0.92f, normalizedY + 0.065f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            var icon = CreatePanel($"{name} Icon", row, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(70f, 70f), new Vector2(iconPositionX, 0f), Color.white,
+                LoadBattleStatIcon(iconIndex));
+            icon.type = Image.Type.Simple;
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+
+            var labelText = CreateText($"{name} Label", row, new Vector2(0.10f, 0f), new Vector2(0.10f, 1f),
+                new Vector2(0f, 0.5f), new Vector2(220f, 0f), new Vector2(90f, 0f), 20,
+                TextAlignmentOptions.MidlineLeft);
+            labelText.text = GameText.Localized(labelKey, string.Empty);
+
+            var outer = CreatePanel($"{name} Bar Outer", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(160f, 17f), new Vector2(10f, 0f),
+                new Color32(0x12, 0x2F, 0x49, 0xFF), _roundedBarSprite);
+            outer.type = Image.Type.Sliced;
+            outer.fillCenter = true;
+            outer.raycastTarget = false;
+            var bar = CreatePanel($"{name} Bar", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(156f, 13f), new Vector2(10f, 0f),
+                new Color32(0x09, 0x34, 0x5D, 0xFF), _roundedBarSprite);
+            bar.type = Image.Type.Sliced;
+            bar.fillCenter = true;
+            bar.raycastTarget = false;
+            var fill = CreatePanel($"{name} Bar Fill", row, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0f, 0.5f), new Vector2(0f, 13f), new Vector2(-68f, 0f),
+                new Color32(0x29, 0xD8, 0xFF, 0xFF), _roundedBarSprite);
+            fill.type = Image.Type.Sliced;
+            fill.fillCenter = true;
+            fill.gameObject.SetActive(false);
+            fill.raycastTarget = false;
+            var value = CreateText($"{name} Value", row, new Vector2(0.72f, 0f), new Vector2(0.90f, 1f),
+                new Vector2(1f, 0.5f), Vector2.zero, new Vector2(-40f, 0f), 25,
+                TextAlignmentOptions.MidlineRight);
+            return new BattleDetailsStatRow
+            {
+                Row = row,
+                Icon = icon,
+                Label = labelText,
+                Outer = outer,
+                Bar = bar,
+                Fill = fill,
+                Value = value
+            };
+        }
+
+        private void ShowWeaponDetails(BattleWeaponHudItem item)
+        {
+            if (_weaponDetailsRoot == null)
+            {
+                return;
+            }
+
+            _weaponDetailsName.text = item.Label;
+            _weaponDetailsLevel.text = GameText.LevelLabel() + " " + Mathf.Max(1, item.Level);
+            _weaponDetailsDescription.text = item.Description;
+            _weaponDetailsStats[0].Label.text = GameText.Localized(
+                item.CoreStatLabelKey, string.Empty);
+            var values = new[] { item.DamageValue, item.AccuracyValue, item.AmmoValue, item.RadiusValue };
+            var maxValues = new[]
+            {
+                item.CoreStatLabelKey == "architect.detail.statDuration"
+                    ? 6f : Mathf.Max(1f, item.DamageValue * 1.5f),
+                100f,
+                item.HasLimitedAmmo ? Mathf.Max(1f, item.AmmoValue + 6f) : 1f,
+                Mathf.Max(0.1f, item.RadiusValue * 1.5f)
+            };
+            for (var index = 0; index < _weaponDetailsStats.Length; index++)
+            {
+                var stat = _weaponDetailsStats[index];
+                var value = values[index];
+                var fillAmount = item.HasLimitedAmmo || index != 2
+                    ? Mathf.Clamp01(value / maxValues[index])
+                    : 1f;
+                stat.Value.text = FormatBattleDetailsValue(value);
+                Canvas.ForceUpdateCanvases();
+                var rowWidth = Mathf.Max(1f, stat.Row.rect.width);
+                var barRight = rowWidth * 0.19f + 10f;
+                var labelLeft = rowWidth * (stat.Label.rectTransform.anchorMin.x - 0.5f)
+                    + stat.Label.rectTransform.anchoredPosition.x;
+                var barLeft = labelLeft + stat.Label.preferredWidth + 8f;
+                barLeft = Mathf.Min(barLeft, barRight - 40f);
+                var barWidth = Mathf.Max(40f, barRight - barLeft);
+                var barCenter = (barLeft + barRight) * 0.5f;
+                stat.Outer.rectTransform.anchoredPosition = new Vector2(barCenter, 0f);
+                stat.Outer.rectTransform.sizeDelta = new Vector2(barWidth + 4f, 17f);
+                stat.Bar.rectTransform.anchoredPosition = new Vector2(barCenter, 0f);
+                stat.Bar.rectTransform.sizeDelta = new Vector2(barWidth, 13f);
+                stat.Fill.rectTransform.anchoredPosition = new Vector2(barLeft, 0f);
+                stat.Fill.rectTransform.sizeDelta = new Vector2(barWidth * fillAmount, 13f);
+                stat.Fill.gameObject.SetActive(fillAmount > 0f);
+            }
+
+            _weaponDetailsRoot.transform.SetAsLastSibling();
+            _weaponDetailsRoot.SetActive(true);
+        }
+
+        private void HideWeaponDetails()
+        {
+            _weaponDetailsRoot?.SetActive(false);
+        }
+
+        private Sprite LoadBattleStatIcon(int iconIndex)
+        {
+            var texture = Resources.Load<Texture2D>("UI/Menu/Architect/icons");
+            if (texture == null || texture.width < 2 || texture.height < 2)
+            {
+                return _whiteSprite;
+            }
+
+            iconIndex = Mathf.Clamp(iconIndex, 0, 3);
+            var cellSize = Mathf.Min(texture.width, texture.height) / 2f;
+            var column = iconIndex % 2;
+            var rowFromTop = iconIndex / 2;
+            return Sprite.Create(texture,
+                new Rect(column * cellSize, texture.height - (rowFromTop + 1) * cellSize, cellSize, cellSize),
+                new Vector2(0.5f, 0.5f), 100f);
+        }
+
+        private static Sprite CreateRoundedRectSprite(float radius = 8f)
+        {
+            const int width = 64;
+            const int height = 32;
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            var pixels = new Color32[width * height];
+            var center = new Vector2((width - 1) * 0.5f, (height - 1) * 0.5f);
+            var halfSize = new Vector2(width * 0.5f - 1f, height * 0.5f - 1f);
+
+            for (var y = 0; y < height; y++)
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    var local = new Vector2(Mathf.Abs(x - center.x), Mathf.Abs(y - center.y));
+                    var corner = local - (halfSize - Vector2.one * radius);
+                    var outside = new Vector2(Mathf.Max(corner.x, 0f), Mathf.Max(corner.y, 0f)).magnitude;
+                    var inside = Mathf.Min(Mathf.Max(corner.x, corner.y), 0f);
+                    var signedDistance = outside + inside - radius;
+                    var alpha = (byte)Mathf.RoundToInt(Mathf.Clamp01(0.5f - signedDistance) * 255f);
+                    pixels[y * width + x] = new Color32(255, 255, 255, alpha);
+                }
+            }
+
+            texture.SetPixels32(pixels);
+            texture.Apply(false, true);
+            texture.name = "Battle Weapon Details Rounded Bar";
+            return Sprite.Create(texture, new Rect(0f, 0f, width, height), new Vector2(0.5f, 0.5f), 100f,
+                0, SpriteMeshType.FullRect, new Vector4(radius + 1f, radius + 1f, radius + 1f, radius + 1f));
+        }
+
+        private static string FormatBattleDetailsValue(float value)
+        {
+            return value < 0f ? "∞" : Mathf.Abs(value - Mathf.Round(value)) < 0.01f
+                ? Mathf.RoundToInt(value).ToString()
+                : value.ToString("0.0");
         }
 
         private void CreateArsenalCloseButton(Transform parent)
@@ -575,9 +858,24 @@ namespace Game.UI.Battle
             const float columnGap = -18f;
             const float rowGap = 18f;
             var totalWidth = columns * visualCardWidth + (columns - 1) * columnGap;
-            const float totalHeight = 4f * visualCardHeight + 3f * rowGap;
+            const float visibleHeight = 4f * visualCardHeight + 3f * rowGap;
+            var rowCount = Mathf.CeilToInt(count / (float)columns);
+            var totalHeight = rowCount * visualCardHeight + Mathf.Max(0, rowCount - 1) * rowGap;
+            var contentRect = _arsenalItemsRoot as RectTransform;
+            if (contentRect != null)
+            {
+                contentRect.sizeDelta = new Vector2(1320f, Mathf.Max(visibleHeight, totalHeight));
+                contentRect.anchoredPosition = Vector2.zero;
+            }
+            if (_arsenalScrollRect != null)
+            {
+                _arsenalScrollRect.verticalNormalizedPosition = 1f;
+            }
             var startX = -totalWidth * 0.5f + visualCardWidth * 0.5f;
-            var startY = totalHeight * 0.5f - visualCardHeight * 0.5f;
+            // Item anchors are centred inside a top-pivoted content rect. Start
+            // at the content's top edge rather than its centre, otherwise the
+            // first row is rendered at the bottom of the carousel.
+            var startY = contentRect.sizeDelta.y * 0.5f - visualCardHeight * 0.5f;
             for (var index = 0; index < count; index++)
             {
                 var item = state.ArsenalWeapons[index];
@@ -602,8 +900,17 @@ namespace Game.UI.Battle
                 button.interactable = item.IsUsable;
                 button.colors = CreateButtonColors(Color.white);
                 var weaponIndex = item.Index;
+                var detailsHold = slot.gameObject.AddComponent<WeaponDetailsLongPressRelay>();
+                detailsHold.Configure(
+                    () => ShowWeaponDetails(item),
+                    null);
                 button.onClick.AddListener(() =>
                 {
+                    if (detailsHold.ConsumeClick())
+                    {
+                        return;
+                    }
+
                     SetArsenalVisible(false);
                     WeaponSelected?.Invoke(weaponIndex);
                 });
@@ -683,22 +990,7 @@ namespace Game.UI.Battle
             _resultRewardText.raycastTarget = false;
 
             CreateResultButton("Result Menu", _resultPanel.transform, "UI/Shop/btn_blue",
-                new Vector2(-128f, 178f), GameText.Menu, () => MenuRequested?.Invoke());
-            // On a loss this button retries the mission instead of advancing, so the
-            // action follows the rendered state rather than being fixed at build time.
-            _resultContinueButton = CreateResultButton("Result Continue", _resultPanel.transform, "UI/Shop/btn_green",
-                new Vector2(128f, 178f), GameText.Continue, () =>
-                {
-                    if (_resultOffersRetry)
-                    {
-                        RestartRequested?.Invoke();
-                    }
-                    else
-                    {
-                        ContinueRequested?.Invoke();
-                    }
-                });
-            _resultContinueLabel = _resultContinueButton.GetComponentInChildren<TMP_Text>();
+                new Vector2(0f, 178f), GameText.Menu, () => MenuRequested?.Invoke());
 
             _resultRoot.SetActive(false);
         }
@@ -759,10 +1051,6 @@ namespace Game.UI.Battle
                 ? SciFiTextStyle.SuccessText
                 : SciFiTextStyle.MainText;
 
-            _resultOffersRetry = !state.ResultPlayerWon;
-            _resultContinueLabel.text = _resultOffersRetry ? GameText.Restart : state.ContinueLabel;
-            _resultContinueButton.interactable = true;
-            _resultContinueLabel.color = SciFiTextStyle.MainText;
         }
 
         private void RenderTutorialHighlight(string tutorialTargetId, bool showTutorialCard)
@@ -929,6 +1217,115 @@ namespace Game.UI.Battle
         {
             var relay = target.GetComponent<HoldInputRelay>() ?? target.AddComponent<HoldInputRelay>();
             relay.Configure(onStart, onStop);
+        }
+
+        private sealed class BattleDetailsStatRow
+        {
+            public RectTransform Row;
+            public Image Icon;
+            public TMP_Text Label;
+            public Image Outer;
+            public Image Bar;
+            public Image Fill;
+            public TMP_Text Value;
+        }
+
+        private sealed class WeaponDetailsOverlayClickHandler : MonoBehaviour, IPointerClickHandler
+        {
+            private RectTransform _card;
+            private Action _onOutsideClick;
+
+            public void Configure(RectTransform card, Action onOutsideClick)
+            {
+                _card = card;
+                _onOutsideClick = onOutsideClick;
+            }
+
+            public void OnPointerClick(PointerEventData eventData)
+            {
+                if (_card == null || !RectTransformUtility.RectangleContainsScreenPoint(
+                        _card, eventData.position, eventData.pressEventCamera))
+                {
+                    _onOutsideClick?.Invoke();
+                }
+            }
+        }
+
+        private sealed class WeaponDetailsLongPressRelay : MonoBehaviour,
+            IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
+        {
+            private const float LongPressSeconds = 0.45f;
+            private Action _onLongPress;
+            private Action _onRelease;
+            private Coroutine _longPressRoutine;
+            private bool _longPressed;
+            private bool _suppressClick;
+
+            public void Configure(Action onLongPress, Action onRelease)
+            {
+                _onLongPress = onLongPress;
+                _onRelease = onRelease;
+            }
+
+            public void OnPointerDown(PointerEventData eventData)
+            {
+                StopLongPress();
+                _longPressed = false;
+                _suppressClick = false;
+                _longPressRoutine = StartCoroutine(WaitForLongPress());
+            }
+
+            public void OnPointerUp(PointerEventData eventData)
+            {
+                if (_longPressed)
+                {
+                    _suppressClick = true;
+                }
+
+                StopLongPress();
+                if (!_longPressed)
+                {
+                    _onRelease?.Invoke();
+                }
+            }
+
+            public void OnPointerExit(PointerEventData eventData)
+            {
+                if (_longPressed)
+                {
+                    _suppressClick = true;
+                }
+
+                StopLongPress();
+                if (!_longPressed)
+                {
+                    _onRelease?.Invoke();
+                }
+            }
+
+            public bool ConsumeClick()
+            {
+                var suppress = _suppressClick;
+                _suppressClick = false;
+                return suppress;
+            }
+
+            private System.Collections.IEnumerator WaitForLongPress()
+            {
+                yield return new WaitForSecondsRealtime(LongPressSeconds);
+                _longPressRoutine = null;
+                _longPressed = true;
+                _onLongPress?.Invoke();
+            }
+
+            private void StopLongPress()
+            {
+                if (_longPressRoutine != null)
+                {
+                    StopCoroutine(_longPressRoutine);
+                    _longPressRoutine = null;
+                }
+            }
         }
 
         private sealed class HoldInputRelay : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler

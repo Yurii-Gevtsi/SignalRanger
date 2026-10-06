@@ -28,6 +28,7 @@ namespace Game.Tests.EditMode.Gameplay
 
         [TestCase(2, 1)]
         [TestCase(3, 2)]
+        [TestCase(4, 3)]
         public void Fire_SpawnsFirstImpulseImmediatelyAndSchedulesTheRest(int salvoCount, int scheduledCount)
         {
             var weapon = CreateImpulseWeapon();
@@ -45,12 +46,24 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.That(spawner.ImmediateRequests, Has.Count.EqualTo(1));
             Assert.That(spawner.ScheduledRequests, Has.Count.EqualTo(scheduledCount));
-            Assert.That(spawner.ImmediateRequests[0].Definition.Damage, Is.EqualTo(weapon.Damage));
+            var allDamage = spawner.ImmediateRequests[0].Definition.Damage;
+            foreach (var scheduled in spawner.ScheduledRequests)
+            {
+                allDamage += scheduled.Request.Definition.Damage;
+            }
+            Assert.That(allDamage, Is.EqualTo(salvoCount switch
+            {
+                2 => 54,
+                3 => 64,
+                _ => 72
+            }));
+            Assert.That(spawner.ImmediateRequests[0].Definition.Damage,
+                Is.LessThan(weapon.Damage));
             Assert.That(spawner.ScheduledRequests[0].Delay, Is.EqualTo(0.18f).Within(0.0001f));
         }
 
         [Test]
-        public void Resolver_MapsImpulseBranchBToConfiguredKnockbackStrength()
+        public void Resolver_MapsLegacyImpulseBranchBToTheCanonicalSalvo()
         {
             var weapon = CreateImpulseWeapon();
             var rankFive = new SaveWeaponProgressData
@@ -69,9 +82,61 @@ namespace Game.Tests.EditMode.Gameplay
             var impact = WeaponEvolutionRuntimeResolver.Resolve(weapon, rankFive);
             var assault = WeaponEvolutionRuntimeResolver.Resolve(weapon, rankTen);
 
-            Assert.That(impact.SalvoCount, Is.EqualTo(1));
-            Assert.That(impact.KnockbackMultiplier, Is.EqualTo(1.55f).Within(0.0001f));
-            Assert.That(assault.KnockbackMultiplier, Is.EqualTo(2.15f).Within(0.0001f));
+            Assert.That(impact.SalvoCount, Is.EqualTo(2));
+            Assert.That(assault.SalvoCount, Is.EqualTo(3));
+            Assert.That(impact.KnockbackMultiplier, Is.EqualTo(1f));
+            Assert.That(assault.KnockbackMultiplier, Is.EqualTo(1f));
+        }
+
+        [TestCase("weapon.impulse", 34)]
+        [TestCase("weapon.granata", 42)]
+        [TestCase("weapon.plasma-sword", 45)]
+        [TestCase("weapon.ion-shotgun", 38)]
+        public void EarlyWeapons_CorePurchasesUseTheDisplayedDamageCurve(
+            string weaponId, int baseDamage)
+        {
+            var weapon = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                candidate => candidate.WeaponId == weaponId);
+            var multipliers = new[] { 1f, 1.5f, 3f, 5f, 10f };
+            for (var purchases = 0; purchases <= 4; purchases++)
+            {
+                var progress = new SaveWeaponProgressData
+                {
+                    weaponId = weaponId,
+                    rank = purchases + 1,
+                    upgradeChoices = new List<SaveWeaponUpgradeChoiceData>()
+                };
+                for (var rank = 2; rank <= progress.rank; rank++)
+                {
+                    progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData
+                    {
+                        rank = rank,
+                        path = (int)WeaponUpgradePath.Core
+                    });
+                }
+
+                var shownDamage = WeaponUpgradeChoiceResolver.ResolveValue(
+                    weapon, null, progress, WeaponUpgradePath.Core);
+                var modifiers = WeaponUpgradeModifierResolver.Resolve(weapon, progress);
+                Assert.That(shownDamage, Is.EqualTo(Mathf.RoundToInt(
+                    baseDamage * multipliers[purchases])).Within(0.001f));
+                Assert.That(modifiers.DamageMultiplier, Is.EqualTo(multipliers[purchases]).Within(0.001f));
+            }
+        }
+
+        [TestCase("weapon.bur", WeaponUpgradePath.Radius, 3.25f)]
+        [TestCase("weapon.impulse", WeaponUpgradePath.Aim, 70f)]
+        [TestCase("weapon.rope", WeaponUpgradePath.Aim, 45f)]
+        [TestCase("weapon.rope", WeaponUpgradePath.Radius, 8f)]
+        [TestCase("weapon.plasma-sword", WeaponUpgradePath.Core, 45f)]
+        [TestCase("weapon.ion-shotgun", WeaponUpgradePath.Radius, 0.1f)]
+        public void BaseWeaponStats_AreAvailableBeforeAnyProgressIsSaved(
+            string weaponId, WeaponUpgradePath path, float expectedValue)
+        {
+            var weapon = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                candidate => candidate.WeaponId == weaponId);
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(weapon, null, null, path),
+                Is.EqualTo(expectedValue).Within(0.0001f));
         }
 
         [Test]
@@ -268,7 +333,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void Resolver_MapsC4BranchesToDamageRadiusAndKnockback()
+        public void Resolver_IgnoresObsoleteC4BranchesWithoutPurchasedSpecials()
         {
             var weapon = WeaponDefinition.CreateRuntime(
                 "weapon.c4",
@@ -310,18 +375,16 @@ namespace Game.Tests.EditMode.Gameplay
                 branch = (int)WeaponUpgradeBranch.B
             });
 
-            Assert.That(enhanced.C4DamageMultiplier, Is.EqualTo(1.15f).Within(0.0001f));
-            Assert.That(enhanced.C4ImpactRadiusMultiplier, Is.EqualTo(1.3f).Within(0.0001f));
-            Assert.That(breaching.C4DamageMultiplier, Is.EqualTo(1.3f).Within(0.0001f));
-            Assert.That(breaching.C4ImpactRadiusMultiplier, Is.EqualTo(1.55f).Within(0.0001f));
-            Assert.That(impulse.KnockbackMultiplier, Is.EqualTo(2.15f).Within(0.0001f));
-            Assert.That(impulse.C4ImpactRadiusMultiplier, Is.EqualTo(0.93f).Within(0.0001f));
-            Assert.That(shockwave.KnockbackMultiplier, Is.EqualTo(3f).Within(0.0001f));
-            Assert.That(shockwave.C4ImpactRadiusMultiplier, Is.EqualTo(0.85f).Within(0.0001f));
+            foreach (var resolved in new[] { enhanced, breaching, impulse, shockwave })
+            {
+                Assert.That(resolved.C4DamageMultiplier, Is.EqualTo(1f));
+                Assert.That(resolved.C4ImpactRadiusMultiplier, Is.EqualTo(1f));
+                Assert.That(resolved.KnockbackMultiplier, Is.EqualTo(1f));
+            }
         }
 
         [Test]
-        public void Resolver_MapsGrenadeBranchesToStickyMagneticAndGravityEffects()
+        public void Resolver_MigratesLegacyGrenadeBranchesToTheTwoCurrentPullEffects()
         {
             var weapon = WeaponDefinition.CreateRuntime(
                 "weapon.granata",
@@ -363,13 +426,15 @@ namespace Game.Tests.EditMode.Gameplay
                 branch = (int)WeaponUpgradeBranch.B
             });
 
-            Assert.That(sticky.GrenadeSticks, Is.True);
-            Assert.That(sticky.GrenadeMagneticSeekRadius, Is.Zero);
-            Assert.That(magnetic.GrenadeSticks, Is.True);
-            Assert.That(magnetic.GrenadeMagneticSeekRadius, Is.EqualTo(2.4f).Within(0.0001f));
-            Assert.That(gravity.GrenadeGravityPullRadius, Is.EqualTo(3.5f).Within(0.0001f));
-            Assert.That(collapse.GrenadeGravityPullRadius, Is.EqualTo(5f).Within(0.0001f));
-            Assert.That(gravity.GrenadePullAcceleration, Is.EqualTo(8f).Within(0.0001f));
+            Assert.That(sticky.GrenadeSticks, Is.False);
+            Assert.That(sticky.GrenadeMagneticSeekRadius, Is.EqualTo(1.5f).Within(0.0001f));
+            Assert.That(sticky.GrenadeGravityPullRadius, Is.Zero);
+            Assert.That(magnetic.GrenadeSticks, Is.False);
+            Assert.That(magnetic.GrenadeGravityPullRadius, Is.EqualTo(1.5f).Within(0.0001f));
+            Assert.That(gravity.GrenadeMagneticSeekRadius, Is.EqualTo(1.5f).Within(0.0001f));
+            Assert.That(gravity.GrenadeGravityPullRadius, Is.Zero);
+            Assert.That(collapse.GrenadeGravityPullRadius, Is.EqualTo(1.5f).Within(0.0001f));
+            Assert.That(collapse.GrenadePullAcceleration, Is.EqualTo(8f).Within(0.0001f));
         }
 
         [Test]
@@ -572,6 +637,67 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(assault.MortarFragmentCount, Is.EqualTo(5));
             Assert.That(cascade.MortarCascadeCount, Is.EqualTo(1));
             Assert.That(multiCascade.MortarCascadeCount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void PurchasedImpulseSteps_SetTwoThroughFourShotsWithoutRequiringRankTen()
+        {
+            var weapon = CreateImpulseWeapon();
+            for (var steps = 1; steps <= 3; steps++)
+            {
+                var progress = new SaveWeaponProgressData
+                {
+                    weaponId = weapon.WeaponId,
+                    rank = 5 + steps,
+                    evolutionChoices = new List<SaveWeaponEvolutionChoiceData>
+                    {
+                        new() { rank = 5, optionId = "double-impulse" }
+                    },
+                    specialUpgrades = new List<SaveWeaponSpecialUpgradeData>
+                    {
+                        new() { rank = 5, purchaseCount = steps }
+                    }
+                };
+
+                Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, progress).SalvoCount,
+                    Is.EqualTo(1 + steps));
+            }
+        }
+
+        [Test]
+        public void PurchasedMineSafetyAndGrenadePulls_StackIndependentMilestones()
+        {
+            var weapons = PrototypeWeaponLibrary.CreateAll();
+            var mine = System.Array.Find(weapons, value => value.WeaponId == "weapon.mine");
+            var grenade = System.Array.Find(weapons, value => value.WeaponId == "weapon.granata");
+            var mineProgress = new SaveWeaponProgressData
+            {
+                weaponId = mine.WeaponId,
+                rank = 11,
+                evolutionChoices = new List<SaveWeaponEvolutionChoiceData>
+                {
+                    new() { rank = 5, optionId = "ally-safe" },
+                    new() { rank = 10, optionId = "ally-immune" }
+                }
+            };
+            var grenadeProgress = new SaveWeaponProgressData
+            {
+                weaponId = grenade.WeaponId,
+                rank = 11,
+                evolutionChoices = new List<SaveWeaponEvolutionChoiceData>
+                {
+                    new() { rank = 5, optionId = "target-pull" },
+                    new() { rank = 10, optionId = "gravity-pull" }
+                }
+            };
+
+            var mineEvolution = WeaponEvolutionRuntimeResolver.Resolve(mine, mineProgress);
+            var grenadeEvolution = WeaponEvolutionRuntimeResolver.Resolve(grenade, grenadeProgress);
+            Assert.That(mineEvolution.MineTriggersEnemiesOnly, Is.True);
+            Assert.That(mineEvolution.MineAlliesImmuneToExplosion, Is.True);
+            Assert.That(grenadeEvolution.GrenadeMagneticSeekRadius, Is.GreaterThan(0f));
+            Assert.That(grenadeEvolution.GrenadeGravityPullRadius, Is.GreaterThan(0f));
+            Assert.That(grenadeEvolution.GrenadeSticks, Is.False);
         }
 
         private static WeaponDefinition CreateImpulseWeapon()

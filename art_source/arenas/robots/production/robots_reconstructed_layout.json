@@ -1,0 +1,14 @@
+{
+  "canvas_width_px": 4096,
+  "canvas_height_px": 2304,
+  "production_scale": 2,
+  "source_canvas_width_px": 2048,
+  "source_canvas_height_px": 1152,
+  "alignment_reference": "previous_robots_runtime_layout",
+  "draw_order": ["lower_left", "upper_left", "right_robot"],
+  "pieces": [
+    { "id": "lower_left", "source": "production_source/ChatGPT Image 7 вер. 2026 р., 15_00_20 (1).png", "affine_to_production_canvas": [1.4325, -0.000042, 181.175, 0.000775, 1.43267, 610.926] },
+    { "id": "upper_left", "source": "production_source/ChatGPT Image 7 вер. 2026 р., 15_00_20 (2).png", "affine_to_production_canvas": [1.35997, -0.012092, 512.978, 0.001054, 1.36763, 30.013] },
+    { "id": "right_robot", "source": "production_source/ChatGPT Image 7 вер. 2026 р., 15_00_23 (3).png", "affine_to_production_canvas": [1.60116, -0.006433, 1798.384, -0.001637, 1.60944, 419.48] }
+  ]
+}

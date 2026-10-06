@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "d76e980e-9137-473b-a86e-c459a59b39a8",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "workshop-stat-card-max-details",
+  "profile": "default",
+  "request": {
+    "message": "Update Workshop stat upgrade cards: display the stat's own current and next rank, keep maxed cards selectable, and show current maximum value plus a localized maximum-reached message instead of purchase controls.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 1,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "70ec2525-52b1-4d63-ba5c-1a43a1db666b",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-stat-card-max-state-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-stat-card-max-state-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-stat-card-max-state-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-stat-card-max-state-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:docs/architecture/workshop-stat-card-max-state-testability.json",
+    "reason": "The current player-visible Workshop card state is assembled inside private ArchitectScreenController methods and has no stable public or isolated test seam. A direct UI assertion would require a live Canvas, resource loading, AppServices save state, and click dispatch, so it cannot honestly provide a focused RED for only the requested behavior.",
+    "missingAcceptance": "Introduce a small pure Workshop stat-card presentation resolver, use it from ArchitectScreenController, and cover its unpurchased and maxed states with EditMode tests before UI smoke validation."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-17T13:08:17.723Z",
+  "updatedAt": "2026-09-17T13:10:26.253Z"
+}

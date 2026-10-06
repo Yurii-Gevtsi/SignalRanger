@@ -1,0 +1,10 @@
+{
+  "behavior": "Repair jammer is selectable without aim, fires only at a nearby hostile target, attaches through the existing attachment projectile path, and applies no direct projectile damage.",
+  "implementation": "Enabled weapon.repair-jammer in the combat mechanic gate, exempted it from aiming, and created its projectile with zero impact damage while retaining the existing 1.5-second attachment fuse.",
+  "changedFiles": [
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs"
+  ],
+  "test": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage",
+  "result": "Passed: nearby use returns Fired and the target's HP is unchanged.",
+  "receiptRef": "receipt:f58a7ec4-aae0-46d2-be8d-6052fac662b8"
+}

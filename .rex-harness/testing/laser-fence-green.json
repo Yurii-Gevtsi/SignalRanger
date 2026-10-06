@@ -1,0 +1,10 @@
+{
+  "behavior": "Laser-fence is available through BattleSimulation.TryFire and reaches its existing dedicated projectile deployment flow.",
+  "implementation": "Removed weapon.laser-fence from the explicit unavailable-mechanics switch. No generic projectile fallback was introduced; TryFire already routes this id to DeployLaserFenceNode.",
+  "changedFiles": [
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs"
+  ],
+  "test": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_DeploysTwoGroundNodesFromRealCombatShots",
+  "result": "Passed: two real combat shots land as two registered nodes within the specified link range.",
+  "receiptRef": "receipt:414df41f-5944-494a-9219-798b79d3f8e7"
+}

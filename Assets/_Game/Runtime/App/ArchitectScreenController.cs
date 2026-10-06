@@ -998,7 +998,7 @@ namespace Game.App
             if (isBasePathMaxed)
             {
                 var maximumValue = ResolveWorkshopParameterValue(weapon, definition, progress, selectedCard.Parameter);
-                _workshopNextStatLabel.text = ResolveWorkshopParameterLabel(selectedCard.Parameter);
+                _workshopNextStatLabel.text = ResolveWorkshopParameterLabel(selectedCard.Parameter, weapon.WeaponId);
                 _workshopNextStatValue.text = FormatWorkshopValue(maximumValue);
                 SetWorkshopUpgradeCostVisible(false);
                 _workshopNextRequiredChipsTopDivider.gameObject.SetActive(true);
@@ -1015,7 +1015,7 @@ namespace Game.App
             {
                 var fromValue = ResolveWorkshopParameterValue(weapon, definition, progress, selectedCard.Parameter);
                 var toValue = ResolveWorkshopParameterValue(weapon, definition, progress, selectedCard.Parameter, 1);
-                _workshopNextStatLabel.text = ResolveWorkshopParameterLabel(selectedCard.Parameter);
+                _workshopNextStatLabel.text = ResolveWorkshopParameterLabel(selectedCard.Parameter, weapon.WeaponId);
                 _workshopNextStatValue.text = FormatWorkshopValue(fromValue)
                     + "  <color=#" + WorkshopUpgradeGreenHex + ">→ " + FormatWorkshopValue(toValue) + "</color>";
             }
@@ -1101,7 +1101,7 @@ namespace Game.App
             {
                 return false;
             }
-            if (definition.CountBaseUpgrades(progress, card.Path) >= definition.GetBaseUpgradeLimit(card.Path))
+            if (!definition.CanPurchaseBaseUpgrade(progress, card.Path))
             {
                 return false;
             }
@@ -1142,7 +1142,9 @@ namespace Game.App
                 Mathf.Max(1f, weapon.Damage * 1.5f),
                 100f,
                 weapon.HasLimitedAmmo ? Mathf.Max(1f, weapon.AmmoCount + 6f) : 1f,
-                Mathf.Max(0.1f, weapon.ImpactRadius * 1.5f)
+                weapon.WeaponId == "weapon.bur"
+                    ? WeaponUpgradeChoiceResolver.ResolveDrillLaserRange(4)
+                    : Mathf.Max(0.1f, weapon.ImpactRadius * 1.5f)
             };
             Canvas.ForceUpdateCanvases();
             for (var i = 0; i < _workshopCurrentStats.Length; i++)
@@ -1194,10 +1196,14 @@ namespace Game.App
             }
         }
 
-        private string ResolveWorkshopParameterLabel(WorkshopParameter parameter)
+        private string ResolveWorkshopParameterLabel(WorkshopParameter parameter, string weaponId)
         {
             return parameter switch
             {
+                WorkshopParameter.Core when weaponId == "weapon.grounder" =>
+                    GameText.Localized("architect.detail.statDuration", string.Empty),
+                WorkshopParameter.Core when weaponId == "weapon.heal" =>
+                    GameText.Localized("architect.detail.statHealingPercent", string.Empty),
                 WorkshopParameter.Core => GameText.Localized("architect.detail.statDamage", string.Empty),
                 WorkshopParameter.Aim => GameText.Localized("architect.detail.statAccuracy", string.Empty),
                 WorkshopParameter.Loadout => GameText.Localized("architect.detail.statAmmo", string.Empty),

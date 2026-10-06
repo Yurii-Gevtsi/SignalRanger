@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/elemental-status-v2-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire followed by Tick and EndActiveTurn through the Unity EditMode BattleSimulation harness.",
+    "setup": "A player fires a 30-damage toxic projectile at one opponent. The scenario observes its real health and poison indicator across the opponent's next two completed turns.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeapon_AppliesTwoEndOfVictimTurnTicksEqualToTwentyPercentOfImpactDamage"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "The opponent keeps its post-impact 75 HP when its turn begins, then loses two 5-HP ticks at the end of its two turns and loses the poison status.",
+    "observed": "The opponent has 69 HP when its turn begins. Unity reports: Expected 75, But was 69.",
+    "failureReason": "The current implementation applies a fixed 6 damage at the beginning of the poisoned unit's turn, instead of a 20 percent resolved-damage tick at the end of that unit's turn.",
+    "receiptRef": "receipt:7c5cf46d-49eb-46c7-91be-7ccc53a46daf"
+  }
+}

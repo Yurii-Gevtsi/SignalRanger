@@ -4,6 +4,8 @@ Status: editable planning baseline. Runtime currently contains four planet slots
 
 ## Global campaign rules
 
+Target reward amounts and formulas are owned exclusively by [the canonical arsenal, progression and economy catalog](weapon-catalog-canonical.md), sections 7–9. Credit/XP/blueprint ranges below are historical planning notes, not current balance. This document remains authoritative for campaign structure and authored content, not economy.
+
 - A planet owns one chapter. A chapter owns an ordered mission list.
 - Main progression is linear; optional stars and replay goals never hard-lock the next planet.
 - Each planet introduces one primary environment rule, one enemy/loadout escalation and one meaningful reward theme.

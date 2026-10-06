@@ -872,10 +872,13 @@ namespace Game.App
             };
             var maxValues = new[]
             {
-                Mathf.Max(1f, item.Definition.Damage * 1.5f),
+                item.Definition.WeaponId == "weapon.grounder"
+                    ? 6f : Mathf.Max(1f, item.Definition.Damage * 1.5f),
                 100f,
                 item.Definition.HasLimitedAmmo ? Mathf.Max(1f, item.Definition.AmmoCount + 6f) : 1f,
-                Mathf.Max(0.1f, item.Definition.ImpactRadius * 1.5f)
+                item.Definition.WeaponId == "weapon.bur"
+                    ? WeaponUpgradeChoiceResolver.ResolveDrillLaserRange(4)
+                    : Mathf.Max(0.1f, item.Definition.ImpactRadius * 1.5f)
             };
 
             Canvas.ForceUpdateCanvases();
@@ -884,7 +887,10 @@ namespace Game.App
                 var stat = _ownedStats[i];
                 var value = values[i];
                 stat.Row.gameObject.SetActive(true);
-                stat.Label.text = GameText.Localized(GetShopStatLabelKey(i), string.Empty);
+                stat.Label.text = GameText.Localized(
+                    i == 0 && item.Definition.WeaponId == "weapon.grounder"
+                        ? "architect.detail.statDuration"
+                        : GetShopStatLabelKey(i), string.Empty);
                 stat.Value.text = FormatShopStatValue(value);
                 var fillAmount = item.Definition.HasLimitedAmmo || i != 2
                     ? Mathf.Clamp01(value / maxValues[i])

@@ -17,11 +17,21 @@ namespace Game.Gameplay.Battle.Terrain
         private const float VisualCraterEdgePaddingPixels = 2f;
 
         private readonly List<DestructibleVisual> _visuals;
+        private readonly List<DestructibleVisual> _movingVisuals;
+        private readonly List<PlacedTerrainSpriteSurface> _placedSurfaces = new();
 
         private BattleTerrain(TerrainGrid grid, List<DestructibleVisual> visuals = null)
         {
             Grid = grid;
             _visuals = visuals ?? new List<DestructibleVisual>();
+            _movingVisuals = new List<DestructibleVisual>();
+            for (var i = 0; i < _visuals.Count; i++)
+            {
+                if (_visuals[i].IsMoving)
+                {
+                    _movingVisuals.Add(_visuals[i]);
+                }
+            }
         }
 
         public TerrainGrid Grid { get; }
@@ -110,6 +120,8 @@ namespace Game.Gameplay.Battle.Terrain
             {
                 _visuals[i].ApplyCrater(worldCenter, worldRadius);
             }
+            if (maximumMaterial >= TerrainMaterial.Titanium)
+                foreach (var surface in _placedSurfaces) surface.ApplyCrater(worldCenter, worldRadius);
 
             // A crater may cross overlapping cluster sprites. Re-rasterizing
             // the surviving pixels preserves union semantics: a cell remains
@@ -130,6 +142,66 @@ namespace Game.Gameplay.Battle.Terrain
             return destroyedCellCount;
         }
 
+        /// <summary>
+        /// Rebuilds the shared collision grid after a sprite-backed surface has
+        /// moved. Runtime textures already contain any craters, so rebuilding
+        /// from the surviving pixels preserves destruction while removing the
+        /// old position from collision queries.
+        /// </summary>
+        public void RefreshMovingSpriteSurfaces()
+        {
+            if (_movingVisuals.Count > 0)
+            {
+                var hasDirtyBounds = false;
+                var dirtyWorldBounds = default(Rect);
+                for (var i = 0; i < _movingVisuals.Count; i++)
+                {
+                    var visual = _movingVisuals[i];
+                    var previousBounds = visual.WorldBounds;
+                    visual.RefreshWorldTransform();
+                    var currentBounds = visual.WorldBounds;
+                    var bounds = Encapsulate(previousBounds, currentBounds);
+                    dirtyWorldBounds = hasDirtyBounds
+                        ? Encapsulate(dirtyWorldBounds, bounds)
+                        : bounds;
+                    hasDirtyBounds = true;
+                }
+
+                if (!hasDirtyBounds)
+                {
+                    return;
+                }
+
+                var dirtyCells = WorldBoundsToCellRegion(dirtyWorldBounds);
+                Grid.ClearSolidCells(dirtyCells);
+                for (var i = 0; i < _visuals.Count; i++)
+                {
+                    if (Intersects(_visuals[i].WorldBounds, dirtyWorldBounds))
+                    {
+                        RasterizeIntoGrid(_visuals[i], Grid, dirtyCells);
+                    }
+                }
+                foreach (var surface in _placedSurfaces) surface.Rasterize(Grid, dirtyCells);
+
+                return;
+            }
+
+            Grid.ClearSolidCells();
+            for (var i = 0; i < _visuals.Count; i++)
+            {
+                _visuals[i].RefreshWorldTransform();
+                RasterizeIntoGrid(_visuals[i], Grid);
+            }
+            foreach (var surface in _placedSurfaces)
+                surface.Rasterize(Grid, new RectInt(0, 0, Grid.Width, Grid.Height));
+        }
+
+        public void AddPlacedSurface(PlacedTerrainSpriteSurface surface)
+        {
+            _placedSurfaces.Add(surface);
+            surface.Rasterize(Grid, new RectInt(0, 0, Grid.Width, Grid.Height));
+        }
+
         public void StampSolidRect(Vector2 worldCenter, Vector2 worldSize)
         {
             StampSolidRect(worldCenter, worldSize, TerrainMaterial.Soil);
@@ -142,6 +214,8 @@ namespace Game.Gameplay.Battle.Terrain
 
         public void Dispose()
         {
+            foreach (var surface in _placedSurfaces) surface.Dispose();
+            _placedSurfaces.Clear();
             for (var i = 0; i < _visuals.Count; i++)
             {
                 _visuals[i].Dispose();
@@ -231,6 +305,7 @@ namespace Game.Gameplay.Battle.Terrain
             return new DestructibleVisual(
                 runtimeTexture,
                 runtimeSprite,
+                renderer,
                 runtimeTexture.GetPixels32(),
                 maskPixels,
                 Mathf.RoundToInt(sourceSprite.rect.x),
@@ -238,7 +313,34 @@ namespace Game.Gameplay.Battle.Terrain
                 pixelWidth,
                 pixelHeight,
                 worldMin,
-                worldSize);
+                worldSize,
+                surface.IsMoving);
+        }
+
+        private RectInt WorldBoundsToCellRegion(Rect worldBounds)
+        {
+            var min = Grid.WorldToCell(worldBounds.min);
+            var max = Grid.WorldToCell(worldBounds.max - Grid.CellSize * 0.001f);
+            var minX = Mathf.Clamp(min.x, 0, Grid.Width - 1);
+            var maxX = Mathf.Clamp(max.x, 0, Grid.Width - 1);
+            var minY = Mathf.Clamp(min.y, 0, Grid.Height - 1);
+            var maxY = Mathf.Clamp(max.y, 0, Grid.Height - 1);
+            return new RectInt(minX, minY, maxX - minX + 1, maxY - minY + 1);
+        }
+
+        private static Rect Encapsulate(Rect first, Rect second)
+        {
+            var min = Vector2.Min(first.min, second.min);
+            var max = Vector2.Max(first.max, second.max);
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
+
+        private static bool Intersects(Rect first, Rect second)
+        {
+            return first.xMin < second.xMax
+                && first.xMax > second.xMin
+                && first.yMin < second.yMax
+                && first.yMax > second.yMin;
         }
 
         private static void RasterizeIntoGrid(DestructibleVisual visual, TerrainGrid grid)
@@ -339,6 +441,7 @@ namespace Game.Gameplay.Battle.Terrain
             public DestructibleVisual(
                 Texture2D texture,
                 Sprite sprite,
+                SpriteRenderer renderer,
                 Color32[] pixels,
                 byte[] maskPixels,
                 int textureRectX,
@@ -346,7 +449,8 @@ namespace Game.Gameplay.Battle.Terrain
                 int pixelWidth,
                 int pixelHeight,
                 Vector2 worldMin,
-                Vector2 worldSize)
+                Vector2 worldSize,
+                bool isMoving)
             {
                 Texture = texture;
                 Sprite = sprite;
@@ -358,6 +462,8 @@ namespace Game.Gameplay.Battle.Terrain
                 PixelHeight = pixelHeight;
                 WorldMin = worldMin;
                 WorldSize = worldSize;
+                Renderer = renderer;
+                IsMoving = isMoving;
             }
 
             public Texture2D Texture { get; }
@@ -369,8 +475,26 @@ namespace Game.Gameplay.Battle.Terrain
             public int TextureRectY { get; }
             public int PixelWidth { get; }
             public int PixelHeight { get; }
-            public Vector2 WorldMin { get; }
-            public Vector2 WorldSize { get; }
+            public Vector2 WorldMin { get; private set; }
+            public Vector2 WorldSize { get; private set; }
+            public Rect WorldBounds => new Rect(WorldMin, WorldSize);
+            public bool IsMoving { get; }
+            public SpriteRenderer Renderer { get; }
+
+            public void RefreshWorldTransform()
+            {
+                if (Renderer == null || Sprite == null)
+                {
+                    return;
+                }
+
+                var scale = Renderer.transform.lossyScale;
+                var pixelWorldSize = new Vector2(
+                    Mathf.Abs(scale.x) / Sprite.pixelsPerUnit,
+                    Mathf.Abs(scale.y) / Sprite.pixelsPerUnit);
+                WorldMin = (Vector2)Renderer.transform.position - Vector2.Scale(Sprite.pivot, pixelWorldSize);
+                WorldSize = new Vector2(PixelWidth * pixelWorldSize.x, PixelHeight * pixelWorldSize.y);
+            }
 
             public void ApplyCrater(Vector2 worldCenter, float worldRadius)
             {

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "2628301a-8bae-4c0a-bbf3-9549b4d0f64b",
+  "command": {
+    "executable": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Unity.exe",
+    "args": [
+      "-batchmode",
+      "-nographics",
+      "-quit",
+      "-projectPath",
+      "C:\\Projects\\Game",
+      "-runTests",
+      "-testPlatform",
+      "EditMode",
+      "-testFilter",
+      "Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests",
+      "-testResults",
+      "Temp\\workshop-base-stat-description-red.xml",
+      "-logFile",
+      "Temp\\workshop-base-stat-description-red.log"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "678ceb5948483b6ba81072094ca82ab0e07614b6b4d9fee48fdc102406095140",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-19T13:53:37.845Z"
+}

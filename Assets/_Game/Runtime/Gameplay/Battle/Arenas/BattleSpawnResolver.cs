@@ -70,10 +70,22 @@ namespace Game.Gameplay.Battle.Arenas
             var scanTop = Mathf.Max(
                 desiredPoint.y + _rayStartHeight,
                 _profile.HalfHeight + _rayStartHeight);
+            var maxDrop = _rayDistance + _rayStartHeight;
+            if (_terrain.IsSolidWorld(new Vector2(candidateX, scanTop)))
+            {
+                // An authored anchor can fall inside a tall open-world prop
+                // (for example, a ring or canyon wall). Starting the ray in
+                // solid skips the upper surface and may land inside a lower
+                // pocket. Search from above the whole terrain in that case;
+                // empty cave interiors are unaffected because their scan start
+                // is not solid and still resolves to the cave floor.
+                scanTop = _terrain.WorldMaxY;
+                maxDrop = Mathf.Max(maxDrop, scanTop - desiredPoint.y + _terrain.CellSize.y);
+            }
             if (!_terrain.TryFindSurfaceBelow(
                     candidateX,
                     scanTop,
-                    _rayDistance + _rayStartHeight,
+                    maxDrop,
                     out var surfaceY))
             {
                 resolvedPoint = desiredPoint;

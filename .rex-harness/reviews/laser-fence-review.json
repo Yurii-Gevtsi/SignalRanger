@@ -1,0 +1,47 @@
+{
+  "kind": "rex.standards-spec-review.v1",
+  "fixedPoint": "HEAD b0fae5d7cbd55cb603258d830d9c2900bc351107; shared dirty worktree reviewed only at the laser-fence availability hunk, its focused test, and its untracked evidence files.",
+  "diffRef": "git diff HEAD -- Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs Assets/_Game/Tests/EditMode/Gameplay/BattleSimulationTests.cs",
+  "specSources": [
+    "docs/design/weapon-combat-specification.md:209-213",
+    "docs/architecture/laser-fence-combat-test-scope.md"
+  ],
+  "standards": {
+    "checked": [
+      "Mysterious Name",
+      "Duplicated Code",
+      "Feature Envy",
+      "Data Clumps",
+      "Primitive Obsession",
+      "Repeated Switches",
+      "Shotgun Surgery",
+      "Divergent Change",
+      "Speculative Generality",
+      "Message Chains",
+      "Middle Man",
+      "Refused Bequest"
+    ],
+    "findings": []
+  },
+  "spec": {
+    "findings": [
+      {
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs:925-943, 4440-4463",
+        "evidence": "The specification requires an enemy-only beam that damages on crossing, consumes itself and ends the victim turn. The changed hunk only enables the existing placement path; Tick does not evaluate laser-fence links.",
+        "severity": "hard",
+        "recommendation": "Add a public-behavior test and runtime link collision resolution before claiming laser_fence complete. Cover damage, one-shot link consumption, active-turn ending and own-team safety."
+      },
+      {
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs:5277-5301 and laser-fence-combat-test-scope.md:9-14",
+        "evidence": "The specification also requires persistent linked beams. Nodes exist, but no runtime data records consumed links or exposes a beam state.",
+        "severity": "hard",
+        "recommendation": "Model an active link pair with a stable identity so a triggered beam does not re-arm automatically."
+      }
+    ]
+  },
+  "verdict": "changes-requested",
+  "evidenceRefs": [
+    "receipt:414df41f-5944-494a-9219-798b79d3f8e7",
+    "receipt:363ad5ec-9a30-46b5-86ac-bcff4911814a"
+  ]
+}

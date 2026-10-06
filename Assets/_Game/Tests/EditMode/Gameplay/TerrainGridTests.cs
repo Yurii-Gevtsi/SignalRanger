@@ -320,6 +320,39 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void RefreshMovingSpriteSurfaces_RebuildsCollisionAtTheNewPosition()
+        {
+            const int size = 32;
+            var visualTexture = CreateSolidTexture(size);
+            var maskTexture = CreateSolidTexture(size);
+            var source = Sprite.Create(visualTexture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+            var surfaceObject = new GameObject("Moving Mask Surface");
+            try
+            {
+                var renderer = surfaceObject.AddComponent<SpriteRenderer>();
+                renderer.sprite = source;
+                var terrain = BattleTerrain.CreateFromSpriteSurfaces(
+                    new[] { new BattleTerrainSpriteSurface(renderer, maskTexture) },
+                    new Rect(-2f, -2f, 4f, 4f));
+
+                Assert.IsTrue(terrain.Grid.IsSolidWorld(Vector2.zero));
+                surfaceObject.transform.position = Vector3.right;
+                terrain.RefreshMovingSpriteSurfaces();
+
+                Assert.IsFalse(terrain.Grid.IsSolidWorld(Vector2.zero));
+                Assert.IsTrue(terrain.Grid.IsSolidWorld(Vector2.right));
+                terrain.Dispose();
+            }
+            finally
+            {
+                Object.DestroyImmediate(surfaceObject);
+                Object.DestroyImmediate(source);
+                Object.DestroyImmediate(visualTexture);
+                Object.DestroyImmediate(maskTexture);
+            }
+        }
+
+        [Test]
         public void ReusedMaskedAsset_CreatesIndependentRuntimeVisuals()
         {
             const int size = 32;

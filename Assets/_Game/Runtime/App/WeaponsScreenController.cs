@@ -353,6 +353,10 @@ namespace Game.App
         private void RefreshDetailsStats(WeaponDefinition weapon, WeaponProgressionDefinition progression,
             SaveWeaponProgressData progress)
         {
+            _detailsStats[0].Label.text = GameText.Localized(
+                weapon.WeaponId == "weapon.grounder"
+                    ? "architect.detail.statDuration"
+                    : "architect.detail.statDamage", string.Empty);
             var values = new[]
             {
                 WeaponUpgradeChoiceResolver.ResolveValue(weapon, progression, progress, WeaponUpgradePath.Core),
@@ -362,10 +366,12 @@ namespace Game.App
             };
             var maxValues = new[]
             {
-                Mathf.Max(1f, weapon.Damage * 1.5f),
+                weapon.WeaponId == "weapon.grounder" ? 6f : Mathf.Max(1f, weapon.Damage * 1.5f),
                 100f,
                 weapon.HasLimitedAmmo ? Mathf.Max(1f, weapon.AmmoCount + 6f) : 1f,
-                Mathf.Max(0.1f, weapon.ImpactRadius * 1.5f)
+                weapon.WeaponId == "weapon.bur"
+                    ? WeaponUpgradeChoiceResolver.ResolveDrillLaserRange(4)
+                    : Mathf.Max(0.1f, weapon.ImpactRadius * 1.5f)
             };
 
             Canvas.ForceUpdateCanvases();

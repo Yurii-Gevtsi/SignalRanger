@@ -21,11 +21,15 @@ namespace Game.Gameplay.Battle.Weapons
                 : 1f;
             var modifiers = context.Modifiers;
             var delayedSpawner = context.Spawner as IDelayedProjectileSpawner;
+            var baseDamage = Mathf.RoundToInt(weapon.Damage * modifiers.DamageMultiplier);
+            var totalDamage = Mathf.RoundToInt(baseDamage * ResolveSalvoDamageMultiplier(salvoCount));
+            var damagePerShot = totalDamage / salvoCount;
+            var extraDamage = totalDamage % salvoCount;
             for (var shotIndex = 0; shotIndex < salvoCount; shotIndex++)
             {
                 var request = new ProjectileSpawnRequest(
                     weapon.CreateProjectileDefinition(
-                        Mathf.RoundToInt(weapon.Damage * modifiers.DamageMultiplier),
+                        damagePerShot + (shotIndex < extraDamage ? 1 : 0),
                         knockbackMultiplier,
                         impactRadiusOverride: weapon.ImpactRadius * modifiers.ImpactRadiusMultiplier),
                     context.OwnerUnitId,
@@ -43,6 +47,17 @@ namespace Game.Gameplay.Battle.Weapons
                     delayedSpawner.Schedule(request, shotIndex * context.Evolution.SalvoIntervalSeconds);
                 }
             }
+        }
+
+        private static float ResolveSalvoDamageMultiplier(int salvoCount)
+        {
+            return salvoCount switch
+            {
+                2 => 1.35f,
+                3 => 1.6f,
+                >= 4 => 1.8f,
+                _ => 1f
+            };
         }
     }
 }

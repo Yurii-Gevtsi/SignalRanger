@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "8d1270fd-0aeb-498e-a0d3-efa3610c9e26",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-repair-jammer-status-icon",
+  "profile": "default",
+  "request": {
+    "message": "Implement and verify the remaining repair-jammer status-icon requirement: import the owner-provided no-repair-2 PNG into the UI Resources family with validated alpha, add one BattleUnitView world-space icon beside HP, and make BattleSceneController show it exactly while BattleSimulation.IsUnitRepairJammed is true.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 4,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.implementation.minimize",
+    "software.testing.design",
+    "software.testing.tdd",
+    "software.review.standards-spec"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "d375c0cc-8f81-46d2-a61f-7fccfb7e8404",
+      "capabilityId": "software.implementation.minimize",
+      "recipeId": "software.implementation.minimize.recipe",
+      "reasonCode": "new-construct-proposed",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "minimize"
+      ],
+      "evidence": [
+        {
+          "kind": "reuse-ladder-evaluated",
+          "refs": [
+            "file:.rex-harness/decisions/repair-jammer-status-icon-minimize.json"
+          ]
+        },
+        {
+          "kind": "minimal-option-recorded",
+          "refs": [
+            "file:.rex-harness/decisions/repair-jammer-status-icon-minimize.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "1751af74-c39c-4581-ad6a-9d3b364a8e4c",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-status-icon-scope.json"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-status-icon-mapping.json"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-status-icon-seam.json"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-status-icon-testability.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "80d53c3d-4fff-4940-8196-c2db1d0d0b47",
+      "capabilityId": "software.testing.tdd",
+      "recipeId": "software.testing.tdd.recipe",
+      "reasonCode": "honest-red-candidate",
+      "triggerEvidenceRefs": [
+        "request:current",
+        "activation:software.testing.design:completed",
+        "file:.rex-harness/testing/repair-jammer-status-icon-testability.json",
+        "receipt:640b1e92-68e6-4903-a1e4-d8dad025c6df"
+      ],
+      "status": "completed",
+      "stageIndex": 3,
+      "stageId": "",
+      "completedStages": [
+        "red",
+        "green",
+        "refactor"
+      ],
+      "evidence": [
+        {
+          "kind": "failing-test-observed",
+          "refs": [
+            "receipt:640b1e92-68e6-4903-a1e4-d8dad025c6df"
+          ]
+        },
+        {
+          "kind": "red-failure-reason-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-status-icon-red.json"
+          ]
+        },
+        {
+          "kind": "passing-test-observed",
+          "refs": [
+            "receipt:26425070-404b-4dc6-a315-6e2456def31a"
+          ]
+        },
+        {
+          "kind": "implementation-diff-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-status-icon-green.json"
+          ]
+        },
+        {
+          "kind": "refactor-check-recorded",
+          "refs": [
+            "receipt:9b6fe360-9963-4bcf-abcf-06eb31d303f1"
+          ]
+        },
+        {
+          "kind": "test-diff-review-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-status-icon-refactor.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "9a8133cb-6c76-4e0a-ae54-565f37f42523",
+      "capabilityId": "software.review.standards-spec",
+      "recipeId": "software.review.standards-spec.recipe",
+      "reasonCode": "diff-ready",
+      "triggerEvidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "review"
+      ],
+      "evidence": [
+        {
+          "kind": "standards-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/repair-jammer-status-icon-resource-review.json"
+          ]
+        },
+        {
+          "kind": "spec-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/repair-jammer-status-icon-resource-review.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "new-construct-proposed",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:.rex-harness/testing/repair-jammer-status-icon-testability.json",
+        "receipt:640b1e92-68e6-4903-a1e4-d8dad025c6df"
+      ]
+    },
+    {
+      "kind": "diff-ready",
+      "evidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:.rex-harness/testing/repair-jammer-status-icon-testability.json",
+    "redCandidate": {
+      "publicEntry": "Resources.Load<Texture2D>(\"UI/Common/no-repair-2\")",
+      "setup": "Run the focused EditMode visual-resource test before the approved status icon is imported into the existing Resources UI family.",
+      "command": {
+        "executable": "node",
+        "args": [
+          "tools/run-unity-mcp-editmode-test.mjs",
+          "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.RepairJammerStatus_UsesTheApprovedTransparentIconResource"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "The approved repair-jammer status texture is loadable at UI/Common/no-repair-2 and has its source dimensions.",
+      "observed": "Resources.Load returned null because the approved icon has not yet been imported.",
+      "receiptRef": "receipt:640b1e92-68e6-4903-a1e4-d8dad025c6df",
+      "failureReason": "The repair-jammer presentation resource is absent from the game Resources tree."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.implementation.minimize",
+      "software.testing.design",
+      "software.testing.tdd",
+      "software.review.standards-spec"
+    ]
+  },
+  "createdAt": "2026-09-23T05:28:45.586Z",
+  "updatedAt": "2026-09-23T05:39:58.778Z"
+}
