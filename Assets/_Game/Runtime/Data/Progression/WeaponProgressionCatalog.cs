@@ -595,7 +595,7 @@ namespace Game.Data.Progression
             Catalog("weapon.bur-rocket", 9, 3000, false, 4, 4, 4, 4),
             Catalog("weapon.titanium-barrier", 9, 3000, false, 0, 0, 4, 4, 1, 0, "size-unlock"),
             Catalog("weapon.mortira", 12, 5000, false, 4, 4, 2, 4, 5, 0, "cascade-mortar"),
-            Catalog("weapon.sticky-grenade", 12, 5000, false, 4, 4, 2, 4, 4, 0, "toxic-release"),
+            Catalog("weapon.sticky-grenade", 12, 5000, false, 4, 4, 2, 4, 1, 0, "toxic-release"),
             Catalog("weapon.teleport", 12, 5000, false, 0, 4, 4, 0, 1, 1, "instant-touch", string.Empty, "early-trigger"),
             Catalog("weapon.rail-rifle", 15, 7500, false, 4, 0, 4, 0, 4, 0, "terrain-pierce"),
             Catalog("weapon.cryo-grenade", 15, 7500, false, 4, 4, 2, 4),
@@ -605,7 +605,7 @@ namespace Game.Data.Progression
             Catalog("weapon.missle", 30, 22000, false, 4, 4, 0, 4),
             Catalog("weapon.orbital-rocket", 36, 30000, false, 4, 0, 2, 4),
             Catalog("weapon.guardian-drone", 6, 0, false, 4, 0, 2, 4, 1, 0, "stealth"),
-            Catalog("weapon.emp", 15, 0, false, 4, 4, 2, 4, 2, 2, "aim-jam", string.Empty, "movement-lock"),
+            Catalog("weapon.emp", 15, 0, false, 4, 4, 2, 2, 2, 2, "aim-jam", string.Empty, "movement-lock"),
             Catalog("weapon.turn-transfer", 15, 0, false, 0, 0, 1, 0),
             Catalog("weapon.electric-harpoon", 20, 0, false, 4, 0, 2, 4, 1, 1, "impact-pull", string.Empty, "double-grab"),
             Catalog("weapon.swap-jump", 25, 0, false, 0, 4, 0, 4),
@@ -613,7 +613,7 @@ namespace Game.Data.Progression
             Catalog("weapon.force-field", 42, 0, false, 4, 0, 0, 4),
             Catalog("weapon.boost", 6, 0, false, 0, 0, 4, 4),
             Catalog("weapon.sky-hook", 9, 0, false, 4, 0, 0, 0),
-            Catalog("weapon.spider-mine", 12, 0, false, 4, 0, 2, 4, 4, 0, "spider-freeze", string.Empty,
+            Catalog("weapon.spider-mine", 12, 0, false, 4, 0, 2, 4, 1, 0, "spider-freeze", string.Empty,
                 string.Empty, string.Empty, "spider-burn", "spider-poison"),
             Catalog("weapon.virus", 25, 0, false, 4, 0, 0, 0),
             Catalog("weapon.bomber", 30, 0, false, 4, 0, 0, 4),
@@ -621,9 +621,9 @@ namespace Game.Data.Progression
             Catalog("weapon.self-destruct", 36, 0, false, 4, 0, 0, 4),
             Catalog("weapon.nuclear-charge", 42, 0, false, 4, 0, 0, 4),
             Catalog("weapon.laser-fence", 12, 0, false, 4, 4, 4, 4),
-            Catalog("weapon.freeze", 15, 0, false, 4, 4, 2, 4, 2, 3, "full-freeze", string.Empty, "cold-bonus"),
-            Catalog("weapon.fire-gun", 20, 0, false, 4, 4, 2, 4, 2, 3, "movement-lock-burn", string.Empty, "burn-bonus"),
-            Catalog("weapon.toxic", 25, 0, false, 4, 4, 2, 4, 2, 3, "movement-poison", string.Empty, "poison-bonus")
+            Catalog("weapon.freeze", 15, 0, false, 4, 4, 2, 2, 2, 3, "full-freeze", string.Empty, "cold-bonus"),
+            Catalog("weapon.fire-gun", 20, 0, false, 4, 4, 2, 2, 2, 3, "movement-lock-burn", string.Empty, "burn-bonus"),
+            Catalog("weapon.toxic", 25, 0, false, 4, 4, 2, 2, 2, 3, "movement-poison", string.Empty, "poison-bonus")
         };
 
         private static readonly Dictionary<string, WeaponProgressionDefinition> ById = BuildIndex();

@@ -7,7 +7,7 @@ namespace Game.Data.Save
     [Serializable]
     public sealed class SaveData
     {
-        public const int CurrentSchemaVersion = 8;
+        public const int CurrentSchemaVersion = 9;
 
         public int schemaVersion;
         public long lastWriteUtcTicks;

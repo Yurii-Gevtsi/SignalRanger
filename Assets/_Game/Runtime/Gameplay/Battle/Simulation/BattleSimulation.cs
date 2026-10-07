@@ -416,6 +416,7 @@ namespace Game.Gameplay.Battle.Simulation
         public bool HasProjectilesInFlight => _projectiles.Count > 0;
         public bool HasActiveWeaponEffect => _activeTimedEffects.Count > 0
             || _activeMines.Exists(mine => mine.IsGuardian && mine.Triggered)
+            || _activeMines.Exists(mine => mine.IsSpider && mine.OwnerUnitId == _state.Turn.ActiveUnitId)
             || _scheduledProjectileSpawns.Count > 0
             || _ropeTraversal != null && !_ropeTraversal.IsAttached
             || _electricHarpoonTraversal != null;
@@ -2259,9 +2260,12 @@ namespace Game.Gameplay.Battle.Simulation
                 crawlDirection: facing);
             _activeMines.Add(mine);
             MineDeployed?.Invoke(new MineDeployedEvent(mine.Id, mine.Position, weapon, unit.TeamId));
+            // Releasing the spider is the attack of the turn: no other weapon afterwards, and the turn
+            // passes once the crawler has blown up.
             _activeShotWeapon = weapon;
-            _activeShotEndsTurn = false;
-            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            _activeShotEndsTurn = true;
+            _turnService.SpendAction(_state);
+            ShotFired?.Invoke(unit.TeamId, weapon, true);
             return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, mine.Position);
         }
 
@@ -2579,6 +2583,12 @@ namespace Game.Gameplay.Battle.Simulation
                 // The device is not consumed and the turn stays unchanged until a
                 // nearby hostile target exists. This avoids firing a visible
                 // effect into empty space.
+                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+            }
+
+            // One virus per carrier: an infected target refuses a second device without spending it.
+            if (weapon.WeaponId == VirusWeaponId && _virusInfections.ContainsKey(target.UnitId))
+            {
                 return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
             }
 
@@ -3670,6 +3680,12 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 // Arming alone is harmless; an actual hit interrupts either side.
                 AdvanceTurnNow(TurnAdvanceReason.MineTriggered);
+            }
+            else if (mine.IsSpider && mine.OwnerUnitId == _state.Turn.ActiveUnitId && _state.Turn.ActionSpent
+                && !HasProjectilesInFlight && !HasActiveWeaponEffect)
+            {
+                // The owner's spider was the attack of this turn; its blast concludes it.
+                AdvanceTurnOrStartRetreat(TurnAdvanceReason.ProjectileImpactResolved);
             }
         }
 

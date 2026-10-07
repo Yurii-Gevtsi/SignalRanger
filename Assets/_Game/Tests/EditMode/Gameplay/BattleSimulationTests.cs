@@ -1915,6 +1915,7 @@ namespace Game.Tests.EditMode.Gameplay
 
             WeaponProgressionCatalog.TryGet(id, out var definition);
             Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "toxic-release" }));
+            Assert.That(definition.Special5PurchaseCount, Is.EqualTo(1), "the toxin is a single purchase");
             Assert.That(WeaponEvolutionIconResolver.ResolveCurrentIconResource(weapon.IconId, definition, restoredProgress),
                 Is.EqualTo("UI/Weapons/sticky_grenade_5A"));
             Assert.That(WeaponEvolutionIconResolver.ResolveCurrentIconResource(weapon.IconId, definition, new SaveWeaponProgressData
@@ -2349,7 +2350,7 @@ namespace Game.Tests.EditMode.Gameplay
         {
             Assert.That(WeaponProgressionCatalog.TryGet("weapon.emp", out var definition), Is.True);
             Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
-                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 2 }));
             Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "aim-jam" }));
             Assert.That(definition.GetEvolutionOptions(10).Select(o => o.Id), Is.EquivalentTo(new[] { "movement-lock" }));
             var progress = new SaveWeaponProgressData { weaponId = "weapon.emp", rank = 6 };
@@ -3373,7 +3374,8 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Simulation.MineDeployed += _ => deployed++;
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "no aim needed");
             Assert.That(deployed, Is.EqualTo(1));
-            Assert.That(harness.State.Turn.ActionSpent, Is.False, "setting it up does not spend the action");
+            Assert.That(harness.State.Turn.ActionSpent, Is.True, "releasing the spider is the attack of the turn");
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "the turn waits for the blast");
             for (var i = 0; i < 480; i++)
             {
                 harness.Simulation.Tick(1f / 120f);
@@ -3408,6 +3410,9 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(blastAt, Is.EqualTo(5f).Within(0.3f), "the search lasts five seconds");
             Assert.That(blastX, Is.EqualTo(-3f + 0.46f + 1.4f * 5f).Within(0.5f), "crawled at about 1.4 u/s");
             Assert.That(enemy.Health, Is.EqualTo(enemy.MaxHealth));
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "the retreat window follows the blast");
+            TickMany(harness.Simulation, 480, 1f / 120f);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent), "the blast concluded the turn");
         }
 
         [TestCase("spider-freeze", 1)]
@@ -3454,6 +3459,7 @@ namespace Game.Tests.EditMode.Gameplay
                 definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 2, 4 }));
             Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id),
                 Is.EquivalentTo(new[] { "spider-freeze", "spider-burn", "spider-poison" }));
+            Assert.That(definition.Special5PurchaseCount, Is.EqualTo(1), "the element is a single purchase");
             Assert.That(definition.GetEvolutionOptions(10), Is.Empty);
             foreach (var art in new[] { "spider_mine", "spider_mine_5A", "spider_mine_frame_00", "spider_mine_frame_03",
                 "spider_mine_5A_frame_00", "spider_mine_5A_frame_03" })
@@ -3537,6 +3543,24 @@ namespace Game.Tests.EditMode.Gameplay
             var far = CreateHarness(PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.virus"));
             Assert.That(far.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
                 Is.EqualTo(BattleFireOutcome.Blocked), "without an enemy nearby nothing is spent");
+        }
+
+        [Test]
+        public void Virus_AnInfectedTargetRefusesASecondVirusWithoutSpendingIt()
+        {
+            var harness = CreateVirusHarness();
+            var carrier = harness.State.GetUnit("opponent.test.01");
+            InfectWithVirus(harness);
+            Assert.That(harness.Simulation.IsUnitInfected(carrier.UnitId), Is.True);
+            harness.State.SetTurn(new TurnState(BattleTeamId.Player, "player.test.01", 3, false));
+            var inventory = harness.Simulation.ActiveInventory;
+            var virus = inventory.Selected;
+            inventory.SetRemainingAmmo(virus, 1);
+
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Blocked), "one virus per carrier");
+            Assert.That(inventory.GetRemainingAmmo(virus), Is.EqualTo(1), "the device is not spent");
+            Assert.That(harness.State.Turn.ActionSpent, Is.False);
         }
 
         [Test]
@@ -4449,7 +4473,7 @@ namespace Game.Tests.EditMode.Gameplay
             const string id = "weapon.freeze";
             Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
             Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
-                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 2 }));
             Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "full-freeze" }));
             Assert.That(definition.GetEvolutionOptions(10).Select(o => o.Id), Is.EquivalentTo(new[] { "cold-bonus" }));
             foreach (var art in new[] { "freeze", "freeze_5_10_B", "ice_shot" })
@@ -4575,7 +4599,7 @@ namespace Game.Tests.EditMode.Gameplay
             const string id = "weapon.fire-gun";
             Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
             Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
-                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 2 }));
             Assert.That(definition.GetEvolutionOptions(5).Count, Is.EqualTo(1));
             Assert.That(definition.GetEvolutionOptions(10).Count, Is.EqualTo(1));
             foreach (var art in new[] { "fire_gun", "fire_gun_5_10_A", "fire_shot_1", "fire_shot_2", "fire_shot_3", "fire_shot_4" })
@@ -4657,7 +4681,7 @@ namespace Game.Tests.EditMode.Gameplay
             const string id = "weapon.toxic";
             Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
             Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
-                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 2 }));
             Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "movement-poison" }));
             Assert.That(definition.GetEvolutionOptions(10).Select(o => o.Id), Is.EquivalentTo(new[] { "poison-bonus" }));
             foreach (var art in new[] { "toxic", "toxic_5_10_A", "toxic_shot" })

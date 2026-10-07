@@ -201,6 +201,52 @@ namespace Game.Tests.EditMode.Data
         }
 
         [Test]
+        public void MigrationService_V8ToV9TrimsPurchasesBeyondTheShortenedScales()
+        {
+            var saveData = SaveData.CreateNew();
+            saveData.schemaVersion = 8;
+            // Sticky grenade: 2 Aim + 2 Loadout, the old four toxin steps, then one Core.
+            var sticky = saveData.inventory.GetOrCreateWeaponProgress("weapon.sticky-grenade");
+            sticky.rank = 10;
+            sticky.upgradeChoices = new System.Collections.Generic.List<SaveWeaponUpgradeChoiceData>
+            {
+                new SaveWeaponUpgradeChoiceData { rank = 2, path = 2 },
+                new SaveWeaponUpgradeChoiceData { rank = 3, path = 2 },
+                new SaveWeaponUpgradeChoiceData { rank = 4, path = 3 },
+                new SaveWeaponUpgradeChoiceData { rank = 5, path = 3 },
+                new SaveWeaponUpgradeChoiceData { rank = 10, path = 1 }
+            };
+            sticky.evolutionChoices = new System.Collections.Generic.List<SaveWeaponEvolutionChoiceData>
+                { new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "toxic-release" } };
+            sticky.specialUpgrades = new System.Collections.Generic.List<SaveWeaponSpecialUpgradeData>
+                { new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 4 } };
+            // Cryo cannon: four Radius purchases, only two remain allowed.
+            var cryo = saveData.inventory.GetOrCreateWeaponProgress("weapon.freeze");
+            cryo.rank = 6;
+            cryo.upgradeChoices = new System.Collections.Generic.List<SaveWeaponUpgradeChoiceData>
+            {
+                new SaveWeaponUpgradeChoiceData { rank = 2, path = 4 },
+                new SaveWeaponUpgradeChoiceData { rank = 3, path = 4 },
+                new SaveWeaponUpgradeChoiceData { rank = 4, path = 4 },
+                new SaveWeaponUpgradeChoiceData { rank = 5, path = 4 },
+                new SaveWeaponUpgradeChoiceData { rank = 6, path = 1 }
+            };
+
+            new SaveMigrationService().MigrateToCurrent(saveData);
+
+            Assert.That(saveData.schemaVersion, Is.EqualTo(9));
+            Assert.That(sticky.rank, Is.EqualTo(7), "four base + one toxin step + one Core");
+            Assert.That(sticky.specialUpgrades[0].purchaseCount, Is.EqualTo(1));
+            Assert.That(sticky.upgradeChoices.ConvertAll(c => c.rank * 10 + c.path),
+                Is.EqualTo(new[] { 22, 32, 43, 53, 71 }), "the Core purchase moves to rank 7");
+            Game.Data.Progression.WeaponProgressionCatalog.TryGet("weapon.sticky-grenade", out var stickyDefinition);
+            Assert.That(stickyDefinition.CountBaseUpgrades(sticky, Game.Data.Progression.WeaponUpgradePath.Core), Is.EqualTo(1));
+            Assert.That(stickyDefinition.GetSpecialPurchaseCount(sticky, 5), Is.EqualTo(1));
+            Assert.That(cryo.rank, Is.EqualTo(4));
+            Assert.That(cryo.upgradeChoices.ConvertAll(c => c.rank * 10 + c.path), Is.EqualTo(new[] { 24, 34, 41 }));
+        }
+
+        [Test]
         public void MigrationService_RejectsNewerSchema()
         {
             var saveData = SaveData.CreateNew();
