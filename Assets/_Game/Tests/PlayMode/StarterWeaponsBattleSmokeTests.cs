@@ -776,6 +776,62 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator LaserFence_ProductionSceneDrawsSmallHullsAndALongBeamThatVanishesWithAWreckedHull()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.laser-fence" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var state = Get<BattleState>(controller, "_battleState");
+            var owner = state.GetTeam(BattleTeamId.Player).Units[0];
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.laser-fence") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var nodes = new List<LaserFenceNodeDeployedEvent>();
+            simulation.LaserFenceNodeDeployed += nodes.Add;
+            var floor = owner.Position + new Vector2(0f, -0.5f);
+            Set(controller, "_aimState", new AimState(owner.Position, Vector2.down, 4f, true));
+            Invoke(controller, "Fire");
+            for (var tick = 0; tick < 600 && nodes.Count < 1; tick++) simulation.Tick(1f / 120f);
+            Set(controller, "_aimState", new AimState(owner.Position, new Vector2(1f, -0.35f), 6f, true));
+            for (var tick = 0; tick < 600 && simulation.HasProjectilesInFlight; tick++) simulation.Tick(1f / 120f);
+            Invoke(controller, "Fire");
+            for (var tick = 0; tick < 900 && nodes.Count < 2; tick++) simulation.Tick(1f / 120f);
+            yield return null;
+            Assert.That(nodes.Count, Is.EqualTo(2), "two hulls on the ground");
+            var hulls = new List<GameObject>();
+            foreach (var go in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Exclude))
+                if (go.name == "Laser Fence Node") hulls.Add(go);
+            Assert.That(hulls.Count, Is.EqualTo(2));
+            Assert.That(hulls[0].transform.localScale.x, Is.EqualTo(0.055f).Within(0.001f), "half the former 0.11");
+            var beams = new List<GameObject>();
+            foreach (var go in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Exclude))
+                if (go.name == "Laser Fence Link") beams.Add(go);
+            var distance = Vector2.Distance(nodes[0].Point, nodes[1].Point);
+            Assert.That(beams.Count, Is.EqualTo(distance <= BattleSimulation.LaserFenceLinkRange ? 1 : 0), "the beam is drawn within the 5.4 reach");
+
+            simulation.Spawn(new ProjectileSpawnRequest(
+                Game.Gameplay.Battle.Projectiles.ProjectileDefinition.CreateRuntime("projectile.weapon.granata", 0.1f, 0f, 0.05f, 60, 1.5f),
+                state.GetTeam(BattleTeamId.Opponent).Units[0].UnitId, nodes[0].Point + Vector2.up * 0.3f, Vector2.zero, 0.2f, Color.white));
+            for (var tick = 0; tick < 30; tick++) simulation.Tick(1f / 120f);
+            yield return null;
+            var remaining = 0;
+            foreach (var go in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Exclude))
+                if (go.name == "Laser Fence Node") remaining++;
+            Assert.That(remaining, Is.EqualTo(1), "the wrecked hull's visual is gone");
+            var beamsAfter = 0;
+            foreach (var go in UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsInactive.Exclude))
+                if (go.name == "Laser Fence Link") beamsAfter++;
+            Assert.That(beamsAfter, Is.Zero, "and its beam with it");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {

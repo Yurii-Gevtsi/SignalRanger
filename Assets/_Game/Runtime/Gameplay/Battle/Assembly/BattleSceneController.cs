@@ -80,7 +80,7 @@ namespace Game.Gameplay.Battle.Assembly
         // constant ~70 ms); the old 5.5 made straight-shot aiming feel laggy.
         private const float DirectAimSmoothingSpeed = 14f;
         private const string RopeHookSpriteId = "rope_shot";
-        private const float LaserFenceLinkRange = 1.8f;
+        private const float LaserFenceLinkRange = BattleSimulation.LaserFenceLinkRange;
         private static readonly Color LaserFenceLinkColor = new(0.20f, 1f, 0.30f, 0.96f);
         // Barrels of these weapons visually match the aim only after this art
         // correction, and their resting pose tilts slightly toward the ground.
@@ -153,6 +153,7 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Dictionary<int, GameObject> _grounderVisuals = new();
         private readonly Dictionary<int, GameObject> _forceFieldVisuals = new();
         private readonly Dictionary<int, GameObject> _laserFenceNodeVisuals = new();
+        private readonly HashSet<(int, int)> _spentLaserFenceLinks = new();
         private readonly Dictionary<int, float> _forceFieldPulseUntil = new();
         private readonly Dictionary<int, (WeaponDefinition Weapon, BattleTeamId Team)> _mineOwners = new();
         private readonly Dictionary<int, LaserFenceNodeDeployedEvent> _laserFenceNodes = new();
@@ -782,6 +783,8 @@ namespace Game.Gameplay.Battle.Assembly
             simulation.GrounderDeployed += OnSimulationGrounderDeployed;
             simulation.GrounderRemoved += OnSimulationGrounderRemoved;
             simulation.GroundObjectCarried += OnSimulationGroundObjectCarried;
+            simulation.LaserFenceLinkSpent += OnSimulationLaserFenceLinkSpent;
+            simulation.LaserFenceNodeRemoved += OnSimulationLaserFenceNodeRemoved;
             simulation.ForceFieldDeployed += OnSimulationForceFieldDeployed;
             simulation.ForceFieldRemoved += OnSimulationForceFieldRemoved;
             simulation.ForceFieldAbsorbed += OnSimulationForceFieldAbsorbed;
@@ -1537,6 +1540,7 @@ namespace Game.Gameplay.Battle.Assembly
             _grounderVisuals.Clear();
             _forceFieldVisuals.Clear();
             _laserFenceNodeVisuals.Clear();
+            _spentLaserFenceLinks.Clear();
             _forceFieldPulseUntil.Clear();
             _laserFenceNodes.Clear();
             _laserFenceLinks.Clear();
@@ -2528,9 +2532,33 @@ namespace Game.Gameplay.Battle.Assembly
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = LoadWeaponIconSprite(node.Weapon?.IconId ?? "laser_fence");
             renderer.sortingOrder = 27;
-            visual.transform.localScale = Vector3.one * 0.11f;
+            // Half of the former 0.11: the hulls are small marks on the ground.
+            visual.transform.localScale = Vector3.one * 0.055f;
 
             _laserFenceNodes[node.NodeId] = node;
+            RebuildLaserFenceLinks();
+        }
+
+        private void OnSimulationLaserFenceLinkSpent(int firstNodeId, int secondNodeId)
+        {
+            _spentLaserFenceLinks.Add((firstNodeId, secondNodeId));
+            RebuildLaserFenceLinks();
+        }
+
+        private void OnSimulationLaserFenceNodeRemoved(int nodeId)
+        {
+            if (_laserFenceNodeVisuals.TryGetValue(nodeId, out var visual))
+            {
+                _laserFenceNodeVisuals.Remove(nodeId);
+                _arenaObjects.Remove(visual);
+                if (visual != null)
+                {
+                    Destroy(visual);
+                }
+            }
+
+            _laserFenceNodes.Remove(nodeId);
+            _spentLaserFenceLinks.RemoveWhere(pair => pair.Item1 == nodeId || pair.Item2 == nodeId);
             RebuildLaserFenceLinks();
         }
 
@@ -2551,6 +2579,12 @@ namespace Game.Gameplay.Battle.Assembly
             var links = LaserFenceLinkResolver.Resolve(_laserFenceNodes.Values.ToList(), LaserFenceLinkRange);
             foreach (var link in links)
             {
+                if (_spentLaserFenceLinks.Contains((link.FirstNodeId, link.SecondNodeId))
+                    || _spentLaserFenceLinks.Contains((link.SecondNodeId, link.FirstNodeId)))
+                {
+                    continue;
+                }
+
                 if (!_laserFenceNodes.TryGetValue(link.FirstNodeId, out var first)
                     || !_laserFenceNodes.TryGetValue(link.SecondNodeId, out var second))
                 {

@@ -88,7 +88,10 @@ namespace Game.Gameplay.Battle.Simulation
         private const string LaserFenceDeployProjectileId = "projectile.weapon.laser-fence.deploy";
         private const int MaxLaserFenceNodesPerTurn = 4;
         private const float LaserFenceGravityScale = 1.05f;
-        private const float LaserFenceLinkRange = 5.4f;
+        /// <summary>Three times the old visual link of 1.8.</summary>
+        public const float LaserFenceLinkRange = 5.4f;
+        // Hull durability is a playtest number: any ordinary blast near a hull destroys it.
+        private const int LaserFenceNodeHealth = 30;
         private const float LaserFenceContactRadius = 0.42f;
         private const int BaseBlasterShotsPerTurn = 3;
         // Keep the armed mine in the same close placement zone as C4 instead of
@@ -391,6 +394,10 @@ namespace Game.Gameplay.Battle.Simulation
         /// <summary>A hostile energy carrier or beam was absorbed: field id and the absorption point.</summary>
         public event Action<int, Vector2> ForceFieldAbsorbed;
         public event Action<LaserFenceNodeDeployedEvent> LaserFenceNodeDeployed;
+        /// <summary>A hull was destroyed: its beams disappear with it.</summary>
+        public event Action<int> LaserFenceNodeRemoved;
+        /// <summary>A pair fired once and its beam is gone for good.</summary>
+        public event Action<int, int> LaserFenceLinkSpent;
         public event Action<int> MineTriggered;
         public event Action<ChargeDeployedEvent> ChargeDeployed;
         public event Action<GroundObjectRepositionedEvent> GroundObjectRepositioned;
@@ -1435,6 +1442,7 @@ namespace Game.Gameplay.Battle.Simulation
                         }
 
                         _spentLaserFenceLinks.Add(linkId);
+                        LaserFenceLinkSpent?.Invoke(link.FirstNodeId, link.SecondNodeId);
                         ApplyDamage(unit, firstNode.Weapon.Damage, LaserFenceWeaponId, firstNode.TeamId);
                         if (unit.UnitId == _state.Turn.ActiveUnitId)
                         {
@@ -4270,6 +4278,7 @@ namespace Game.Gameplay.Battle.Simulation
                     }
                 }
             }
+            DamageLaserFenceNodesInBlast(impact.Point, impact.ImpactRadius, effectiveDamage);
             ApplyExplosionKnockback(
                 impact.Point,
                 impact.Velocity,
@@ -4278,6 +4287,39 @@ namespace Game.Gameplay.Battle.Simulation
                 impact.KnockbackMultiplier,
                 ignoredTeam);
             return terrainChanged;
+        }
+
+        /// <summary>A blast can wreck a laser-fence hull: its beam then vanishes (a carried hull is dropped first).</summary>
+        private void DamageLaserFenceNodesInBlast(Vector2 point, float radius, int damage)
+        {
+            if (_activeLaserFenceNodes.Count == 0 || damage <= 0 || radius <= 0f)
+            {
+                return;
+            }
+
+            for (var index = _activeLaserFenceNodes.Count - 1; index >= 0; index--)
+            {
+                var node = _activeLaserFenceNodes[index];
+                if (Vector2.Distance(node.Position, point) > radius)
+                {
+                    continue;
+                }
+
+                node.Health -= damage;
+                if (node.Health > 0)
+                {
+                    continue;
+                }
+
+                if (_copter != null && _copter.CarriedNode == node)
+                {
+                    ReleaseCarrierCargo(_copter);
+                }
+
+                _activeLaserFenceNodes.RemoveAt(index);
+                _spentLaserFenceLinks.RemoveWhere(linkId => (int)(linkId & 0xFFFFFFFF) == node.Id || (int)(linkId >> 32) == node.Id);
+                LaserFenceNodeRemoved?.Invoke(node.Id);
+            }
         }
 
         private void ApplyRepairAftereffect(
@@ -8083,6 +8125,7 @@ namespace Game.Gameplay.Battle.Simulation
             public Vector2 Position { get; private set; }
             public bool IsCarried { get; set; }
             public bool FallPending { get; set; }
+            public int Health { get; set; } = LaserFenceNodeHealth;
 
             public void MoveTo(Vector2 position)
             {

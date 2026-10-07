@@ -4263,6 +4263,104 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
         }
 
+        private static Harness CreateLaserFencePair(out List<LaserFenceNodeDeployedEvent> nodes, Vector2? ally = null)
+        {
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.laser-fence");
+            var harness = CreateHarness(weapon, secondPlayerPosition: ally);
+            var placed = new List<LaserFenceNodeDeployedEvent>();
+            harness.Simulation.LaserFenceNodeDeployed += placed.Add;
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.down, 4f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 180, 1f / 60f);
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), new Vector2(1f, -0.2f), 4f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 240, 1f / 60f);
+            Assert.That(placed, Has.Count.EqualTo(2));
+            nodes = placed;
+            return harness;
+        }
+
+        private static void PlaceDroidAt(Harness harness, string unitId, Vector2 point)
+        {
+            var unit = harness.State.GetUnit(unitId);
+            unit.MoveTo(point);
+            harness.Motors[unitId].Teleport(point);
+        }
+
+        [Test]
+        public void LaserFence_LinkRangeIsThreeTimesTheOldOneAndTheResolverCutsAtIt()
+        {
+            Assert.That(BattleSimulation.LaserFenceLinkRange, Is.EqualTo(5.4f), "3 x the old 1.8");
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.laser-fence");
+            LaserFenceNodeDeployedEvent Node(int id, float x) =>
+                new LaserFenceNodeDeployedEvent(id, "player.test.01", new Vector2(x, 0f), weapon, BattleTeamId.Player);
+            Assert.That(LaserFenceLinkResolver.Resolve(new[] { Node(1, 0f), Node(2, 5.3f) }, BattleSimulation.LaserFenceLinkRange),
+                Has.Count.EqualTo(1), "5.3 apart are linked");
+            Assert.That(LaserFenceLinkResolver.Resolve(new[] { Node(1, 0f), Node(2, 5.5f) }, BattleSimulation.LaserFenceLinkRange),
+                Is.Empty, "5.5 apart are not (a broken link)");
+        }
+
+        [Test]
+        public void LaserFence_AnEnemyCrossingTheBeamTakesTheBaseDamageOnceTheBeamIsGoneAndOwnSideIsSafe()
+        {
+            var harness = CreateLaserFencePair(out var nodes, ally: new Vector2(-8f, 0f));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.laser-fence");
+            var midpoint = (nodes[0].Point + nodes[1].Point) * 0.5f;
+            var spent = 0;
+            harness.Simulation.LaserFenceLinkSpent += (_, _) => spent++;
+
+            // The owner's own droid in the beam is not hurt (also not an ally).
+            PlaceDroidAt(harness, "player.test.02", midpoint);
+            var ally = harness.State.GetUnit("player.test.02");
+            var owner = harness.State.GetUnit("player.test.01");
+            PlaceDroidAt(harness, "player.test.01", midpoint);
+            TickMany(harness.Simulation, 10, 1f / 120f);
+            Assert.That(ally.Health, Is.EqualTo(ally.MaxHealth));
+            Assert.That(owner.Health, Is.EqualTo(owner.MaxHealth), "never hurts its owner");
+            Assert.That(spent, Is.Zero);
+
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            PlaceDroidAt(harness, enemy.UnitId, midpoint);
+            harness.Simulation.EndActiveTurn();                                      // the enemy's turn: it is the active one
+            TickMany(harness.Simulation, 4, 1f / 120f);
+            Assert.That(enemy.MaxHealth - enemy.Health, Is.EqualTo(weapon.Damage), "the base damage");
+            Assert.That(spent, Is.EqualTo(1), "the beam is spent by one crossing");
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "the struck active droid loses its turn");
+        }
+
+        [Test]
+        public void LaserFence_ABlastOnAHullDestroysItAndItsBeamAndTheBrokenPairNoLongerHurts()
+        {
+            var harness = CreateLaserFencePair(out var nodes);
+            var midpoint = (nodes[0].Point + nodes[1].Point) * 0.5f;
+            var removed = new List<int>();
+            harness.Simulation.LaserFenceNodeRemoved += removed.Add;
+            // An enemy grenade goes off right at the first hull.
+            var blast = ProjectileDefinition.CreateRuntime("projectile.weapon.granata", 0.1f, 0f, 0.05f, 60, 1.5f);
+            harness.Simulation.Spawn(new ProjectileSpawnRequest(
+                blast, "opponent.test.01", nodes[0].Point + Vector2.up * 0.3f, Vector2.zero, 0.2f, Color.white));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(removed, Is.EqualTo(new[] { nodes[0].NodeId }), "the hull was wrecked");
+
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            PlaceDroidAt(harness, enemy.UnitId, midpoint);
+            harness.Simulation.EndActiveTurn();
+            var health = enemy.Health;
+            TickMany(harness.Simulation, 6, 1f / 120f);
+            Assert.That(enemy.Health, Is.EqualTo(health), "no hull, no beam, no damage");
+        }
+
+        [Test]
+        public void LaserFence_RegistryStockAndArtMatchTheCard()
+        {
+            const string id = "weapon.laser-fence";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 4, 4 }));
+            Assert.That(PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id).AmmoCount, Is.EqualTo(4));
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/laser_fence"), Is.Not.Null);
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {
