@@ -2698,7 +2698,11 @@ namespace Game.Gameplay.Battle.Simulation
             _turnService.SpendAction(_state);
             var evolution = ResolveEvolutionFor(unit.TeamId, weapon);
             var streamDuration = FireStreamDurationSeconds * evolution.FireGunStreamDurationMultiplier;
-            _activeTimedEffects.Add(ActiveTimedEffect.FireStream(unit.UnitId, unit.TeamId, weapon, aim.Origin, direction, streamDuration));
+            var stream = ActiveTimedEffect.FireStream(unit.UnitId, unit.TeamId, weapon, aim.Origin, direction, streamDuration);
+            stream.StreamId = ++_nextProjectileId;
+            // The whole stream is one attack: Core steps scale its single damage budget.
+            stream.TotalDamage = Mathf.RoundToInt(weapon.Damage * ResolveModifiersFor(unit.TeamId, weapon).DamageMultiplier);
+            _activeTimedEffects.Add(stream);
             ShotFired?.Invoke(unit.TeamId, weapon, true);
             return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, aim.Origin + direction * FireStreamRange);
         }
@@ -2954,6 +2958,12 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
+            if (_activeFirePuddles.Count == 0 && _streamHits.Count > 0
+                && !_activeTimedEffects.Exists(effect => effect.Kind == ActiveTimedEffectKind.FireStream))
+            {
+                _streamHits.Clear();
+            }
+
             for (var i = _activeFirePuddles.Count - 1; i >= 0; i--)
             {
                 var puddle = _activeFirePuddles[i];
@@ -3005,7 +3015,8 @@ namespace Game.Gameplay.Battle.Simulation
                             puddle.OwnerUnitId,
                             FirePuddleDamageRadius,
                             tickDamage,
-                            applyLavaOverlay: true);
+                            applyLavaOverlay: true,
+                            attackId: puddle.StreamId);
                     }
 
                     UnitsMoved?.Invoke();
@@ -3429,8 +3440,8 @@ namespace Game.Gameplay.Battle.Simulation
                 endpoint,
                 travelSeconds,
                 puddleLifetime));
-            var baseDamageBudget = effect.Weapon.Damage / totalBlobs;
-            var remainingDamageBudget = effect.Weapon.Damage % totalBlobs;
+            var baseDamageBudget = effect.TotalDamage / totalBlobs;
+            var remainingDamageBudget = effect.TotalDamage % totalBlobs;
             var damageBudget = baseDamageBudget + (blobIndex < remainingDamageBudget ? 1 : 0);
             _activeFirePuddles.Add(new ActiveFirePuddle(
                 puddleId,
@@ -3439,7 +3450,8 @@ namespace Game.Gameplay.Battle.Simulation
                 endpoint,
                 travelSeconds,
                 puddleLifetime,
-                damageBudget));
+                damageBudget,
+                effect.StreamId));
         }
 
         private void TraceFireBlobTrajectory(
@@ -3558,7 +3570,8 @@ namespace Game.Gameplay.Battle.Simulation
             string ownerUnitId,
             float radius,
             int damage,
-            bool applyLavaOverlay = false)
+            bool applyLavaOverlay = false,
+            int attackId = 0)
         {
             var sourceTeam = ResolveTeamForOwner(ownerUnitId);
             var fireEvolution = applyLavaOverlay ? ResolveEvolutionFor(sourceTeam, weapon) : default;
@@ -3585,10 +3598,38 @@ namespace Game.Gameplay.Battle.Simulation
                             resolvedDamage * (1f + fireEvolution.FireGunChainDamagePercent / 100f));
                     }
 
+                    StreamHit streamHit = null;
+                    if (applyLavaOverlay && attackId > 0)
+                    {
+                        var key = (attackId, unit.UnitId);
+                        if (!_streamHits.TryGetValue(key, out streamHit))
+                        {
+                            // The first drop of this attack on this droid: a fire status left by an EARLIER attack boosts
+                            // this whole attack's direct damage (shared +25%), later drops of the same attack do not stack it.
+                            streamHit = new StreamHit
+                            {
+                                Boosted = _fireEffects.TryGetValue(unit.UnitId, out var earlier) && earlier.AttackId != attackId
+                            };
+                            _streamHits[key] = streamHit;
+                        }
+
+                        if (streamHit.Boosted)
+                        {
+                            resolvedDamage = Mathf.CeilToInt(resolvedDamage * (1f + ElementalRepeatBonusPercent / 100f));
+                        }
+                    }
+
+                    var healthBefore = unit.Health;
                     ApplyDamage(unit, resolvedDamage, weapon.WeaponId, sourceTeam);
                     if (applyLavaOverlay)
                     {
                         _lavaOverlayRemainingSeconds[unit.UnitId] = LavaOverlayDurationSeconds;
+                        if (streamHit != null)
+                        {
+                            // The shared fire status; its tick is 20% of everything this attack dealt to the droid.
+                            streamHit.Total += Mathf.Max(0, healthBefore - unit.Health);
+                            ApplyElementalStatus(_fireEffects, unit, sourceTeam, streamHit.Total, attackId);
+                        }
                     }
                 }
             }
@@ -4444,8 +4485,17 @@ namespace Game.Gameplay.Battle.Simulation
             return Mathf.CeilToInt(amount * (1f + ElementalRepeatBonusPercent / 100f));
         }
 
+        private readonly Dictionary<(int, string), StreamHit> _streamHits = new();
+
+        private sealed class StreamHit
+        {
+            public bool Boosted { get; set; }
+            public int Total { get; set; }
+        }
+
         private void ApplyElementalStatus(
-            Dictionary<string, ElementalStatus> effects, BattleUnitState unit, BattleTeamId sourceTeam, int directDamage)
+            Dictionary<string, ElementalStatus> effects, BattleUnitState unit, BattleTeamId sourceTeam, int directDamage,
+            int attackId = 0)
         {
             if (unit == null || unit.IsDefeated || directDamage <= 0)
             {
@@ -4455,7 +4505,10 @@ namespace Game.Gameplay.Battle.Simulation
             // The tick is 20% of the direct hit this unit took; a repeat hit replaces it and the
             // remaining time with the full base duration instead of stacking.
             var tick = Mathf.Max(1, Mathf.RoundToInt(directDamage * ElementalStatusDamageRatio));
-            effects[unit.UnitId] = new ElementalStatus(unit.UnitId, sourceTeam, tick, ElementalBaseDurationTurns);
+            effects[unit.UnitId] = new ElementalStatus(unit.UnitId, sourceTeam, tick, ElementalBaseDurationTurns)
+            {
+                AttackId = attackId
+            };
         }
 
         private void ProcessElementalForEndingActiveTurn(Dictionary<string, ElementalStatus> effects)
@@ -4517,6 +4570,8 @@ namespace Game.Gameplay.Battle.Simulation
             public BattleTeamId SourceTeam { get; }
             public int DamagePerTurn { get; }
             public int TurnsRemaining { get; set; }
+            /// <summary>The stream that applied it, so that its own later drops do not count as a repeat hit.</summary>
+            public int AttackId { get; set; }
         }
 
         private void ProcessPoisonForEndingActiveTurn()
@@ -8038,6 +8093,9 @@ namespace Game.Gameplay.Battle.Simulation
                     drillPenetration);
             }
 
+            public int StreamId { get; set; }
+            public int TotalDamage { get; set; }
+
             public static ActiveTimedEffect FireStream(
                 string ownerUnitId,
                 BattleTeamId teamId,
@@ -8308,8 +8366,10 @@ namespace Game.Gameplay.Battle.Simulation
                 Vector2 point,
                 float delaySeconds,
                 float lifetimeSeconds = FirePuddleLifetimeSeconds,
-                int damageBudget = 0)
+                int damageBudget = 0,
+                int streamId = 0)
             {
+                StreamId = streamId;
                 Id = id;
                 OwnerUnitId = ownerUnitId;
                 Weapon = weapon;
@@ -8319,6 +8379,7 @@ namespace Game.Gameplay.Battle.Simulation
                 DamageBudget = Mathf.Max(0, damageBudget);
             }
 
+            public int StreamId { get; }
             public int Id { get; }
             public string OwnerUnitId { get; }
             public WeaponDefinition Weapon { get; }

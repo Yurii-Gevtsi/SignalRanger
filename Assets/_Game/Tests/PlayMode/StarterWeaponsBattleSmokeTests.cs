@@ -832,6 +832,48 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator LavaGun_ProductionSceneThrowsAnimatedDropsBurnsTheDroidWithTheSharedStatusAndEndsTheTurn()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.fire-gun" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var state = Get<BattleState>(controller, "_battleState");
+            var motors = Get<Dictionary<string, UnitMotor>>(controller, "_unitMotors");
+            var player = state.GetTeam(BattleTeamId.Player).Units[0];
+            var enemy = state.GetTeam(BattleTeamId.Opponent).Units[0];
+            // The enemy stands about two units in front of the stream's muzzle.
+            var spot = player.Position + new Vector2(2.2f, 0f);
+            enemy.MoveTo(spot);
+            motors[enemy.UnitId].Teleport(spot);
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.fire-gun") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            var blobs = 0;
+            simulation.FireBlobSpawned += _ => blobs++;
+            Set(controller, "_aimState", new AimState(player.Position + Vector2.up * 0.2f, Vector2.right, 6.4f, true));
+            Invoke(controller, "Fire");
+            var burned = false;
+            for (var frame = 0; frame < 300 && (simulation.HasActiveWeaponEffect || frame < 30); frame++)
+            {
+                for (var tick = 0; tick < 12; tick++) simulation.Tick(1f / 120f);
+                Invoke(controller, "RefreshUnitViews");
+                burned |= simulation.IsUnitLavaBurning(enemy.UnitId);
+                yield return null;
+            }
+            Assert.That(blobs, Is.GreaterThan(10), "the stream throws a series of flame drops");
+            Assert.That(GameObject.Find("Fire Blob") != null || blobs > 0, Is.True);
+            Assert.That(burned, Is.True, "the droid in the fire got the shared fire status");
+            Assert.That(enemy.Health, Is.LessThan(enemy.MaxHealth));
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {

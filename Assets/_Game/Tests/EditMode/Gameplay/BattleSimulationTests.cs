@@ -4479,6 +4479,121 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(empProfile.EmpWeakenDamagePercent, Is.Zero);
         }
 
+        private static readonly AimState LavaAim = new AimState(new Vector2(-2.6f, 0.2f), new Vector2(1f, 0.35f).normalized, 6.4f, true);
+
+        /// <summary>Fires one stream in a throw-away harness and returns the landing points of its drops.</summary>
+        private static List<Vector2> ProbeLavaDrops()
+        {
+            var probe = CreateHarness(PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.fire-gun"));
+            var points = new List<Vector2>();
+            probe.Simulation.FireBlobSpawned += evt => points.Add(evt.ImpactPoint);
+            Assert.That(probe.Simulation.TryFire(LavaAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(probe.Simulation, 240, 1f / 120f);
+            Assert.That(points.Count, Is.GreaterThan(10));
+            return points;
+        }
+
+        private static Harness CreateLavaHarness(Vector2 enemyAt, Vector2? allyAt = null)
+        {
+            var harness = CreateHarness(PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.fire-gun"),
+                secondPlayerPosition: allyAt);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            enemy.MoveTo(enemyAt);
+            harness.Motors[enemy.UnitId].Teleport(enemyAt);
+            return harness;
+        }
+
+        [Test]
+        public void LavaGun_TheWholeStreamIsOneAttackWhoseDamageIsSpreadOverTheDropsAndNeverExceedsTheWeaponDamage()
+        {
+            var drops = ProbeLavaDrops();
+            var spot = drops[drops.Count / 2];
+            var harness = CreateLavaHarness(spot, allyAt: spot + new Vector2(0.05f, 0f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var ally = harness.State.GetUnit("player.test.02");
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.fire-gun");
+            Assert.That(harness.Simulation.TryFire(LavaAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 960, 1f / 120f);                      // the stream and every drop have burned out
+            var dealt = enemy.MaxHealth - enemy.Health;
+            Assert.That(dealt, Is.GreaterThan(0), "the stream reached the droid");
+            Assert.That(dealt, Is.LessThanOrEqualTo(weapon.Damage), "one attack, one damage budget: not the full damage per drop");
+            Assert.That(ally.MaxHealth - ally.Health, Is.GreaterThan(0), "an ally in the same fire is hurt too");
+            Assert.That(harness.Simulation.IsUnitLavaBurning(enemy.UnitId), Is.True, "the shared fire status is on");
+            Assert.That(harness.Simulation.IsUnitLavaBurning(ally.UnitId), Is.True, "also on the ally");
+        }
+
+        [Test]
+        public void LavaGun_TheFireStatusTicksTwentyPercentOfTheAttackForTwoVictimTurnsAndDoesNotStack()
+        {
+            var drops = ProbeLavaDrops();
+            var harness = CreateLavaHarness(drops[drops.Count / 2]);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            Assert.That(harness.Simulation.TryFire(LavaAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 960, 1f / 120f);
+            var direct = enemy.MaxHealth - enemy.Health;
+            Assert.That(direct, Is.GreaterThan(0));
+            var tick = Mathf.Max(1, Mathf.RoundToInt(direct * 0.2f));
+            var afterAttack = enemy.Health;
+            var victimTurnEnds = 0;
+            for (var i = 0; i < 8 && victimTurnEnds < 3; i++)
+            {
+                var victimTurn = harness.State.Turn.ActiveTeam == BattleTeamId.Opponent;
+                harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+                if (victimTurn) victimTurnEnds++;
+            }
+
+            Assert.That(afterAttack - enemy.Health, Is.EqualTo(tick * 2), "two ticks of 20% of the attack, not more");
+            Assert.That(harness.Simulation.IsUnitLavaBurning(enemy.UnitId), Is.False, "the status ends after the second victim turn");
+        }
+
+        [Test]
+        public void LavaGun_ARepeatAttackWhileTheFireLastsBoostsOnlyItsOwnDirectDamageByAQuarter()
+        {
+            var drops = ProbeLavaDrops();
+            var spot = drops[drops.Count / 2];
+            var harness = CreateLavaHarness(spot);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            Assert.That(harness.Simulation.TryFire(LavaAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 960, 1f / 120f);
+            var first = enemy.MaxHealth - enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();               // the enemy's turn ends: one tick, one turn of fire left
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            Assert.That(harness.Simulation.IsUnitLavaBurning(enemy.UnitId), Is.True);
+            enemy.MoveTo(spot);
+            harness.Motors[enemy.UnitId].Teleport(spot);
+            var beforeSecond = enemy.Health;
+            Assert.That(harness.Simulation.TryFire(LavaAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 960, 1f / 120f);
+            var second = beforeSecond - enemy.Health;
+            Assert.That(second, Is.GreaterThan(first), "the second attack is stronger");
+            Assert.That(second, Is.EqualTo(Mathf.CeilToInt(first * 1.25f)).Within(Mathf.Max(3, first / 6)), "about +25% to the direct damage");
+        }
+
+        [Test]
+        public void LavaGun_RegistryFeaturesAwaitingTheOwnerLeaveNoLegacyEffectAndTheArtExists()
+        {
+            const string id = "weapon.fire-gun";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+            Assert.That(definition.GetEvolutionOptions(5).Count, Is.EqualTo(1));
+            Assert.That(definition.GetEvolutionOptions(10).Count, Is.EqualTo(1));
+            foreach (var art in new[] { "fire_gun", "fire_gun_5_10_A", "fire_shot_1", "fire_shot_2", "fire_shot_3", "fire_shot_4" })
+                Assert.That(Resources.Load<Texture2D>("UI/Weapons/" + art), Is.Not.Null, art);
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            var progress = new SaveWeaponProgressData { weaponId = id, rank = 6 };
+            progress.EnsureDefaults();
+            for (var rank = 2; rank <= 5; rank++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Core });
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData
+                { rank = 5, optionId = definition.GetEvolutionOptions(5)[0].Id });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            var profile = WeaponEvolutionRuntimeResolver.Resolve(weapon, progress);
+            Assert.That(profile.FireGunIgniteTurns, Is.Zero, "no leftover legacy ignite before the owner defines the feature");
+            Assert.That(profile.FireGunChainDamagePercent, Is.Zero);
+            Assert.That(profile.FireGunStreamDurationMultiplier, Is.EqualTo(1f));
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {
