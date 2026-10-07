@@ -316,7 +316,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void UnimplementedUtility_CannotHealOrTeleportThroughGenericFallback()
+        public void TurnTransfer_WithoutALivingAllyIsUnavailableAndSpendsNothing()
         {
             foreach (var (id, role) in new[]
             {
@@ -336,6 +336,102 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.That(player.Health, Is.EqualTo(80), id);
                 Assert.That(player.Position, Is.EqualTo(beforePosition), id);
             }
+        }
+
+        [Test]
+        public void TeamTurns_DroidsOfATeamTakeTurnsInRotation()
+        {
+            var harness = CreateHarness(CreateWeapon("weapon.impulse"), secondPlayerPosition: new Vector2(-6f, 0f),
+                secondOpponentPosition: new Vector2(6f, 0f));
+            var order = new List<string> { harness.State.Turn.ActiveUnitId };
+            for (var i = 0; i < 5; i++)
+            {
+                harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+                order.Add(harness.State.Turn.ActiveUnitId);
+            }
+
+            Assert.That(order, Is.EqualTo(new[] { "player.test.01", "opponent.test.01", "player.test.02",
+                "opponent.test.02", "player.test.01", "opponent.test.01" }), "A1, B1, A2, B2, A1");
+        }
+
+        [Test]
+        public void TeamTurns_AStatusCountsTheTurnsOfTheDroidThatCarriesIt()
+        {
+            var cannon = CreateWeapon("weapon.freeze", WeaponRole.DirectProjectile, damage: 20, impactRadius: 2.5f,
+                gravityScale: 0f);
+            var team = CreateHarness(cannon, secondPlayerPosition: new Vector2(-7f, 0f));
+            var shooter = team.State.GetUnit("player.test.01");
+            var mate = team.State.GetUnit("player.test.02");
+            // The shooter chills itself with a blast at its own feet.
+            Assert.That(team.Simulation.TryFire(new AimState(shooter.Position + Vector2.up * 0.3f, Vector2.down, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(team.Simulation, 1200, 1f / 120f);
+            Assert.That(team.Simulation.IsUnitChilled(shooter.UnitId), Is.True);
+            Assert.That(team.Simulation.IsUnitChilled(mate.UnitId), Is.False);
+            var afterHit = shooter.Health;
+            for (var i = 0; i < 4 && team.State.Turn.ActiveUnitId != mate.UnitId; i++)
+                team.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(team.State.Turn.ActiveUnitId, Is.EqualTo(mate.UnitId));
+            team.Simulation.AdvanceTurnDueToNoUsableWeapon();                                // the mate's turn ends
+            Assert.That(shooter.Health, Is.EqualTo(afterHit), "no tick at the end of a teammate's turn");
+            for (var i = 0; i < 4 && team.State.Turn.ActiveUnitId != shooter.UnitId; i++)
+                team.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            team.Simulation.AdvanceTurnDueToNoUsableWeapon();                                // the shooter's own turn ends
+            Assert.That(shooter.Health, Is.LessThan(afterHit), "the tick comes at the end of its own turn");
+        }
+
+        [Test]
+        public void TurnTransfer_TheFirstPressChoosesAnAllyTheSecondHandsOverTheRestOfTheTurn()
+        {
+            var transfer = CreateWeapon("weapon.turn-transfer", WeaponRole.DefensiveTool, damage: 0, ammo: 1);
+            var harness = CreateHarness(transfer, secondPlayerPosition: new Vector2(-6f, 0f));
+            var owner = harness.State.GetUnit("player.test.01");
+            var ally = harness.State.GetUnit("player.test.02");
+            owner.SetFacing(-1);
+            var inventory = harness.Simulation.ActiveInventory;
+            var transferred = new List<(string, string)>();
+            harness.Simulation.TurnTransferred += (from, to) => transferred.Add((from, to));
+            var turnNumber = harness.State.Turn.TurnNumber;
+            var secondsBefore = harness.Simulation.MovementTimeRemaining;
+
+            Assert.That(harness.Simulation.CanUsePlayerWeapon(transfer), Is.True);
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed), "the choice opens");
+            Assert.That(harness.Simulation.HasTurnTransferSelection, Is.True);
+            Assert.That(harness.Simulation.TurnTransferTargetUnitId, Is.EqualTo(ally.UnitId));
+            Assert.That(inventory.GetRemainingAmmo(transfer), Is.EqualTo(1), "nothing is spent until the confirmation");
+            Assert.That(harness.Simulation.SelectTurnTransferTarget(1), Is.False, "no other ally to the right");
+
+            TickMany(harness.Simulation, 120, 1f / 120f);
+            Assert.That(harness.Simulation.MovementTimeRemaining, Is.LessThan(secondsBefore), "the countdown keeps running");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed), "confirmed");
+            Assert.That(transferred, Is.EqualTo(new[] { (owner.UnitId, ally.UnitId) }));
+            Assert.That(harness.State.Turn.ActiveUnitId, Is.EqualTo(ally.UnitId), "the ally now acts");
+            Assert.That(harness.State.Turn.TurnNumber, Is.EqualTo(turnNumber), "the same turn, no artificial turn end");
+            Assert.That(harness.State.Turn.ActionSpent, Is.False, "the ally may still attack");
+            Assert.That(harness.Simulation.MovementTimeRemaining, Is.LessThan(secondsBefore).And.GreaterThan(0f),
+                "only the remaining time, not a new timer");
+            Assert.That(inventory.GetRemainingAmmo(transfer), Is.Zero, "the charge is spent at the confirmation");
+            Assert.That(harness.Simulation.HasTurnTransferSelection, Is.False);
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(harness.State.Turn.ActiveUnitId, Is.EqualTo(owner.UnitId), "the rotation continues after the ally");
+        }
+
+        [Test]
+        public void TurnTransfer_BrowsingAndCancellingSpendNothing()
+        {
+            var transfer = CreateWeapon("weapon.turn-transfer", WeaponRole.DefensiveTool, damage: 0, ammo: 2);
+            var harness = CreateHarness(transfer, secondPlayerPosition: new Vector2(-6f, 0f));
+            var owner = harness.State.GetUnit("player.test.01");
+            var ally = harness.State.GetUnit("player.test.02");
+            owner.SetFacing(1);                                                             // nobody on the right side
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            Assert.That(harness.Simulation.TurnTransferTargetUnitId, Is.EqualTo(ally.UnitId), "the nearest one otherwise");
+            Assert.That(harness.Simulation.SelectTurnTransferTarget(-1), Is.False, "no further ally to the left");
+            harness.Simulation.CancelTurnTransfer();
+            Assert.That(harness.Simulation.HasTurnTransferSelection, Is.False);
+            Assert.That(harness.Simulation.ActiveInventory.GetRemainingAmmo(transfer), Is.EqualTo(2));
+            Assert.That(harness.State.Turn.ActiveUnitId, Is.EqualTo(owner.UnitId));
         }
 
         [Test]

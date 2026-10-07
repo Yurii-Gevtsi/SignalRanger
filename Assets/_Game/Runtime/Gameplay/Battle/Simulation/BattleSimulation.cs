@@ -240,6 +240,8 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly List<ActiveForceField> _activeForceFields = new();
         private readonly List<ActiveLaserFenceNode> _activeLaserFenceNodes = new();
         private readonly List<CarryablePickup> _carryablePickups = new();
+        private const string TurnTransferWeaponId = "weapon.turn-transfer";
+        private TurnTransferSelection _turnTransfer;
         private readonly Dictionary<int, int> _guardianCopterShots = new();
         private readonly HashSet<int> _downedCopterProjectileIds = new();
         private List<LaserFenceLink> _currentLaserFenceLinks = new();
@@ -409,6 +411,8 @@ namespace Game.Gameplay.Battle.Simulation
         public event Action<int> LaserFenceNodeRemoved;
         /// <summary>A pair fired once and its beam is gone for good.</summary>
         public event Action<int, int> LaserFenceLinkSpent;
+        /// <summary>The rest of the turn went from the first droid to the second one.</summary>
+        public event Action<string, string> TurnTransferred;
         public event Action<int> MineTriggered;
         public event Action<ChargeDeployedEvent> ChargeDeployed;
         public event Action<GroundObjectRepositionedEvent> GroundObjectRepositioned;
@@ -552,6 +556,12 @@ namespace Game.Gameplay.Battle.Simulation
                 return false;
             }
 
+            // The turn transfer needs a living ally to receive the turn.
+            if (weapon.WeaponId == TurnTransferWeaponId && !HasLivingAllyOfActiveUnit())
+            {
+                return false;
+            }
+
             // A multi-shot cassette blaster owns the rest of the turn once its
             // first round has been fired. Other weapons remain selectable after
             // any number of mine placements.
@@ -574,7 +584,6 @@ namespace Game.Gameplay.Battle.Simulation
 
             return weapon.WeaponId switch
             {
-                "weapon.turn-transfer" => false,
                 _ => true
             };
         }
@@ -736,6 +745,11 @@ namespace Game.Gameplay.Battle.Simulation
                 return _copter.IsCarrier ? PressCarrier() : DropBomberBomb();
             }
 
+            if (_turnTransfer != null && _turnTransfer.OwnerUnitId == _state.Turn.ActiveUnitId)
+            {
+                return ConfirmTurnTransfer();
+            }
+
             if (_boost != null && _boost.OwnerUnitId == _state.Turn.ActiveUnitId)
             {
                 // A second press cuts the fuel; the droid falls unless it is supported.
@@ -832,6 +846,11 @@ namespace Game.Gameplay.Battle.Simulation
             if (weapon.WeaponId == BoostWeaponId)
             {
                 return StartBoost(unit, activeInventory, weapon);
+            }
+
+            if (weapon.WeaponId == TurnTransferWeaponId)
+            {
+                return BeginTurnTransfer(unit, activeInventory, weapon);
             }
 
             if (weapon.WeaponId == RopeWeaponId)
@@ -1915,6 +1934,7 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void ResetMotionForNewTurn()
         {
+            _turnTransfer = null;
             EndBoost();
             if (_ropeTraversal != null)
             {
@@ -2502,6 +2522,155 @@ namespace Game.Gameplay.Battle.Simulation
             session.CarriedMine = null;
             session.CarriedNode = null;
             session.CarriedPickup = null;
+        }
+
+        /// <summary>True while the active droid is choosing the ally that receives the rest of its turn.</summary>
+        public bool HasTurnTransferSelection => _turnTransfer != null && _turnTransfer.OwnerUnitId == _state.Turn.ActiveUnitId;
+
+        /// <summary>The ally currently chosen to receive the turn; empty without a selection.</summary>
+        public string TurnTransferTargetUnitId => HasTurnTransferSelection ? _turnTransfer.TargetUnitId : string.Empty;
+
+        /// <summary>
+        /// First press of the turn transfer: the choice opens on the nearest living ally on the side the droid faces
+        /// (or the nearest one). Without an ally nothing happens and nothing is spent.
+        /// </summary>
+        private BattleFireResult BeginTurnTransfer(BattleUnitState unit, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
+        {
+            if (!inventory.CanFireSelected)
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            BattleUnitState best = null;
+            var bestScore = float.PositiveInfinity;
+            foreach (var ally in _state.GetTeam(unit.TeamId).Units)
+            {
+                if (ally == null || ally.IsDefeated || ally.UnitId == unit.UnitId)
+                {
+                    continue;
+                }
+
+                var dx = ally.Position.x - unit.Position.x;
+                var onFacingSide = Mathf.Sign(dx) == Mathf.Sign(unit.FacingDirectionX == 0 ? 1 : unit.FacingDirectionX);
+                var score = Mathf.Abs(dx) + (onFacingSide ? 0f : 1000f);
+                if (score < bestScore)
+                {
+                    bestScore = score;
+                    best = ally;
+                }
+            }
+
+            if (best == null)
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+            }
+
+            _turnTransfer = new TurnTransferSelection(unit.UnitId, weapon, best.UnitId);
+            UnitsMoved?.Invoke();
+            return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, best.Position);
+        }
+
+        private bool HasLivingAllyOfActiveUnit()
+        {
+            foreach (var ally in _state.GetTeam(_state.Turn.ActiveTeam).Units)
+            {
+                if (ally != null && !ally.IsDefeated && ally.UnitId != _state.Turn.ActiveUnitId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Left/right browses the allies one by one in that direction from the current choice.</summary>
+        public bool SelectTurnTransferTarget(int direction)
+        {
+            if (!HasTurnTransferSelection || direction == 0)
+            {
+                return false;
+            }
+
+            var current = FindUnit(_turnTransfer.TargetUnitId);
+            var owner = FindUnit(_turnTransfer.OwnerUnitId);
+            var originX = current?.Position.x ?? owner?.Position.x ?? 0f;
+            BattleUnitState best = null;
+            var bestDistance = float.PositiveInfinity;
+            foreach (var ally in _state.GetTeam(owner?.TeamId ?? _state.Turn.ActiveTeam).Units)
+            {
+                if (ally == null || ally.IsDefeated || ally.UnitId == _turnTransfer.OwnerUnitId
+                    || ally.UnitId == _turnTransfer.TargetUnitId)
+                {
+                    continue;
+                }
+
+                var dx = ally.Position.x - originX;
+                if (Mathf.Sign(dx) != Mathf.Sign(direction) || Mathf.Abs(dx) >= bestDistance)
+                {
+                    continue;
+                }
+
+                bestDistance = Mathf.Abs(dx);
+                best = ally;
+            }
+
+            if (best == null)
+            {
+                return false;
+            }
+
+            _turnTransfer.TargetUnitId = best.UnitId;
+            UnitsMoved?.Invoke();
+            return true;
+        }
+
+        /// <summary>Changing the weapon closes an unconfirmed choice; nothing was spent.</summary>
+        public void CancelTurnTransfer()
+        {
+            _turnTransfer = null;
+        }
+
+        /// <summary>
+        /// Second press: the charge is spent and the chosen ally continues the same turn with the time that is left.
+        /// The turn does not end, no status ticks and the action is still available.
+        /// </summary>
+        private BattleFireResult ConfirmTurnTransfer()
+        {
+            var selection = _turnTransfer;
+            _turnTransfer = null;
+            var owner = FindUnit(selection.OwnerUnitId);
+            var target = FindUnit(selection.TargetUnitId);
+            var inventory = owner != null ? GetInventoryFor(owner.TeamId) : null;
+            if (owner == null || target == null || target.IsDefeated || inventory == null
+                || inventory.Selected?.WeaponId != TurnTransferWeaponId || !inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, _state.Turn.ActiveTeam, selection.Weapon);
+            }
+
+            _walkIntentDirection = 0;
+            if (!_turnService.TransferTurn(_state, target.UnitId))
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, _state.Turn.ActiveTeam, selection.Weapon);
+            }
+
+            ShotFired?.Invoke(owner.TeamId, selection.Weapon, false);
+            TurnTransferred?.Invoke(owner.UnitId, target.UnitId);
+            UnitsMoved?.Invoke();
+            return new BattleFireResult(BattleFireOutcome.UtilityUsed, owner.TeamId, selection.Weapon, target.Position);
+        }
+
+        private sealed class TurnTransferSelection
+        {
+            public TurnTransferSelection(string ownerUnitId, WeaponDefinition weapon, string targetUnitId)
+            {
+                OwnerUnitId = ownerUnitId;
+                Weapon = weapon;
+                TargetUnitId = targetUnitId;
+            }
+
+            public string OwnerUnitId { get; }
+            public WeaponDefinition Weapon { get; }
+            public string TargetUnitId { get; set; }
         }
 
         /// <summary>
@@ -4964,7 +5133,8 @@ namespace Game.Gameplay.Battle.Simulation
                     continue;
                 }
 
-                if (unit.TeamId != activeTeam)
+                // A status counts the turns of the droid that carries it, not of any droid of its team.
+                if (unit.TeamId != activeTeam || unit.UnitId != _state.Turn.ActiveUnitId)
                 {
                     continue;
                 }
@@ -5027,7 +5197,7 @@ namespace Game.Gameplay.Battle.Simulation
                     continue;
                 }
 
-                if (unit.TeamId != activeTeam)
+                if (unit.TeamId != activeTeam || unit.UnitId != _state.Turn.ActiveUnitId)
                 {
                     continue;
                 }
@@ -5117,7 +5287,7 @@ namespace Game.Gameplay.Battle.Simulation
             foreach (var pair in _repairEffects)
             {
                 var effect = pair.Value;
-                if (effect.TeamId != activeTeam)
+                if (effect.TeamId != activeTeam || effect.UnitId != _state.Turn.ActiveUnitId)
                 {
                     continue;
                 }
@@ -7261,7 +7431,8 @@ namespace Game.Gameplay.Battle.Simulation
             foreach (var pair in _virusInfections)
             {
                 var carrier = FindUnit(pair.Key);
-                if (carrier == null || carrier.IsDefeated || carrier.TeamId != activeTeam)
+                if (carrier == null || carrier.IsDefeated || carrier.TeamId != activeTeam
+                    || carrier.UnitId != _state.Turn.ActiveUnitId)
                 {
                     continue;
                 }

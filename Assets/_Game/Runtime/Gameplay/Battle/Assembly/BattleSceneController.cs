@@ -831,6 +831,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             ClearOrbitalTargetMarker();
+            _simulation?.CancelTurnTransfer();
             _inventory.Select(weaponIndex);
             var weapon = _inventory.Selected;
             _aimSettings = weapon.CreateAimSettings(_baseAimSettings);
@@ -2198,6 +2199,13 @@ namespace Game.Gameplay.Battle.Assembly
                 && result.Outcome == BattleFireOutcome.UtilityUsed)
             {
                 ClearOrbitalTargetMarker();
+            }
+
+            // Opening the turn transfer choice shows the whole arena so every ally can be seen.
+            if (_simulation.HasTurnTransferSelection && _camera != null && _maximumCameraSize > 0f)
+            {
+                _camera.orthographicSize = _maximumCameraSize;
+                ClampCameraToArena();
             }
 
             switch (result.Outcome)
@@ -4178,6 +4186,13 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void SetUiHorizontalInput(int direction)
         {
+            // While the turn transfer is choosing, left/right browse the allies instead of walking.
+            if (_simulation != null && _simulation.HasTurnTransferSelection)
+            {
+                _simulation.SelectTurnTransferTarget(NormalizeDirection(direction));
+                return;
+            }
+
             if (_simulation != null && _simulation.HasActiveControlledProjectile)
             {
                 _controlledUiHorizontalInput = NormalizeDirection(direction);
@@ -5514,6 +5529,47 @@ namespace Game.Gameplay.Battle.Assembly
             return sprite;
         }
 
+        private GameObject _turnTransferMarker;
+
+        /// <summary>The turn transfer art above the ally chosen to receive the turn, while the choice is open.</summary>
+        private void UpdateTurnTransferMarker()
+        {
+            var targetId = _simulation != null ? _simulation.TurnTransferTargetUnitId : string.Empty;
+            var target = string.IsNullOrEmpty(targetId)
+                ? null
+                : _unitPresenters.FirstOrDefault(presenter => presenter.State.UnitId == targetId);
+            if (target == null)
+            {
+                if (_turnTransferMarker != null)
+                {
+                    _turnTransferMarker.SetActive(false);
+                }
+
+                return;
+            }
+
+            if (_turnTransferMarker == null)
+            {
+                var sprite = LoadWeaponIconSprite("turn_transfer");
+                if (sprite == null)
+                {
+                    return;
+                }
+
+                _turnTransferMarker = new GameObject("Turn Transfer Marker");
+                var renderer = _turnTransferMarker.AddComponent<SpriteRenderer>();
+                renderer.sprite = sprite;
+                renderer.sortingOrder = 35;
+                _turnTransferMarker.transform.localScale = Vector3.one * (TurnTransferMarkerWorldWidth / Mathf.Max(0.001f, sprite.bounds.size.x));
+                _arenaObjects.Add(_turnTransferMarker);
+            }
+
+            _turnTransferMarker.SetActive(true);
+            _turnTransferMarker.transform.position = new Vector3(target.State.Position.x, target.State.Position.y + 1.05f, 0f);
+        }
+
+        private const float TurnTransferMarkerWorldWidth = 0.6f;
+
         private Sprite LoadWeaponIconSprite(string iconId)
         {
             if (string.IsNullOrWhiteSpace(iconId))
@@ -5858,6 +5914,7 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void RenderHud()
         {
+            UpdateTurnTransferMarker();
             if (_hud == null || !IsBattleReady())
             {
                 return;
