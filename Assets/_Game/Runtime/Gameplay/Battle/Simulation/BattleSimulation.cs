@@ -36,6 +36,8 @@ namespace Game.Gameplay.Battle.Simulation
         private const string BurWeaponId = "weapon.bur";
         private const string BurRocketWeaponId = "weapon.bur-rocket";
         private const string RailRifleWeaponId = "weapon.rail-rifle";
+        private const float RailPierceDamageStep = 0.25f;
+        private const float RailPierceMinimumDamageFactor = 0.25f;
         private const float RailBasePierceSeconds = 1f;
         private const float RailPierceStepPercent = 0.10f;
         private const float RailTunnelRadius = 0.12f;
@@ -90,8 +92,11 @@ namespace Game.Gameplay.Battle.Simulation
         private const float LaserFenceGravityScale = 1.05f;
         /// <summary>Three times the old visual link of 1.8.</summary>
         public const float LaserFenceLinkRange = 5.4f;
+        private const float LaserFenceLinkRangeStep = 0.10f;
         // Hull durability is a playtest number: any ordinary blast near a hull destroys it.
-        private const int LaserFenceNodeHealth = 30;
+        // Any hit wrecks a hull: one blast of any strength or one pellet that touches it.
+        private const int LaserFenceNodeHealth = 1;
+        private const float LaserFenceHullHitRadius = 0.12f;
         private const float LaserFenceContactRadius = 0.42f;
         private const int BaseBlasterShotsPerTurn = 3;
         // Keep the armed mine in the same close placement zone as C4 instead of
@@ -1413,7 +1418,7 @@ namespace Game.Gameplay.Battle.Simulation
                     node.TeamId));
             }
 
-            var links = LaserFenceLinkResolver.Resolve(deployedNodes, LaserFenceLinkRange);
+            var links = LaserFenceLinkResolver.Resolve(deployedNodes, GetLaserFenceLinkRange);
             for (var linkIndex = 0; linkIndex < links.Count; linkIndex++)
             {
                 var link = links[linkIndex];
@@ -1454,6 +1459,14 @@ namespace Game.Gameplay.Battle.Simulation
                     }
                 }
             }
+        }
+
+        /// <summary>Maximum beam length of this owner's hulls: 5.4, +10% of it per Radius purchase.</summary>
+        public float GetLaserFenceLinkRange(string ownerUnitId)
+        {
+            var radiusPurchases = ProgressionFor(ResolveTeamForOwner(ownerUnitId))
+                .ResolveUpgradeCount(LaserFenceWeaponId, WeaponUpgradePath.Radius);
+            return LaserFenceLinkRange * (1f + Mathf.Clamp(radiusPurchases, 0, 4) * LaserFenceLinkRangeStep);
         }
 
         private bool TryGetLaserFenceNode(int nodeId, out ActiveLaserFenceNode node)
@@ -4373,15 +4386,40 @@ namespace Game.Gameplay.Battle.Simulation
                     continue;
                 }
 
-                if (_copter != null && _copter.CarriedNode == node)
+                RemoveLaserFenceNodeAt(index);
+            }
+        }
+
+        /// <summary>A shot that touches a hull wrecks it on the way; the shot itself flies on.</summary>
+        private bool TryWreckLaserFenceNodeTouchedBy(Vector2 point, float radius)
+        {
+            var wrecked = false;
+            for (var index = _activeLaserFenceNodes.Count - 1; index >= 0; index--)
+            {
+                var reach = radius + LaserFenceHullHitRadius;
+                if ((_activeLaserFenceNodes[index].Position - point).sqrMagnitude > reach * reach)
                 {
-                    ReleaseCarrierCargo(_copter);
+                    continue;
                 }
 
-                _activeLaserFenceNodes.RemoveAt(index);
-                _spentLaserFenceLinks.RemoveWhere(linkId => (int)(linkId & 0xFFFFFFFF) == node.Id || (int)(linkId >> 32) == node.Id);
-                LaserFenceNodeRemoved?.Invoke(node.Id);
+                RemoveLaserFenceNodeAt(index);
+                wrecked = true;
             }
+
+            return wrecked;
+        }
+
+        private void RemoveLaserFenceNodeAt(int index)
+        {
+            var node = _activeLaserFenceNodes[index];
+            if (_copter != null && _copter.CarriedNode == node)
+            {
+                ReleaseCarrierCargo(_copter);
+            }
+
+            _activeLaserFenceNodes.RemoveAt(index);
+            _spentLaserFenceLinks.RemoveWhere(linkId => (int)(linkId & 0xFFFFFFFF) == node.Id || (int)(linkId >> 32) == node.Id);
+            LaserFenceNodeRemoved?.Invoke(node.Id);
         }
 
         private void ApplyRepairAftereffect(
@@ -5986,6 +6024,11 @@ namespace Game.Gameplay.Battle.Simulation
 
                     var ignoredUnitId = projectile.HasClearedOwner ? null : projectile.OwnerUnitId;
 
+                    if (!isLaserFenceDeploy && _activeLaserFenceNodes.Count > 0)
+                    {
+                        TryWreckLaserFenceNodeTouchedBy(position, projectile.Definition.Radius);
+                    }
+
                     if ((isStickyGrenade || isAttachmentDevice)
                         && TryFindHitUnit(
                             position,
@@ -6141,6 +6184,15 @@ namespace Game.Gameplay.Battle.Simulation
         /// Straight bullet that tunnels through ground and droids. Time spent inside an obstacle or a
         /// body spends the same penetration budget; each droid is hurt once per pass.
         /// </summary>
+        /// <summary>
+        /// Each following droid on the rail bullet's path takes 25% of the base less:
+        /// 100% / 75% / 50% / 25%, and never below 25%.
+        /// </summary>
+        public static float ResolveRailPierceDamageFactor(int pierceOrdinal)
+        {
+            return Mathf.Max(RailPierceMinimumDamageFactor, 1f - (Mathf.Max(1, pierceOrdinal) - 1) * RailPierceDamageStep);
+        }
+
         private void StepRailBullet(int projectileIndex, SimProjectile projectile, float deltaTime)
         {
             projectile.ReduceLifetime(deltaTime);
@@ -6185,6 +6237,11 @@ namespace Game.Gameplay.Battle.Simulation
                     return;
                 }
 
+                if (_activeLaserFenceNodes.Count > 0)
+                {
+                    TryWreckLaserFenceNodeTouchedBy(position, radius);
+                }
+
                 var insideBody = false;
                 foreach (var team in _state.Teams)
                 {
@@ -6200,7 +6257,9 @@ namespace Game.Gameplay.Battle.Simulation
                         insideBody = true;
                         if (projectile.TryMarkPierced(unit.UnitId))
                         {
-                            ApplyDamage(unit, ResolveOutgoingDamage(projectile.OwnerUnitId, projectile.Definition.Damage),
+                            var falloff = ResolveRailPierceDamageFactor(projectile.PiercedCount);
+                            ApplyDamage(unit, Mathf.RoundToInt(
+                                    ResolveOutgoingDamage(projectile.OwnerUnitId, projectile.Definition.Damage) * falloff),
                                 projectile.Definition.ProjectileId, sourceTeam);
                         }
                     }

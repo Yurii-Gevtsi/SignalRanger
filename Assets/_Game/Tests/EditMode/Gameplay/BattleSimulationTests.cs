@@ -3028,6 +3028,26 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void Boost_ABlastKnocksTheHoveringDroidAwayAndCutsTheFuel()
+        {
+            var boost = CreateWeapon("weapon.boost", WeaponRole.MovementTool, damage: 0, impactRadius: 0.1f, ammo: 2,
+                gravityScale: 0f);
+            var harness = CreateHarness(boost, CreateWeapon("weapon.impulse", damage: 10, impactRadius: 1.5f));
+            var unit = harness.State.GetUnit("player.test.01");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 240, 1f / 120f);
+            Assert.That(harness.Simulation.HasPlayerBoost, Is.True);
+            var hoverPosition = unit.Position;
+            var blast = ProjectileDefinition.CreateRuntime("projectile.weapon.impulse", 0.1f, 0f, 2f, 10, 1.5f);
+            harness.Simulation.Spawn(new ProjectileSpawnRequest(
+                blast, "opponent.test.01", hoverPosition + new Vector2(-1.2f, 0f), Vector2.right * 8f, 0.2f, Color.white));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(harness.Simulation.HasPlayerBoost, Is.False, "the knock cuts the fuel");
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(unit.Position.x, Is.GreaterThan(hoverPosition.x + 0.05f), "the blast pushed it away");
+        }
+
+        [Test]
         public void Boost_SteersInFourDirectionsAndOtherDroidsBlockTheBody()
         {
             var harness = CreateBoostHarness(CreateBoostProgress(0, 4));     // nine seconds of fuel
@@ -4375,6 +4395,64 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void LaserFence_ASinglePelletTouchingAHullWrecksItAndItsBeam()
+        {
+            var harness = CreateLaserFencePair(out var nodes);
+            var removed = new List<int>();
+            harness.Simulation.LaserFenceNodeRemoved += removed.Add;
+            var pellet = ProjectileDefinition.CreateRuntime("projectile.weapon.ion-shotgun", 0.04f, 0f, 1f, 5, 0.08f);
+            var target = nodes[1].Point + Vector2.up * 0.06f;    // the owner stands on the first hull
+            harness.Simulation.Spawn(new ProjectileSpawnRequest(
+                pellet, "opponent.test.01", target + Vector2.up * 1.5f, Vector2.down * 12f, 0.08f, Color.white));
+            TickMany(harness.Simulation, 30, 1f / 120f);
+            Assert.That(removed, Does.Contain(nodes[1].NodeId), "one pellet is enough");
+        }
+
+        [Test]
+        public void LaserFence_EachRadiusPurchaseLengthensTheLinkByTenPercent()
+        {
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.laser-fence");
+            var progress = new SaveWeaponProgressData { weaponId = "weapon.laser-fence", rank = 5 };
+            progress.EnsureDefaults();
+            for (var rank = 2; rank <= 5; rank++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Radius });
+            var upgraded = CreateHarness(weapon, playerWeaponProgress: progress);
+            var plain = CreateHarness(weapon);
+            Assert.That(plain.Simulation.GetLaserFenceLinkRange("player.test.01"), Is.EqualTo(5.4f).Within(0.001f));
+            Assert.That(upgraded.Simulation.GetLaserFenceLinkRange("player.test.01"), Is.EqualTo(7.56f).Within(0.001f));
+            Assert.That(upgraded.Simulation.GetLaserFenceLinkRange("opponent.test.01"), Is.EqualTo(5.4f).Within(0.001f),
+                "the other side's range is its own");
+        }
+
+        [Test]
+        public void EveryLimitedWeapon_GainsOneBattleChargePerPaidLoadoutPurchaseWithinItsCatalogLimit()
+        {
+            var checkedWeapons = 0;
+            foreach (var weapon in PrototypeWeaponLibrary.CreateAll())
+            {
+                if (!weapon.HasLimitedAmmo || weapon.WeaponId == "weapon.mine"
+                    || !WeaponProgressionCatalog.TryGet(weapon.WeaponId, out var definition)
+                    || definition.LoadoutUpgradeLimit <= 0)
+                {
+                    continue;
+                }
+
+                var limit = definition.LoadoutUpgradeLimit;
+                var progress = new SaveWeaponProgressData { weaponId = weapon.WeaponId, rank = 1 + limit };
+                progress.EnsureDefaults();
+                for (var rank = 2; rank <= 1 + limit; rank++)
+                    progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Loadout });
+                var progression = BattleWeaponProgression.FromResolver(new[] { weapon },
+                    id => id == weapon.WeaponId ? progress : null);
+                Assert.That(Game.Gameplay.Battle.Assembly.BattleSceneController.ResolveLoadoutBattleAmmo(weapon, progression),
+                    Is.EqualTo(weapon.AmmoCount + limit), weapon.WeaponId);
+                checkedWeapons++;
+            }
+
+            Assert.That(checkedWeapons, Is.GreaterThanOrEqualTo(20), "every limited weapon with Loadout purchases");
+        }
+
+        [Test]
         public void LaserFence_RegistryStockAndArtMatchTheCard()
         {
             const string id = "weapon.laser-fence";
@@ -4733,13 +4811,20 @@ namespace Game.Tests.EditMode.Gameplay
                 Is.EqualTo(BattleFireOutcome.Fired));
             TickMany(harness.Simulation, 360, 1f / 120f);
             Assert.That(firstStart - first.Health, Is.EqualTo(52));
-            Assert.That(secondStart - second.Health, Is.EqualTo(52), "the bullet kept flying after the first droid");
+            Assert.That(secondStart - second.Health, Is.EqualTo(39), "the bullet kept flying; the next droid takes 75%");
             Assert.That(hits["opponent.test.01"], Is.EqualTo(1));
             Assert.That(hits["opponent.test.02"], Is.EqualTo(1));
             Assert.That(harness.State.GetUnit("player.test.01").Health, Is.EqualTo(100), "the shooter is untouched");
             Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
             TickMany(harness.Simulation, 3600, 1f / 120f); // the retreat window ends
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+        }
+
+        [Test]
+        public void RailRifle_EachFollowingDroidTakesAQuarterOfTheBaseLessDownToAQuarter()
+        {
+            Assert.That(new[] { 1, 2, 3, 4, 5, 9 }.Select(BattleSimulation.ResolveRailPierceDamageFactor),
+                Is.EqualTo(new[] { 1f, 0.75f, 0.5f, 0.25f, 0.25f, 0.25f }));
         }
 
         [Test]

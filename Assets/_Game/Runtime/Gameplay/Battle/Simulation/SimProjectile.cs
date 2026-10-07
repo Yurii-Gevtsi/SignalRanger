@@ -211,6 +211,9 @@ namespace Game.Gameplay.Battle.Simulation
             return _piercedUnitIds.Add(unitId);
         }
 
+        /// <summary>How many different units this projectile has passed through so far.</summary>
+        internal int PiercedCount => _piercedUnitIds?.Count ?? 0;
+
         internal void ConfigureTerrainDrill(float durationSeconds, TerrainMaterial penetration)
         {
             TerrainDrillTimeRemaining = Mathf.Max(0f, durationSeconds);

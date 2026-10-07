@@ -233,6 +233,12 @@ namespace Game.Gameplay.Battle.Motion
         /// <summary>Knockback entry point: push the unit and let physics resolve the rest.</summary>
         public void AddImpulse(Vector2 velocity)
         {
+            // A blast or throw knocks a hovering body off its fuel: the hover ends and the push is kept.
+            if (_hovering && velocity.sqrMagnitude > 0.0001f)
+            {
+                StopHover();
+            }
+
             IsJumping = false;
             ResetJumpPhase();
             Velocity += velocity;

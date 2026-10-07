@@ -406,15 +406,33 @@ namespace Game.Gameplay.Battle.Assembly
                 {
                     inventory.SetRemainingAmmo(weapon, 4);
                 }
-                else if (weapon.WeaponId is "weapon.granata" or "weapon.ion-shotgun" or "weapon.c4"
-                    or "weapon.heal" or "weapon.titanium-disc" or "weapon.titanium-barrier" or "weapon.mortira")
+                else
                 {
-                    var loadoutLimit = weapon.WeaponId is "weapon.c4" or "weapon.heal" ? 2 : 4;
-                    var loadoutPurchases = Mathf.Clamp(progression.ResolveUpgradeCount(
-                        weapon.WeaponId, WeaponUpgradePath.Loadout), 0, loadoutLimit);
-                    inventory.SetRemainingAmmo(weapon, weapon.AmmoCount + loadoutPurchases);
+                    var loadoutAmmo = ResolveLoadoutBattleAmmo(weapon, progression);
+                    if (loadoutAmmo > 0)
+                    {
+                        inventory.SetRemainingAmmo(weapon, loadoutAmmo);
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Battle stock of a limited weapon: its base stock plus one per paid Loadout purchase, within the
+        /// catalog limit of that weapon. Returns 0 when the stock is fixed or unlimited.
+        /// </summary>
+        public static int ResolveLoadoutBattleAmmo(WeaponDefinition weapon, BattleWeaponProgression progression)
+        {
+            if (weapon == null || progression == null || !weapon.HasLimitedAmmo
+                || !WeaponProgressionCatalog.TryGet(weapon.WeaponId, out var definition)
+                || definition.LoadoutUpgradeLimit <= 0)
+            {
+                return 0;
+            }
+
+            var loadoutPurchases = Mathf.Clamp(progression.ResolveUpgradeCount(
+                weapon.WeaponId, WeaponUpgradePath.Loadout), 0, definition.LoadoutUpgradeLimit);
+            return weapon.AmmoCount + loadoutPurchases;
         }
 
         private static bool IsBattleArsenalWeapon(WeaponDefinition weapon)
@@ -2576,7 +2594,8 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             _laserFenceLinks.Clear();
-            var links = LaserFenceLinkResolver.Resolve(_laserFenceNodes.Values.ToList(), LaserFenceLinkRange);
+            var links = LaserFenceLinkResolver.Resolve(_laserFenceNodes.Values.ToList(),
+                owner => _simulation != null ? _simulation.GetLaserFenceLinkRange(owner) : LaserFenceLinkRange);
             foreach (var link in links)
             {
                 if (_spentLaserFenceLinks.Contains((link.FirstNodeId, link.SecondNodeId))
