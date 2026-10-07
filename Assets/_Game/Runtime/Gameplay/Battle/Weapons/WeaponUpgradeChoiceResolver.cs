@@ -80,6 +80,8 @@ namespace Game.Gameplay.Battle.Weapons
                     ResolveBomberSeconds(count),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.ion-shotgun" =>
                     weapon.ProjectileRadius * (1f + count * RadiusPercentPerUpgrade),
+                // The repair jammer's two Radius purchases add a turn each: 2 -> 3 -> 4.
+                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.repair-jammer" => 2f + Math.Clamp(count, 0, 2),
                 WeaponUpgradePath.Radius when IsElementCannon(weapon.WeaponId) =>
                     ResolveElementCannonStatusTurns(count),
                 // The laser fence's Radius lengthens the link between its hulls by 10% of 5.4 per purchase.

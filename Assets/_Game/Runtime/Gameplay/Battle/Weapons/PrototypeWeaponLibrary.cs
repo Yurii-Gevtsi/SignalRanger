@@ -34,7 +34,7 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.repair-jammer", WeaponRole.DefensiveTool, 0, 1.2f, 0.1f, 0f, 5f, 4f, 8f, 2, "repair_jammer", "ground", "jammer"),
                 Weapon("weapon.missle", WeaponRole.ArcingExplosive, 52, 1.4f, 0.13f, 0.8f, 8f, 5f, 13f, 1, "missle", "arc-homing", "homing"),
                 Weapon("weapon.orbital-rocket", WeaponRole.ArcingExplosive, 65, 2.1f, 0.16f, 1.1f, 6f, 5f, 14f, 2, "missle_5_10_A", "arc", "orbital"),
-                Weapon("weapon.guardian-drone", WeaponRole.DefensiveTool, 42, 1.6f, 0.12f, 0f, 7f, 4f, 9f, 2, "guardian_drone", "ground", "drone"),
+                Weapon("weapon.guardian-drone", WeaponRole.DefensiveTool, 54, SharedNearbyRadius, 0.12f, 0f, 7f, 4f, 9f, 2, "guardian_drone", "ground", "drone"),
                 Weapon("weapon.emp", WeaponRole.DirectProjectile, 38, 1.5f, 0.13f, 0f, 7f, 9f, 9f, 2, "emp", "straight-long", "emp"),
                 Weapon("weapon.turn-transfer", WeaponRole.DefensiveTool, 0, 0.1f, 0.08f, 0f, 2f, 1f, 1f, 1, "turn_transfer", "bonus", "team"),
                 Weapon("weapon.electric-harpoon", WeaponRole.DirectProjectile, 40, 1.1f, 0.1f, 0f, 5f, 12f, 12f, 2, "electric_harpoon", "straight-long", "harpoon"),

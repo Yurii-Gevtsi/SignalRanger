@@ -6809,6 +6809,11 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(Triggers(1.3f, 0), Is.True, "inside the base N0 = 1.4");
             Assert.That(Triggers(1.55f, 0), Is.False, "outside the base N0 (the old 1.6 is gone)");
             Assert.That(Triggers(1.8f, 4), Is.True, "four Radius purchases: 1.96");
+            var library = PrototypeWeaponLibrary.CreateAll();
+            Assert.That(library.Single(w => w.WeaponId == "weapon.guardian-drone").Damage,
+                Is.EqualTo(library.Single(w => w.WeaponId == "weapon.mine").Damage), "the bullet hits like a mine");
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(library.Single(w => w.WeaponId == "weapon.repair-jammer"),
+                null, null, WeaponUpgradePath.Radius), Is.EqualTo(2f), "the jammer's Radius shows its turns");
         }
 
         [Test]
