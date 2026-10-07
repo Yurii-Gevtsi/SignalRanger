@@ -1731,7 +1731,7 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (_inventory?.Selected?.WeaponId == "weapon.orbital-rocket")
+            if (BattleSimulation.IsMarkedStrikeWeapon(_inventory?.Selected))
             {
                 UpdateOrbitalTargetInput();
                 return;
@@ -2167,7 +2167,7 @@ namespace Game.Gameplay.Battle.Assembly
             EmitDuelCommand(BattleCommandKind.Fire, 0, aim.Origin, aim.Direction, aim.Power);
 
             var result = _simulation.TryFire(aim);
-            if (result.Weapon?.WeaponId == "weapon.orbital-rocket"
+            if (BattleSimulation.IsMarkedStrikeWeapon(result.Weapon)
                 && result.Outcome == BattleFireOutcome.UtilityUsed)
             {
                 ClearOrbitalTargetMarker();
@@ -2828,7 +2828,13 @@ namespace Game.Gameplay.Battle.Assembly
         /// <summary>Most flight skins face +X; the signal rocket art points up.</summary>
         private static float ResolveProjectileArtRotationOffset(WeaponDefinition weapon)
         {
-            return weapon?.WeaponId == "weapon.sky-hook" ? -90f : 0f;
+            // The signal rocket points up; the nuclear bomb's nose points towards the lower left (225 degrees).
+            return weapon?.WeaponId switch
+            {
+                "weapon.sky-hook" => -90f,
+                "weapon.nuclear-charge" => 135f,
+                _ => 0f
+            };
         }
 
         private static Vector3 ResolveProjectileVisualScale(WeaponDefinition weapon, float diameter)
@@ -2864,6 +2870,8 @@ namespace Game.Gameplay.Battle.Assembly
                 "weapon.bur-rocket" => Vector3.one * (diameter * 0.68f),
                 "weapon.missle" => Vector3.one * (diameter * 1.25f),
                 "weapon.orbital-rocket" => Vector3.one * (diameter * 1.1f),
+                // nuclear_charge is 1254 px square (12.5 units at 100 px/unit); the bomb is drawn about 0.8 long.
+                "weapon.nuclear-charge" => Vector3.one * 0.06f,
                 "weapon.fpv-drone" => Vector3.one * (diameter * 1.4f),
                 _ => Vector3.one * (diameter * 1.15f)
             };
@@ -2908,6 +2916,7 @@ namespace Game.Gameplay.Battle.Assembly
                 "weapon.toxic" => "toxic_shot",
                 "weapon.missle" => MissileInFlightSpriteId,
                 "weapon.orbital-rocket" => MissileInFlightSpriteId,
+                "weapon.nuclear-charge" => "nuclear_charge",
                 "weapon.bur-rocket" => "bur_rocket",
                 "weapon.bur" => "bur_lazer",
                 "weapon.fire-gun" => "fire_shot_1",
@@ -5514,7 +5523,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             if (!_playerWeaponSelected || _inventory?.Selected == null || _hideHeldWeaponForReusableThrow
-                || _inventory.Selected.WeaponId == "weapon.orbital-rocket")
+                || BattleSimulation.IsMarkedStrikeWeapon(_inventory.Selected))
             {
                 presenter.ClearEquippedWeapon();
                 return;

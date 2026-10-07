@@ -194,6 +194,7 @@ namespace Game.Gameplay.Battle.Simulation
         private const string RepairJammerWeaponId = "weapon.repair-jammer";
         private const int RepairJammerBaseDurationTurns = 2;
         private const string OrbitalRocketWeaponId = "weapon.orbital-rocket";
+        private const string NuclearChargeWeaponId = "weapon.nuclear-charge";
         private const float OrbitalRocketFallSpeed = 14f;
         private const float OrbitalRocketMinimumSpawnHeight = 4f;
         private const string VirusWeaponId = "weapon.virus";
@@ -531,8 +532,7 @@ namespace Game.Gameplay.Battle.Simulation
 
             return weapon.WeaponId switch
             {
-                "weapon.turn-transfer"
-                    or "weapon.nuclear-charge" => false,
+                "weapon.turn-transfer" => false,
                 _ => true
             };
         }
@@ -549,7 +549,7 @@ namespace Game.Gameplay.Battle.Simulation
                 && weapon.WeaponId != SpiderMineWeaponId
                 && weapon.WeaponId != C4WeaponId
                 && weapon.WeaponId != RepairJammerWeaponId
-                && weapon.WeaponId != OrbitalRocketWeaponId
+                && !IsMarkedStrikeWeapon(weapon)
                 && weapon.WeaponId != BoostWeaponId
                 && weapon.WeaponId != BomberWeaponId
                 && weapon.WeaponId != SelfDestructWeaponId
@@ -557,6 +557,12 @@ namespace Game.Gameplay.Battle.Simulation
                 && weapon.WeaponId != VirusWeaponId
                 && weapon.WeaponId != SkyHookWeaponId
                 && weapon.WeaponId != FpvWeaponId;
+        }
+
+        /// <summary>The orbital rocket and the nuclear charge share one scenario: mark, confirm, strike after the enemy turn.</summary>
+        public static bool IsMarkedStrikeWeapon(WeaponDefinition weapon)
+        {
+            return weapon?.WeaponId == OrbitalRocketWeaponId || weapon?.WeaponId == NuclearChargeWeaponId;
         }
 
         public bool HasOrbitalTargetMarker => _orbitalTargetMarker.HasValue;
@@ -573,7 +579,7 @@ namespace Game.Gameplay.Battle.Simulation
             if (Result.IsFinished || HasProjectilesInFlight || HasActiveMotion || HasActiveWeaponEffect
                 || HasPendingGroundAction || _state.Turn.ActionSpent
                 || _state.Turn.ActiveTeam != BattleTeamId.Player
-                || _playerInventory.Selected?.WeaponId != OrbitalRocketWeaponId
+                || !IsMarkedStrikeWeapon(_playerInventory.Selected)
                 || !CanUsePlayerWeapon(_playerInventory.Selected))
             {
                 return false;
@@ -756,7 +762,7 @@ namespace Game.Gameplay.Battle.Simulation
                 return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
             }
 
-            if (weapon.WeaponId == OrbitalRocketWeaponId)
+            if (IsMarkedStrikeWeapon(weapon))
             {
                 return ConfirmOrbitalStrike(unit, activeInventory, weapon);
             }

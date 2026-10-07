@@ -733,6 +733,49 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Nuclear_ProductionSceneDropsTheBombNoseDownAfterTheEnemyTurn()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.nuclear-charge" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var state = Get<BattleState>(controller, "_battleState");
+            var visuals = Get<Dictionary<int, GameObject>>(controller, "_projectileVisuals");
+            var enemy = state.GetTeam(BattleTeamId.Opponent).Units[0];
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.nuclear-charge") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            Assert.That(simulation.TrySetOrbitalTarget(enemy.Position), Is.True);
+            GameObject body = null;
+            simulation.ProjectileSpawned += projectile => body = visuals[projectile.Id];
+            Invoke(controller, "Fire");
+            Assert.That(state.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent), "the strike is deferred");
+            Assert.That(inventory.GetSelectedRemainingAmmo(), Is.Zero, "one use");
+            simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(body, Is.Not.Null, "the bomb falls after the enemy turn");
+            for (var tick = 0; tick < 10; tick++) simulation.Tick(1f / 120f);
+            Invoke(controller, "SyncProjectileVisuals");
+            var visual = body.transform.Find("Visual");
+            Assert.That(visual.GetComponent<SpriteRenderer>().sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/nuclear_charge")));
+            // The art's nose points towards the lower left (225 degrees); rotated, it must point straight down.
+            var nose = (Vector2)(visual.rotation * new Vector3(Mathf.Cos(225f * Mathf.Deg2Rad), Mathf.Sin(225f * Mathf.Deg2Rad), 0f));
+            Assert.That(Vector2.Dot(nose, Vector2.down), Is.GreaterThan(0.98f), "nose down along the fall");
+            Assert.That(visual.localScale.x, Is.EqualTo(0.06f).Within(0.001f));
+            for (var frame = 0; frame < 60 && simulation.HasProjectilesInFlight; frame++)
+            {
+                for (var tick = 0; tick < 30; tick++) simulation.Tick(1f / 120f);
+                yield return null;
+            }
+            Assert.That(simulation.ProjectilesInFlight, Is.Zero);
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {

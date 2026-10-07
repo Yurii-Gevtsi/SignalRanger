@@ -320,8 +320,7 @@ namespace Game.Tests.EditMode.Gameplay
         {
             foreach (var (id, role) in new[]
             {
-                ("weapon.turn-transfer", WeaponRole.DefensiveTool),
-                ("weapon.nuclear-charge", WeaponRole.DefensiveTool)
+                ("weapon.turn-transfer", WeaponRole.DefensiveTool)
             })
             {
                 var weapon = CreateWeapon(id, role, ammo: 1);
@@ -2702,6 +2701,7 @@ namespace Game.Tests.EditMode.Gameplay
         [TestCase("weapon.repair-jammer", "projectile.weapon.repair-jammer", true)]
         [TestCase("weapon.missle", "projectile.weapon.missle", true)]
         [TestCase("weapon.orbital-rocket", "projectile.weapon.orbital-rocket", true)]
+        [TestCase("weapon.nuclear-charge", "projectile.weapon.nuclear-charge", true)]
         [TestCase("weapon.impulse", "projectile.weapon.impulse", false)]
         [TestCase("weapon.emp", "projectile.weapon.emp", false)]
         public void Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(
@@ -4158,6 +4158,109 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
             }
             Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+        }
+
+        private static Harness CreateStrikeHarness(string weaponId, Vector2? secondEnemy = null)
+        {
+            var strike = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == weaponId);
+            return CreateHarness(strike, secondOpponentPosition: secondEnemy);
+        }
+
+        /// <summary>Marks the enemy, confirms, and lets the opponent's turn end so that the strike falls and resolves.</summary>
+        private static List<ProjectileImpact> RunMarkedStrike(Harness harness, Vector2 target)
+        {
+            var impacts = new List<ProjectileImpact>();
+            harness.Simulation.ProjectileExploded += (_, impact) => { if (impact.Damage > 0) impacts.Add(impact); };
+            Assert.That(harness.Simulation.TrySetOrbitalTarget(target), Is.True);
+            Assert.That(harness.Simulation.TryFire(new AimState(target, Vector2.up, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+            Assert.That(impacts, Is.Empty, "nothing falls during the player's turn");
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(harness.Simulation.HasProjectilesInFlight, Is.True, "the strike visibly falls after the enemy turn");
+            TickMany(harness.Simulation, 600, 1f / 60f);
+            return impacts;
+        }
+
+        [Test]
+        public void Nuclear_FollowsTheOrbitalScenarioButHitsHarderAndWiderWithoutKillingAHealthyDroidOutright()
+        {
+            var nuclear = CreateStrikeHarness("weapon.nuclear-charge", secondEnemy: new Vector2(5.8f, 0f));
+            var orbital = CreateStrikeHarness("weapon.orbital-rocket", secondEnemy: new Vector2(5.8f, 0f));
+            var nuclearTarget = nuclear.State.GetUnit("opponent.test.01");
+            var orbitalTarget = orbital.State.GetUnit("opponent.test.01");
+            var nuclearOuter = nuclear.State.GetUnit("opponent.test.02");
+            var orbitalOuter = orbital.State.GetUnit("opponent.test.02");
+            var nuclearImpacts = RunMarkedStrike(nuclear, nuclearTarget.Position);
+            var orbitalImpacts = RunMarkedStrike(orbital, orbitalTarget.Position);
+
+            var nuclearLoss = nuclearTarget.MaxHealth - nuclearTarget.Health;
+            var orbitalLoss = orbitalTarget.MaxHealth - orbitalTarget.Health;
+            Assert.That(nuclearLoss, Is.GreaterThan(orbitalLoss), "more damage than the orbital rocket");
+            Assert.That(nuclearTarget.IsDefeated, Is.False, "not a one-hit kill of a healthy droid");
+            Assert.That(nuclearOuter.Health, Is.LessThan(nuclearOuter.MaxHealth), "the wider blast reaches a droid 2.8 away");
+            Assert.That(orbitalOuter.Health, Is.EqualTo(orbitalOuter.MaxHealth), "the orbital rocket does not");
+            Assert.That(nuclearImpacts, Has.Count.EqualTo(1), "one blast only: no side blasts and no radiation zone");
+            TickMany(nuclear.Simulation, 1200, 1f / 60f);
+            Assert.That(nuclearTarget.MaxHealth - nuclearTarget.Health, Is.EqualTo(nuclearLoss), "nothing lingers after the blast");
+            Assert.That(nuclear.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "the player's turn reopens");
+        }
+
+        [Test]
+        public void Nuclear_IsOneUsePerBattleAndTheMarkerIsADraftThatCanBeCancelled()
+        {
+            var harness = CreateStrikeHarness("weapon.nuclear-charge");
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var playerInventory = harness.Simulation.ActiveInventory;
+            var before = playerInventory.GetSelectedRemainingAmmo();
+            Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.AimRequired), "no marker, no strike");
+            Assert.That(harness.Simulation.TrySetOrbitalTarget(enemy.Position), Is.True);
+            Assert.That(harness.Simulation.HasOrbitalTargetMarker, Is.True);
+            harness.Simulation.ClearOrbitalTarget();
+            Assert.That(harness.Simulation.HasOrbitalTargetMarker, Is.False, "the draft was cancelled");
+            Assert.That(playerInventory.GetSelectedRemainingAmmo(), Is.EqualTo(before), "nothing was spent");
+
+            Assert.That(harness.Simulation.TrySetOrbitalTarget(enemy.Position), Is.True);
+            Assert.That(harness.Simulation.TryFire(new AimState(enemy.Position, Vector2.up, 0f, false)).Outcome,
+                Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            Assert.That(playerInventory.GetSelectedRemainingAmmo(), Is.Zero, "the single charge is gone");
+        }
+
+        [Test]
+        public void Nuclear_RegistryProportionRadiusCoreRadiusStepsAndArtMatchTheCard()
+        {
+            const string id = "weapon.nuclear-charge";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 0, 4 }));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            var orbital = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.orbital-rocket");
+            Assert.That(weapon.AmmoCount, Is.EqualTo(1));
+            Assert.That(weapon.ImpactRadius, Is.EqualTo(2f * PrototypeWeaponLibrary.SharedExplosionRadius).Within(0.001f), "2 x R0");
+            Assert.That(weapon.Damage, Is.EqualTo(Mathf.RoundToInt(orbital.Damage * 55f / 48f)), "55% against the orbital's 48%");
+            Assert.That(weapon.Damage, Is.LessThan(100), "not a one-hit kill of a 100 HP droid");
+            Assert.That(BattleSimulation.IsMarkedStrikeWeapon(weapon), Is.True);
+            Assert.That(BattleSimulation.RequiresAim(weapon), Is.False);
+            Assert.That(BattleSimulation.IsBattleMechanicAvailable(weapon), Is.True);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/nuclear_charge"), Is.Not.Null);
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            foreach (var path in new[] { WeaponUpgradePath.Aim, WeaponUpgradePath.Loadout })
+                Assert.That(service.TryUpgrade(id, path).Applied, Is.False, path.ToString());
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
+            }
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
         }
 
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
