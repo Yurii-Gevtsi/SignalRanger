@@ -4361,6 +4361,124 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(Resources.Load<Texture2D>("UI/Weapons/laser_fence"), Is.Not.Null);
         }
 
+        private static Harness CreateCryoCannonHarness(Vector2? ally = null, int damage = 40, WeaponDefinition opponentWeapon = null)
+        {
+            var cannon = CreateWeapon("weapon.freeze", WeaponRole.ArcingExplosive, damage: damage, impactRadius: 2.5f,
+                gravityScale: 0f, timeoutSeconds: 8f);
+            return CreateHarness(cannon, opponentWeapon: opponentWeapon, secondPlayerPosition: ally);
+        }
+
+        [Test]
+        public void CryoCannon_AppliesTheSharedTwoTurnColdCycleWithoutTheOldMovementBlockInItsBase()
+        {
+            var harness = CreateCryoCannonHarness(ally: new Vector2(4f, 0f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var friend = harness.State.GetUnit("player.test.02");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var direct = start - enemy.Health;
+            Assert.That(direct, Is.GreaterThan(0));
+            Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.True);
+            Assert.That(harness.Simulation.IsUnitChilled(friend.UnitId), Is.True, "allies in the primary radius are chilled too");
+            Assert.That(harness.Simulation.IsUnitFrozen(enemy.UnitId), Is.False, "no movement block in the base");
+            Assert.That(harness.Simulation.CanAcceptMovementInput() || harness.State.Turn.ActiveTeam == BattleTeamId.Opponent, Is.True);
+
+            var tick = Mathf.Max(1, Mathf.RoundToInt(direct * 0.2f));
+            var afterBlast = enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // victim turn ends: tick
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // second tick and removal
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick * 2));
+            Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void CryoCannon_RepeatHitRefreshesWithoutStackingAndBoostsOnlyTheDirectDamage()
+        {
+            var harness = CreateCryoCannonHarness(damage: 20);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var first = start - enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            enemy.MoveTo(new Vector2(3f, 0f));
+            harness.Motors[enemy.UnitId].Teleport(enemy.Position);
+            var beforeSecond = enemy.Health;
+            ThrowAtOpponent(harness);
+            var second = beforeSecond - enemy.Health;
+            Assert.That(second, Is.EqualTo(Mathf.CeilToInt(first * 1.25f)).Within(1));
+            var tick = Mathf.Max(1, Mathf.RoundToInt(second * 0.2f));
+            var afterSecond = enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(enemy.Health, Is.EqualTo(afterSecond - tick * 2), "two ticks in total, not three");
+            Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void CryoCannon_TheColdIsSharedWithTheCryoGrenadeSoEachBoostsTheOthersNextDirectHit()
+        {
+            int GrenadeDamage(Harness harness)
+            {
+                var enemy = harness.State.GetUnit("opponent.test.01");
+                var before = enemy.Health;
+                harness.Simulation.Spawn(new ProjectileSpawnRequest(
+                    ProjectileDefinition.CreateRuntime("projectile.weapon.cryo-grenade", 0.1f, 0f, 0.05f, 30, 2.5f),
+                    "player.test.01", enemy.Position + Vector2.up * 0.4f, Vector2.zero, 0.2f, Color.white));
+                TickMany(harness.Simulation, 30, 1f / 120f);
+                return before - enemy.Health;
+            }
+
+            var grenade = CreateWeapon("weapon.cryo-grenade", WeaponRole.ArcingExplosive, damage: 30, impactRadius: 2.5f, gravityScale: 0f);
+            var plain = CreateCryoCannonHarness(opponentWeapon: grenade);
+            var unboosted = GrenadeDamage(plain);
+
+            var chilled = CreateCryoCannonHarness(opponentWeapon: grenade);
+            ThrowAtOpponent(chilled);                                                          // the cannon chills the target
+            Assert.That(chilled.Simulation.IsUnitChilled("opponent.test.01"), Is.True);
+            chilled.Simulation.AdvanceTurnDueToNoUsableWeapon();                                // back to the player
+            var boosted = GrenadeDamage(chilled);
+            Assert.That(boosted, Is.EqualTo(Mathf.CeilToInt(unboosted * 1.25f)).Within(1), "+25% across the two cold weapons");
+        }
+
+        [Test]
+        public void CryoCannon_RegistryArtAndTheTwoFeaturesAwaitingTheOwnerMatchTheCatalog()
+        {
+            const string id = "weapon.freeze";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+            Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "full-freeze" }));
+            Assert.That(definition.GetEvolutionOptions(10).Select(o => o.Id), Is.EquivalentTo(new[] { "cold-bonus" }));
+            foreach (var art in new[] { "freeze", "freeze_5_10_B", "ice_shot" })
+                Assert.That(Resources.Load<Texture2D>("UI/Weapons/" + art), Is.Not.Null, art);
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            var progress = new SaveWeaponProgressData { weaponId = id, rank = 6 };
+            progress.EnsureDefaults();
+            for (var rank = 2; rank <= 5; rank++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Core });
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "full-freeze" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            var profile = WeaponEvolutionRuntimeResolver.Resolve(weapon, progress);
+            Assert.That(profile.CryoFreezeTurns, Is.Zero, "the purchased full_freeze has no effect until the owner defines it");
+            Assert.That(profile.CryoChainDamagePercent, Is.Zero);
+
+            // Same for the EMP cannon's two purchases: no leftover legacy stun, weaken or movement lock.
+            var emp = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.emp");
+            var empProgress = new SaveWeaponProgressData { weaponId = emp.WeaponId, rank = 6 };
+            empProgress.EnsureDefaults();
+            for (var rank = 2; rank <= 5; rank++)
+                empProgress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Core });
+            empProgress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "aim-jam" });
+            empProgress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            var empProfile = WeaponEvolutionRuntimeResolver.Resolve(emp, empProgress);
+            Assert.That(empProfile.EmpStunTurns, Is.Zero);
+            Assert.That(empProfile.EmpStunBlocksMovement, Is.False);
+            Assert.That(empProfile.EmpWeakenDamagePercent, Is.Zero);
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {

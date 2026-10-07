@@ -4203,7 +4203,9 @@ namespace Game.Gameplay.Battle.Simulation
             }
             var appliesEmpStun = impactWeapon.WeaponId == EmpWeaponId;
             var empEvolution = appliesEmpStun ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
-            var appliesChill = impactWeapon.WeaponId == CryoGrenadeWeaponId || spiderElement == SpiderElement.Cold;
+            // The cannon's base is the same shared cold as the cryo grenade's (and the cold spider's).
+            var appliesChill = impactWeapon.WeaponId == CryoGrenadeWeaponId || spiderElement == SpiderElement.Cold
+                || impactWeapon.WeaponId == FreezeWeaponId;
             var appliesFire = impactWeapon.WeaponId == IncendiaryGrenadeWeaponId || spiderElement == SpiderElement.Fire;
             var appliesElectric = impactWeapon.WeaponId == EmpWeaponId;
             var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId;
@@ -4266,7 +4268,9 @@ namespace Game.Gameplay.Battle.Simulation
                     }
                 }
 
-                if (appliesFreeze)
+                // The old movement-blocking freeze only survives in a legacy saved branch; the base cannon no longer
+                // blocks anything (when the full freeze opens is an open owner question).
+                if (appliesFreeze && freezeEvolution.CryoFreezeTurns > 0f)
                 {
                     var freezeTurns = freezeEvolution.CryoFreezeTurns > 0f
                         ? Mathf.RoundToInt(freezeEvolution.CryoFreezeTurns)

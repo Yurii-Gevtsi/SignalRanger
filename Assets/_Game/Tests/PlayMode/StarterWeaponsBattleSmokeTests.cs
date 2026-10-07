@@ -331,7 +331,7 @@ namespace Game.Tests.PlayMode
         [UnityTest]
         public IEnumerator ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(
             [Values("weapon.cryo-grenade:cryo_grenade", "weapon.hopping-grenade:hopping_grenade",
-                "weapon.incendiary-grenade:incendiary_grenade", "weapon.missle:missle_fly", "weapon.emp:emp_shot",
+                "weapon.incendiary-grenade:incendiary_grenade", "weapon.missle:missle_fly", "weapon.emp:emp_shot", "weapon.freeze:ice_shot",
                 "weapon.swap-jump:teleport_5_10_A")] string pair)
         {
             var weaponId = pair.Split(':')[0];

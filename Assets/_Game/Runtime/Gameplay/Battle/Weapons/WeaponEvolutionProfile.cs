@@ -271,6 +271,11 @@ namespace Game.Gameplay.Battle.Weapons
                             mortarCascadeCount: 2 + Mathf.Clamp(firstSteps - 1, 0, 4));
                     case StickyGrenadeWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, stickyToxicRelease: true);
+                    case EmpWeaponId:
+                    case FreezeWeaponId:
+                        // The purchased features of the two cannons (aim_jam / movement_lock, full_freeze / cold_bonus) are
+                        // open owner questions: until they are defined a purchase must not fall back to the old legacy effects.
+                        return WeaponEvolutionProfile.Base;
                     case SpiderMineWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, spiderElement: firstSpecial.Id switch
                         {
