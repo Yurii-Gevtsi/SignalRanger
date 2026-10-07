@@ -152,6 +152,7 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Dictionary<int, GameObject> _mineVisuals = new();
         private readonly Dictionary<int, GameObject> _grounderVisuals = new();
         private readonly Dictionary<int, GameObject> _forceFieldVisuals = new();
+        private readonly Dictionary<int, GameObject> _laserFenceNodeVisuals = new();
         private readonly Dictionary<int, float> _forceFieldPulseUntil = new();
         private readonly Dictionary<int, (WeaponDefinition Weapon, BattleTeamId Team)> _mineOwners = new();
         private readonly Dictionary<int, LaserFenceNodeDeployedEvent> _laserFenceNodes = new();
@@ -780,6 +781,7 @@ namespace Game.Gameplay.Battle.Assembly
             simulation.MineTriggered += OnSimulationMineTriggered;
             simulation.GrounderDeployed += OnSimulationGrounderDeployed;
             simulation.GrounderRemoved += OnSimulationGrounderRemoved;
+            simulation.GroundObjectCarried += OnSimulationGroundObjectCarried;
             simulation.ForceFieldDeployed += OnSimulationForceFieldDeployed;
             simulation.ForceFieldRemoved += OnSimulationForceFieldRemoved;
             simulation.ForceFieldAbsorbed += OnSimulationForceFieldAbsorbed;
@@ -1534,6 +1536,7 @@ namespace Game.Gameplay.Battle.Assembly
             _mineVisuals.Clear();
             _grounderVisuals.Clear();
             _forceFieldVisuals.Clear();
+            _laserFenceNodeVisuals.Clear();
             _forceFieldPulseUntil.Clear();
             _laserFenceNodes.Clear();
             _laserFenceLinks.Clear();
@@ -2241,6 +2244,13 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 SpawnSkyHookTail(visualObject.transform, renderer);
             }
+            else if (weapon?.WeaponId == "weapon.ufo-carrier")
+            {
+                // The carrier's body is the animated rotor frames.
+                var animator = visualObject.AddComponent<WeaponProjectileSpriteAnimator>();
+                animator.SetFrames(LoadWeaponIconSprite("fpv_0"), LoadWeaponIconSprite("fpv_1"),
+                    LoadWeaponIconSprite("fpv_2"), LoadWeaponIconSprite("fpv_3"), LoadWeaponIconSprite("fpv_4"));
+            }
         }
 
         /// <summary>
@@ -2513,6 +2523,7 @@ namespace Game.Gameplay.Battle.Assembly
         {
             var visual = new GameObject("Laser Fence Node");
             _arenaObjects.Add(visual);
+            _laserFenceNodeVisuals[node.NodeId] = visual;
             visual.transform.position = node.Point;
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = LoadWeaponIconSprite(node.Weapon?.IconId ?? "laser_fence");
@@ -2612,8 +2623,33 @@ namespace Game.Gameplay.Battle.Assembly
             }
         }
 
+        /// <summary>A carried item is drawn over the copter's body; a released one returns to the ground layer.</summary>
+        private void OnSimulationGroundObjectCarried(int objectId, bool carried)
+        {
+            GameObject visual = null;
+            if (!_mineVisuals.TryGetValue(objectId, out visual) && !_laserFenceNodeVisuals.TryGetValue(objectId, out visual))
+            {
+                return;
+            }
+
+            if (visual != null && visual.TryGetComponent<SpriteRenderer>(out var renderer))
+            {
+                renderer.sortingOrder = carried ? 31 : 27;
+            }
+        }
+
         private void OnSimulationGroundObjectRepositioned(GroundObjectRepositionedEvent groundObject)
         {
+            if (_laserFenceNodeVisuals.TryGetValue(groundObject.ObjectId, out var nodeVisual) && nodeVisual != null
+                && _laserFenceNodes.TryGetValue(groundObject.ObjectId, out var node))
+            {
+                nodeVisual.transform.position = groundObject.Point;
+                _laserFenceNodes[groundObject.ObjectId] = new LaserFenceNodeDeployedEvent(
+                    node.NodeId, node.OwnerUnitId, groundObject.Point, node.Weapon, node.Team);
+                RebuildLaserFenceLinks();
+                return;
+            }
+
             if (!_mineVisuals.TryGetValue(groundObject.ObjectId, out var visual) || visual == null)
             {
                 return;
@@ -2756,7 +2792,7 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (projectile.Definition.ProjectileId == "projectile.weapon.bomber")
+            if (IsCopterBody(projectile.Definition.ProjectileId))
             {
                 // The copter art is about 10 units across at 100 px/unit; it faces right and never rotates.
                 projectileTransform.localScale = Vector3.one * 0.085f;
@@ -2779,6 +2815,14 @@ namespace Game.Gameplay.Battle.Assembly
                     Mathf.Atan2(projectile.Velocity.y, projectile.Velocity.x) * Mathf.Rad2Deg
                     + ResolveProjectileArtRotationOffset(weapon));
             }
+        }
+
+        /// <summary>The bomber and the carrier copters (and the carrier falling after its window) share one upright body look.</summary>
+        private static bool IsCopterBody(string projectileId)
+        {
+            return projectileId == "projectile.weapon.bomber"
+                || projectileId == "projectile.weapon.ufo-carrier"
+                || projectileId == "projectile.weapon.ufo-carrier.fall";
         }
 
         /// <summary>Most flight skins face +X; the signal rocket art points up.</summary>
@@ -2943,6 +2987,11 @@ namespace Game.Gameplay.Battle.Assembly
                 return _weaponsById.TryGetValue("weapon.bomber", out var bomber) ? bomber : null;
             }
 
+            if (projectileId == "projectile.weapon.ufo-carrier.fall")
+            {
+                return _weaponsById.TryGetValue("weapon.ufo-carrier", out var carrier) ? carrier : null;
+            }
+
             if (projectileId != null
                 && (projectileId.StartsWith("projectile.weapon.mortira.fragment", System.StringComparison.Ordinal)
                     || projectileId.StartsWith("projectile.weapon.mortira.cascade.", System.StringComparison.Ordinal)))
@@ -2989,7 +3038,7 @@ namespace Game.Gameplay.Battle.Assembly
                 var keepsHoppingControl = weapon?.WeaponId == "weapon.hopping-grenade" && !setsShotStatus;
                 // The purchased early trigger needs the same weapon and aim for the second press.
                 var keepsSphereControl = weapon?.WeaponId == "weapon.teleport" && _simulation.CanTriggerTeleportEarly();
-                var keepsBomberControl = weapon?.WeaponId == "weapon.bomber" && _simulation.HasPlayerBomber;
+                var keepsBomberControl = weapon?.WeaponId is "weapon.bomber" or "weapon.ufo-carrier" && _simulation.HasPlayerCopter;
                 _hideHeldWeaponForReusableThrow = keepsHoppingControl || keepsSphereControl || keepsBomberControl;
                 _playerWeaponSelected = keepsHoppingControl || keepsSphereControl || keepsBomberControl;
                 RefreshPlayerWeaponVisual();
@@ -3011,7 +3060,7 @@ namespace Game.Gameplay.Battle.Assembly
                 || _inventory?.Selected?.WeaponId != weapon.WeaponId
                 || _inventory.GetSelectedRemainingAmmo() > 0
                 // The copter's one charge is spent on launch, but its fire button drops the bombs.
-                || (weapon.WeaponId == "weapon.bomber" && _simulation.HasPlayerBomber))
+                || (weapon.WeaponId is "weapon.bomber" or "weapon.ufo-carrier" && _simulation.HasPlayerCopter))
             {
                 return;
             }
@@ -3925,7 +3974,7 @@ namespace Game.Gameplay.Battle.Assembly
                 if (_projectileVisuals.TryGetValue(projectile.Id, out var projectileObject) && projectileObject != null)
                 {
                     projectileObject.transform.position = projectile.Position;
-                    if (projectile.Definition.ProjectileId == "projectile.weapon.bomber"
+                    if (IsCopterBody(projectile.Definition.ProjectileId)
                         && projectileObject.transform.childCount > 0)
                     {
                         // The copter art faces right: it mirrors with the direction of travel.
@@ -5695,7 +5744,7 @@ namespace Game.Gameplay.Battle.Assembly
             var ropeAttached = _simulation.IsPlayerRopeAttached || _simulation.HasPlayerBoost;
             var directDroneControlActive = _simulation.HasActiveControlledProjectile;
             var fireInputReady = ropeAttached || !BattleSimulation.RequiresAim(weapon) || _aimState.HasInput;
-            var bomberActive = _simulation.HasPlayerBomber;
+            var bomberActive = _simulation.HasPlayerCopter;
             var canContinueMinePlacement = CanContinueMinePlacementInput();
             var canFire = !_simulation.Result.IsFinished
                 && (ropeAttached || bomberActive || (!HasActiveMotion && !HasActiveWeaponEffect
@@ -5705,7 +5754,7 @@ namespace Game.Gameplay.Battle.Assembly
                 && _playerWeaponSelected
                 && (_inventory.CanFireSelected || _simulation.CanContinueHoppingGrenade()
                     || _simulation.CanTriggerTeleportEarly() || _simulation.HasPlayerBoost
-                    || _simulation.HasPlayerBomber)
+                    || _simulation.HasPlayerCopter)
                 && fireInputReady;
             var guideActive = _firstBattleGuide != null && _firstBattleGuide.IsActive;
             var isFirstTrainingBattle = FirstBattleGuideState.IsFirstMission(GameSessionContext.SelectedMissionId);

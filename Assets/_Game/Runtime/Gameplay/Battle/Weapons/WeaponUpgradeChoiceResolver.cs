@@ -75,7 +75,7 @@ namespace Game.Gameplay.Battle.Weapons
                     ResolveRopeLength(count),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.boost" =>
                     ResolveBoostSeconds(count),
-                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.bomber" =>
+                WeaponUpgradePath.Radius when weapon.WeaponId is "weapon.bomber" or "weapon.ufo-carrier" =>
                     ResolveBomberSeconds(count),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.ion-shotgun" =>
                     weapon.ProjectileRadius * (1f + count * RadiusPercentPerUpgrade),

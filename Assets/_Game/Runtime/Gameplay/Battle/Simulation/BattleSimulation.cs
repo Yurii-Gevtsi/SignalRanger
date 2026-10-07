@@ -57,6 +57,10 @@ namespace Game.Gameplay.Battle.Simulation
         private const string GrounderWeaponId = "weapon.grounder";
         private const string BomberCopterProjectileId = "projectile.weapon.bomber";
         private const string BomberBombProjectileId = "projectile.weapon.bomber.bomb";
+        private const string CarrierCopterProjectileId = "projectile.weapon.ufo-carrier";
+        private const string CarrierFallProjectileId = "projectile.weapon.ufo-carrier.fall";
+        private const float CarrierCaptureDistance = 0.62f;
+        private const float CarrierCargoLift = 0.2f;
         private const int BomberBombCount = 4;
         private const float BomberBodyHalfSize = 0.32f;
         private const string SkyHookWeaponId = "weapon.sky-hook";
@@ -272,7 +276,7 @@ namespace Game.Gameplay.Battle.Simulation
         private int _turnSequence;
         private RopeTraversal _ropeTraversal;
         private BoostSession _boost;
-        private BomberSession _bomber;
+        private CopterSession _copter;
         private ElectricHarpoonTraversal _electricHarpoonTraversal;
         private Vector2? _orbitalTargetMarker;
         private PendingOrbitalStrike _pendingOrbitalStrike;
@@ -377,6 +381,8 @@ namespace Game.Gameplay.Battle.Simulation
         public event Action<MineDeployedEvent> MineDeployed;
         public event Action<GrounderDeployedEvent> GrounderDeployed;
         public event Action<int> GrounderRemoved;
+        /// <summary>A mine, guardian or laser-fence node was picked up (true) or let go (false) by the carrier.</summary>
+        public event Action<int, bool> GroundObjectCarried;
         public event Action<ForceFieldDeployedEvent> ForceFieldDeployed;
         public event Action<int> ForceFieldRemoved;
         /// <summary>A hostile energy carrier or beam was absorbed: field id and the absorption point.</summary>
@@ -405,8 +411,10 @@ namespace Game.Gameplay.Battle.Simulation
             || _electricHarpoonTraversal != null;
         /// <summary>True while the active droid is on rocket fuel (hovering).</summary>
         /// <summary>True while the active droid's copter is in the air.</summary>
-        public bool HasPlayerBomber => _bomber != null && _bomber.OwnerUnitId == _state.Turn.ActiveUnitId;
-        public int BomberBombsRemaining => _bomber?.BombsLeft ?? 0;
+        /// <summary>True while the active droid's carrier copter holds an item.</summary>
+        public bool CopterHasCargo => _copter != null && _copter.HasCargo;
+        public bool HasPlayerCopter => _copter != null && _copter.OwnerUnitId == _state.Turn.ActiveUnitId;
+        public int BomberBombsRemaining => _copter?.BombsLeft ?? 0;
         public bool HasPlayerBoost => _boost != null && _boost.OwnerUnitId == _state.Turn.ActiveUnitId;
         public float BoostSecondsRemaining => _boost?.Remaining ?? 0f;
         public bool HasPlayerRopeTraversal => _ropeTraversal != null
@@ -522,7 +530,7 @@ namespace Game.Gameplay.Battle.Simulation
             return weapon.WeaponId switch
             {
                 "weapon.turn-transfer"
-                    or "weapon.ufo-carrier" or "weapon.self-destruct"
+                    or "weapon.self-destruct"
                     or "weapon.nuclear-charge" => false,
                 _ => true
             };
@@ -543,6 +551,7 @@ namespace Game.Gameplay.Battle.Simulation
                 && weapon.WeaponId != OrbitalRocketWeaponId
                 && weapon.WeaponId != BoostWeaponId
                 && weapon.WeaponId != BomberWeaponId
+                && weapon.WeaponId != CarrierWeaponId
                 && weapon.WeaponId != VirusWeaponId
                 && weapon.WeaponId != SkyHookWeaponId
                 && weapon.WeaponId != FpvWeaponId;
@@ -672,9 +681,9 @@ namespace Game.Gameplay.Battle.Simulation
 
         public BattleFireResult TryFire(AimState aim)
         {
-            if (_bomber != null && _bomber.OwnerUnitId == _state.Turn.ActiveUnitId)
+            if (_copter != null && _copter.OwnerUnitId == _state.Turn.ActiveUnitId)
             {
-                return DropBomberBomb();
+                return _copter.IsCarrier ? PressCarrier() : DropBomberBomb();
             }
 
             if (_boost != null && _boost.OwnerUnitId == _state.Turn.ActiveUnitId)
@@ -835,7 +844,7 @@ namespace Game.Gameplay.Battle.Simulation
                 return DeployC4(unit, activeInventory, weapon);
             }
 
-            if (weapon.WeaponId == BomberWeaponId)
+            if (weapon.WeaponId == BomberWeaponId || weapon.WeaponId == CarrierWeaponId)
             {
                 return LaunchBomber(unit, activeInventory, weapon);
             }
@@ -1352,6 +1361,19 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void StepLaserFenceLinks()
         {
+            foreach (var node in _activeLaserFenceNodes)
+            {
+                if (node.FallPending && !node.IsCarried)
+                {
+                    node.FallPending = false;
+                    if (TryFindGroundObjectLanding(node.Position, out var landing))
+                    {
+                        node.MoveTo(landing);
+                        GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(node.Id, landing));
+                    }
+                }
+            }
+
             if (_activeLaserFenceNodes.Count < 2 || Result.IsFinished)
             {
                 return;
@@ -2231,6 +2253,7 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var radiusPurchases = ProgressionFor(unit.TeamId).ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Radius);
+            var isCarrier = weapon.WeaponId == CarrierWeaponId;
             var seconds = WeaponUpgradeChoiceResolver.ResolveBomberSeconds(radiusPurchases);
             var spawnPoint = unit.Position + Vector2.up * 1.05f;
             Spawn(new ProjectileSpawnRequest(
@@ -2244,7 +2267,7 @@ namespace Game.Gameplay.Battle.Simulation
             _controlledProjectileId = copter.Id;
             _controlledProjectileInput = Vector2.zero;
             var bombDamage = Mathf.RoundToInt(weapon.Damage * ResolveModifiersFor(unit.TeamId, weapon).DamageMultiplier);
-            _bomber = new BomberSession(unit.UnitId, copter.Id, weapon, bombDamage, BomberBombCount);
+            _copter = new CopterSession(unit.UnitId, copter.Id, weapon, bombDamage, isCarrier ? 0 : BomberBombCount, isCarrier);
             _activeShotWeapon = weapon;
             _activeShotEndsTurn = true;
             _turnService.SpendAction(_state);
@@ -2252,10 +2275,116 @@ namespace Game.Gameplay.Battle.Simulation
             return new BattleFireResult(BattleFireOutcome.Fired, unit.TeamId, weapon, spawnPoint);
         }
 
+        /// <summary>
+        /// The carrier's button: it grabs the nearest movable item the copter touches (mines, guardians, laser-fence
+        /// nodes — never droids or barriers), and a second press lets it go.
+        /// </summary>
+        private BattleFireResult PressCarrier()
+        {
+            var session = _copter;
+            var copter = _projectiles.Find(value => value.Id == session.CopterProjectileId);
+            if (copter == null)
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, _state.Turn.ActiveTeam, session.Weapon);
+            }
+
+            if (session.HasCargo)
+            {
+                ReleaseCarrierCargo(session);
+                return new BattleFireResult(BattleFireOutcome.Fired, _state.Turn.ActiveTeam, session.Weapon, copter.Position);
+            }
+
+            ActiveMine bestMine = null;
+            ActiveLaserFenceNode bestNode = null;
+            var bestDistance = CarrierCaptureDistance;
+            foreach (var mine in _activeMines)
+            {
+                var distance = Vector2.Distance(mine.Position, copter.Position);
+                if (mine.IsSpider || mine.Triggered || distance > bestDistance)
+                {
+                    continue;
+                }
+
+                bestMine = mine;
+                bestNode = null;
+                bestDistance = distance;
+            }
+
+            foreach (var node in _activeLaserFenceNodes)
+            {
+                var distance = Vector2.Distance(node.Position, copter.Position);
+                if (distance > bestDistance)
+                {
+                    continue;
+                }
+
+                bestNode = node;
+                bestMine = null;
+                bestDistance = distance;
+            }
+
+            if (bestMine == null && bestNode == null)
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, _state.Turn.ActiveTeam, session.Weapon);
+            }
+
+            session.CarriedMine = bestMine;
+            session.CarriedNode = bestNode;
+            if (bestMine != null)
+            {
+                bestMine.IsCarried = true;
+                GroundObjectCarried?.Invoke(bestMine.Id, true);
+            }
+            else
+            {
+                bestNode.IsCarried = true;
+                GroundObjectCarried?.Invoke(bestNode.Id, true);
+            }
+
+            FollowCarrierCargo(session, copter.Position);
+            return new BattleFireResult(BattleFireOutcome.Fired, _state.Turn.ActiveTeam, session.Weapon, copter.Position);
+        }
+
+        /// <summary>The held item hangs a little above the copter's centre; it keeps its owner and its armed state.</summary>
+        private void FollowCarrierCargo(CopterSession session, Vector2 copterPosition)
+        {
+            var point = copterPosition + Vector2.up * CarrierCargoLift;
+            if (session.CarriedMine != null)
+            {
+                session.CarriedMine.MoveTo(point);
+                GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(session.CarriedMine.Id, point));
+            }
+            else if (session.CarriedNode != null)
+            {
+                session.CarriedNode.MoveTo(point);
+                GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(session.CarriedNode.Id, point));
+            }
+        }
+
+        /// <summary>The item falls straight to the surface: no bounce and no roll.</summary>
+        private void ReleaseCarrierCargo(CopterSession session)
+        {
+            if (session.CarriedMine != null)
+            {
+                session.CarriedMine.IsCarried = false;
+                GroundObjectCarried?.Invoke(session.CarriedMine.Id, false);
+            }
+            else if (session.CarriedNode != null)
+            {
+                var node = session.CarriedNode;
+                node.IsCarried = false;
+                node.FallPending = true;
+                GroundObjectCarried?.Invoke(node.Id, false);
+            }
+
+            session.CarriedMine = null;
+            session.CarriedNode = null;
+        }
+
         /// <summary>Every fire press lets one bomb fall from the copter; there is no delay between bombs.</summary>
         private BattleFireResult DropBomberBomb()
         {
-            var session = _bomber;
+            var session = _copter;
             var copter = _projectiles.Find(value => value.Id == session.CopterProjectileId);
             if (copter == null || session.BombsLeft <= 0)
             {
@@ -2310,6 +2439,10 @@ namespace Game.Gameplay.Battle.Simulation
             var velocity = projectile.Id == _controlledProjectileId
                 ? _controlledProjectileInput * Mathf.Max(0.1f, weapon?.MaxPower ?? 1f)
                 : Vector2.zero;
+            if (_copter != null && _copter.IsCarrier && _copter.CopterProjectileId == projectile.Id && _copter.HasCargo)
+            {
+                FollowCarrierCargo(_copter, projectile.Position);
+            }
             if (TryFindGrounderForProjectile(projectile, weapon, projectile.Position, out var attractor))
             {
                 var toGrounder = attractor.Position - projectile.Position;
@@ -2341,18 +2474,44 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             projectile.MoveTo(position);
+            if (_copter != null && _copter.IsCarrier && _copter.CopterProjectileId == projectile.Id && _copter.HasCargo)
+            {
+                FollowCarrierCargo(_copter, position);
+            }
         }
 
         private void EndBomberCopter(int projectileIndex, SimProjectile projectile)
         {
-            _bomber = null;
+            var carrier = _copter != null && _copter.IsCarrier ? _copter : null;
+            if (carrier != null)
+            {
+                ReleaseCarrierCargo(carrier);
+            }
+
+            _copter = null;
             if (_controlledProjectileId == projectile.Id)
             {
                 _controlledProjectileId = -1;
                 _controlledProjectileInput = Vector2.zero;
             }
 
-            ConcludeProjectileShot(projectileIndex, projectile);
+            if (carrier == null)
+            {
+                ConcludeProjectileShot(projectileIndex, projectile);
+                return;
+            }
+
+            // The carrier's window is over: it falls and blasts like a mine (damage and R0 of the weapon).
+            var ownerId = projectile.OwnerUnitId;
+            var position = projectile.Position;
+            _projectiles.RemoveAt(projectileIndex);
+            ProjectileExploded?.Invoke(projectile.Id, new ProjectileImpact(
+                projectile.Definition.ProjectileId, ownerId, position, Vector2.zero, 0, 0f));
+            var team = ResolveTeamForOwner(ownerId);
+            var damage = Mathf.RoundToInt(carrier.Weapon.Damage * ResolveModifiersFor(team, carrier.Weapon).DamageMultiplier);
+            Spawn(new ProjectileSpawnRequest(
+                ProjectileDefinition.CreateRuntime(CarrierFallProjectileId, 0.2f, 1f, 8f, damage, carrier.Weapon.ImpactRadius, 1f, 0),
+                ownerId, position, Vector2.zero, 0.4f, ProjectileWeaponEffect.GetProjectileColor(carrier.Weapon.Role)));
         }
 
         private BattleFireResult LaunchControlledDrone(
@@ -2901,6 +3060,12 @@ namespace Game.Gameplay.Battle.Simulation
             for (var i = _activeMines.Count - 1; i >= 0; i--)
             {
                 var mine = _activeMines[i];
+                if (mine.IsCarried)
+                {
+                    // Held by the carrier: it cannot trigger, and its armed state is kept as it was.
+                    continue;
+                }
+
                 if (mine.IsSpider)
                 {
                     StepSpiderMine(mine, deltaTime);
@@ -5496,7 +5661,8 @@ namespace Game.Gameplay.Battle.Simulation
                     StepSkyHook(i, projectile, deltaTime);
                     continue;
                 }
-                if (projectile.Definition.ProjectileId == BomberCopterProjectileId)
+                if (projectile.Definition.ProjectileId == BomberCopterProjectileId
+                    || projectile.Definition.ProjectileId == CarrierCopterProjectileId)
                 {
                     StepBomberCopter(i, projectile, deltaTime);
                     continue;
@@ -7509,6 +7675,11 @@ namespace Game.Gameplay.Battle.Simulation
                 return _weaponsById.TryGetValue(BomberWeaponId, out var bomber) ? bomber : null;
             }
 
+            if (projectileId == CarrierFallProjectileId)
+            {
+                return _weaponsById.TryGetValue(CarrierWeaponId, out var carrierWeapon) ? carrierWeapon : null;
+            }
+
             if (projectileId == LaserFenceDeployProjectileId)
             {
                 return _weaponsById.TryGetValue(LaserFenceWeaponId, out var laserFence) ? laserFence : null;
@@ -7560,16 +7731,23 @@ namespace Game.Gameplay.Battle.Simulation
             public Vector2 Target { get; }
         }
 
-        private sealed class BomberSession
+        private sealed class CopterSession
         {
-            public BomberSession(string ownerUnitId, int copterProjectileId, WeaponDefinition weapon, int bombDamage, int bombs)
+            public CopterSession(string ownerUnitId, int copterProjectileId, WeaponDefinition weapon, int bombDamage, int bombs,
+                bool isCarrier = false)
             {
                 OwnerUnitId = ownerUnitId;
                 CopterProjectileId = copterProjectileId;
                 Weapon = weapon;
                 BombDamage = bombDamage;
                 BombsLeft = bombs;
+                IsCarrier = isCarrier;
             }
+
+            public bool IsCarrier { get; }
+            public ActiveMine CarriedMine { get; set; }
+            public ActiveLaserFenceNode CarriedNode { get; set; }
+            public bool HasCargo => CarriedMine != null || CarriedNode != null;
 
             public string OwnerUnitId { get; }
             public int CopterProjectileId { get; }
@@ -7776,6 +7954,7 @@ namespace Game.Gameplay.Battle.Simulation
             public float TriggerTimeRemaining { get; set; }
             public string TriggerTargetUnitId { get; set; }
             public bool IsConcealed { get; set; }
+            public bool IsCarried { get; set; }
 
             public void MoveTo(Vector2 position)
             {
@@ -7803,7 +7982,14 @@ namespace Game.Gameplay.Battle.Simulation
             public string OwnerUnitId { get; }
             public BattleTeamId TeamId { get; }
             public WeaponDefinition Weapon { get; }
-            public Vector2 Position { get; }
+            public Vector2 Position { get; private set; }
+            public bool IsCarried { get; set; }
+            public bool FallPending { get; set; }
+
+            public void MoveTo(Vector2 position)
+            {
+                Position = position;
+            }
         }
 
         private sealed class ActiveRepairEffect

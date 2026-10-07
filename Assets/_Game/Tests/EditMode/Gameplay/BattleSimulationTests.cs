@@ -321,7 +321,7 @@ namespace Game.Tests.EditMode.Gameplay
             foreach (var (id, role) in new[]
             {
                 ("weapon.turn-transfer", WeaponRole.DefensiveTool),
-                ("weapon.ufo-carrier", WeaponRole.MovementTool)
+                ("weapon.self-destruct", WeaponRole.DefensiveTool)
             })
             {
                 var weapon = CreateWeapon(id, role, ammo: 1);
@@ -3686,7 +3686,7 @@ namespace Game.Tests.EditMode.Gameplay
             var harness = CreateBomberHarness();
             var owner = harness.State.GetUnit("player.test.01");
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
-            Assert.That(harness.Simulation.HasPlayerBomber, Is.True);
+            Assert.That(harness.Simulation.HasPlayerCopter, Is.True);
             Assert.That(harness.State.Turn.ActionSpent, Is.True, "the flight is the attack");
             Assert.That(harness.Simulation.BomberBombsRemaining, Is.EqualTo(4));
             var copter = harness.Simulation.Projectiles[0];
@@ -3722,7 +3722,7 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Simulation.SetControlledProjectileInput(Vector2.left);
             TickMany(harness.Simulation, 480, 1f / 120f);
             Assert.That(copter.Position.x, Is.GreaterThan(-10f), "stopped by the map border");
-            Assert.That(harness.Simulation.HasPlayerBomber, Is.True, "it never explodes by itself");
+            Assert.That(harness.Simulation.HasPlayerCopter, Is.True, "it never explodes by itself");
         }
 
         [Test]
@@ -3733,9 +3733,9 @@ namespace Game.Tests.EditMode.Gameplay
                 var harness = CreateBomberHarness(CreateBomberProgress(radius));
                 Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
                 TickMany(harness.Simulation, Mathf.RoundToInt((seconds - 0.3f) * 120f), 1f / 120f);
-                Assert.That(harness.Simulation.HasPlayerBomber, Is.True, $"still flying before {seconds}");
+                Assert.That(harness.Simulation.HasPlayerCopter, Is.True, $"still flying before {seconds}");
                 TickMany(harness.Simulation, 60, 1f / 120f);
-                Assert.That(harness.Simulation.HasPlayerBomber, Is.False, $"landed after {seconds}");
+                Assert.That(harness.Simulation.HasPlayerCopter, Is.False, $"landed after {seconds}");
                 Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
                 TickMany(harness.Simulation, 3600, 1f / 120f);
                 Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent), "the turn passes");
@@ -3753,7 +3753,7 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(harness.Simulation.ProjectilesInFlight, Is.EqualTo(5), "the copter and four bombs, with no delay between presses");
             Assert.That(harness.Simulation.BomberBombsRemaining, Is.Zero);
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Blocked), "no attack after the fourth");
-            Assert.That(harness.Simulation.HasPlayerBomber, Is.True, "the copter stays in the air");
+            Assert.That(harness.Simulation.HasPlayerCopter, Is.True, "the copter stays in the air");
             TickMany(harness.Simulation, 30, 1f / 120f);
             foreach (var bomb in harness.Simulation.Projectiles.Where(p => p.Definition.ProjectileId.EndsWith(".bomb")))
             {
@@ -3814,7 +3814,7 @@ namespace Game.Tests.EditMode.Gameplay
             TickMany(second.Simulation, 40, 1f / 120f);
             second.Simulation.SetControlledProjectileInput(Vector2.down);
             TickMany(second.Simulation, 240, 1f / 120f);
-            Assert.That(second.Simulation.HasPlayerBomber, Is.False, "the copter was destroyed at the magnet");
+            Assert.That(second.Simulation.HasPlayerCopter, Is.False, "the copter was destroyed at the magnet");
         }
 
         [Test]
@@ -3854,6 +3854,184 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
             }
             Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
+        }
+
+        /// <summary>The player flies the carrier; the opponent has already put a mine down beside itself.</summary>
+        private static Harness CreateCarrierHarness(out int mineId, out Vector2 minePoint, SaveWeaponProgressData progress = null,
+            string cargoWeaponId = "weapon.mine")
+        {
+            var carrier = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.ufo-carrier");
+            var cargo = cargoWeaponId == "weapon.mine"
+                ? PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.mine")
+                : CreateWeapon(cargoWeaponId, WeaponRole.ArcingExplosive, damage: 42, impactRadius: 1.2f, ammo: 4, gravityScale: 0f);
+            var harness = CreateHarness(carrier, opponentWeapon: cargo, playerWeaponProgress: progress);
+            var id = -1;
+            var point = Vector2.zero;
+            harness.Simulation.MineDeployed += evt => { id = evt.MineId; point = evt.Point; };
+            harness.Simulation.LaserFenceNodeDeployed += evt => { id = evt.NodeId; point = evt.Point; };
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                       // the opponent acts
+            if (cargoWeaponId == "weapon.mine")
+            {
+                Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+                // The mine would go off on any droid near it, its owner included: walk the owner away.
+                var owner = harness.State.GetUnit("opponent.test.01");
+                var away = new Vector2(9.2f, owner.Position.y);
+                owner.MoveTo(away);
+                harness.Motors[owner.UnitId].Teleport(away);
+            }
+            else
+            {
+                Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(3f, 0f), Vector2.down, 4f, true)).Outcome,
+                    Is.EqualTo(BattleFireOutcome.Fired));
+                TickMany(harness.Simulation, 240, 1f / 60f);
+            }
+            if (harness.State.Turn.ActiveTeam == BattleTeamId.Opponent)
+                harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                   // back to the player
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            TickMany(harness.Simulation, 360, 1f / 120f);                              // the mine is armed
+            mineId = id;
+            minePoint = point;
+            Assert.That(mineId, Is.GreaterThanOrEqualTo(0));
+            return harness;
+        }
+
+        /// <summary>Steers the copter towards a point, one axis at a time, until it is within the distance.</summary>
+        private static void FlyCopterTo(Harness harness, Vector2 target, float within)
+        {
+            for (var i = 0; i < 2400 && harness.Simulation.HasPlayerCopter; i++)
+            {
+                var copter = harness.Simulation.Projectiles.First(p => p.Definition.ProjectileId == "projectile.weapon.ufo-carrier");
+                var delta = target - copter.Position;
+                if (delta.magnitude <= within) break;
+                harness.Simulation.SetControlledProjectileInput(Mathf.Abs(delta.x) > 0.15f
+                    ? new Vector2(Mathf.Sign(delta.x), 0f) : new Vector2(0f, Mathf.Sign(delta.y)));
+                harness.Simulation.Tick(1f / 120f);
+            }
+
+            harness.Simulation.SetControlledProjectileInput(Vector2.zero);
+        }
+
+        [Test]
+        public void Carrier_GrabsAnEnemyMineWithThePressKeepsItArmedWhileItIsHeldAndLetsItFallOnTheSecondPress()
+        {
+            var harness = CreateCarrierHarness(out var mineId, out var minePoint);
+            var player = harness.State.GetUnit("player.test.01");
+            var triggered = 0;
+            var exploded = false;
+            var moved = default(Vector2?);
+            harness.Simulation.MineTriggered += _ => triggered++;
+            harness.Simulation.GroundObjectRepositioned += evt => { if (evt.ObjectId == mineId) moved = evt.Point; };
+            harness.Simulation.ProjectileExploded += (_, impact) => { if (impact.Damage > 0) exploded = true; };
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(harness.Simulation.HasPlayerCopter, Is.True);
+
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Blocked), "nothing in reach yet");
+            FlyCopterTo(harness, minePoint + Vector2.up * 0.3f, 0.15f);
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "grabbed on contact");
+            Assert.That(harness.Simulation.CopterHasCargo, Is.True);
+
+            // It follows the copter; flying right past the player's droid does not trigger it while it is held.
+            FlyCopterTo(harness, new Vector2(player.Position.x, player.Position.y + 1.2f), 0.2f);
+            Assert.That(moved.HasValue && Vector2.Distance(moved.Value, new Vector2(player.Position.x, player.Position.y + 1.4f)) < 0.5f,
+                Is.True, "the mine hangs just above the copter");
+            TickMany(harness.Simulation, 150, 1f / 120f);
+            Assert.That(triggered, Is.Zero, "held: it cannot go off");
+
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "second press lets go");
+            Assert.That(harness.Simulation.CopterHasCargo, Is.False);
+            TickMany(harness.Simulation, 360, 1f / 120f);
+            Assert.That(moved.Value.y, Is.LessThan(player.Position.y), "it fell to the surface");
+            Assert.That(triggered, Is.GreaterThan(0), "its armed state and owner were kept: it goes off on our droid");
+            Assert.That(exploded, Is.True);
+        }
+
+        [Test]
+        public void Carrier_NeverGrabsADroidAndNeedsPhysicalContact()
+        {
+            var harness = CreateCarrierHarness(out _, out var minePoint);
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            FlyCopterTo(harness, enemy.Position + Vector2.up * 0.4f, 0.3f);
+            // The enemy droid is right at the copter, but the mine is more than the contact distance away.
+            Assert.That(Vector2.Distance(minePoint, harness.Simulation.Projectiles[0].Position), Is.GreaterThan(0.62f));
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Blocked), "a droid is not cargo");
+            Assert.That(harness.Simulation.CopterHasCargo, Is.False);
+        }
+
+        [Test]
+        public void Carrier_TheWindowEndsTheItemIsLeftAndTheCopterFallsAndBlastsLikeAMine()
+        {
+            var harness = CreateCarrierHarness(out var mineId, out var minePoint);
+            var impacts = new List<ProjectileImpact>();
+            harness.Simulation.ProjectileExploded += (_, impact) => { if (impact.Damage > 0) impacts.Add(impact); };
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            FlyCopterTo(harness, minePoint + Vector2.up * 0.3f, 0.15f);
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            FlyCopterTo(harness, new Vector2(0f, 1.5f), 0.3f);                       // a neutral spot between the droids
+            harness.Simulation.SetControlledProjectileInput(Vector2.zero);
+            TickMany(harness.Simulation, 1500, 1f / 120f);                          // past the ten-second window
+            Assert.That(harness.Simulation.HasPlayerCopter, Is.False);
+            Assert.That(harness.Simulation.CopterHasCargo, Is.False, "the item was let go");
+            Assert.That(impacts.Any(i => i.ProjectileId.EndsWith(".fall")), Is.True, "the copter fell and blasted");
+            Assert.That(impacts.First(i => i.ProjectileId.EndsWith(".fall")).Damage,
+                Is.EqualTo(PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.mine").Damage));
+            TickMany(harness.Simulation, 3600, 1f / 120f);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent), "the turn passes");
+        }
+
+        [Test]
+        public void Carrier_ALaserFenceNodeCanBeCarriedAndDroppedTooButASpiderOrDroidCannot()
+        {
+            var harness = CreateCarrierHarness(out var nodeId, out var nodePoint, cargoWeaponId: "weapon.laser-fence");
+            var moved = new List<Vector2>();
+            harness.Simulation.GroundObjectRepositioned += evt => { if (evt.ObjectId == nodeId) moved.Add(evt.Point); };
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            FlyCopterTo(harness, nodePoint + Vector2.up * 0.3f, 0.15f);
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "the beam body is cargo");
+            FlyCopterTo(harness, new Vector2(0f, 1.8f), 0.3f);
+            Assert.That(moved, Is.Not.Empty);
+            Assert.That(Vector2.Distance(moved[moved.Count - 1], new Vector2(0f, 2.0f)), Is.LessThan(0.6f), "the node went with the copter");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            moved.Clear();
+            TickMany(harness.Simulation, 120, 1f / 120f);
+            Assert.That(moved, Is.Not.Empty, "it fell to the surface after the release");
+            Assert.That(moved[moved.Count - 1].y, Is.LessThan(0f));
+        }
+
+        [Test]
+        public void Carrier_RegistryOnePerBattleMineBlastRadiusSecondsAndArtMatchTheCard()
+        {
+            const string id = "weapon.ufo-carrier";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 0, 0, 0, 4 }));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            var mine = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.mine");
+            Assert.That(weapon.AmmoCount, Is.EqualTo(1));
+            Assert.That(weapon.Damage, Is.EqualTo(mine.Damage));
+            Assert.That(weapon.ImpactRadius, Is.EqualTo(mine.ImpactRadius));
+            Assert.That(BattleSimulation.RequiresAim(weapon), Is.False);
+            Assert.That(BattleSimulation.IsBattleMechanicAvailable(weapon), Is.True);
+            var progress = new SaveWeaponProgressData { weaponId = id, rank = 5 };
+            progress.EnsureDefaults();
+            for (var rank = 2; rank <= 5; rank++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Radius });
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(weapon, definition, progress, WeaponUpgradePath.Radius), Is.EqualTo(14f));
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveImpactRadiusPercent(weapon, progress), Is.Zero);
+            foreach (var art in new[] { "ufo_carrier", "fpv_0", "fpv_1", "fpv_2", "fpv_3", "fpv_4" })
+                Assert.That(Resources.Load<Texture2D>("UI/Weapons/" + art), Is.Not.Null, art);
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            foreach (var path in new[] { WeaponUpgradePath.Core, WeaponUpgradePath.Aim, WeaponUpgradePath.Loadout })
+                Assert.That(service.TryUpgrade(id, path).Applied, Is.False, path.ToString());
+            for (var i = 0; i < 4; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
             Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
         }
 

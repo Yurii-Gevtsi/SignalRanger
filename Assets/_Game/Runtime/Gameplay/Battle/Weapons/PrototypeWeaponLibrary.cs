@@ -48,7 +48,8 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.virus", WeaponRole.DirectProjectile, 42, 0.75f, 0.09f, 0f, 4f, 12f, 12f, 1, "virus", "straight-long", "virus"),
                 // Each bomb is an ordinary mine blast (54, the shared R0); 10 s of flight at 4 u/s, four bombs per flight.
                 Weapon("weapon.bomber", WeaponRole.ArcingExplosive, 54, SharedExplosionRadius, 0.14f, 0f, 10f, 4f, 4f, 1, "bomber", "controlled", "bomber"),
-                Weapon("weapon.ufo-carrier", WeaponRole.MovementTool, 0, 1.0f, 0.1f, 0f, 7f, 4f, 12f, 1, "ufo_carrier", "controlled", "carrier"),
+                // The copter's emergency blast after its window is an ordinary mine blast (54, the shared R0).
+                Weapon("weapon.ufo-carrier", WeaponRole.MovementTool, 54, SharedExplosionRadius, 0.1f, 0f, 10f, 4f, 4f, 1, "ufo_carrier", "controlled", "carrier"),
                 Weapon("weapon.self-destruct", WeaponRole.ShortRangeBurst, 72, 2.1f, 0.16f, 0f, 3f, 1f, 1f, 1, "self_destruct", "ground", "self-destruct"),
                 Weapon("weapon.nuclear-charge", WeaponRole.ShortRangeBurst, 95, 3.2f, 0.2f, 0f, 5f, 1f, 1f, 1, "nuclear_charge", "ground", "nuclear"),
                 Weapon("weapon.laser-fence", WeaponRole.ArcingExplosive, 42, 1.2f, 0.1f, 1.05f, 6f, 5f, 12f, 4, "laser_fence", "ground", "laser"),

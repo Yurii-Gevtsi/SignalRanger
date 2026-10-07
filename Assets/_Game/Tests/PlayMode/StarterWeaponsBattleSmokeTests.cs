@@ -612,7 +612,7 @@ namespace Game.Tests.PlayMode
             simulation.ProjectileSpawned += projectile => shown.Add((projectile.Definition.ProjectileId, visuals[projectile.Id]));
             Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
             Invoke(controller, "Fire");
-            Assert.That(simulation.HasPlayerBomber, Is.True);
+            Assert.That(simulation.HasPlayerCopter, Is.True);
             var copter = shown[0].visual.transform.Find("Visual");
             Assert.That(copter.GetComponent<SpriteRenderer>().sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/bomber")));
             Assert.That(copter.localScale.x, Is.EqualTo(0.085f).Within(0.001f));
@@ -636,6 +636,67 @@ namespace Game.Tests.PlayMode
                 yield return null;
             }
             Assert.That(simulation.ProjectilesInFlight, Is.EqualTo(1), "the bomb blasted, the copter still flies");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator Carrier_ProductionSceneAnimatesTheCopterAndDrawsAHeldMineOverIt()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.ufo-carrier" || id == "weapon.mine" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var visuals = Get<Dictionary<int, GameObject>>(controller, "_projectileVisuals");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.mine") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            var minePoint = Vector2.zero;
+            simulation.MineDeployed += evt => minePoint = evt.Point;
+            Invoke(controller, "Fire");                                    // an own mine beside the droid
+            for (var tick = 0; tick < 600 && GameObject.Find("Mine Armed") == null; tick++) simulation.Tick(1f / 120f);
+            var mineVisual = GameObject.Find("Mine Armed");
+            Assert.That(mineVisual, Is.Not.Null, "the thrown mine landed and is shown");
+            var mineOrder = mineVisual.GetComponent<SpriteRenderer>().sortingOrder;
+            index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.ufo-carrier") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            GameObject body = null;
+            simulation.ProjectileSpawned += projectile => body = visuals[projectile.Id];
+            Invoke(controller, "Fire");
+            Assert.That(simulation.HasPlayerCopter, Is.True);
+            Assert.That(body, Is.Not.Null, "copter visual spawned");
+            var copter = body.transform.Find("Visual");
+            Assert.That(copter, Is.Not.Null, "copter Visual child");
+            Assert.That(copter.GetComponent<WeaponProjectileSpriteAnimator>(), Is.Not.Null, "the rotor frames are animated");
+            Assert.That(copter.GetComponent<SpriteRenderer>().sprite, Is.Not.Null);
+
+            // Fly down beside the mine and grab it.
+            var mine = simulation.Projectiles.Count;
+            for (var i = 0; i < 600 && !simulation.CopterHasCargo; i++)
+            {
+                var c = simulation.Projectiles[0].Position;
+                var target = minePoint + Vector2.up * 0.3f;
+                var delta = target - c;
+                if (Vector2.Distance(c, minePoint) < 0.5f) { Invoke(controller, "Fire"); break; }
+                simulation.SetControlledProjectileInput(Mathf.Abs(delta.x) > 0.15f ? new Vector2(Mathf.Sign(delta.x), 0f) : new Vector2(0f, Mathf.Sign(delta.y)));
+                for (var tick = 0; tick < 4; tick++) simulation.Tick(1f / 120f);
+            }
+            Assert.That(simulation.CopterHasCargo, Is.True, "the carrier holds the mine; copter=" + (simulation.Projectiles.Count > 0 ? simulation.Projectiles[0].Position.ToString() : "none") + " mine=" + minePoint + " hasCopter=" + simulation.HasPlayerCopter + " projectiles=" + simulation.Projectiles.Count);
+            Assert.That(mineVisual.GetComponent<SpriteRenderer>().sortingOrder, Is.GreaterThan(30), "drawn over the copter body");
+            simulation.SetControlledProjectileInput(Vector2.right);
+            for (var tick = 0; tick < 30; tick++) simulation.Tick(1f / 120f);
+            yield return null;
+            Assert.That(Vector2.Distance(mineVisual.transform.position, simulation.Projectiles[0].Position), Is.LessThan(0.5f),
+                "the held mine travels with the copter");
+            Invoke(controller, "Fire");
+            Assert.That(simulation.CopterHasCargo, Is.False);
+            Assert.That(mineVisual.GetComponent<SpriteRenderer>().sortingOrder, Is.EqualTo(mineOrder), "back on the ground layer");
             LogAssert.NoUnexpectedReceived();
         }
 
