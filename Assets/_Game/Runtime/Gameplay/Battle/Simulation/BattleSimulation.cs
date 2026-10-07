@@ -239,6 +239,10 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly List<ActiveGrounder> _activeGrounders = new();
         private readonly List<ActiveForceField> _activeForceFields = new();
         private readonly List<ActiveLaserFenceNode> _activeLaserFenceNodes = new();
+        private readonly List<CarryablePickup> _carryablePickups = new();
+        private readonly Dictionary<int, int> _guardianCopterShots = new();
+        private readonly HashSet<int> _downedCopterProjectileIds = new();
+        private List<LaserFenceLink> _currentLaserFenceLinks = new();
         private readonly HashSet<ulong> _spentLaserFenceLinks = new();
         private readonly List<ActiveCharge> _activeCharges = new();
         private readonly List<ActiveTimedEffect> _activeTimedEffects = new();
@@ -431,6 +435,23 @@ namespace Game.Gameplay.Battle.Simulation
         public bool CopterHasCargo => _copter != null && _copter.HasCargo;
         public bool HasPlayerCopter => _copter != null && _copter.OwnerUnitId == _state.Turn.ActiveUnitId;
         public int BomberBombsRemaining => _copter?.BombsLeft ?? 0;
+
+        /// <summary>Seconds left of the active droid's copter flight; 0 without a copter.</summary>
+        public float CopterSecondsRemaining
+        {
+            get
+            {
+                if (!HasPlayerCopter)
+                {
+                    return 0f;
+                }
+
+                var copter = _projectiles.Find(value => value.Id == _copter.CopterProjectileId);
+                return copter != null ? Mathf.Max(0f, copter.RemainingLifetime) : 0f;
+            }
+        }
+
+        public bool HasPlayerBomberCopter => HasPlayerCopter && !_copter.IsCarrier;
         public bool HasPlayerBoost => _boost != null && _boost.OwnerUnitId == _state.Turn.ActiveUnitId;
         public float BoostSecondsRemaining => _boost?.Remaining ?? 0f;
         public bool HasPlayerRopeTraversal => _ropeTraversal != null
@@ -1280,6 +1301,7 @@ namespace Game.Gameplay.Battle.Simulation
                 StepCharges(_settings.SimulationTickSeconds);
                 StepUnits();
                 StepLaserFenceLinks();
+                StepCarryablePickups();
                 StepPoisonMovementDamage(_settings.SimulationTickSeconds);
             }
 
@@ -1403,6 +1425,7 @@ namespace Game.Gameplay.Battle.Simulation
 
             if (_activeLaserFenceNodes.Count < 2 || Result.IsFinished)
             {
+                _currentLaserFenceLinks.Clear();
                 return;
             }
 
@@ -1419,6 +1442,7 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var links = LaserFenceLinkResolver.Resolve(deployedNodes, GetLaserFenceLinkRange);
+            _currentLaserFenceLinks = links;
             for (var linkIndex = 0; linkIndex < links.Count; linkIndex++)
             {
                 var link = links[linkIndex];
@@ -2336,6 +2360,7 @@ namespace Game.Gameplay.Battle.Simulation
 
             ActiveMine bestMine = null;
             ActiveLaserFenceNode bestNode = null;
+            CarryablePickup bestPickup = null;
             var bestDistance = CarrierCaptureDistance;
             foreach (var mine in _activeMines)
             {
@@ -2347,6 +2372,7 @@ namespace Game.Gameplay.Battle.Simulation
 
                 bestMine = mine;
                 bestNode = null;
+                bestPickup = null;
                 bestDistance = distance;
             }
 
@@ -2360,25 +2386,47 @@ namespace Game.Gameplay.Battle.Simulation
 
                 bestNode = node;
                 bestMine = null;
+                bestPickup = null;
                 bestDistance = distance;
             }
 
-            if (bestMine == null && bestNode == null)
+            foreach (var pickup in _carryablePickups)
+            {
+                var distance = Vector2.Distance(pickup.Position, copter.Position);
+                if (distance > bestDistance)
+                {
+                    continue;
+                }
+
+                bestPickup = pickup;
+                bestMine = null;
+                bestNode = null;
+                bestDistance = distance;
+            }
+
+            if (bestMine == null && bestNode == null && bestPickup == null)
             {
                 return new BattleFireResult(BattleFireOutcome.Blocked, _state.Turn.ActiveTeam, session.Weapon);
             }
 
             session.CarriedMine = bestMine;
             session.CarriedNode = bestNode;
+            session.CarriedPickup = bestPickup;
             if (bestMine != null)
             {
                 bestMine.IsCarried = true;
                 GroundObjectCarried?.Invoke(bestMine.Id, true);
             }
-            else
+            else if (bestNode != null)
             {
                 bestNode.IsCarried = true;
                 GroundObjectCarried?.Invoke(bestNode.Id, true);
+            }
+            else
+            {
+                bestPickup.IsCarried = true;
+                bestPickup.FallPending = false;
+                GroundObjectCarried?.Invoke(bestPickup.Id, true);
             }
 
             FollowCarrierCargo(session, copter.Position);
@@ -2399,6 +2447,11 @@ namespace Game.Gameplay.Battle.Simulation
                 session.CarriedNode.MoveTo(point);
                 GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(session.CarriedNode.Id, point));
             }
+            else if (session.CarriedPickup != null)
+            {
+                session.CarriedPickup.Position = point;
+                GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(session.CarriedPickup.Id, point));
+            }
         }
 
         /// <summary>The item falls straight to the surface: no bounce and no roll.</summary>
@@ -2416,9 +2469,92 @@ namespace Game.Gameplay.Battle.Simulation
                 node.FallPending = true;
                 GroundObjectCarried?.Invoke(node.Id, false);
             }
+            else if (session.CarriedPickup != null)
+            {
+                var pickup = session.CarriedPickup;
+                pickup.IsCarried = false;
+                pickup.FallPending = true;
+                GroundObjectCarried?.Invoke(pickup.Id, false);
+            }
 
             session.CarriedMine = null;
             session.CarriedNode = null;
+            session.CarriedPickup = null;
+        }
+
+        /// <summary>
+        /// Medkits and supply boxes that drop during the battle. The scene owns their reward; the simulation
+        /// only knows their position, so the carrier can lift them and drop them elsewhere.
+        /// </summary>
+        public int RegisterCarryablePickup(Vector2 position)
+        {
+            var pickup = new CarryablePickup(++_nextProjectileId, position);
+            _carryablePickups.Add(pickup);
+            return pickup.Id;
+        }
+
+        /// <summary>The scene collected or removed the pickup; a carrier holding it simply has no cargo any more.</summary>
+        public void RemoveCarryablePickup(int pickupId)
+        {
+            var pickup = _carryablePickups.Find(value => value.Id == pickupId);
+            if (pickup == null)
+            {
+                return;
+            }
+
+            if (_copter != null && _copter.CarriedPickup == pickup)
+            {
+                _copter.CarriedPickup = null;
+            }
+
+            _carryablePickups.Remove(pickup);
+        }
+
+        /// <summary>The scene settled the pickup somewhere else (it fell after the ground under it was destroyed).</summary>
+        public void SetCarryablePickupPosition(int pickupId, Vector2 position)
+        {
+            var pickup = _carryablePickups.Find(value => value.Id == pickupId);
+            if (pickup != null && !pickup.IsCarried)
+            {
+                pickup.Position = position;
+            }
+        }
+
+        public bool IsCarryablePickupCarried(int pickupId)
+        {
+            return _carryablePickups.Exists(value => value.Id == pickupId && value.IsCarried);
+        }
+
+        private void StepCarryablePickups()
+        {
+            foreach (var pickup in _carryablePickups)
+            {
+                if (!pickup.FallPending || pickup.IsCarried)
+                {
+                    continue;
+                }
+
+                pickup.FallPending = false;
+                if (TryFindGroundObjectLanding(pickup.Position, out var landing))
+                {
+                    pickup.Position = landing;
+                    GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(pickup.Id, landing));
+                }
+            }
+        }
+
+        private sealed class CarryablePickup
+        {
+            public CarryablePickup(int id, Vector2 position)
+            {
+                Id = id;
+                Position = position;
+            }
+
+            public int Id { get; }
+            public Vector2 Position { get; set; }
+            public bool IsCarried { get; set; }
+            public bool FallPending { get; set; }
         }
 
         /// <summary>Every fire press lets one bomb fall from the copter; there is no delay between bombs.</summary>
@@ -2469,7 +2605,9 @@ namespace Game.Gameplay.Battle.Simulation
         {
             projectile.ReduceLifetime(deltaTime);
             var owner = FindUnit(projectile.OwnerUnitId);
-            if (projectile.RemainingLifetime <= 0f || owner == null || owner.IsDefeated)
+            if (projectile.RemainingLifetime <= 0f || owner == null || owner.IsDefeated
+                || _downedCopterProjectileIds.Remove(projectile.Id)
+                || TrySpendHostileLaserBeamOnCopter(projectile))
             {
                 EndBomberCopter(projectileIndex, projectile);
                 return;
@@ -3176,6 +3314,15 @@ namespace Game.Gameplay.Battle.Simulation
                 guardian.TriggerTimeRemaining = GuardianDroneRiseSeconds;
                 MineTriggered?.Invoke(guardian.Id);
             }
+            else if (!guardian.Triggered && TryFindHostileCopterNear(guardian.TeamId, guardian.Position,
+                         guardian.Weapon.ImpactRadius, out var copterProjectileId))
+            {
+                // A hostile copter flying into range is shot down like a droid would be.
+                guardian.Triggered = true;
+                guardian.TriggerCopterProjectileId = copterProjectileId;
+                guardian.TriggerTimeRemaining = GuardianDroneRiseSeconds;
+                MineTriggered?.Invoke(guardian.Id);
+            }
 
             if (!guardian.Triggered)
             {
@@ -3189,7 +3336,122 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             _activeMines.RemoveAt(guardianIndex);
+            if (guardian.TriggerCopterProjectileId >= 0)
+            {
+                SpawnGuardianDroneCopterShot(guardian);
+                return;
+            }
+
             SpawnGuardianDroneShot(guardian);
+        }
+
+        private bool TryFindHostileCopterNear(BattleTeamId team, Vector2 point, float range, out int copterProjectileId)
+        {
+            copterProjectileId = -1;
+            if (_copter == null || ResolveTeamForOwner(_copter.OwnerUnitId) == team)
+            {
+                return false;
+            }
+
+            var copter = _projectiles.Find(value => value.Id == _copter.CopterProjectileId);
+            if (copter == null || Vector2.Distance(copter.Position, point) > range)
+            {
+                return false;
+            }
+
+            copterProjectileId = copter.Id;
+            return true;
+        }
+
+        private void SpawnGuardianDroneCopterShot(ActiveMine guardian)
+        {
+            var copter = _projectiles.Find(value => value.Id == guardian.TriggerCopterProjectileId);
+            if (copter == null)
+            {
+                return;
+            }
+
+            var origin = guardian.Position + Vector2.up * GuardianDroneRiseHeight;
+            var direction = (copter.Position - origin).sqrMagnitude > 0.0001f
+                ? (copter.Position - origin).normalized
+                : Vector2.up;
+            var definition = ProjectileDefinition.CreateRuntime(
+                GuardianDroneShotProjectileId,
+                Mathf.Max(0.04f, guardian.Weapon.ProjectileRadius * 0.38f),
+                0f,
+                2f,
+                0,
+                0f);
+            var shot = new SimProjectile(
+                ++_nextProjectileId,
+                definition,
+                guardian.OwnerUnitId,
+                origin,
+                direction * GuardianDroneShotSpeed,
+                definition.TimeoutSeconds,
+                suppressTurnAdvanceOnImpact: true);
+            _projectiles.Add(shot);
+            _guardianCopterShots[shot.Id] = copter.Id;
+            ProjectileSpawned?.Invoke(shot);
+        }
+
+        /// <summary>The guardian's bullet homes on the copter; the copter is brought down on its own step.</summary>
+        private void StepGuardianCopterShot(int projectileIndex, SimProjectile projectile, int copterProjectileId, float deltaTime)
+        {
+            var copter = _projectiles.Find(value => value.Id == copterProjectileId);
+            projectile.ReduceLifetime(deltaTime);
+            if (copter == null || projectile.RemainingLifetime <= 0f)
+            {
+                _guardianCopterShots.Remove(projectile.Id);
+                DiscardProjectile(projectileIndex, projectile);
+                return;
+            }
+
+            var offset = copter.Position - projectile.Position;
+            var distance = offset.magnitude;
+            var speed = Mathf.Max(0.1f, projectile.Velocity.magnitude);
+            if (distance <= speed * deltaTime + projectile.Definition.Radius + 0.2f)
+            {
+                _guardianCopterShots.Remove(projectile.Id);
+                _projectiles.RemoveAt(projectileIndex);
+                ProjectileExploded?.Invoke(projectile.Id, new ProjectileImpact(
+                    projectile.Definition.ProjectileId, projectile.OwnerUnitId, copter.Position, projectile.Velocity, 0, 0f));
+                _downedCopterProjectileIds.Add(copterProjectileId);
+                return;
+            }
+
+            var velocity = offset / distance * speed;
+            projectile.SetVelocity(velocity);
+            projectile.MoveTo(projectile.Position + velocity * deltaTime);
+        }
+
+        /// <summary>A hostile laser beam the copter flies into is spent on it and brings the copter down.</summary>
+        private bool TrySpendHostileLaserBeamOnCopter(SimProjectile copter)
+        {
+            if (_currentLaserFenceLinks.Count == 0)
+            {
+                return false;
+            }
+
+            var copterTeam = ResolveTeamForOwner(copter.OwnerUnitId);
+            foreach (var link in _currentLaserFenceLinks)
+            {
+                var linkId = GetLaserFenceLinkId(link.FirstNodeId, link.SecondNodeId);
+                if (_spentLaserFenceLinks.Contains(linkId)
+                    || !TryGetLaserFenceNode(link.FirstNodeId, out var first)
+                    || !TryGetLaserFenceNode(link.SecondNodeId, out var second)
+                    || first.TeamId == copterTeam
+                    || !IsPointWithinLaserFenceLink(copter.Position, first.Position, second.Position))
+                {
+                    continue;
+                }
+
+                _spentLaserFenceLinks.Add(linkId);
+                LaserFenceLinkSpent?.Invoke(link.FirstNodeId, link.SecondNodeId);
+                return true;
+            }
+
+            return false;
         }
 
         private void SpawnGuardianDroneShot(ActiveMine guardian)
@@ -5851,6 +6113,11 @@ namespace Game.Gameplay.Battle.Simulation
                     StepBomberCopter(i, projectile, deltaTime);
                     continue;
                 }
+                if (_guardianCopterShots.TryGetValue(projectile.Id, out var targetCopterId))
+                {
+                    StepGuardianCopterShot(i, projectile, targetCopterId, deltaTime);
+                    continue;
+                }
                 if (!string.IsNullOrEmpty(projectile.GuaranteedTargetUnitId))
                 {
                     StepGuaranteedTargetProjectile(i, projectile, deltaTime);
@@ -8034,7 +8301,8 @@ namespace Game.Gameplay.Battle.Simulation
             public bool IsCarrier { get; }
             public ActiveMine CarriedMine { get; set; }
             public ActiveLaserFenceNode CarriedNode { get; set; }
-            public bool HasCargo => CarriedMine != null || CarriedNode != null;
+            public CarryablePickup CarriedPickup { get; set; }
+            public bool HasCargo => CarriedMine != null || CarriedNode != null || CarriedPickup != null;
 
             public string OwnerUnitId { get; }
             public int CopterProjectileId { get; }
@@ -8243,6 +8511,7 @@ namespace Game.Gameplay.Battle.Simulation
             public bool Triggered { get; set; }
             public float TriggerTimeRemaining { get; set; }
             public string TriggerTargetUnitId { get; set; }
+            public int TriggerCopterProjectileId { get; set; } = -1;
             public bool IsConcealed { get; set; }
             public bool IsCarried { get; set; }
 

@@ -107,7 +107,9 @@ namespace Game.Core.Battle
             string opponentName = null,
             string opponentWeaponLabel = null,
             int opponentWeaponRank = 0,
-            bool ropeControlsActive = false)
+            bool ropeControlsActive = false,
+            int controlledBombsRemaining = -1,
+            float controlledSecondsRemaining = -1f)
         {
             Status = status;
             TurnNumber = turnNumber;
@@ -156,7 +158,18 @@ namespace Game.Core.Battle
             OpponentWeaponLabel = opponentWeaponLabel ?? string.Empty;
             OpponentWeaponRank = opponentWeaponRank < 0 ? 0 : opponentWeaponRank;
             RopeControlsActive = ropeControlsActive;
+            ControlledBombsRemaining = controlledBombsRemaining;
+            ControlledSecondsRemaining = controlledSecondsRemaining;
         }
+
+        /// <summary>Bombs the player's copter can still drop; negative when no bomber is flying.</summary>
+        public int ControlledBombsRemaining { get; }
+
+        /// <summary>Seconds left of the player's copter flight or rocket fuel; negative when none is active.</summary>
+        public float ControlledSecondsRemaining { get; }
+
+        public bool ShowControlledBombs => ControlledBombsRemaining >= 0 && !ShowResult;
+        public bool ShowControlledSeconds => ControlledSecondsRemaining >= 0f && !ShowResult;
 
         /// <summary>
         /// Who the player is fighting: the antagonist in a raid, the matched

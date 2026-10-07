@@ -56,6 +56,7 @@ namespace Game.UI.Battle
         private static readonly Color TutorialHighlight = new(1f, 0.83f, 0.26f, 0.98f);
         private static readonly Color ControlVisual = new(1f, 1f, 1f, 0.4f);
         private static readonly Color FireControlVisual = new(1f, 1f, 1f, 0.68f);
+        private static readonly Color ControlledCounterColor = new(0.45f, 0.92f, 1f, 1f);
 
         private readonly Dictionary<string, Sprite> _weaponSprites = new(StringComparer.Ordinal);
         private readonly Dictionary<RectTransform, Vector3> _tutorialBaseScales = new();
@@ -85,6 +86,8 @@ namespace Game.UI.Battle
         private TMP_Text _statusTitleText;
         private TMP_Text _statusText;
         private TMP_Text _turnText;
+        private TMP_Text _controlledSecondsText;
+        private TMP_Text _controlledBombsText;
         private Image _statusPanel;
         private Image _turnPanel;
         private Button _moveLeftButton;
@@ -191,6 +194,17 @@ namespace Game.UI.Battle
             _turnText.text = state.TurnSecondsRemaining > 0f
                 ? Mathf.CeilToInt(state.TurnSecondsRemaining).ToString()
                 : "--";
+            _controlledSecondsText.gameObject.SetActive(state.ShowControlledSeconds && state.ShowTurnTimer);
+            if (state.ShowControlledSeconds)
+            {
+                _controlledSecondsText.text = Mathf.CeilToInt(state.ControlledSecondsRemaining).ToString();
+            }
+
+            _controlledBombsText.gameObject.SetActive(state.ShowControlledBombs);
+            if (state.ShowControlledBombs)
+            {
+                _controlledBombsText.text = state.ControlledBombsRemaining.ToString();
+            }
             var tutorialTarget = state.TutorialTargetId;
             var movementEnabled = state.CanUseMovement
                 && (!state.TutorialBlocksMovement
@@ -301,6 +315,14 @@ namespace Game.UI.Battle
             _turnText = CreateText("Turn Seconds", _turnPanel.transform, new Vector2(0.24f, 0.28f), new Vector2(0.76f, 0.72f),
                 new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 36, TextAlignmentOptions.Center);
             SciFiTextStyle.Apply(_turnText, GameTextRole.Numeric, 36, TextAlignmentOptions.Center);
+
+            // Seconds left of a copter flight or of rocket fuel, just under the turn timer.
+            _controlledSecondsText = CreateText("Controlled Seconds", _turnPanel.transform, new Vector2(0.2f, -0.18f),
+                new Vector2(0.8f, 0.12f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 30, TextAlignmentOptions.Center);
+            SciFiTextStyle.Apply(_controlledSecondsText, GameTextRole.Numeric, 30, TextAlignmentOptions.Center);
+            _controlledSecondsText.color = ControlledCounterColor;
+            _controlledSecondsText.raycastTarget = false;
+            _controlledSecondsText.gameObject.SetActive(false);
 
             // Opponent readout, centred under the turn timer. Text only: the strip has
             // to work for any name length and no artwork exists that would frame it.
@@ -486,6 +508,14 @@ namespace Game.UI.Battle
             _fireIcon.preserveAspect = true;
             _fireIcon.color = Color.white;
             _fireIcon.raycastTarget = false;
+
+            // Bombs left in the player's copter, as a number on the fire button.
+            _controlledBombsText = CreateText("Controlled Bombs", _firePanel.transform, new Vector2(0.62f, 0.62f),
+                new Vector2(1.02f, 1.02f), new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, 34, TextAlignmentOptions.Center);
+            SciFiTextStyle.Apply(_controlledBombsText, GameTextRole.Numeric, 34, TextAlignmentOptions.Center);
+            _controlledBombsText.color = ControlledCounterColor;
+            _controlledBombsText.raycastTarget = false;
+            _controlledBombsText.gameObject.SetActive(false);
             _firePanel.gameObject.SetActive(false);
 
             var resetRect = CreateRect("Reset Weapon", root, new Vector2(0.25f, 0f), new Vector2(0.25f, 0f),

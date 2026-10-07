@@ -279,6 +279,11 @@ namespace Game.Gameplay.Battle.Assembly
             public Vector2 Position { get; set; }
             public ResourcePickupKind Kind { get; }
             public bool IsFalling { get; set; }
+            /// <summary>Id of the same pickup in the simulation, so the carrier can lift it; -1 without one.</summary>
+            public int SimulationId { get; set; } = -1;
+            /// <summary>Height of the visual centre above the ground point the simulation knows.</summary>
+            public float VisualLift { get; set; }
+            public bool IsCarried { get; set; }
         }
 
         private sealed class MovingArenaSurface
@@ -2680,7 +2685,13 @@ namespace Game.Gameplay.Battle.Assembly
         private void OnSimulationGroundObjectCarried(int objectId, bool carried)
         {
             GameObject visual = null;
-            if (!_mineVisuals.TryGetValue(objectId, out visual) && !_laserFenceNodeVisuals.TryGetValue(objectId, out visual))
+            var pickup = FindResourcePickupBySimulationId(objectId);
+            if (pickup != null)
+            {
+                pickup.IsCarried = carried;
+                visual = pickup.Visual;
+            }
+            else if (!_mineVisuals.TryGetValue(objectId, out visual) && !_laserFenceNodeVisuals.TryGetValue(objectId, out visual))
             {
                 return;
             }
@@ -2693,6 +2704,18 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void OnSimulationGroundObjectRepositioned(GroundObjectRepositionedEvent groundObject)
         {
+            var pickup = FindResourcePickupBySimulationId(groundObject.ObjectId);
+            if (pickup != null)
+            {
+                pickup.Position = groundObject.Point + Vector2.up * pickup.VisualLift;
+                if (pickup.Visual != null)
+                {
+                    pickup.Visual.transform.position = pickup.Position;
+                }
+
+                return;
+            }
+
             if (_laserFenceNodeVisuals.TryGetValue(groundObject.ObjectId, out var nodeVisual) && nodeVisual != null
                 && _laserFenceNodes.TryGetValue(groundObject.ObjectId, out var node))
             {
@@ -3218,7 +3241,7 @@ namespace Game.Gameplay.Battle.Assembly
             var searchDistance = _battleTerrain.Grid.WorldMaxY - _battleTerrain.Grid.WorldMinY + 2f;
             foreach (var pickup in _resourcePickups)
             {
-                if (pickup.Visual == null || pickup.IsFalling)
+                if (pickup.Visual == null || pickup.IsFalling || pickup.IsCarried)
                 {
                     continue;
                 }
@@ -3263,6 +3286,11 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 pickup.Position = destination;
                 pickup.Visual.transform.position = destination;
+            }
+
+            if (pickup.SimulationId >= 0)
+            {
+                _simulation?.SetCarryablePickupPosition(pickup.SimulationId, destination - Vector2.up * pickup.VisualLift);
             }
 
             pickup.IsFalling = false;
@@ -3617,7 +3645,29 @@ namespace Game.Gameplay.Battle.Assembly
             renderer.sprite = sprite;
             renderer.sortingOrder = 27;
             _arenaObjects.Add(pickup);
-            _resourcePickups.Add(new ResourcePickup(pickup, groundedPosition, kind));
+            var resourcePickup = new ResourcePickup(pickup, groundedPosition, kind)
+            {
+                VisualLift = groundedPosition.y - position.y
+            };
+            if (_simulation != null)
+            {
+                resourcePickup.SimulationId = _simulation.RegisterCarryablePickup(position);
+            }
+
+            _resourcePickups.Add(resourcePickup);
+        }
+
+        private ResourcePickup FindResourcePickupBySimulationId(int simulationId)
+        {
+            foreach (var pickup in _resourcePickups)
+            {
+                if (pickup.SimulationId == simulationId && simulationId >= 0)
+                {
+                    return pickup;
+                }
+            }
+
+            return null;
         }
 
         private void OnSimulationBattleFinished(BattleResult result, BattleFinishReason reason)
@@ -3841,7 +3891,18 @@ namespace Game.Gameplay.Battle.Assembly
                     continue;
                 }
 
+                // The repair jammer blocks every source of healing, the medkit included: it stays on the ground.
+                if (pickup.Kind == ResourcePickupKind.Medkit && _simulation != null
+                    && _simulation.IsUnitRepairJammed(player.UnitId))
+                {
+                    continue;
+                }
+
                 _resourcePickups.RemoveAt(index);
+                if (pickup.SimulationId >= 0)
+                {
+                    _simulation?.RemoveCarryablePickup(pickup.SimulationId);
+                }
                 _arenaObjects.Remove(pickup.Visual);
                 Destroy(pickup.Visual);
                 if (pickup.Kind == ResourcePickupKind.Medkit)
@@ -5897,9 +5958,36 @@ namespace Game.Gameplay.Battle.Assembly
                 ResolveOpponentName(),
                 DescribeWeapon(opponentWeapon),
                 opponentWeapon != null ? _opponentProgression.ResolveRank(opponentWeapon.WeaponId) : 0,
-                ropeAttached || directDroneControlActive || IsTitaniumBarrierPlacementActive());
+                ropeAttached || directDroneControlActive || IsTitaniumBarrierPlacementActive(),
+                ResolveControlledBombsForHud(),
+                ResolveControlledSecondsForHud());
 
             _hud.Render(state);
+        }
+
+        /// <summary>Bomb counter of the player's own copter; hidden (-1) otherwise.</summary>
+        private int ResolveControlledBombsForHud()
+        {
+            return _simulation != null && _battleState.Turn.ActiveTeam == BattleTeamId.Player
+                && _simulation.HasPlayerBomberCopter
+                    ? _simulation.BomberBombsRemaining
+                    : -1;
+        }
+
+        /// <summary>Flight seconds of the player's copter or rocket fuel; hidden (-1) otherwise.</summary>
+        private float ResolveControlledSecondsForHud()
+        {
+            if (_simulation == null || _battleState.Turn.ActiveTeam != BattleTeamId.Player)
+            {
+                return -1f;
+            }
+
+            if (_simulation.HasPlayerCopter)
+            {
+                return _simulation.CopterSecondsRemaining;
+            }
+
+            return _simulation.HasPlayerBoost ? _simulation.BoostSecondsRemaining : -1f;
         }
 
         /// <summary>
