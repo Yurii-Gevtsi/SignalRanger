@@ -274,6 +274,7 @@ namespace Game.Gameplay.Battle.Weapons
                     case EmpWeaponId:
                     case FreezeWeaponId:
                     case FireGunWeaponId:
+                    case ToxicWeaponId:
                         // The purchased features of the two cannons (aim_jam / movement_lock, full_freeze / cold_bonus) are
                         // open owner questions: until they are defined a purchase must not fall back to the old legacy effects.
                         return WeaponEvolutionProfile.Base;

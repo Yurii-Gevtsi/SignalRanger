@@ -4594,6 +4594,86 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(profile.FireGunStreamDurationMultiplier, Is.EqualTo(1f));
         }
 
+        private static Harness CreateNanotoxicHarness(Vector2? ally = null, int damage = 40)
+        {
+            var toxic = CreateWeapon("weapon.toxic", WeaponRole.DirectProjectile, damage: damage, impactRadius: 2.5f,
+                gravityScale: 0f, timeoutSeconds: 8f);
+            return CreateHarness(toxic, secondPlayerPosition: ally);
+        }
+
+        [Test]
+        public void NanotoxicCharge_PoisonsEveryDroidInTheBlastWithTheSharedTwoTurnCycleAndNoMovementDamageInTheBase()
+        {
+            var harness = CreateNanotoxicHarness(ally: new Vector2(4f, 0f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var friend = harness.State.GetUnit("player.test.02");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var direct = start - enemy.Health;
+            Assert.That(direct, Is.GreaterThan(0));
+            Assert.That(harness.Simulation.IsUnitPoisoned(enemy.UnitId), Is.True);
+            Assert.That(harness.Simulation.IsUnitPoisoned(friend.UnitId), Is.True, "allies in the primary radius too");
+            var afterBlast = enemy.Health;
+            var tick = Mathf.Max(1, Mathf.RoundToInt(direct * 0.2f));
+
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // victim turn ends: tick
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick));
+            // Walking while poisoned costs nothing extra in the base (the movement poison is an unbought feature).
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.Walk(1, 0f);
+            TickMany(harness.Simulation, 120, 1f / 120f);
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();   // victim's second turn ends
+            Assert.That(enemy.Health, Is.EqualTo(afterBlast - tick * 2));
+            Assert.That(harness.Simulation.IsUnitPoisoned(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void NanotoxicCharge_RepeatHitRefreshesWithoutStackingAndBoostsOnlyTheDirectDamage()
+        {
+            var harness = CreateNanotoxicHarness(damage: 20);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var first = start - enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            enemy.MoveTo(new Vector2(3f, 0f));
+            harness.Motors[enemy.UnitId].Teleport(enemy.Position);
+            var beforeSecond = enemy.Health;
+            ThrowAtOpponent(harness);
+            var second = beforeSecond - enemy.Health;
+            Assert.That(second, Is.EqualTo(Mathf.CeilToInt(first * 1.25f)).Within(1), "+25% shared with the other poison weapons");
+            var tick = Mathf.Max(1, Mathf.RoundToInt(second * 0.2f));
+            var afterSecond = enemy.Health;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(enemy.Health, Is.EqualTo(afterSecond - tick * 2), "two ticks in total, not three");
+            Assert.That(harness.Simulation.IsUnitPoisoned(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void NanotoxicCharge_RegistryArtAndTheTwoFeaturesAwaitingTheOwnerLeaveNoLegacyEffect()
+        {
+            const string id = "weapon.toxic";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 4, 2, 4 }));
+            Assert.That(definition.GetEvolutionOptions(5).Select(o => o.Id), Is.EquivalentTo(new[] { "movement-poison" }));
+            Assert.That(definition.GetEvolutionOptions(10).Select(o => o.Id), Is.EquivalentTo(new[] { "poison-bonus" }));
+            foreach (var art in new[] { "toxic", "toxic_5_10_A", "toxic_shot" })
+                Assert.That(Resources.Load<Texture2D>("UI/Weapons/" + art), Is.Not.Null, art);
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            var progress = new SaveWeaponProgressData { weaponId = id, rank = 6 };
+            progress.EnsureDefaults();
+            for (var rank = 2; rank <= 5; rank++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Core });
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "movement-poison" });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
+            var profile = WeaponEvolutionRuntimeResolver.Resolve(weapon, progress);
+            Assert.That(profile.ToxicMovementDamagePerSecond, Is.Zero, "no leftover legacy movement damage before the owner defines it");
+            Assert.That(profile.ToxicArmorWeakenPercent, Is.Zero);
+        }
+
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,
             Vector2? secondOpponent = null)
         {

@@ -4260,13 +4260,14 @@ namespace Game.Gameplay.Battle.Simulation
                 impact.OwnerUnitId,
                 impact.ProjectileId,
                 settings,
-                (unit, amount) => ResolveElementalRepeatBonus(
-                    _electricEffects, appliesElectric, unit,
+                (unit, amount) => ResolvePoisonRepeatBonus(appliesPoison, unit,
                     ResolveElementalRepeatBonus(
-                        _fireEffects, appliesFire, unit,
+                        _electricEffects, appliesElectric, unit,
                         ResolveElementalRepeatBonus(
-                            _chillEffects, appliesChill, unit,
-                            ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution)))));
+                            _fireEffects, appliesFire, unit,
+                            ResolveElementalRepeatBonus(
+                                _chillEffects, appliesChill, unit,
+                                ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution))))));
             foreach (var damageEvent in damageEvents)
             {
                 DamageApplied?.Invoke(sourceTeam, damageEvent);
@@ -4471,6 +4472,18 @@ namespace Game.Gameplay.Battle.Simulation
                 evolution.ToxicArmorWeakenPercent,
                 evolution.ToxicArmorWeakenTurns,
                 evolution.ToxicMovementDamagePerSecond);
+        }
+
+        /// <summary>The same shared +25% for poison: nanotoxic charge, toxic sticky release and the poison spider.</summary>
+        private int ResolvePoisonRepeatBonus(bool applies, BattleUnitState unit, int amount)
+        {
+            if (!applies || unit == null || amount <= 0
+                || !_poisonEffects.TryGetValue(unit.UnitId, out var poison) || poison.TurnsRemaining <= 0)
+            {
+                return amount;
+            }
+
+            return Mathf.CeilToInt(amount * (1f + ElementalRepeatBonusPercent / 100f));
         }
 
         private int ResolveElementalRepeatBonus(
