@@ -82,6 +82,7 @@ namespace Game.Gameplay.Battle.Weapons
                 WeaponUpgradePath.Radius => weapon.ImpactRadius *
                     (1f + count * (weapon.WeaponId == "weapon.grounder" || weapon.WeaponId == "weapon.granata"
                         || weapon.WeaponId == "weapon.force-field" || weapon.WeaponId == "weapon.swap-jump"
+                        || weapon.WeaponId == "weapon.self-destruct"
                         || weapon.WeaponId == "weapon.impulse"
                         || weapon.WeaponId == "weapon.c4"
                         || weapon.WeaponId == "weapon.mine" || weapon.WeaponId == "weapon.titanium-disc"
@@ -179,6 +180,7 @@ namespace Game.Gameplay.Battle.Weapons
             var percentPerUpgrade = weapon != null &&
                 (weapon.WeaponId == "weapon.grounder" || weapon.WeaponId == "weapon.granata"
                     || weapon.WeaponId == "weapon.force-field" || weapon.WeaponId == "weapon.swap-jump"
+                    || weapon.WeaponId == "weapon.self-destruct"
                     || weapon.WeaponId == "weapon.impulse"
                     || weapon.WeaponId == "weapon.c4" || weapon.WeaponId == "weapon.mine"
                     || weapon.WeaponId == "weapon.titanium-disc" || weapon.WeaponId == "weapon.mortira") ? 10 : 8;

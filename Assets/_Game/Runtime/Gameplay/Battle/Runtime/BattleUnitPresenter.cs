@@ -44,6 +44,11 @@ namespace Game.Gameplay.Battle.Runtime
             _view.ClearEquippedWeapon();
         }
 
+        public void SetSelfDestructActive(bool isActive)
+        {
+            _view.SetSelfDestructActive(isActive);
+        }
+
         public void SetVirusActive(bool isActive)
         {
             _view.SetVirusActive(isActive);

@@ -50,7 +50,8 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.bomber", WeaponRole.ArcingExplosive, 54, SharedExplosionRadius, 0.14f, 0f, 10f, 4f, 4f, 1, "bomber", "controlled", "bomber"),
                 // The copter's emergency blast after its window is an ordinary mine blast (54, the shared R0).
                 Weapon("weapon.ufo-carrier", WeaponRole.MovementTool, 54, SharedExplosionRadius, 0.1f, 0f, 10f, 4f, 4f, 1, "ufo_carrier", "controlled", "carrier"),
-                Weapon("weapon.self-destruct", WeaponRole.ShortRangeBurst, 72, 2.1f, 0.16f, 0f, 3f, 1f, 1f, 1, "self_destruct", "ground", "self-destruct"),
+                // 1.5 x the shared explosion radius; the owner is sacrificed by the protocol itself, whatever the damage.
+                Weapon("weapon.self-destruct", WeaponRole.ShortRangeBurst, 72, 1.5f * SharedExplosionRadius, 0.16f, 0f, 3f, 1f, 1f, 1, "self_destruct", "ground", "self-destruct"),
                 Weapon("weapon.nuclear-charge", WeaponRole.ShortRangeBurst, 95, 3.2f, 0.2f, 0f, 5f, 1f, 1f, 1, "nuclear_charge", "ground", "nuclear"),
                 Weapon("weapon.laser-fence", WeaponRole.ArcingExplosive, 42, 1.2f, 0.1f, 1.05f, 6f, 5f, 12f, 4, "laser_fence", "ground", "laser"),
                 Weapon("weapon.freeze", WeaponRole.ArcingExplosive, 36, 1.35f, 0.12f, 1.05f, 8f, 4f, 12f, 2, "freeze", "arc", "freeze"),

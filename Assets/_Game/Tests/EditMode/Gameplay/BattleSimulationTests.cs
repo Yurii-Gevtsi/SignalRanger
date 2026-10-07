@@ -321,7 +321,7 @@ namespace Game.Tests.EditMode.Gameplay
             foreach (var (id, role) in new[]
             {
                 ("weapon.turn-transfer", WeaponRole.DefensiveTool),
-                ("weapon.self-destruct", WeaponRole.DefensiveTool)
+                ("weapon.nuclear-charge", WeaponRole.DefensiveTool)
             })
             {
                 var weapon = CreateWeapon(id, role, ammo: 1);
@@ -4033,6 +4033,131 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.That(service.TryUpgrade(id, path).Applied, Is.False, path.ToString());
             for (var i = 0; i < 4; i++) Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
             Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.False);
+        }
+
+        private static Harness CreateSelfDestructHarness(Vector2? enemy = null, Vector2? ally = null, int ownerHealth = 500)
+        {
+            var protocol = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.self-destruct");
+            var harness = CreateHarness(protocol, secondOpponentPosition: null, secondPlayerPosition: ally, playerMaxHealth: ownerHealth);
+            if (enemy.HasValue)
+            {
+                var opponent = harness.State.GetUnit("opponent.test.01");
+                opponent.MoveTo(enemy.Value);
+                harness.Motors[opponent.UnitId].Teleport(enemy.Value);
+            }
+
+            return harness;
+        }
+
+        [Test]
+        public void SelfDestruct_MarksTheDroidWithoutSpendingTheActionOrEndingTheTurn()
+        {
+            var harness = CreateSelfDestructHarness();
+            var owner = harness.State.GetUnit("player.test.01");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed), "no aim, no projectile");
+            Assert.That(harness.Simulation.IsUnitSelfDestructing(owner.UnitId), Is.True);
+            Assert.That(harness.State.Turn.ActionSpent, Is.False, "the right to another weapon is kept");
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "the turn goes on");
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+            Assert.That(harness.Simulation.CanAcceptMovementInput(), Is.True, "it can still move");
+            Assert.That(owner.IsDefeated, Is.False, "nothing happens before the turn ends");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.OutOfAmmo).Or.EqualTo(BattleFireOutcome.Blocked));
+        }
+
+        [Test]
+        public void SelfDestruct_WhenTheTurnEndsTheOwnerDiesAndTheBlastHurtsEveryoneInOneAndAHalfBlastRadii()
+        {
+            var harness = CreateSelfDestructHarness(enemy: new Vector2(-2f, -0.46f), ally: new Vector2(-4.2f, -0.46f));
+            var owner = harness.State.GetUnit("player.test.01");
+            var near = harness.State.GetUnit("opponent.test.01");
+            var ally = harness.State.GetUnit("player.test.02");
+            var craters = 0;
+            harness.Simulation.TerrainCraterApplied += (_, _, _) => craters++;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();               // the turn ends
+            Assert.That(owner.IsDefeated, Is.True, "the owner is sacrificed even with plenty of health");
+            Assert.That(near.Health, Is.LessThan(near.MaxHealth), "an enemy inside the radius is hurt");
+            Assert.That(ally.Health, Is.LessThan(ally.MaxHealth), "so is an ally inside the radius");
+            Assert.That(craters, Is.GreaterThan(0));
+            Assert.That(harness.Simulation.IsUnitSelfDestructing(owner.UnitId), Is.False);
+            Assert.That(harness.Simulation.Result.IsFinished, Is.False, "two droids are still alive");
+        }
+
+        [Test]
+        public void SelfDestruct_TheBlastRadiusIsOneAndAHalfSharedRadiiAndAFarEnemyIsSafe()
+        {
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.self-destruct");
+            Assert.That(weapon.ImpactRadius, Is.EqualTo(1.5f * PrototypeWeaponLibrary.SharedExplosionRadius).Within(0.001f));
+            var harness = CreateSelfDestructHarness(enemy: new Vector2(-0.5f, -0.46f));      // 2.5 away: outside 2.3
+            var far = harness.State.GetUnit("opponent.test.01");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(far.Health, Is.EqualTo(far.MaxHealth));
+            Assert.That(harness.Simulation.Result.IsFinished, Is.True, "the last droid of the player's side is gone");
+            Assert.That(harness.Simulation.Result.WinningTeam, Is.EqualTo(BattleTeamId.Opponent));
+        }
+
+        [Test]
+        public void SelfDestruct_TheLastTwoDroidsDyingTogetherIsADrawDecidedAfterBothDeaths()
+        {
+            var harness = CreateSelfDestructHarness(enemy: new Vector2(-2f, -0.46f));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            enemy.ApplyDamage(enemy.Health - 5, "test");
+            var finished = new List<BattleResult>();
+            harness.Simulation.BattleFinished += (result, _) => finished.Add(result);
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(harness.State.GetUnit("player.test.01").IsDefeated, Is.True);
+            Assert.That(enemy.IsDefeated, Is.True);
+            Assert.That(finished, Has.Count.EqualTo(1));
+            Assert.That(finished[0].Outcome, Is.EqualTo(BattleOutcome.Draw), "a draw, not a win for either side");
+        }
+
+        [Test]
+        public void SelfDestruct_AnOwnerWhoDiesBeforeTheTurnEndsLeavesNoBlast()
+        {
+            var harness = CreateSelfDestructHarness(enemy: new Vector2(-2f, -0.46f));
+            var owner = harness.State.GetUnit("player.test.01");
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            owner.ApplyDamage(owner.Health, "test");
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(enemy.Health, Is.EqualTo(enemy.MaxHealth), "a dead owner explodes nothing");
+        }
+
+        [Test]
+        public void SelfDestruct_RegistryOnePerBattleCoreAndRadiusStepsAndArtMatchTheCard()
+        {
+            const string id = "weapon.self-destruct";
+            Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
+            Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
+                definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 0, 4 }));
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+            Assert.That(weapon.AmmoCount, Is.EqualTo(1));
+            Assert.That(BattleSimulation.RequiresAim(weapon), Is.False);
+            Assert.That(BattleSimulation.IsBattleMechanicAvailable(weapon), Is.True);
+            Assert.That(Resources.Load<Texture2D>("UI/Weapons/self_destruct"), Is.Not.Null);
+            var progress = new SaveWeaponProgressData { weaponId = id, rank = 5 };
+            progress.EnsureDefaults();
+            for (var rank = 2; rank <= 5; rank++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Radius });
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveImpactRadiusPercent(weapon, progress), Is.EqualTo(40), "+10% of the base per Radius purchase");
+
+            var save = SaveData.CreateNew();
+            save.inventory.unlockedWeaponIds.Add(id);
+            var economy = new Game.Economy.EconomyService(save);
+            economy.Grant(new Game.Data.Progression.ProgressionReward(300000, 100000, 10000, "test"), "test",
+                string.Empty, System.Guid.NewGuid().ToString());
+            save.inventory.GetOrCreateWeaponProgress(id).blueprints = 10000;
+            var service = new Game.Progression.WeaponUpgradeService(save, economy);
+            foreach (var path in new[] { WeaponUpgradePath.Aim, WeaponUpgradePath.Loadout })
+                Assert.That(service.TryUpgrade(id, path).Applied, Is.False, path.ToString());
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.True);
+                Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Radius).Applied, Is.True);
+            }
+            Assert.That(service.TryUpgrade(id, WeaponUpgradePath.Core).Applied, Is.False);
         }
 
         private static Harness CreateRailHarness(SaveWeaponProgressData progress = null,

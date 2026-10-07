@@ -701,6 +701,38 @@ namespace Game.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator SelfDestruct_ProductionSceneMarksTheDroidWithAnIconAndKeepsTheTurn()
+        {
+            WeaponProgressionBridge.UnlockedResolver = id =>
+                id == "weapon.self-destruct" || Array.IndexOf(StarterIds, id) >= 0;
+            yield return SceneManager.LoadSceneAsync(GameSceneNames.Battle, LoadSceneMode.Single);
+            BattleSceneBootstrap.EnsureCreated();
+            var controller = UnityEngine.Object.FindAnyObjectByType<BattleSceneController>();
+            controller.enabled = false;
+            Set(controller, "_firstBattleGuide", null);
+            var simulation = Get<BattleSimulation>(controller, "_simulation");
+            var inventory = Get<WeaponInventoryRuntime>(controller, "_inventory");
+            var state = Get<BattleState>(controller, "_battleState");
+            var index = 0;
+            while (inventory.Weapons[index].WeaponId != "weapon.self-destruct") index++;
+            Invoke(controller, "OnHudWeaponSelected", index);
+            Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            var owner = state.GetUnit(state.Turn.ActiveUnitId);
+            Invoke(controller, "Fire");
+            Assert.That(simulation.IsUnitSelfDestructing(owner.UnitId), Is.True);
+            Assert.That(state.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "the turn is not ended by the marking");
+            Assert.That(state.Turn.ActionSpent, Is.False);
+            Invoke(controller, "RefreshUnitViews");
+            var visible = 0;
+            foreach (var renderer in UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Include))
+                if (renderer.name == "Self Destruct Status Icon" && renderer.enabled
+                    && renderer.sprite != null && renderer.sprite.texture.name == "self_destruct") visible++;
+            Assert.That(visible, Is.EqualTo(1), "exactly one marker, on the marked droid");
+            yield return null;
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
         public IEnumerator ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(
             [Values(false, true)] bool purchased)
         {

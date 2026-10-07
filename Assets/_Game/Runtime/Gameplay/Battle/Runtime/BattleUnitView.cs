@@ -24,6 +24,7 @@ namespace Game.Gameplay.Battle.Runtime
         private const string JetTrailResourcePath = "UI/Common/jet_trail_light";
         private const string RepairJammerStatusIconResourcePath = "UI/Common/no-repair-2";
         private const string VirusStatusIconResourcePath = "UI/Weapons/virus";
+        private const string SelfDestructIconResourcePath = "UI/Weapons/self_destruct";
         private const string DeadWreckageResourcePath = "Visuals/Characters/dead";
         private static readonly Vector3 DeadWreckageScale = new(0.15f, 0.15f, 1f);
         private static readonly Vector3 WeaponMountPosition = new(-0.68f, 0.42f, 0f);
@@ -61,6 +62,7 @@ namespace Game.Gameplay.Battle.Runtime
         private SpriteRenderer _jetTrailRenderer;
         private SpriteRenderer _repairJammerStatusIconRenderer;
         private SpriteRenderer _virusStatusIconRenderer;
+        private SpriteRenderer _selfDestructIconRenderer;
         private SpriteRenderer _deadWreckageRenderer;
         private bool _deadWreckageLoadAttempted;
         private SpriteRenderer _freezeOverlayRenderer;
@@ -185,6 +187,33 @@ namespace Game.Gameplay.Battle.Runtime
             var scale = Mathf.Clamp01(scaleMultiplier) * JetTrailVisualScale;
             _jetTrailRenderer.transform.localScale = new Vector3(scale, scale, 1f);
             _jetTrailRenderer.enabled = isActive && scale > 0.001f && _jetTrailRenderer.sprite != null;
+        }
+
+        public void SetSelfDestructActive(bool isActive)
+        {
+            EnsureReferences();
+            if (_selfDestructIconRenderer == null)
+            {
+                var texture = Resources.Load<Texture2D>(SelfDestructIconResourcePath);
+                if (texture == null)
+                {
+                    return;
+                }
+
+                var iconObject = new GameObject("Self Destruct Status Icon");
+                iconObject.transform.SetParent(transform, false);
+                iconObject.transform.localPosition = new Vector3(0f, 1.62f, 0f);
+                // The art is a large canvas; about 0.6 world units wide above the droid.
+                var scale = 0.6f / (texture.width / 100f);
+                iconObject.transform.localScale = new Vector3(scale, scale, 1f);
+                _selfDestructIconRenderer = iconObject.AddComponent<SpriteRenderer>();
+                _selfDestructIconRenderer.sprite = Sprite.Create(
+                    texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+                _selfDestructIconRenderer.sortingOrder = 34;
+                _selfDestructIconRenderer.enabled = false;
+            }
+
+            _selfDestructIconRenderer.enabled = isActive;
         }
 
         public void SetVirusActive(bool isActive)

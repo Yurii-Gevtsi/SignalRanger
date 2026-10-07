@@ -8,6 +8,30 @@ namespace Game.Tests.EditMode.Gameplay
     public sealed class BattleUnitViewTests
     {
         [Test]
+        public void SelfDestructMarker_AppearsAboveTheDroidAndTracksTheState()
+        {
+            var viewObject = new GameObject("Self Destruct View Test");
+            try
+            {
+                var view = viewObject.AddComponent<BattleUnitView>();
+                var setStatus = typeof(BattleUnitView).GetMethod("SetSelfDestructActive", BindingFlags.Public | BindingFlags.Instance);
+                Assert.IsNotNull(setStatus);
+                setStatus.Invoke(view, new object[] { true });
+                var icon = viewObject.transform.Find("Self Destruct Status Icon")?.GetComponent<SpriteRenderer>();
+                Assert.IsNotNull(icon);
+                Assert.IsTrue(icon.enabled);
+                Assert.AreEqual("self_destruct", icon.sprite.texture.name);
+                Assert.That(icon.sprite.bounds.size.x * icon.transform.localScale.x, Is.EqualTo(0.6f).Within(0.01f));
+                setStatus.Invoke(view, new object[] { false });
+                Assert.IsFalse(icon.enabled);
+            }
+            finally
+            {
+                Object.DestroyImmediate(viewObject);
+            }
+        }
+
+        [Test]
         public void VirusStatusIcon_SitsBesideTheHealthLabelOnTheOtherSideFromTheJammerIconAndTracksTheState()
         {
             var viewObject = new GameObject("Virus Status View Test");

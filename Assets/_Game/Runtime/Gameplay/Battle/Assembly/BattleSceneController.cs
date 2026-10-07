@@ -4436,6 +4436,7 @@ namespace Game.Gameplay.Battle.Assembly
                 presenter.View.SetElectroOverlay(electroOverlayFrames, _simulation.IsUnitElectrified(presenter.State.UnitId));
                 presenter.SetRepairJammerActive(_simulation.IsUnitRepairJammed(presenter.State.UnitId));
                 presenter.SetVirusActive(_simulation.IsUnitInfected(presenter.State.UnitId));
+                presenter.SetSelfDestructActive(_simulation.IsUnitSelfDestructing(presenter.State.UnitId));
             }
         }
 

@@ -55,6 +55,7 @@ namespace Game.Gameplay.Battle.Simulation
         private const string TeleportWeaponId = "weapon.teleport";
         private const string SwapJumpWeaponId = "weapon.swap-jump";
         private const string GrounderWeaponId = "weapon.grounder";
+        private const string SelfDestructWeaponId = "weapon.self-destruct";
         private const string BomberCopterProjectileId = "projectile.weapon.bomber";
         private const string BomberBombProjectileId = "projectile.weapon.bomber.bomb";
         private const string CarrierCopterProjectileId = "projectile.weapon.ufo-carrier";
@@ -241,6 +242,7 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly Dictionary<string, ActiveRepairEffect> _repairEffects = new(StringComparer.Ordinal);
         private readonly Dictionary<string, int> _repairJammerTurns = new(StringComparer.Ordinal);
         private readonly Dictionary<string, VirusInfection> _virusInfections = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, SelfDestructMark> _selfDestructMarks = new(StringComparer.Ordinal);
         private const int VirusDurationTurns = 3;
         private readonly Dictionary<string, ActiveDisorientation> _disorientations = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ActivePoisonEffect> _poisonEffects = new(StringComparer.Ordinal);
@@ -530,7 +532,6 @@ namespace Game.Gameplay.Battle.Simulation
             return weapon.WeaponId switch
             {
                 "weapon.turn-transfer"
-                    or "weapon.self-destruct"
                     or "weapon.nuclear-charge" => false,
                 _ => true
             };
@@ -551,6 +552,7 @@ namespace Game.Gameplay.Battle.Simulation
                 && weapon.WeaponId != OrbitalRocketWeaponId
                 && weapon.WeaponId != BoostWeaponId
                 && weapon.WeaponId != BomberWeaponId
+                && weapon.WeaponId != SelfDestructWeaponId
                 && weapon.WeaponId != CarrierWeaponId
                 && weapon.WeaponId != VirusWeaponId
                 && weapon.WeaponId != SkyHookWeaponId
@@ -847,6 +849,11 @@ namespace Game.Gameplay.Battle.Simulation
             if (weapon.WeaponId == BomberWeaponId || weapon.WeaponId == CarrierWeaponId)
             {
                 return LaunchBomber(unit, activeInventory, weapon);
+            }
+
+            if (weapon.WeaponId == SelfDestructWeaponId)
+            {
+                return ArmSelfDestruct(unit, activeInventory, weapon);
             }
 
             if (IsControlledDroneWeapon(weapon))
@@ -1215,6 +1222,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessElementalForEndingActiveTurn(_electricEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ProcessVirusForEndingActiveTurn();
+            ProcessSelfDestructForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
             ConsumeEmpStunForActiveTurn();
@@ -1503,6 +1511,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessElementalForEndingActiveTurn(_electricEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ProcessVirusForEndingActiveTurn();
+            ProcessSelfDestructForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
             ConsumeEmpStunForActiveTurn();
@@ -5223,6 +5232,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessElementalForEndingActiveTurn(_electricEffects);
             ProcessRepairJammerForEndingActiveTurn();
             ProcessVirusForEndingActiveTurn();
+            ProcessSelfDestructForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
             ConsumeEmpStunForActiveTurn();
@@ -6490,6 +6500,78 @@ namespace Game.Gameplay.Battle.Simulation
                 hitTerrain ? projectile.Definition.Radius * 2f : 0f);
         }
 
+        public bool IsUnitSelfDestructing(string unitId)
+        {
+            return !string.IsNullOrWhiteSpace(unitId) && _selfDestructMarks.ContainsKey(unitId);
+        }
+
+        /// <summary>
+        /// Marks the droid. Marking spends the charge but neither the action nor the turn: the droid may still
+        /// move and use another weapon until its turn ends.
+        /// </summary>
+        private BattleFireResult ArmSelfDestruct(BattleUnitState unit, WeaponInventoryRuntime inventory, WeaponDefinition weapon)
+        {
+            if (_selfDestructMarks.ContainsKey(unit.UnitId))
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+            }
+
+            if (!inventory.TryConsumeSelectedAmmo())
+            {
+                return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
+            }
+
+            _selfDestructMarks[unit.UnitId] = new SelfDestructMark(weapon);
+            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            UnitsMoved?.Invoke();
+            return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, unit.Position);
+        }
+
+        /// <summary>
+        /// When the marked droid's turn ends, its death and the blast are resolved together and only then is the
+        /// winner decided (so the last two droids dying at once is a draw).
+        /// </summary>
+        private void ProcessSelfDestructForEndingActiveTurn()
+        {
+            if (_selfDestructMarks.Count == 0)
+            {
+                return;
+            }
+
+            var unit = FindUnit(_state.Turn.ActiveUnitId);
+            if (unit == null || !_selfDestructMarks.TryGetValue(unit.UnitId, out var mark))
+            {
+                return;
+            }
+
+            _selfDestructMarks.Remove(unit.UnitId);
+            if (unit.IsDefeated)
+            {
+                return;
+            }
+
+            var team = unit.TeamId;
+            var modifiers = ResolveModifiersFor(team, mark.Weapon);
+            var impact = new ProjectileImpact(
+                $"projectile.{mark.Weapon.WeaponId}",
+                unit.UnitId,
+                unit.Position,
+                Vector2.up,
+                Mathf.RoundToInt(mark.Weapon.Damage * modifiers.DamageMultiplier),
+                mark.Weapon.ImpactRadius * modifiers.ImpactRadiusMultiplier);
+            ProjectileExploded?.Invoke(++_nextProjectileId, impact);
+            var terrainChanged = ResolveDamageImpact(impact, mark.Weapon);
+            ImpactResolved?.Invoke(new ImpactResolvedEvent(impact.Point, mark.Weapon, terrainChanged));
+            // The protocol sacrifices its owner even if the blast and any protection left them standing.
+            if (!unit.IsDefeated)
+            {
+                ApplyDamage(unit, unit.Health, SelfDestructWeaponId, team, canBeProtected: false);
+            }
+
+            UnitsMoved?.Invoke();
+            ResolveBattleAfterMotion();
+        }
+
         public bool IsUnitInfected(string unitId)
         {
             return !string.IsNullOrWhiteSpace(unitId) && _virusInfections.ContainsKey(unitId);
@@ -6611,6 +6693,16 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 HealthRestored?.Invoke(new HealthRestoredEvent(owner.Position, restored, owner.TeamId));
             }
+        }
+
+        private sealed class SelfDestructMark
+        {
+            public SelfDestructMark(WeaponDefinition weapon)
+            {
+                Weapon = weapon;
+            }
+
+            public WeaponDefinition Weapon { get; }
         }
 
         private sealed class VirusInfection
