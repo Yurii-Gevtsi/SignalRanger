@@ -263,6 +263,8 @@ namespace Game.Gameplay.Battle.Simulation
         private readonly Dictionary<string, ElementalStatus> _chillEffects = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ElementalStatus> _fireEffects = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ElementalStatus> _electricEffects = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, ActiveDisorientation> _aimJams = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, Vector2> _poisonLastPositions = new(StringComparer.Ordinal);
         private const int ElementalBaseDurationTurns = 2;
         private const int ElementalRepeatBonusPercent = 25;
         private readonly Dictionary<string, ActiveDisorientation> _freezes = new(StringComparer.Ordinal);
@@ -544,6 +546,12 @@ namespace Game.Gameplay.Battle.Simulation
                 return false;
             }
 
+            // The EMP aim jam leaves only weapons that need no aiming (mine, sword, devices).
+            if (_state.Turn.ActiveTeam == BattleTeamId.Player && !CanActiveUnitUseWeapon(weapon))
+            {
+                return false;
+            }
+
             // A multi-shot cassette blaster owns the rest of the turn once its
             // first round has been fired. Other weapons remain selectable after
             // any number of mine placements.
@@ -792,6 +800,11 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             if (!IsBattleMechanicAvailable(weapon))
+            {
+                return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
+            }
+
+            if (!CanActiveUnitUseWeapon(weapon))
             {
                 return new BattleFireResult(BattleFireOutcome.Blocked, unit.TeamId, weapon);
             }
@@ -1101,6 +1114,13 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
+            // A movement ban keeps the hook but blocks steering on the rope.
+            if (IsUnitMovementLocked(_ropeTraversal.OwnerUnitId))
+            {
+                horizontalDirection = 0;
+                verticalDirection = 0;
+            }
+
             _ropeTraversal.SetInput(GetMotor(_ropeTraversal.OwnerUnitId), horizontalDirection, verticalDirection);
         }
 
@@ -1265,6 +1285,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessSelfDestructForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
+            ConsumeAimJamForActiveTurn();
             ConsumeEmpStunForActiveTurn();
             ExpireGroundersForEndingTurn();
             _turnService.AdvanceTurn(_state);
@@ -1566,6 +1587,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessSelfDestructForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
+            ConsumeAimJamForActiveTurn();
             ConsumeEmpStunForActiveTurn();
             ExpireGroundersForEndingTurn();
             _turnService.AdvanceTurn(_state);
@@ -2178,7 +2200,7 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             // A frozen or disoriented droid keeps the automatic rise and hover but cannot steer.
-            var canSteer = !IsUnitFrozen(unit.UnitId) && !IsActiveUnitDisoriented();
+            var canSteer = !IsUnitMovementLocked(unit.UnitId);
             motor.SetHoverInput(
                 canSteer ? _boost.HorizontalInput : 0,
                 canSteer ? _boost.VerticalInput : 0);
@@ -3315,7 +3337,7 @@ namespace Game.Gameplay.Battle.Simulation
                 MineTriggered?.Invoke(guardian.Id);
             }
             else if (!guardian.Triggered && TryFindHostileCopterNear(guardian.TeamId, guardian.Position,
-                         guardian.Weapon.ImpactRadius, out var copterProjectileId))
+                         ResolveMineTriggerRange(guardian), out var copterProjectileId))
             {
                 // A hostile copter flying into range is shot down like a droid would be.
                 guardian.Triggered = true;
@@ -3900,7 +3922,8 @@ namespace Game.Gameplay.Battle.Simulation
 
                         if (streamHit.Boosted)
                         {
-                            resolvedDamage = Mathf.CeilToInt(resolvedDamage * (1f + ElementalRepeatBonusPercent / 100f));
+                            resolvedDamage = Mathf.CeilToInt(
+                                resolvedDamage * (1f + ResolveRepeatBonusPercent(sourceTeam, FireGunWeaponId) / 100f));
                         }
                     }
 
@@ -3913,7 +3936,14 @@ namespace Game.Gameplay.Battle.Simulation
                         {
                             // The shared fire status; its tick is 20% of everything this attack dealt to the droid.
                             streamHit.Total += Mathf.Max(0, healthBefore - unit.Health);
-                            ApplyElementalStatus(_fireEffects, unit, sourceTeam, streamHit.Total, attackId);
+                            var streamStatusTurns = ResolveElementStatusTurns(sourceTeam, weapon.WeaponId);
+                            ApplyElementalStatus(_fireEffects, unit, sourceTeam, streamHit.Total, attackId, streamStatusTurns);
+                            // The burning movement lock: 1 turn, 2 with the second step, +1 per Radius purchase.
+                            if (fireEvolution.ElementControlSteps > 0)
+                            {
+                                ApplyDisorientation(unit.UnitId, fireEvolution.ElementControlSteps
+                                    + streamStatusTurns - ElementalBaseDurationTurns);
+                            }
                         }
                     }
                 }
@@ -4542,6 +4572,12 @@ namespace Game.Gameplay.Battle.Simulation
             var appliesElectric = impactWeapon.WeaponId == EmpWeaponId;
             var appliesFreeze = impactWeapon.WeaponId == FreezeWeaponId;
             var freezeEvolution = appliesFreeze ? ResolveEvolutionFor(sourceTeam, impactWeapon) : default;
+            // The element cannons' Radius purchases lengthen their status (and their purchased controls) by a turn each.
+            var statusTurns = ResolveElementStatusTurns(sourceTeam, impactWeapon.WeaponId);
+            var cannonExtraTurns = statusTurns - ElementalBaseDurationTurns;
+            var movementPoisonPerSecond = impactWeapon.WeaponId == ToxicWeaponId
+                ? ResolveMovementPoisonPerSecond(sourceTeam, impactWeapon, poisonEvolution)
+                : 0f;
 
             const float selfDamageMultiplier = 1f;
             var settings = new RadialDamageSettings(effectiveDamage, impact.ImpactRadius, selfDamageMultiplier);
@@ -4558,29 +4594,48 @@ namespace Game.Gameplay.Battle.Simulation
                             _fireEffects, appliesFire, unit,
                             ResolveElementalRepeatBonus(
                                 _chillEffects, appliesChill, unit,
-                                ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution))))));
+                                ResolveFreezeChainDamage(ResolveIncomingDamage(unit, amount), unit, appliesFreeze, freezeEvolution),
+                                ResolveRepeatBonusPercent(sourceTeam, FreezeWeaponId)),
+                            ResolveRepeatBonusPercent(sourceTeam, FireGunWeaponId)),
+                        ElementalRepeatBonusPercent),
+                    ResolveRepeatBonusPercent(sourceTeam, ToxicWeaponId)));
             foreach (var damageEvent in damageEvents)
             {
                 DamageApplied?.Invoke(sourceTeam, damageEvent);
                 var target = FindUnit(damageEvent.TargetUnitId);
                 if (appliesPoison)
                 {
-                    ApplyPoison(target, sourceTeam, damageEvent.Damage, poisonEvolution);
+                    ApplyPoison(target, sourceTeam, damageEvent.Damage, poisonEvolution, statusTurns, movementPoisonPerSecond);
                 }
 
                 if (appliesChill)
                 {
-                    ApplyElementalStatus(_chillEffects, target, sourceTeam, damageEvent.Damage);
+                    ApplyElementalStatus(_chillEffects, target, sourceTeam, damageEvent.Damage, turns: statusTurns);
+                    // The full freeze of the cryo cannon: 1 turn, 2 with the second step, +1 per Radius purchase.
+                    if (appliesFreeze && freezeEvolution.ElementControlSteps > 0)
+                    {
+                        ApplyFreeze(target?.UnitId, freezeEvolution.ElementControlSteps + cannonExtraTurns);
+                    }
                 }
 
                 if (appliesFire)
                 {
-                    ApplyElementalStatus(_fireEffects, target, sourceTeam, damageEvent.Damage);
+                    ApplyElementalStatus(_fireEffects, target, sourceTeam, damageEvent.Damage, turns: statusTurns);
                 }
 
                 if (appliesElectric)
                 {
-                    ApplyElementalStatus(_electricEffects, target, sourceTeam, damageEvent.Damage);
+                    ApplyElementalStatus(_electricEffects, target, sourceTeam, damageEvent.Damage, turns: statusTurns);
+                    // The aim jam (1 → 2 turns) and the movement lock (2 → 3 turns), each +1 per Radius purchase.
+                    if (empEvolution.ElementControlSteps > 0)
+                    {
+                        ApplyAimJam(target?.UnitId, empEvolution.ElementControlSteps + cannonExtraTurns);
+                    }
+
+                    if (empEvolution.ElementSecondFeatureSteps > 0)
+                    {
+                        ApplyDisorientation(target?.UnitId, 1 + empEvolution.ElementSecondFeatureSteps + cannonExtraTurns);
+                    }
                 }
 
                 if (appliesEmpStun)
@@ -4760,14 +4815,16 @@ namespace Game.Gameplay.Battle.Simulation
             BattleUnitState unit,
             BattleTeamId sourceTeam,
             int resolvedDirectDamage,
-            WeaponEvolutionProfile evolution)
+            WeaponEvolutionProfile evolution,
+            int durationTurns = ToxicBaseDurationTurns,
+            float movementDamagePerSecond = 0f)
         {
             if (unit == null || unit.IsDefeated || resolvedDirectDamage <= 0)
             {
                 return;
             }
 
-            var duration = ToxicBaseDurationTurns;
+            var duration = Mathf.Max(1, durationTurns);
             var damagePerTurn = Mathf.Max(1, Mathf.RoundToInt(resolvedDirectDamage * ElementalStatusDamageRatio));
             if (_poisonEffects.TryGetValue(unit.UnitId, out var existing))
             {
@@ -4776,7 +4833,8 @@ namespace Game.Gameplay.Battle.Simulation
                 existing.TurnsRemaining = duration;
                 existing.ArmorWeakenPercent = Mathf.Max(existing.ArmorWeakenPercent, evolution.ToxicArmorWeakenPercent);
                 existing.ArmorWeakenTurnsRemaining = Mathf.Max(existing.ArmorWeakenTurnsRemaining, evolution.ToxicArmorWeakenTurns);
-                existing.MovementDamagePerSecond = Mathf.Max(existing.MovementDamagePerSecond, evolution.ToxicMovementDamagePerSecond);
+                // A new hit replaces the movement poison of the old one instead of stacking it.
+                existing.MovementDamagePerSecond = movementDamagePerSecond;
                 return;
             }
 
@@ -4787,11 +4845,12 @@ namespace Game.Gameplay.Battle.Simulation
                 duration,
                 evolution.ToxicArmorWeakenPercent,
                 evolution.ToxicArmorWeakenTurns,
-                evolution.ToxicMovementDamagePerSecond);
+                movementDamagePerSecond);
+            _poisonLastPositions[unit.UnitId] = unit.Position;
         }
 
         /// <summary>The same shared +25% for poison: nanotoxic charge, toxic sticky release and the poison spider.</summary>
-        private int ResolvePoisonRepeatBonus(bool applies, BattleUnitState unit, int amount)
+        private int ResolvePoisonRepeatBonus(bool applies, BattleUnitState unit, int amount, float bonusPercent)
         {
             if (!applies || unit == null || amount <= 0
                 || !_poisonEffects.TryGetValue(unit.UnitId, out var poison) || poison.TurnsRemaining <= 0)
@@ -4799,11 +4858,11 @@ namespace Game.Gameplay.Battle.Simulation
                 return amount;
             }
 
-            return Mathf.CeilToInt(amount * (1f + ElementalRepeatBonusPercent / 100f));
+            return Mathf.CeilToInt(amount * (1f + bonusPercent / 100f));
         }
 
         private int ResolveElementalRepeatBonus(
-            Dictionary<string, ElementalStatus> effects, bool applies, BattleUnitState unit, int amount)
+            Dictionary<string, ElementalStatus> effects, bool applies, BattleUnitState unit, int amount, float bonusPercent)
         {
             if (!applies || unit == null || amount <= 0 || !effects.ContainsKey(unit.UnitId))
             {
@@ -4811,8 +4870,54 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             // A second hit of the same element boosts only its own direct damage.
-            return Mathf.CeilToInt(amount * (1f + ElementalRepeatBonusPercent / 100f));
+            return Mathf.CeilToInt(amount * (1f + bonusPercent / 100f));
         }
+
+        /// <summary>
+        /// The repeat bonus of an element for the attacking side: the shared +25%, raised to 33⅓ / 41⅔ / 50% by the
+        /// bonus scale of that side's cannon of the element. It boosts every weapon of that element the side fires.
+        /// </summary>
+        private float ResolveRepeatBonusPercent(BattleTeamId sourceTeam, string elementCannonId)
+        {
+            var steps = ProgressionFor(sourceTeam).ResolveEvolution(elementCannonId).ElementSecondFeatureSteps;
+            return ResolveRepeatBonusPercentForSteps(steps);
+        }
+
+        public static float ResolveRepeatBonusPercentForSteps(int bonusSteps)
+        {
+            return ElementalRepeatBonusPercent + Mathf.Clamp(bonusSteps, 0, 3) * (ElementalRepeatBonusPercent / 3f);
+        }
+
+        /// <summary>Status turns an attack applies: 2, or 2 + the Radius purchases (up to 2) of an element cannon.</summary>
+        private int ResolveElementStatusTurns(BattleTeamId sourceTeam, string weaponId)
+        {
+            return WeaponUpgradeChoiceResolver.IsElementCannon(weaponId)
+                ? WeaponUpgradeChoiceResolver.ResolveElementCannonStatusTurns(
+                    ProgressionFor(sourceTeam).ResolveUpgradeCount(weaponId, WeaponUpgradePath.Radius))
+                : ElementalBaseDurationTurns;
+        }
+
+        /// <summary>
+        /// The nanotoxic poison for movement: 0.5% of the unlock-level HP cap per second of any change of position.
+        /// Until the HP cap curve exists it is derived from the charge's base damage (16% of the same cap), and it
+        /// follows the Core purchases like the direct damage. The second step doubles it.
+        /// </summary>
+        private float ResolveMovementPoisonPerSecond(BattleTeamId sourceTeam, WeaponDefinition weapon,
+            WeaponEvolutionProfile evolution)
+        {
+            if (weapon == null || evolution.ElementControlSteps <= 0)
+            {
+                return 0f;
+            }
+
+            var perSecond = weapon.Damage * (MovementPoisonCapPercent / NanotoxicBaseDamageCapPercent)
+                * ResolveModifiersFor(sourceTeam, weapon).DamageMultiplier;
+            return evolution.ElementControlSteps >= 2 ? perSecond * 2f : perSecond;
+        }
+
+        private const float MovementPoisonCapPercent = 0.5f;
+        private const float NanotoxicBaseDamageCapPercent = 16f;
+        private const float TeleportPositionJump = 1f;
 
         private readonly Dictionary<(int, string), StreamHit> _streamHits = new();
 
@@ -4824,7 +4929,7 @@ namespace Game.Gameplay.Battle.Simulation
 
         private void ApplyElementalStatus(
             Dictionary<string, ElementalStatus> effects, BattleUnitState unit, BattleTeamId sourceTeam, int directDamage,
-            int attackId = 0)
+            int attackId = 0, int turns = ElementalBaseDurationTurns)
         {
             if (unit == null || unit.IsDefeated || directDamage <= 0)
             {
@@ -4834,7 +4939,7 @@ namespace Game.Gameplay.Battle.Simulation
             // The tick is 20% of the direct hit this unit took; a repeat hit replaces it and the
             // remaining time with the full base duration instead of stacking.
             var tick = Mathf.Max(1, Mathf.RoundToInt(directDamage * ElementalStatusDamageRatio));
-            effects[unit.UnitId] = new ElementalStatus(unit.UnitId, sourceTeam, tick, ElementalBaseDurationTurns)
+            effects[unit.UnitId] = new ElementalStatus(unit.UnitId, sourceTeam, tick, Mathf.Max(1, turns))
             {
                 AttackId = attackId
             };
@@ -4979,17 +5084,22 @@ namespace Game.Gameplay.Battle.Simulation
                     continue;
                 }
 
-                var motor = GetMotor(effect.UnitId);
-                if (motor == null || motor.IsStable)
+                // Any change of position counts: walking, jumping, knockback, a pull or a fall. A jump of more
+                // than a unit within one tick is a teleport and counts as one second.
+                var last = _poisonLastPositions.TryGetValue(effect.UnitId, out var stored) ? stored : unit.Position;
+                _poisonLastPositions[effect.UnitId] = unit.Position;
+                var moved = Vector2.Distance(last, unit.Position);
+                var movedSeconds = moved > TeleportPositionJump ? 1f : moved > 0.0005f ? deltaTime : 0f;
+                if (movedSeconds <= 0f)
                 {
                     continue;
                 }
 
-                effect.MovementSecondsAccumulator += deltaTime;
-                while (effect.MovementSecondsAccumulator >= PoisonMovementDamageTickSeconds)
+                effect.MovementSecondsAccumulator += movedSeconds * effect.MovementDamagePerSecond;
+                var damage = Mathf.FloorToInt(effect.MovementSecondsAccumulator);
+                if (damage > 0)
                 {
-                    effect.MovementSecondsAccumulator -= PoisonMovementDamageTickSeconds;
-                    var damage = Mathf.Max(1, Mathf.RoundToInt(effect.MovementDamagePerSecond));
+                    effect.MovementSecondsAccumulator -= damage;
                     ApplyDamage(unit, damage, PoisonDamageSourceId, effect.SourceTeam);
                 }
             }
@@ -5103,6 +5213,81 @@ namespace Game.Gameplay.Battle.Simulation
                 && effect.FirstAffectedTurnSequence <= _turnSequence
                 && effect.TurnsRemaining > 0;
         }
+
+        /// <summary>
+        /// True while the unit may not move by itself: the full freeze, the burning or electric movement lock (and
+        /// the old disorientation) for the unit's own turns they cover.
+        /// </summary>
+        public bool IsUnitMovementLocked(string unitId)
+        {
+            return IsLockActiveFor(_freezes, unitId) || IsLockActiveFor(_disorientations, unitId);
+        }
+
+        /// <summary>True while the EMP aim jam forbids choosing a weapon that needs aiming.</summary>
+        public bool IsUnitAimJammed(string unitId)
+        {
+            return IsLockActiveFor(_aimJams, unitId);
+        }
+
+        /// <summary>Whether the active unit may use this weapon now: an aim jam leaves only weapons without aiming.</summary>
+        public bool CanActiveUnitUseWeapon(WeaponDefinition weapon)
+        {
+            return weapon == null || !RequiresAim(weapon) || !IsUnitAimJammed(_state.Turn.ActiveUnitId);
+        }
+
+        private bool IsLockActiveFor(Dictionary<string, ActiveDisorientation> locks, string unitId)
+        {
+            return !string.IsNullOrWhiteSpace(unitId)
+                && locks.TryGetValue(unitId, out var effect)
+                && effect.TurnsRemaining > 0
+                && (unitId != _state.Turn.ActiveUnitId || effect.FirstAffectedTurnSequence <= _turnSequence);
+        }
+
+        private void ApplyAimJam(string unitId, int turns)
+        {
+            if (string.IsNullOrWhiteSpace(unitId) || turns <= 0)
+            {
+                return;
+            }
+
+            var firstAffectedTurn = _turnSequence + 1;
+            if (_aimJams.TryGetValue(unitId, out var existing))
+            {
+                existing.TurnsRemaining = Mathf.Max(existing.TurnsRemaining, turns);
+                existing.FirstAffectedTurnSequence = Mathf.Min(existing.FirstAffectedTurnSequence, firstAffectedTurn);
+                return;
+            }
+
+            _aimJams[unitId] = new ActiveDisorientation(firstAffectedTurn, turns);
+        }
+
+        private void ConsumeAimJamForActiveTurn()
+        {
+            var activeUnitId = _state.Turn.ActiveUnitId;
+            if (string.IsNullOrWhiteSpace(activeUnitId)
+                || !_aimJams.TryGetValue(activeUnitId, out var effect)
+                || effect.FirstAffectedTurnSequence > _turnSequence)
+            {
+                return;
+            }
+
+            effect.TurnsRemaining--;
+            if (effect.TurnsRemaining <= 0)
+            {
+                _aimJams.Remove(activeUnitId);
+            }
+        }
+
+        /// <summary>Own walking is halved by the shared cold and fire statuses.</summary>
+        private float ResolveManualMovementFactor(string unitId)
+        {
+            return !string.IsNullOrWhiteSpace(unitId)
+                && (_chillEffects.ContainsKey(unitId) || _fireEffects.ContainsKey(unitId))
+                ? ElementalSlowMovementFactor
+                : 1f;
+        }
+
+        private const float ElementalSlowMovementFactor = 0.5f;
 
         public bool IsUnitFrozen(string unitId)
         {
@@ -5671,6 +5856,7 @@ namespace Game.Gameplay.Battle.Simulation
             ProcessSelfDestructForEndingActiveTurn();
             ConsumeDisorientationForActiveTurn();
             ConsumeFreezeForActiveTurn();
+            ConsumeAimJamForActiveTurn();
             ConsumeEmpStunForActiveTurn();
             ExpireGroundersForEndingTurn();
             _turnService.AdvanceTurn(_state);
@@ -5727,7 +5913,8 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
-            var outcome = motor.Walk(direction, tickSeconds);
+            // The shared cold and fire halve the droid's own walking while the status lasts.
+            var outcome = motor.Walk(direction, tickSeconds * ResolveManualMovementFactor(unit.UnitId));
             if (outcome == WalkOutcome.None)
             {
                 return;
@@ -7474,6 +7661,26 @@ namespace Game.Gameplay.Battle.Simulation
             return TryFindMineTriggerTarget(mine, out _);
         }
 
+        /// <summary>
+        /// The mine and the guardian drone notice a droid within the shared N0; the guardian's Radius purchases add
+        /// 10% of N0 each. Other ground devices keep their own trigger radius.
+        /// </summary>
+        private float ResolveMineTriggerRange(ActiveMine mine)
+        {
+            if (mine.Weapon.WeaponId == MineWeaponId)
+            {
+                return PrototypeWeaponLibrary.SharedNearbyRadius;
+            }
+
+            if (mine.Weapon.WeaponId == GuardianDroneWeaponId)
+            {
+                var radiusPurchases = ProgressionFor(mine.TeamId).ResolveUpgradeCount(GuardianDroneWeaponId, WeaponUpgradePath.Radius);
+                return PrototypeWeaponLibrary.SharedNearbyRadius * (1f + Mathf.Clamp(radiusPurchases, 0, 4) * 0.10f);
+            }
+
+            return mine.Weapon.ImpactRadius;
+        }
+
         private bool TryFindMineTriggerTarget(ActiveMine mine, out BattleUnitState target)
         {
             target = null;
@@ -7488,9 +7695,7 @@ namespace Game.Gameplay.Battle.Simulation
                 {
                     if (unit != null
                         && !unit.IsDefeated
-                        && Vector2.Distance(unit.Position, mine.Position) <=
-                            (mine.Weapon.WeaponId == MineWeaponId
-                                ? PrototypeWeaponLibrary.SharedNearbyRadius : mine.Weapon.ImpactRadius))
+                        && Vector2.Distance(unit.Position, mine.Position) <= ResolveMineTriggerRange(mine))
                     {
                         target = unit;
                         return true;

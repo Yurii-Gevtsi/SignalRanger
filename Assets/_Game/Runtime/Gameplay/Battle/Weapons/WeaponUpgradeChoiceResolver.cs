@@ -20,6 +20,7 @@ namespace Game.Gameplay.Battle.Weapons
         private const int DamagePercentPerCoreUpgrade = 3;
         private const int AmmoPerLoadoutUpgrade = 1;
         private const float RadiusPercentPerUpgrade = 0.08f;
+        private const float StandardRadiusPercentPerUpgrade = 0.10f;
 
         public static int Count(SaveWeaponProgressData progress, WeaponUpgradePath path, int throughRank = 60)
         {
@@ -79,15 +80,13 @@ namespace Game.Gameplay.Battle.Weapons
                     ResolveBomberSeconds(count),
                 WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.ion-shotgun" =>
                     weapon.ProjectileRadius * (1f + count * RadiusPercentPerUpgrade),
-                WeaponUpgradePath.Radius => weapon.ImpactRadius *
-                    (1f + count * (weapon.WeaponId == "weapon.grounder" || weapon.WeaponId == "weapon.granata"
-                        || weapon.WeaponId == "weapon.force-field" || weapon.WeaponId == "weapon.swap-jump"
-                        || weapon.WeaponId == "weapon.self-destruct"
-                        || weapon.WeaponId == "weapon.impulse"
-                        || weapon.WeaponId == "weapon.c4"
-                        || weapon.WeaponId == "weapon.mine" || weapon.WeaponId == "weapon.titanium-disc"
-                        || weapon.WeaponId == "weapon.mortira"
-                        ? 0.10f : RadiusPercentPerUpgrade)),
+                WeaponUpgradePath.Radius when IsElementCannon(weapon.WeaponId) =>
+                    ResolveElementCannonStatusTurns(count),
+                // The laser fence's Radius lengthens the link between its hulls by 10% of 5.4 per purchase.
+                WeaponUpgradePath.Radius when weapon.WeaponId == "weapon.laser-fence" =>
+                    5.4f * (1f + Math.Clamp(count, 0, 4) * StandardRadiusPercentPerUpgrade),
+                // The standard Radius step is +10% of the base (the shotgun pellet above has its own 8%).
+                WeaponUpgradePath.Radius => weapon.ImpactRadius * (1f + count * StandardRadiusPercentPerUpgrade),
                 _ => 0f
             };
         }
@@ -172,19 +171,26 @@ namespace Game.Gameplay.Battle.Weapons
             WeaponProgressionDefinition definition = null)
         {
             if (weapon?.WeaponId is "weapon.bur" or "weapon.bur-rocket" or "weapon.titanium-barrier"
-                or "weapon.hopping-grenade" or "weapon.boost" or "weapon.bomber" or "weapon.ufo-carrier")
+                or "weapon.hopping-grenade" or "weapon.boost" or "weapon.bomber" or "weapon.ufo-carrier"
+                or "weapon.laser-fence" || IsElementCannon(weapon?.WeaponId))
             {
                 return 0;
             }
 
-            var percentPerUpgrade = weapon != null &&
-                (weapon.WeaponId == "weapon.grounder" || weapon.WeaponId == "weapon.granata"
-                    || weapon.WeaponId == "weapon.force-field" || weapon.WeaponId == "weapon.swap-jump"
-                    || weapon.WeaponId == "weapon.self-destruct"
-                    || weapon.WeaponId == "weapon.impulse"
-                    || weapon.WeaponId == "weapon.c4" || weapon.WeaponId == "weapon.mine"
-                    || weapon.WeaponId == "weapon.titanium-disc" || weapon.WeaponId == "weapon.mortira") ? 10 : 8;
+            var percentPerUpgrade = weapon?.WeaponId == "weapon.ion-shotgun" ? 8 : 10;
             return Count(progress, WeaponUpgradePath.Radius) * percentPerUpgrade;
+        }
+
+        /// <summary>The four element cannons: their Radius purchases lengthen the status instead of the blast.</summary>
+        public static bool IsElementCannon(string weaponId)
+        {
+            return weaponId is "weapon.emp" or "weapon.freeze" or "weapon.fire-gun" or "weapon.toxic";
+        }
+
+        /// <summary>Status turns of an element cannon: 2, +1 per Radius purchase (two purchases, so 4 at most).</summary>
+        public static int ResolveElementCannonStatusTurns(int radiusPurchases)
+        {
+            return 2 + Math.Clamp(radiusPurchases, 0, 2);
         }
 
         public static bool TryGetChoice(SaveWeaponProgressData progress, int rank, out WeaponUpgradePath path)

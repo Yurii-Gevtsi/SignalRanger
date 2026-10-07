@@ -2346,7 +2346,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void EmpCannon_RegistryAndSkinsMatchTheCatalogWhileTheBansAwaitTheOwner()
+        public void EmpCannon_RegistryAndSkinsMatchTheCatalog()
         {
             Assert.That(WeaponProgressionCatalog.TryGet("weapon.emp", out var definition), Is.True);
             Assert.That(new[] { definition.CoreUpgradeLimit, definition.AimUpgradeLimit,
@@ -4077,17 +4077,16 @@ namespace Game.Tests.EditMode.Gameplay
         {
             var guardian = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.guardian-drone");
             var harness = CreateBomberHarness(opponentWeapon: guardian);
-            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                       // the opponent places its drone
-            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
             var guardianPoint = Vector2.zero;
             harness.Simulation.MineDeployed += evt => guardianPoint = evt.Point;
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                       // the opponent places its drone
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
             TickMany(harness.Simulation, 240, 1f / 120f);
             if (harness.State.Turn.ActiveTeam == BattleTeamId.Opponent)
                 harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
-            var guardianX = harness.State.GetUnit("opponent.test.01").Position.x;
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
             Assert.That(harness.Simulation.HasPlayerCopter, Is.True);
-            FlyCopterTo(harness, new Vector2(guardianX - 1.2f, 0.4f), 0.2f);
+            FlyCopterTo(harness, guardianPoint + new Vector2(-0.6f, 0.9f), 0.2f);
             TickMany(harness.Simulation, 240, 1f / 120f);
             Assert.That(harness.Simulation.HasPlayerCopter, Is.False, "the drone rose, fired and brought the copter down");
         }
@@ -4636,7 +4635,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void CryoCannon_RegistryArtAndTheTwoFeaturesAwaitingTheOwnerMatchTheCatalog()
+        public void CryoCannon_RegistryArtAndFeaturesMatchTheCatalogWithoutLegacyEffects()
         {
             const string id = "weapon.freeze";
             Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
@@ -4654,7 +4653,7 @@ namespace Game.Tests.EditMode.Gameplay
             progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = "full-freeze" });
             progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = 1 });
             var profile = WeaponEvolutionRuntimeResolver.Resolve(weapon, progress);
-            Assert.That(profile.CryoFreezeTurns, Is.Zero, "the purchased full_freeze has no effect until the owner defines it");
+            Assert.That(profile.CryoFreezeTurns, Is.Zero, "the full freeze uses the shared movement lock, not the legacy freeze turns");
             Assert.That(profile.CryoChainDamagePercent, Is.Zero);
 
             // Same for the EMP cannon's two purchases: no leftover legacy stun, weaken or movement lock.
@@ -4762,7 +4761,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void LavaGun_RegistryFeaturesAwaitingTheOwnerLeaveNoLegacyEffectAndTheArtExists()
+        public void LavaGun_RegistryFeaturesLeaveNoLegacyEffectAndTheArtExists()
         {
             const string id = "weapon.fire-gun";
             Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
@@ -4844,7 +4843,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void NanotoxicCharge_RegistryArtAndTheTwoFeaturesAwaitingTheOwnerLeaveNoLegacyEffect()
+        public void NanotoxicCharge_RegistryArtAndFeaturesLeaveNoLegacyEffect()
         {
             const string id = "weapon.toxic";
             Assert.That(WeaponProgressionCatalog.TryGet(id, out var definition), Is.True);
@@ -6165,45 +6164,269 @@ namespace Game.Tests.EditMode.Gameplay
                 "the elemental poison always expires after two completed turns of its victim");
         }
 
-        [Test]
-        public void ToxicWeaponBranchB_DealsExtraDamage_WhilePoisonedTargetMoves()
+        /// <summary>
+        /// A cannon developed with Aim purchases (they do not change the damage), the first feature, optional Loadout
+        /// and Radius purchases and, when asked, the second feature.
+        /// </summary>
+        private static SaveWeaponProgressData CreateCannonProgress(string weaponId, string firstOption, int firstSteps,
+            int radius = 0, string secondOption = null, int secondSteps = 0)
         {
-            var weapon = CreateWeapon("weapon.toxic", WeaponRole.DirectProjectile, 30, 1.2f, gravityScale: 0f);
-            var evolutions = new Dictionary<string, WeaponEvolutionProfile>
+            var progress = new SaveWeaponProgressData { weaponId = weaponId };
+            progress.EnsureDefaults();
+            var rank = 1;
+            for (var i = 0; i < 4; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = ++rank, path = (int)WeaponUpgradePath.Aim });
+            progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 5, optionId = firstOption });
+            progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 5, purchaseCount = firstSteps });
+            rank += firstSteps;
+            var loadout = secondOption != null ? 2 : 0;
+            for (var i = 0; i < loadout; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = ++rank, path = (int)WeaponUpgradePath.Loadout });
+            for (var i = 0; i < radius; i++)
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = ++rank, path = (int)WeaponUpgradePath.Radius });
+            if (secondOption != null)
             {
-                [weapon.WeaponId] = new WeaponEvolutionProfile(1, 0f, 1f,
-                    toxicMovementDamagePerSecond: 6f, toxicDurationBonusTurns: 0)
-            };
-            var harness = CreateHarness(weapon, playerWeaponEvolutions: evolutions);
-            var opponent = harness.State.GetUnit("opponent.test.01");
-
-            var exploded = false;
-            var turnAdvanced = false;
-            harness.Simulation.ProjectileExploded += (id, impact) => exploded = true;
-            harness.Simulation.TurnAdvanced += (team, reason) => turnAdvanced = true;
-
-            harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 20f, true));
-            for (var i = 0; i < 240 && !exploded; i++)
-            {
-                harness.Simulation.Tick(1f / 60f);
-            }
-            Assert.IsTrue(exploded);
-
-            for (var i = 0; i < 420 && !turnAdvanced; i++)
-            {
-                harness.Simulation.Tick(1f / 60f);
+                Assert.That(rank, Is.GreaterThanOrEqualTo(10), "the second feature needs weapon rank 10");
+                progress.evolutionChoices.Add(new SaveWeaponEvolutionChoiceData { rank = 10, optionId = secondOption });
+                progress.specialUpgrades.Add(new SaveWeaponSpecialUpgradeData { rank = 10, purchaseCount = secondSteps });
+                rank += secondSteps;
             }
 
-            Assert.IsTrue(turnAdvanced);
-            Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam,
-                "the poisoned opponent is now the active unit and can move itself");
+            progress.rank = rank;
+            return progress;
+        }
 
-            var healthBeforeMovement = opponent.Health;
-            harness.Simulation.Walk(1, 0f);
-            TickMany(harness.Simulation, 600, 1f / 60f);
+        private static Harness CreateCannonHarness(string weaponId, SaveWeaponProgressData progress, int damage = 20,
+            WeaponDefinition opponentWeapon = null, Vector2? ally = null)
+        {
+            var cannon = CreateWeapon(weaponId, WeaponRole.DirectProjectile, damage: damage, impactRadius: 2.5f,
+                gravityScale: 0f, timeoutSeconds: 8f);
+            return CreateHarness(cannon, opponentWeapon ?? CreateWeapon("weapon.impulse", damage: 10),
+                playerWeaponProgress: progress, secondPlayerPosition: ally);
+        }
 
-            Assert.Less(opponent.Health, healthBeforeMovement,
-                "moving while poisoned by the mobile toxin (branch B) deals extra damage on top of the turn tick");
+        /// <summary>Ends turns until the opponent has finished the given number of its own turns.</summary>
+        private static void EndOpponentTurns(Harness harness, int turns)
+        {
+            var done = 0;
+            for (var i = 0; i < 20 && done < turns; i++)
+            {
+                var opponentTurn = harness.State.Turn.ActiveTeam == BattleTeamId.Opponent;
+                harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+                if (opponentTurn) done++;
+            }
+        }
+
+        private static void ToOpponentTurn(Harness harness)
+        {
+            for (var i = 0; i < 3 && harness.State.Turn.ActiveTeam != BattleTeamId.Opponent; i++)
+                harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+        }
+
+        [Test]
+        public void EmpCannon_TheAimJamLeavesTheVictimOnlyWeaponsWithoutAimingForItsOwnTurns()
+        {
+            var mine = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.mine");
+            var harness = CreateCannonHarness("weapon.emp", CreateCannonProgress("weapon.emp", "aim-jam", 1));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            ThrowAtOpponent(harness);
+            ToOpponentTurn(harness);
+            Assert.That(harness.Simulation.IsUnitAimJammed(enemy.UnitId), Is.True);
+            Assert.That(harness.Simulation.CanActiveUnitUseWeapon(harness.Simulation.ActiveInventory.Selected), Is.False,
+                "an aimed weapon cannot be used");
+            Assert.That(harness.Simulation.CanActiveUnitUseWeapon(mine), Is.True, "a weapon without aiming still can");
+            Assert.That(harness.Simulation.TryFire(new AimState(enemy.Position, Vector2.left, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Blocked));
+            Assert.That(harness.Simulation.CanAcceptMovementInput(), Is.True, "the aim jam alone does not stop movement");
+            EndOpponentTurns(harness, 1);
+            ToOpponentTurn(harness);
+            Assert.That(harness.Simulation.IsUnitAimJammed(enemy.UnitId), Is.False, "one own turn with the first step");
+        }
+
+        [Test]
+        public void EmpCannon_TheMovementLockIsItsOwnCounterAndRadiusPurchasesLengthenStatusAndControls()
+        {
+            // Aim jam 2 steps (2 turns), one Radius purchase (+1 everywhere), movement lock 1 step (2 + 1 turns).
+            var progress = CreateCannonProgress("weapon.emp", "aim-jam", 2, radius: 1,
+                secondOption: "movement-lock", secondSteps: 1);
+            var harness = CreateCannonHarness("weapon.emp", progress);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var direct = start - enemy.Health;
+            ToOpponentTurn(harness);
+            Assert.That(harness.Simulation.IsUnitMovementLocked(enemy.UnitId), Is.True);
+            Assert.That(harness.Simulation.CanAcceptMovementInput(), Is.False, "no walking, jumping or steering");
+            var afterHit = enemy.Health;
+            EndOpponentTurns(harness, 2);
+            ToOpponentTurn(harness);
+            Assert.That(harness.Simulation.IsUnitMovementLocked(enemy.UnitId), Is.True, "2 + 1 turns of movement lock");
+            Assert.That(harness.Simulation.IsUnitAimJammed(enemy.UnitId), Is.True, "2 + 1 turns of aim jam");
+            Assert.That(harness.Simulation.IsUnitElectrified(enemy.UnitId), Is.True, "the status lasts 2 + 1 turns");
+            EndOpponentTurns(harness, 1);
+            Assert.That(harness.Simulation.IsUnitElectrified(enemy.UnitId), Is.False);
+            Assert.That(harness.Simulation.IsUnitMovementLocked(enemy.UnitId), Is.False);
+            var tick = Mathf.Max(1, Mathf.RoundToInt(direct * 0.2f));
+            Assert.That(afterHit - enemy.Health, Is.EqualTo(tick * 3), "three ticks for three turns");
+        }
+
+        [Test]
+        public void ElementCannons_RadiusPurchasesAreStatusTurnsNotABiggerBlast()
+        {
+            foreach (var id in new[] { "weapon.emp", "weapon.freeze", "weapon.fire-gun", "weapon.toxic" })
+            {
+                var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
+                WeaponProgressionCatalog.TryGet(id, out var definition);
+                var progress = new SaveWeaponProgressData { weaponId = id, rank = 3 };
+                progress.EnsureDefaults();
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = 2, path = (int)WeaponUpgradePath.Radius });
+                progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = 3, path = (int)WeaponUpgradePath.Radius });
+                Assert.That(WeaponUpgradeChoiceResolver.ResolveImpactRadiusPercent(weapon, progress, definition), Is.Zero, id);
+                Assert.That(WeaponUpgradeChoiceResolver.ResolveValue(weapon, definition, progress, WeaponUpgradePath.Radius),
+                    Is.EqualTo(4f), id + ": 2 + 2 turns");
+            }
+
+            var grenade = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.cryo-grenade");
+            var grenadeProgress = new SaveWeaponProgressData { weaponId = grenade.WeaponId, rank = 2 };
+            grenadeProgress.EnsureDefaults();
+            grenadeProgress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = 2, path = (int)WeaponUpgradePath.Radius });
+            WeaponProgressionCatalog.TryGet(grenade.WeaponId, out var grenadeDefinition);
+            Assert.That(WeaponUpgradeChoiceResolver.ResolveImpactRadiusPercent(grenade, grenadeProgress, grenadeDefinition),
+                Is.EqualTo(10), "the standard Radius step is 10% of the base");
+        }
+
+        [Test]
+        public void SharedColdAndFire_HalveTheVictimsOwnWalking()
+        {
+            float WalkedDistance(string weaponId)
+            {
+                var harness = CreateCannonHarness(weaponId, null);
+                ThrowAtOpponent(harness);
+                ToOpponentTurn(harness);
+                var enemy = harness.State.GetUnit("opponent.test.01");
+                var startX = enemy.Position.x;
+                for (var i = 0; i < 60; i++)
+                {
+                    harness.Simulation.Walk(1, 0f);
+                    harness.Simulation.Tick(1f / 120f);
+                }
+
+                harness.Simulation.Walk(0, 0f);
+                return Mathf.Abs(enemy.Position.x - startX);
+            }
+
+            var normal = WalkedDistance("weapon.impulse");
+            var chilled = WalkedDistance("weapon.freeze");
+            var burning = WalkedDistance("weapon.incendiary-grenade");
+            Assert.That(normal, Is.GreaterThan(0.2f));
+            Assert.That(chilled / normal, Is.EqualTo(0.5f).Within(0.12f), "cold halves walking");
+            Assert.That(burning / normal, Is.EqualTo(0.5f).Within(0.12f), "fire halves walking");
+        }
+
+        [Test]
+        public void CryoCannon_TheFullFreezeBlocksMovementForOneTurnAndTwoWithTheSecondStep()
+        {
+            foreach (var steps in new[] { 1, 2 })
+            {
+                var harness = CreateCannonHarness("weapon.freeze", CreateCannonProgress("weapon.freeze", "full-freeze", steps));
+                var enemy = harness.State.GetUnit("opponent.test.01");
+                ThrowAtOpponent(harness);
+                ToOpponentTurn(harness);
+                Assert.That(harness.Simulation.IsUnitFrozen(enemy.UnitId), Is.True, $"{steps} step(s)");
+                Assert.That(harness.Simulation.CanAcceptMovementInput(), Is.False);
+                EndOpponentTurns(harness, steps);
+                ToOpponentTurn(harness);
+                Assert.That(harness.Simulation.IsUnitFrozen(enemy.UnitId), Is.False, $"free after {steps} own turn(s)");
+            }
+
+            var plain = CreateCannonHarness("weapon.freeze", null);
+            ThrowAtOpponent(plain);
+            ToOpponentTurn(plain);
+            Assert.That(plain.Simulation.IsUnitFrozen("opponent.test.01"), Is.False, "the base cold does not freeze");
+            Assert.That(plain.Simulation.CanAcceptMovementInput(), Is.True);
+        }
+
+        [Test]
+        public void ElementBonusScale_RaisesTheRepeatBonusOfEveryWeaponOfThatElement()
+        {
+            Assert.That(new[] { 0, 1, 2, 3 }.Select(BattleSimulation.ResolveRepeatBonusPercentForSteps),
+                Is.EqualTo(new[] { 25f, 25f + 25f / 3f, 25f + 50f / 3f, 50f }).Within(0.001f));
+
+            var progress = CreateCannonProgress("weapon.freeze", "full-freeze", 1, radius: 2,
+                secondOption: "cold-bonus", secondSteps: 3);
+            var harness = CreateCannonHarness("weapon.freeze", progress, damage: 16);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var start = enemy.Health;
+            ThrowAtOpponent(harness);
+            var first = start - enemy.Health;
+            for (var i = 0; i < 4 && harness.State.Turn.ActiveTeam != BattleTeamId.Player; i++)
+                harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
+            enemy.MoveTo(new Vector2(3f, 0f));
+            harness.Motors[enemy.UnitId].Teleport(enemy.Position);
+            var beforeSecond = enemy.Health;
+            ThrowAtOpponent(harness);
+            Assert.That(beforeSecond - enemy.Health, Is.EqualTo(Mathf.CeilToInt(first * 1.5f)).Within(1),
+                "the full scale gives +50% instead of +25%");
+        }
+
+        [Test]
+        public void LavaGun_TheBurningMovementLockStopsTheVictimForItsNextTurn()
+        {
+            var drops = ProbeLavaDrops();
+            var fire = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.fire-gun");
+            var harness = CreateHarness(fire, CreateWeapon("weapon.impulse", damage: 10),
+                playerWeaponProgress: CreateCannonProgress("weapon.fire-gun", "movement-lock-burn", 1));
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var spot = drops[drops.Count / 2];
+            enemy.MoveTo(spot);
+            harness.Motors[enemy.UnitId].Teleport(spot);
+            Assert.That(harness.Simulation.TryFire(LavaAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 1200, 1f / 120f);
+            Assert.That(enemy.Health, Is.LessThan(enemy.MaxHealth));
+            ToOpponentTurn(harness);
+            Assert.That(harness.Simulation.IsUnitMovementLocked(enemy.UnitId), Is.True);
+            Assert.That(harness.Simulation.CanAcceptMovementInput(), Is.False);
+            EndOpponentTurns(harness, 1);
+            ToOpponentTurn(harness);
+            Assert.That(harness.Simulation.IsUnitMovementLocked(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void NanotoxicCharge_ThePoisonForMovementCountsEveryChangeOfPositionAndATeleportIsOneSecond()
+        {
+            // Two steps: N = 2 x 30 x 0.5 / 16 = 1.875 HP per second of movement; fractions accumulate.
+            var harness = CreateCannonHarness("weapon.toxic", CreateCannonProgress("weapon.toxic", "movement-poison", 2),
+                damage: 30);
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            ThrowAtOpponent(harness);
+            ToOpponentTurn(harness);
+            Assert.That(harness.Simulation.IsUnitPoisoned(enemy.UnitId), Is.True);
+            var standing = enemy.Health;
+            TickMany(harness.Simulation, 240, 1f / 120f);
+            Assert.That(enemy.Health, Is.EqualTo(standing), "standing still costs nothing");
+
+            var before = enemy.Health;
+            for (var i = 0; i < 3; i++)
+            {
+                var point = enemy.Position + new Vector2(1.5f, 0f);
+                enemy.MoveTo(point);
+                harness.Motors[enemy.UnitId].Teleport(point);
+                TickMany(harness.Simulation, 2, 1f / 120f);
+            }
+
+            Assert.That(before - enemy.Health, Is.InRange(5, 6), "three teleports = 3 s x 1.875 = 5.6 plus any kept fraction");
+
+            var plain = CreateCannonHarness("weapon.toxic", null, damage: 30);
+            ThrowAtOpponent(plain);
+            ToOpponentTurn(plain);
+            var plainEnemy = plain.State.GetUnit("opponent.test.01");
+            var plainBefore = plainEnemy.Health;
+            var far = plainEnemy.Position + new Vector2(1.5f, 0f);
+            plainEnemy.MoveTo(far);
+            plain.Motors[plainEnemy.UnitId].Teleport(far);
+            TickMany(plain.Simulation, 4, 1f / 120f);
+            Assert.That(plainEnemy.Health, Is.EqualTo(plainBefore), "no movement poison without the feature");
         }
 
         [Test]
@@ -6455,6 +6678,41 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Simulation.EndActiveTurn();
             TickMany(harness.Simulation, 600, 1f / 120f);
             Assert.That(opponent.Health, Is.EqualTo(before), "the magnet took the bullet");
+        }
+
+        [Test]
+        public void GuardianDrone_NoticesWithinTheSharedN0AndEachRadiusPurchaseAddsTenPercent()
+        {
+            bool Triggers(float distance, int radiusPurchases)
+            {
+                var guardian = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.guardian-drone");
+                SaveWeaponProgressData progress = null;
+                if (radiusPurchases > 0)
+                {
+                    progress = new SaveWeaponProgressData { weaponId = guardian.WeaponId, rank = 1 + radiusPurchases };
+                    progress.EnsureDefaults();
+                    for (var rank = 2; rank <= 1 + radiusPurchases; rank++)
+                        progress.upgradeChoices.Add(new SaveWeaponUpgradeChoiceData { rank = rank, path = (int)WeaponUpgradePath.Radius });
+                }
+
+                var harness = CreateHarness(guardian, playerWeaponProgress: progress);
+                var point = Vector2.zero;
+                harness.Simulation.MineDeployed += evt => point = evt.Point;
+                var triggered = false;
+                harness.Simulation.MineTriggered += _ => triggered = true;
+                Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
+                TickMany(harness.Simulation, 360, 1f / 120f);
+                var enemy = harness.State.GetUnit("opponent.test.01");
+                var spot = new Vector2(point.x + distance, -0.46f);                     // standing on the ground
+                enemy.MoveTo(spot);
+                harness.Motors[enemy.UnitId].Teleport(spot);
+                TickMany(harness.Simulation, 30, 1f / 120f);
+                return triggered;
+            }
+
+            Assert.That(Triggers(1.3f, 0), Is.True, "inside the base N0 = 1.4");
+            Assert.That(Triggers(1.55f, 0), Is.False, "outside the base N0 (the old 1.6 is gone)");
+            Assert.That(Triggers(1.8f, 4), Is.True, "four Radius purchases: 1.96");
         }
 
         [Test]

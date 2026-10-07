@@ -76,9 +76,13 @@ namespace Game.Gameplay.Battle.Weapons
             bool guardianStealth = false,
             bool harpoonImpactPull = false,
             bool harpoonDoubleGrab = false,
-            SpiderElement spiderElement = SpiderElement.None)
+            SpiderElement spiderElement = SpiderElement.None,
+            int elementControlSteps = 0,
+            int elementSecondFeatureSteps = 0)
         {
             SpiderElement = spiderElement;
+            ElementControlSteps = Mathf.Clamp(elementControlSteps, 0, 2);
+            ElementSecondFeatureSteps = Mathf.Clamp(elementSecondFeatureSteps, 0, 3);
             HarpoonImpactPull = harpoonImpactPull;
             HarpoonDoubleGrab = harpoonDoubleGrab;
             GuardianStealth = guardianStealth;
@@ -193,6 +197,18 @@ namespace Game.Gameplay.Battle.Weapons
         public bool HarpoonImpactPull { get; }
         public bool HarpoonDoubleGrab { get; }
 
+        /// <summary>
+        /// Paid steps of an element cannon's first feature: the aim jam (EMP), the full freeze (cryo), the
+        /// burning movement lock (lava) or the poison for movement (nanotoxic). 0 without the feature.
+        /// </summary>
+        public int ElementControlSteps { get; }
+
+        /// <summary>
+        /// Paid steps of an element cannon's second feature: the EMP movement lock, or the repeat bonus scale
+        /// of the cryo, lava and nanotoxic cannons. 0 without the feature.
+        /// </summary>
+        public int ElementSecondFeatureSteps { get; }
+
         public static WeaponEvolutionProfile Base => new(1, 0f, 1f, 3, 0);
     }
 
@@ -275,9 +291,11 @@ namespace Game.Gameplay.Battle.Weapons
                     case FreezeWeaponId:
                     case FireGunWeaponId:
                     case ToxicWeaponId:
-                        // The purchased features of the two cannons (aim_jam / movement_lock, full_freeze / cold_bonus) are
-                        // open owner questions: until they are defined a purchase must not fall back to the old legacy effects.
-                        return WeaponEvolutionProfile.Base;
+                        // Owner decisions 2026-10-07: the first feature is a control (or the poison for movement),
+                        // the second one the EMP movement lock or the repeat bonus scale. The legacy effects never apply.
+                        return new WeaponEvolutionProfile(1, 0f, 1f,
+                            elementControlSteps: Mathf.Clamp(firstSteps, 1, 2),
+                            elementSecondFeatureSteps: hasSecondSpecial ? ResolvePurchasedSteps(progress, 10) : 0);
                     case SpiderMineWeaponId:
                         return new WeaponEvolutionProfile(1, 0f, 1f, spiderElement: firstSpecial.Id switch
                         {

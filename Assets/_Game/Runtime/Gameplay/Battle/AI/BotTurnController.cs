@@ -295,7 +295,8 @@ namespace Game.Gameplay.Battle.AI
         {
             var unit = ActiveOpponentUnit();
             if (unit == null || _weapon == null || !_simulation.CanActiveUnitFire()
-                || !_profile.EvaluateAllWeapons && !BattleSimulation.IsBattleMechanicAvailable(_weapon))
+                || !_profile.EvaluateAllWeapons && (!BattleSimulation.IsBattleMechanicAvailable(_weapon)
+                    || !_simulation.CanActiveUnitUseWeapon(_weapon)))
             {
                 return null;
             }
@@ -346,7 +347,8 @@ namespace Game.Gameplay.Battle.AI
             for (var i = 0; i < inventory.Count; i++)
             {
                 inventory.Select(i);
-                if (!inventory.CanFireSelected || !BattleSimulation.IsBattleMechanicAvailable(inventory.Selected))
+                if (!inventory.CanFireSelected || !BattleSimulation.IsBattleMechanicAvailable(inventory.Selected)
+                    || !_simulation.CanActiveUnitUseWeapon(inventory.Selected))
                 {
                     continue;
                 }
