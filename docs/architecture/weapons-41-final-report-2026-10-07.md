@@ -6,43 +6,28 @@
 
 ## Стан по всіх 41
 
+Оновлено після виконання рішень власника 2026-10-07 — деталі в `weapons-owner-decisions-implementation-2026-10-07.md`. Нумерація — за бойовою специфікацією (попередня редакція цієї таблиці помилково зсувала №7–12 і пропускала бурову ракету та титанову балку).
+
 | № | Зброя | Стан | Що ще потрібно |
 |---:|---|---|---|
-| 1–8 | drill_laser, impulse_cannon, grenade, rope, plasma_sword, ion_shotgun | механіка закрита раніше | — |
-| 9, 10 | dynamite, sensor_mine | механіка закрита | HP-баланс |
-| 11 | repair_kit | механіка закрита | — |
-| 12 | titanium_disc | механіка закрита | HP-баланс |
+| 1–6 | drill_laser, impulse_cannon, grenade, rope, plasma_sword, ion_shotgun | implemented | — |
+| 7, 8 | dynamite, sensor_mine | implemented | HP-баланс |
+| 9 | repair_kit | implemented | — |
+| 10, 11 | titanium_disc, drill_rocket | implemented | HP-баланс |
+| 12 | titanium_barrier | implemented | — |
 | 13 | mortar | implemented | HP-баланс |
-| 14 | sticky_grenade | implemented (база + toxic_release) | роль покупок 2–4 і хмара (арт/рішення) |
-| 15 | teleport_sphere | implemented | — |
-| 16 | rail_rifle | implemented | розмір болта оцінено за арт-межами |
-| 17 | cryo_grenade | implemented | — |
-| 18 | hopping_grenade | implemented | — |
-| 19 | incendiary_grenade | implemented | — |
-| 20 | repair_jammer | implemented | — |
-| 21 | homing_rocket | implemented | — |
-| 22 | orbital_rocket | implemented | — |
-| 23 | guardian_drone | implemented | шкода = прототип |
-| 24 | emp_cannon | **partial** | `aim_jam` / `movement_lock` (що саме блокує) |
-| 25 | turn_transfer | **blocked** | модель командних ходів PvP |
-| 26 | electric_harpoon | implemented | частки X/Y/Z — прототип |
-| 27 | swap_jump | implemented | Радіус → N0 — інтерпретація |
-| 28 | grounder | implemented | HP 45 і лічильник «2 ходи» — прототип/підтвердити |
-| 29 | force_field | implemented | нерухомість поля, центр — підтвердити |
-| 30 | boost | implemented | швидкості, реакція на відкидання — прототип |
-| 31 | sky_hook | implemented (є скріншот) | шкода — прототип |
-| 32 | spider_mine | implemented (база + вибір стихії) | роль решти 3 кроків «1+3» |
-| 33 | virus | implemented | шкода = граната (прототип) |
-| 34 | bomber | implemented (є скріншот) | швидкість, +1 с Радіуса — прототип |
-| 35 | ufo_carrier | implemented | аптечок/ресурсів у бою ще немає |
-| 36 | self_destruct | implemented | вибух і при ранньому кінці ходу — підтвердити |
-| 37 | nuclear_charge | implemented | шкода = прототип |
-| 38 | laser_fence | implemented | міцність корпусу, пари променів, запас — підтвердити |
-| 39 | cryo_cannon | **partial** | `full_freeze`, `cold_bonus` |
-| 40 | lava_gun | **partial** | `movement_lock_burn`, `burn_bonus` |
-| 41 | nanotoxic_charge | **partial** | `movement_poison` (N, роль 2 покупок), `poison_bonus` |
+| 14 | sticky_grenade | implemented | — |
+| 15–22 | teleport_sphere … orbital_rocket | implemented | HP-баланс у зброї зі шкодою |
+| 23 | guardian_drone | implemented | HP-баланс |
+| 24 | emp_cannon | implemented | HP-баланс |
+| 25 | turn_transfer | implemented у симуляції | командний режим бою (окрема фіча) |
+| 26–36 | electric_harpoon … self_destruct | implemented | HP-баланс у зброї зі шкодою |
+| 37 | nuclear_charge | implemented | арт вибуху (пізніше), HP-баланс |
+| 38 | laser_fence | implemented | HP-баланс |
+| 39 | cryo_cannon | implemented | скін повної заморозки (пізніше), HP-баланс |
+| 40, 41 | lava_gun, nanotoxic_charge | implemented | HP-баланс |
 
-Підсумок: **implemented — 36** (№1–23, 26–38), **partial — 4** (№24, 39, 40, 41), **blocked — 1** (№25). Разом 41.
+Підсумок: механіка всіх 41 одиниць реалізована. Відкриті лише балансування (крива `H_cap` і відсотки), два арт-ресурси та командний режим для передачі ходу.
 
 ## Що перевірено (механіка)
 
