@@ -85,7 +85,6 @@ namespace Game.Gameplay.Battle.Assembly
         // Barrels of these weapons visually match the aim only after this art
         // correction, and their resting pose tilts slightly toward the ground.
         private const float RestingWeaponTiltDegrees = 10f;
-        private const float ControlledPointerDeadZonePixels = 2f;
         private const int MaxActiveSupportPickups = 2;
         private const float SupportPickupWorldWidth = 0.93f;
         private const float SupportPickupGroundOffset = 0.4f;
@@ -223,7 +222,6 @@ namespace Game.Gameplay.Battle.Assembly
         private bool _aimDragHadValidPull;
         private Vector2 _aimAnchorWorld;
         private bool _controlledPointerActive;
-        private Vector2 _controlledPointerPreviousScreenPosition;
         private int _uiWalkInputDirection;
         private int _keyboardWalkInputDirection;
         private int _controlledUiHorizontalInput;
@@ -554,6 +552,12 @@ namespace Game.Gameplay.Battle.Assembly
 
             Time.timeScale = _timeScaleBeforeSettings;
             _battleSettingsOpen = false;
+        }
+
+        private void LateUpdate()
+        {
+            // Craters cut during this frame's simulation ticks reach the GPU once, here.
+            _battleTerrain?.FlushTextureUploads();
         }
 
         private void Update()
@@ -923,12 +927,8 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             // Steering a controlled projectile (FPV drone) owns the pointer -
-            // camera zoom would fight the piloting input.
-            if (_simulation != null && _simulation.HasActiveControlledProjectile)
-            {
-                _hasPreviousPinchDistance = false;
-                return;
-            }
+            // camera zoom would fight the piloting input. Since 2026-10-08 drones are piloted with the buttons
+            // only, so the fingers are free to zoom and pan the camera during the flight.
 
             if (IsTitaniumBarrierPlacementActive())
             {
@@ -994,12 +994,11 @@ namespace Game.Gameplay.Battle.Assembly
         private void UpdateCameraPan()
         {
             if (_camera == null
-                || _playerWeaponSelected
                 || _battleState == null
                 || _battleState.Turn.ActiveTeam != BattleTeamId.Player
                 || _simulation == null
+                || _playerWeaponSelected && !_simulation.HasActiveControlledProjectile
                 || _simulation.Result.IsFinished
-                || _simulation.HasActiveControlledProjectile
                 || TryGetPinchDistance(out _))
             {
                 _cameraPanActive = false;
@@ -1971,36 +1970,9 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
-            if (!TryReadPointer(out var pressed, out var pressStarted, out var released, out var screenPosition, out var pointerOverUi)
-                || pointerOverUi)
-            {
-                _controlledPointerActive = false;
-                _simulation.SetControlledProjectileInput(Vector2.zero);
-                return;
-            }
-
-            if (pressStarted || (pressed && !_controlledPointerActive))
-            {
-                _controlledPointerActive = true;
-                _controlledPointerPreviousScreenPosition = screenPosition;
-                _simulation.SetControlledProjectileInput(Vector2.zero);
-                return;
-            }
-
-            if (_controlledPointerActive && pressed)
-            {
-                var delta = screenPosition - _controlledPointerPreviousScreenPosition;
-                _controlledPointerPreviousScreenPosition = screenPosition;
-                _simulation.SetControlledProjectileInput(
-                    delta.magnitude >= ControlledPointerDeadZonePixels ? delta.normalized : Vector2.zero);
-                return;
-            }
-
-            if (released)
-            {
-                _controlledPointerActive = false;
-            }
-
+            // Owner decision 2026-10-08: a drone is piloted with the on-screen buttons (or the keyboard) only; a
+            // finger on the arena moves and zooms the camera instead.
+            _controlledPointerActive = false;
             _simulation.SetControlledProjectileInput(Vector2.zero);
         }
 
@@ -2265,12 +2237,6 @@ namespace Game.Gameplay.Battle.Assembly
                 animator.SetFrames(LoadWeaponIconSprite("fpv_0"), LoadWeaponIconSprite("fpv_1"),
                     LoadWeaponIconSprite("fpv_2"), LoadWeaponIconSprite("fpv_3"), LoadWeaponIconSprite("fpv_4"));
             }
-            else if (weapon?.WeaponId == "weapon.titanium-disc")
-            {
-                // Keep a continuous spin through ricochets; the visual sync must
-                // not overwrite the angle that this component accumulates.
-                visualObject.AddComponent<WeaponProjectileSpinVisual>().SetDegreesPerSecond(900f);
-            }
             else if (weapon?.WeaponId == "weapon.bur-rocket")
             {
                 SpawnRocketTrail(visualObject.transform, renderer, true);
@@ -2278,13 +2244,6 @@ namespace Game.Gameplay.Battle.Assembly
             else if (weapon?.WeaponId == "weapon.sky-hook")
             {
                 SpawnSkyHookTail(visualObject.transform, renderer);
-            }
-            else if (weapon?.WeaponId == "weapon.ufo-carrier")
-            {
-                // The carrier's body is the animated rotor frames.
-                var animator = visualObject.AddComponent<WeaponProjectileSpriteAnimator>();
-                animator.SetFrames(LoadWeaponIconSprite("fpv_0"), LoadWeaponIconSprite("fpv_1"),
-                    LoadWeaponIconSprite("fpv_2"), LoadWeaponIconSprite("fpv_3"), LoadWeaponIconSprite("fpv_4"));
             }
         }
 
@@ -2432,8 +2391,12 @@ namespace Game.Gameplay.Battle.Assembly
                 renderer.sprite = LoadWeaponIconSprite(ResolveMineSpriteId("mine_off", mine.Weapon, mine.Team));
             }
             renderer.sortingOrder = 27;
-            visual.transform.localScale = Vector3.one * 0.11f;
+            visual.transform.localScale = Vector3.one * GuardianPlacedVisualScale;
         }
+
+        private const string GuardianDeployProjectileId = "projectile.weapon.guardian-drone.deploy";
+        private const float GrounderPlacedVisualScale = 0.11f;
+        private const float GuardianPlacedVisualScale = 0.11f;
 
         private void OnSimulationMineTriggered(int mineId)
         {
@@ -2463,7 +2426,7 @@ namespace Game.Gameplay.Battle.Assembly
             _arenaObjects.Add(visual);
             _grounderVisuals[grounder.Id] = visual;
             visual.transform.position = grounder.Point;
-            visual.transform.localScale = Vector3.one * 0.11f;
+            visual.transform.localScale = Vector3.one * GrounderPlacedVisualScale;
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = LoadWeaponIconSprite(grounder.Weapon?.IconId ?? "grounder");
             renderer.sortingOrder = 27;
@@ -2483,6 +2446,15 @@ namespace Game.Gameplay.Battle.Assembly
                 // The sphere art spans the field's diameter.
                 visual.transform.localScale = Vector3.one * (field.Radius * 2f / renderer.sprite.bounds.size.x);
             }
+
+            // The device itself stands on the ground at the centre of its sphere.
+            var device = new GameObject("Force Field Device");
+            device.transform.SetParent(visual.transform, false);
+            var deviceRenderer = device.AddComponent<SpriteRenderer>();
+            deviceRenderer.sprite = LoadWeaponIconSprite(field.Weapon?.IconId ?? "force_field");
+            deviceRenderer.sortingOrder = 27;
+            var parentScale = Mathf.Max(0.0001f, visual.transform.localScale.x);
+            device.transform.localScale = Vector3.one * (GrounderPlacedVisualScale / parentScale);
         }
 
         private void OnSimulationForceFieldRemoved(int fieldId)
@@ -2690,8 +2662,19 @@ namespace Game.Gameplay.Battle.Assembly
         }
 
         /// <summary>A carried item is drawn over the copter's body; a released one returns to the ground layer.</summary>
+        private readonly HashSet<int> _releasedCargoIds = new();
+
         private void OnSimulationGroundObjectCarried(int objectId, bool carried)
         {
+            if (carried)
+            {
+                _releasedCargoIds.Remove(objectId);
+            }
+            else
+            {
+                _releasedCargoIds.Add(objectId);
+            }
+
             GameObject visual = null;
             var pickup = FindResourcePickupBySimulationId(objectId);
             if (pickup != null)
@@ -2712,13 +2695,15 @@ namespace Game.Gameplay.Battle.Assembly
 
         private void OnSimulationGroundObjectRepositioned(GroundObjectRepositionedEvent groundObject)
         {
+            var released = _releasedCargoIds.Remove(groundObject.ObjectId);
             var pickup = FindResourcePickupBySimulationId(groundObject.ObjectId);
             if (pickup != null)
             {
+                var from = pickup.Visual != null ? (Vector2)pickup.Visual.transform.position : pickup.Position;
                 pickup.Position = groundObject.Point + Vector2.up * pickup.VisualLift;
                 if (pickup.Visual != null)
                 {
-                    pickup.Visual.transform.position = pickup.Position;
+                    MoveGroundObjectVisual(pickup.Visual, from, pickup.Position, released);
                 }
 
                 return;
@@ -2727,7 +2712,7 @@ namespace Game.Gameplay.Battle.Assembly
             if (_laserFenceNodeVisuals.TryGetValue(groundObject.ObjectId, out var nodeVisual) && nodeVisual != null
                 && _laserFenceNodes.TryGetValue(groundObject.ObjectId, out var node))
             {
-                nodeVisual.transform.position = groundObject.Point;
+                MoveGroundObjectVisual(nodeVisual, nodeVisual.transform.position, groundObject.Point, released);
                 _laserFenceNodes[groundObject.ObjectId] = new LaserFenceNodeDeployedEvent(
                     node.NodeId, node.OwnerUnitId, groundObject.Point, node.Weapon, node.Team);
                 RebuildLaserFenceLinks();
@@ -2744,7 +2729,24 @@ namespace Game.Gameplay.Battle.Assembly
                 Destroy(dropVisual);
             }
 
-            visual.transform.position = groundObject.Point;
+            MoveGroundObjectVisual(visual, visual.transform.position, groundObject.Point, released);
+        }
+
+        /// <summary>A released cargo falls visibly to its landing point; any other move is applied at once.</summary>
+        private static void MoveGroundObjectVisual(GameObject visual, Vector2 from, Vector2 to, bool released)
+        {
+            if (visual.TryGetComponent<CargoFallVisual>(out var falling))
+            {
+                Destroy(falling);
+            }
+
+            if (released && to.y < from.y - 0.05f)
+            {
+                visual.AddComponent<CargoFallVisual>().Play(from, to);
+                return;
+            }
+
+            visual.transform.position = to;
         }
 
         private void OnSimulationLinearWeaponEffectStarted(LinearWeaponEffectEvent effect)
@@ -2876,6 +2878,12 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            if (projectile.Definition.ProjectileId == GuardianDeployProjectileId)
+            {
+                projectileTransform.localScale = Vector3.one * GuardianPlacedVisualScale;
+                return;
+            }
+
             if (IsCopterBody(projectile.Definition.ProjectileId))
             {
                 // The copter art is about 10 units across at 100 px/unit; it faces right and never rotates.
@@ -2983,6 +2991,12 @@ namespace Game.Gameplay.Battle.Assembly
             if (projectile?.Definition != null && projectile.Definition.ProjectileId == "projectile.weapon.bomber.bomb")
             {
                 return LoadWeaponIconSprite("blaster_shot");
+            }
+
+            // The thrown guardian body flies with the same skin it shows on the ground; only its bullet is small.
+            if (projectile?.Definition != null && projectile.Definition.ProjectileId == GuardianDeployProjectileId)
+            {
+                return LoadWeaponIconSprite(ResolveOwnerAwareEvolvedIconId(weapon, projectile.OwnerUnitId));
             }
 
             var spriteId = weapon.WeaponId switch
@@ -3125,8 +3139,12 @@ namespace Game.Gameplay.Battle.Assembly
                 _status = GameText.ShotStatus(DescribeTeam(team), DescribeWeapon(weapon));
             }
 
-            if (team == BattleTeamId.Player && HidesHeldWeaponAfterUse(weapon)
-                && (HidesHeldWeaponDuringFlight(weapon) || _inventory.GetSelectedRemainingAmmo() <= 0))
+            // Any weapon whose shot spends the turn's action hides its held skin and the aim afterwards.
+            var spentTheTurnsShot = team == BattleTeamId.Player && _battleState.Turn.ActionSpent;
+            if (team == BattleTeamId.Player
+                && (spentTheTurnsShot
+                    || HidesHeldWeaponAfterUse(weapon)
+                        && (HidesHeldWeaponDuringFlight(weapon) || _inventory.GetSelectedRemainingAmmo() <= 0)))
             {
                 var keepsHoppingControl = weapon?.WeaponId == "weapon.hopping-grenade" && !setsShotStatus;
                 // The purchased early trigger needs the same weapon and aim for the second press.
@@ -3165,7 +3183,8 @@ namespace Game.Gameplay.Battle.Assembly
 
         private static bool HidesHeldWeaponAfterUse(WeaponDefinition weapon)
         {
-            return weapon?.WeaponId == "weapon.granata"
+            return weapon?.WeaponId == "weapon.guardian-drone"
+                || weapon?.WeaponId == "weapon.granata"
                 || weapon?.WeaponId == "weapon.teleport"
                 || weapon?.WeaponId == "weapon.mine"
                 || weapon?.WeaponId == "weapon.bur-rocket"
@@ -3187,7 +3206,8 @@ namespace Game.Gameplay.Battle.Assembly
 
         private static bool HidesHeldWeaponDuringFlight(WeaponDefinition weapon)
         {
-            return weapon?.WeaponId == "weapon.bur-rocket"
+            return weapon?.WeaponId == "weapon.guardian-drone"
+                || weapon?.WeaponId == "weapon.bur-rocket"
                 || weapon?.WeaponId == "weapon.titanium-disc"
                 || weapon?.WeaponId == "weapon.granata"
                 || weapon?.WeaponId == "weapon.teleport"
@@ -4853,15 +4873,38 @@ namespace Game.Gameplay.Battle.Assembly
                 || weapon?.WeaponId == "weapon.emp";
         }
 
+        private Vector2 TraceRailLaserEnd(Vector2 start, Vector2 direction)
+        {
+            var grid = _battleTerrain?.Grid;
+            if (grid == null || direction.sqrMagnitude < 0.0001f)
+            {
+                return start + direction * MaxTrajectoryPreviewLength;
+            }
+
+            direction = direction.normalized;
+            var step = Mathf.Max(0.02f, Mathf.Min(grid.CellSize.x, grid.CellSize.y));
+            var point = start;
+            for (var i = 0; i < 20000; i++)
+            {
+                var next = point + direction * step;
+                if (next.x < grid.WorldMinX || next.x > grid.WorldMaxX || next.y < grid.WorldMinY || next.y > grid.WorldMaxY
+                    || grid.IsSolidWorld(next))
+                {
+                    return point;
+                }
+
+                point = next;
+            }
+
+            return point;
+        }
+
         private void DrawRailRifleLaser(Vector2 firePoint, WeaponDefinition weapon)
         {
             HideTrajectoryDots();
             var muzzle = firePoint + _aimState.Direction * ProjectileMuzzleOffset;
-            var endPoint = muzzle + _aimState.Direction * MaxTrajectoryPreviewLength;
-            if (TryProbeTrajectoryEnd(firePoint, weapon, out var impactReport))
-            {
-                endPoint = impactReport.EndPoint;
-            }
+            // A sniper laser: the line runs straight on until it meets ground or leaves the arena.
+            var endPoint = TraceRailLaserEnd(muzzle, _aimState.Direction);
 
             var laserColor = new Color(1f, 0.12f, 0.12f, 0.95f);
             _trajectoryLine.startColor = laserColor;

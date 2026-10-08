@@ -11,7 +11,9 @@ namespace Game.Gameplay.Battle.Weapons
         // 120 HUD units at 0.8 icon scale, in the authored 1080p camera frame.
         public const float ReferenceIconWidth = 96f;
         public const float ReferenceViewportHeight = 1080f;
-        public const float BaseWidth = 2f * 6.2f * ReferenceIconWidth / ReferenceViewportHeight;
+        // Owner decision 2026-10-08: the placed beam is twice the size of the button icon.
+        public const float BaseSizeMultiplier = 2f;
+        public const float BaseWidth = BaseSizeMultiplier * 2f * 6.2f * ReferenceIconWidth / ReferenceViewportHeight;
 
         public static float MaximumScale(bool sizeUnlocked, int radiusPurchases)
         {
@@ -26,7 +28,7 @@ namespace Game.Gameplay.Battle.Weapons
 
         public static Vector2 BaseSize(float referenceCameraSize, float textureAspect)
         {
-            var width = 2f * referenceCameraSize * ReferenceIconWidth / ReferenceViewportHeight;
+            var width = BaseSizeMultiplier * 2f * referenceCameraSize * ReferenceIconWidth / ReferenceViewportHeight;
             return new Vector2(width, width / Mathf.Max(0.001f, textureAspect));
         }
     }

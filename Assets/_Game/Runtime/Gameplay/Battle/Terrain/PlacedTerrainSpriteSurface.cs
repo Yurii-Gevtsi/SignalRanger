@@ -98,6 +98,20 @@ namespace Game.Gameplay.Battle.Terrain
                 }
             if (!changed) return;
             _texture.SetPixels32(_pixels);
+            _pendingUpload = true;
+        }
+
+        private bool _pendingUpload;
+
+        /// <summary>Uploads the craters cut since the last frame in one go.</summary>
+        public void FlushUpload()
+        {
+            if (!_pendingUpload || _texture == null)
+            {
+                return;
+            }
+
+            _pendingUpload = false;
             _texture.Apply(false, false);
         }
 

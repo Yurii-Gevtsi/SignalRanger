@@ -64,6 +64,7 @@ namespace Game.Gameplay.Battle.Simulation
         private const string CarrierFallProjectileId = "projectile.weapon.ufo-carrier.fall";
         private const float CarrierCaptureDistance = 0.62f;
         private const float CarrierCargoLift = 0.2f;
+        private const float GrounderCaptureSpeed = 7f;
         private const int BomberBombCount = 4;
         private const float BomberBodyHalfSize = 0.32f;
         private const string SkyHookWeaponId = "weapon.sky-hook";
@@ -199,6 +200,8 @@ namespace Game.Gameplay.Battle.Simulation
         private const int IncendiaryPuddleCount = 4;
         private const float IncendiaryPuddleSpreadRadius = 0.55f;
         private const float IncendiaryPuddleLifetimeSeconds = 2.5f;
+        private const float IncendiaryDropSpeed = 3.4f;
+        private const float IncendiaryDropGravityScale = 2.4f;
         private const string RepairJammerWeaponId = "weapon.repair-jammer";
         private const int RepairJammerBaseDurationTurns = 2;
         private const string OrbitalRocketWeaponId = "weapon.orbital-rocket";
@@ -210,8 +213,9 @@ namespace Game.Gameplay.Battle.Simulation
         private const float AttachmentDeviceSpeed = 9f;
         private const string SpiderMineWeaponId = "weapon.spider-mine";
         private const float SpiderSearchDurationSeconds = 5f;
-        private const float SpiderAttachFuseSeconds = 1.5f;
-        private const float SpiderCrawlSpeed = 1.4f;
+        // Owner decision 2026-10-08: twice as fast, and it blasts at once when it reaches an enemy.
+        private const float SpiderAttachFuseSeconds = 0f;
+        private const float SpiderCrawlSpeed = 2.8f;
         private const float SpiderAttachDistance = 0.34f;
         // The crawler follows the ground: it climbs ledges up to this height and steps down up to the next.
         private const float SpiderClimbHeight = 0.45f;
@@ -1061,6 +1065,14 @@ namespace Game.Gameplay.Battle.Simulation
             ResolveProjectileAt(index, sphere.Position);
             result = new BattleFireResult(BattleFireOutcome.Fired, team, weapon, sphere.Position);
             return true;
+        }
+
+        /// <summary>The hopping grenade's blast is the attack of the turn: it spends the action and lets the turn pass.</summary>
+        private void ConcludeHoppingGrenadeShot()
+        {
+            _hoppingGrenadeProjectileId = -1;
+            _activeShotEndsTurn = true;
+            _turnService.SpendAction(_state);
         }
 
         public bool CanContinueHoppingGrenade()
@@ -2259,12 +2271,15 @@ namespace Game.Gameplay.Battle.Simulation
                 return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
             }
 
-            // A sphere centred on the droid: the shared nearby distance N0, +10% of it per Radius purchase.
+            // Owner decision 2026-10-08: the device is set on the ground beside the droid and the sphere surrounds the
+            // device: the shared nearby distance N0, +10% of it per Radius purchase.
             var progression = ProgressionFor(unit.TeamId);
             var coreUpgrades = Mathf.Clamp(progression.ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Core), 0, 4);
             var radiusUpgrades = Mathf.Clamp(progression.ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Radius), 0, 4);
+            var facing = unit.FacingDirectionX >= 0 ? 1f : -1f;
+            var devicePoint = ResolveGroundDeployPoint(unit.Position + new Vector2(facing * 0.46f, 0.12f), unit.TeamId);
             var field = new ActiveForceField(
-                ++_nextProjectileId, unit.TeamId, unit.Position, weapon,
+                ++_nextProjectileId, unit.TeamId, devicePoint, weapon,
                 remainingTurns: 2 + coreUpgrades,
                 radius: weapon.ImpactRadius * (1f + radiusUpgrades * 0.10f));
             _activeForceFields.Add(field);
@@ -2275,7 +2290,7 @@ namespace Game.Gameplay.Battle.Simulation
             ShotFired?.Invoke(unit.TeamId, weapon, true);
             _turnService.SpendAction(_state);
             AdvanceTurnNow(TurnAdvanceReason.InstantActionCompleted);
-            return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, unit.Position);
+            return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, devicePoint);
         }
 
         private BattleFireResult DeployLaserFenceNode(
@@ -2879,7 +2894,8 @@ namespace Game.Gameplay.Battle.Simulation
             var team = ResolveTeamForOwner(ownerId);
             var damage = Mathf.RoundToInt(carrier.Weapon.Damage * ResolveModifiersFor(team, carrier.Weapon).DamageMultiplier);
             Spawn(new ProjectileSpawnRequest(
-                ProjectileDefinition.CreateRuntime(CarrierFallProjectileId, 0.2f, 1f, 8f, damage, carrier.Weapon.ImpactRadius, 1f, 0),
+                // Owner decision 2026-10-08: it blasts right where it is when the time runs out, it does not fall first.
+                ProjectileDefinition.CreateRuntime(CarrierFallProjectileId, 0.2f, 0f, 0.01f, damage, carrier.Weapon.ImpactRadius, 1f, 0),
                 ownerId, position, Vector2.zero, 0.4f, ProjectileWeaponEffect.GetProjectileColor(carrier.Weapon.Role)));
         }
 
@@ -3702,8 +3718,9 @@ namespace Game.Gameplay.Battle.Simulation
             var scanTop = spider.Position.y + SpiderClimbHeight;
             var hitsWall = _terrain != null && _terrain.Grid.IsSolidWorld(new Vector2(nextX, scanTop));
             var groundedPosition = Vector2.zero;
+            // The crawler stands on its whole body, so a crack narrower than it is bridged instead of swallowing it.
             var hasGround = !hitsWall && _terrain != null
-                && _terrain.Grid.TryFindSurfaceBelow(nextX, scanTop, SpiderClimbHeight + SpiderDropHeight, out var surfaceY)
+                && TryFindSpiderFooting(nextX, scanTop, out var surfaceY)
                 && (groundedPosition = new Vector2(nextX, surfaceY + 0.04f)).x == nextX;
             if (!hasGround)
             {
@@ -3726,6 +3743,26 @@ namespace Game.Gameplay.Battle.Simulation
                 MineTriggered?.Invoke(spider.Id);
             }
         }
+
+        private bool TryFindSpiderFooting(float centerX, float scanTop, out float surfaceY)
+        {
+            surfaceY = float.MinValue;
+            var found = false;
+            foreach (var offset in SpiderFootOffsets)
+            {
+                if (_terrain.Grid.TryFindSurfaceBelow(centerX + offset, scanTop, SpiderClimbHeight + SpiderDropHeight,
+                        out var columnSurface)
+                    && columnSurface > surfaceY)
+                {
+                    surfaceY = columnSurface;
+                    found = true;
+                }
+            }
+
+            return found;
+        }
+
+        private static readonly float[] SpiderFootOffsets = { 0f, -0.12f, 0.12f };
 
         private bool TryFindSpiderTarget(ActiveMine spider, out BattleUnitState target)
         {
@@ -3852,28 +3889,34 @@ namespace Game.Gameplay.Battle.Simulation
             var baseDamage = totalDamage / IncendiaryPuddleCount;
             var remainder = totalDamage % IncendiaryPuddleCount;
 
+            // The drops fly out of the blast at once on a short, fast arc and land on the ground; there is no pause
+            // in the air before they fall.
+            var gravity = _projectileGravityPerScale * IncendiaryDropGravityScale;
             for (var index = 0; index < IncendiaryPuddleCount; index++)
             {
-                var angle = index * Mathf.PI * 2f / IncendiaryPuddleCount + Mathf.PI * 0.25f;
-                var distance = IncendiaryPuddleSpreadRadius * (index % 2 == 0 ? 0.55f : 1f);
-                var endpoint = impact.Point + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
+                var side = index % 2 == 0 ? -1f : 1f;
+                var reach = index < 2 ? 0.55f : 1f;
+                var initialVelocity = new Vector2(side * IncendiaryDropSpeed * reach, IncendiaryDropSpeed * 0.45f);
+                var origin = impact.Point + Vector2.up * 0.05f;
+                TraceFireBlobTrajectory(impact.OwnerUnitId, origin, initialVelocity, gravity,
+                    out var endpoint, out var travelSeconds);
                 var puddleId = ++_nextProjectileId;
                 FireBlobSpawned?.Invoke(new FireBlobEvent(
                     puddleId,
                     weapon,
                     ownerTeam,
-                    impact.Point,
-                    Vector2.zero,
-                    Vector2.zero,
+                    origin,
+                    initialVelocity,
+                    gravity,
                     endpoint,
-                    0f,
+                    travelSeconds,
                     IncendiaryPuddleLifetimeSeconds));
                 _activeFirePuddles.Add(new ActiveFirePuddle(
                     puddleId,
                     impact.OwnerUnitId,
                     weapon,
                     endpoint,
-                    0f,
+                    travelSeconds,
                     IncendiaryPuddleLifetimeSeconds,
                     baseDamage + (index < remainder ? 1 : 0)));
             }
@@ -4198,11 +4241,11 @@ namespace Game.Gameplay.Battle.Simulation
                 return new BattleFireResult(BattleFireOutcome.OutOfAmmo, unit.TeamId, weapon);
             }
             _terrain.AddPlacedSurface(surface);
-            _activeShotWeapon = weapon;
-            _turnService.SpendAction(_state);
+            // The beam becomes part of the ground; placing it neither spends the action nor ends the turn.
             CoverDeployed?.Invoke(new CoverDeployedEvent(surface.Center, surface.Size, weapon, angle, surface));
             ShotFired?.Invoke(unit.TeamId, weapon, false);
-            CompleteInstantAction();
+            WakeUnitsWithoutSupport();
+            UnitsMoved?.Invoke();
             return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon);
         }
 
@@ -4876,7 +4919,20 @@ namespace Game.Gameplay.Battle.Simulation
             }
         }
 
-        /// <summary>A shot that touches a hull wrecks it on the way; the shot itself flies on.</summary>
+        /// <summary>Shots that go off when they touch something, as opposed to thrown bodies that bounce, roll or rest.</summary>
+        private static bool DetonatesOnContact(WeaponDefinition weapon, SimProjectile projectile)
+        {
+            if (projectile.Definition.ProjectileId == BomberBombProjectileId)
+            {
+                return true;
+            }
+
+            return weapon?.WeaponId is "weapon.impulse" or EmpWeaponId or FreezeWeaponId or ToxicWeaponId
+                or "weapon.ion-shotgun" or BlasterWeaponId or "weapon.missle" or OrbitalRocketWeaponId
+                or NuclearChargeWeaponId;
+        }
+
+        /// <summary>A shot that touches a hull wrecks it.</summary>
         private bool TryWreckLaserFenceNodeTouchedBy(Vector2 point, float radius)
         {
             var wrecked = false;
@@ -6582,13 +6638,11 @@ namespace Game.Gameplay.Battle.Simulation
                 if (TryFindGrounderForProjectile(projectile, projectileWeapon,
                         projectile.Position, out var attractor))
                 {
+                    // Inside the magnet's range the carrier is taken over completely and flies straight in.
                     var toGrounder = attractor.Position - projectile.Position;
                     if (toGrounder.sqrMagnitude > 0.0001f)
                     {
-                        velocity = Vector2.MoveTowards(
-                            velocity,
-                            toGrounder.normalized * Mathf.Max(5f, velocity.magnitude),
-                            35f * deltaTime);
+                        velocity = toGrounder.normalized * Mathf.Max(GrounderCaptureSpeed, velocity.magnitude);
                     }
                 }
                 projectile.SetVelocity(velocity);
@@ -6616,13 +6670,19 @@ namespace Game.Gameplay.Battle.Simulation
                     }
 
                     if (TryFindGrounderForProjectile(projectile, projectileWeapon,
-                            position, out var grounder)
-                        && Vector2.Distance(position, grounder.Position)
-                            <= Mathf.Max(0.35f, projectile.Definition.Radius + 0.18f))
+                            position, out var grounder))
                     {
-                        ResolveGrounderProjectileContact(i, projectile, projectileWeapon,
-                            grounder, position);
-                        break;
+                        if (Vector2.Distance(position, grounder.Position)
+                            <= Mathf.Max(0.35f, projectile.Definition.Radius + 0.18f))
+                        {
+                            ResolveGrounderProjectileContact(i, projectile, projectileWeapon,
+                                grounder, position);
+                            break;
+                        }
+
+                        // Captured: neither ground nor a droid on the way stops it before the magnet.
+                        projectile.MoveTo(position);
+                        continue;
                     }
 
                     if (position.y < _settings.FallDeathY - 2f)
@@ -6648,9 +6708,14 @@ namespace Game.Gameplay.Battle.Simulation
 
                     var ignoredUnitId = projectile.HasClearedOwner ? null : projectile.OwnerUnitId;
 
-                    if (!isLaserFenceDeploy && _activeLaserFenceNodes.Count > 0)
+                    // A hull is wrecked by a real hit: a charge that goes off on contact goes off on the hull. A
+                    // grenade that only rolls or bounces past it does nothing; its later blast may still wreck it.
+                    if (!isLaserFenceDeploy && _activeLaserFenceNodes.Count > 0
+                        && DetonatesOnContact(projectileWeapon, projectile)
+                        && TryWreckLaserFenceNodeTouchedBy(position, projectile.Definition.Radius))
                     {
-                        TryWreckLaserFenceNodeTouchedBy(position, projectile.Definition.Radius);
+                        ResolveProjectileAt(i, position);
+                        break;
                     }
 
                     if ((isStickyGrenade || isAttachmentDevice)
@@ -6740,9 +6805,10 @@ namespace Game.Gameplay.Battle.Simulation
 
                         if (isHoppingGrenade)
                         {
-                            // First contact starts the unstoppable fuse; later landings just rest.
-                            projectile.EnsureHopFuse(HoppingGrenadeFuseSeconds);
-                            projectile.StartRestingFuse(position - step, projectile.HopFuseRemaining);
+                            // Owner decision 2026-10-08: the first contact with ground blasts it; the extra hops are
+                            // pressed while it is still in the air.
+                            ConcludeHoppingGrenadeShot();
+                            ResolveProjectileAt(i, position - step, hitTerrain: true);
                             break;
                         }
 
@@ -6779,7 +6845,6 @@ namespace Game.Gameplay.Battle.Simulation
                     }
 
                     var ignoresUnitsInFlight = projectileWeapon?.WeaponId == GrenadeWeaponId
-                        || isHoppingGrenade
                         || (projectileWeapon?.WeaponId == TeleportWeaponId && !isInstantTouchTeleport)
                         || projectileWeapon?.WeaponId == SwapJumpWeaponId
                         || projectile.Definition.ProjectileId == MineDeployProjectileId
@@ -6792,6 +6857,11 @@ namespace Game.Gameplay.Battle.Simulation
                             projectile.Definition.ProjectileId == BomberBombProjectileId
                                 ? ResolveTeamForOwner(projectile.OwnerUnitId) : BattleTeamId.None))
                     {
+                        if (isHoppingGrenade)
+                        {
+                            ConcludeHoppingGrenadeShot();
+                        }
+
                         ResolveProjectileAt(i, hitPoint, directHit: directHit);
                         break;
                     }

@@ -106,6 +106,20 @@ namespace Game.Gameplay.Battle.Terrain
             return ApplyCraterAndGetDestroyedCellCount(worldCenter, worldRadius) > 0;
         }
 
+        /// <summary>Uploads every texture changed by craters since the last call; the scene calls it once a frame.</summary>
+        public void FlushTextureUploads()
+        {
+            for (var i = 0; i < _visuals.Count; i++)
+            {
+                _visuals[i].FlushUpload();
+            }
+
+            foreach (var surface in _placedSurfaces)
+            {
+                surface.FlushUpload();
+            }
+        }
+
         public int ApplyCraterAndGetDestroyedCellCount(
             Vector2 worldCenter,
             float worldRadius,
@@ -542,6 +556,21 @@ namespace Game.Gameplay.Battle.Terrain
                 }
 
                 Texture.SetPixels32(TextureRectX + minX, TextureRectY + minY, width, height, region);
+                // Uploading the whole texture per crater stalled the drill rocket, which cuts a crater every
+                // few centimetres: the upload is deferred and done once per frame by FlushTextureUploads.
+                HasPendingUpload = true;
+            }
+
+            public bool HasPendingUpload { get; private set; }
+
+            public void FlushUpload()
+            {
+                if (!HasPendingUpload || Texture == null)
+                {
+                    return;
+                }
+
+                HasPendingUpload = false;
                 Texture.Apply(false, false);
             }
 

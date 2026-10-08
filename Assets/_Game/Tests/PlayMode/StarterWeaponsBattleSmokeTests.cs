@@ -101,7 +101,7 @@ namespace Game.Tests.PlayMode
             if (weaponId == TitaniumBarrierRules.WeaponId)
             {
                 Assert.That(simulation.ProjectilesInFlight, Is.Zero);
-                Assert.That(simulation.IsAttackCommitted, Is.True);
+                Assert.That(simulation.IsAttackCommitted, Is.False, "placing the beam does not end the turn");
                 var visual = GameObject.Find("Titanium Beam");
                 Assert.That(visual, Is.Not.Null);
                 Assert.That(visual.GetComponent<SpriteRenderer>().color, Is.EqualTo(Color.white));
@@ -143,11 +143,11 @@ namespace Game.Tests.PlayMode
                     {
                         Assert.That(renderer.sprite.texture,
                             Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/titanium_disc")));
-                        Assert.That(renderer.GetComponent<WeaponProjectileSpinVisual>(), Is.Not.Null);
+                        Assert.That(renderer.GetComponent<WeaponProjectileSpinVisual>(), Is.Null, "the disc does not spin");
                         var initialAngle = renderer.transform.eulerAngles.z;
                         yield return null;
                         Assert.That(Mathf.Abs(Mathf.DeltaAngle(initialAngle,
-                            renderer.transform.eulerAngles.z)), Is.GreaterThan(0.01f));
+                            renderer.transform.eulerAngles.z)), Is.LessThan(0.01f), "it keeps its pose in flight");
                     }
                     if (weaponId == "weapon.bur-rocket")
                     {
@@ -572,6 +572,8 @@ namespace Game.Tests.PlayMode
             while (inventory.Weapons[index].WeaponId != "weapon.spider-mine") index++;
             Invoke(controller, "OnHudWeaponSelected", index);
             Set(controller, "_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            var crawled = new List<Vector2>();
+            simulation.GroundObjectRepositioned += evt => crawled.Add(evt.Point);
             Invoke(controller, "Fire");
             var spider = GameObject.Find("Mine Armed");
             Assert.That(spider, Is.Not.Null, "the crawler is shown where it was set up");
@@ -582,13 +584,18 @@ namespace Game.Tests.PlayMode
             var prefix = purchased ? "spider_mine_5A_frame_" : "spider_mine_frame_";
             Assert.That(first, Is.Not.Null);
             Assert.That(first.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/" + prefix + "00")));
-            var start = spider.transform.position;
-            for (var frame = 0; frame < 20; frame++)
+            var start = (Vector2)spider.transform.position;
+            var blasted = false;
+            simulation.ProjectileExploded += (_, impact) => blasted |= impact.ProjectileId == "projectile.weapon.spider-mine";
+            for (var frame = 0; frame < 20 && !blasted; frame++)
             {
                 for (var tick = 0; tick < 12; tick++) simulation.Tick(1f / 120f);
                 yield return null;
             }
-            Assert.That(Vector2.Distance(start, spider.transform.position), Is.GreaterThan(0.2f), "it crawls");
+            // The crawler moves along the ground until it reaches an enemy, a wall or a deep drop, then blasts.
+            Assert.That(crawled.Count, Is.GreaterThan(1), "it crawls");
+            Assert.That(Vector2.Distance(start, crawled[crawled.Count - 1]), Is.GreaterThan(0.05f));
+            Assert.That(blasted, Is.True, "and it blasts");
             LogAssert.NoUnexpectedReceived();
         }
 
@@ -673,8 +680,10 @@ namespace Game.Tests.PlayMode
             Assert.That(body, Is.Not.Null, "copter visual spawned");
             var copter = body.transform.Find("Visual");
             Assert.That(copter, Is.Not.Null, "copter Visual child");
-            Assert.That(copter.GetComponent<WeaponProjectileSpriteAnimator>(), Is.Not.Null, "the rotor frames are animated");
+            Assert.That(copter.GetComponent<WeaponProjectileSpriteAnimator>(), Is.Null, "no old rotor frames");
             Assert.That(copter.GetComponent<SpriteRenderer>().sprite, Is.Not.Null);
+            Assert.That(copter.GetComponent<SpriteRenderer>().sprite.texture,
+                Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/ufo_carrier")), "the carrier flies with its own skin");
 
             // Fly down beside the mine and grab it.
             var mine = simulation.Projectiles.Count;
@@ -1206,7 +1215,7 @@ namespace Game.Tests.PlayMode
             Assert.That(preview.activeSelf, Is.False);
             Assert.That(simulation.ProjectilesInFlight, Is.Zero);
             Assert.That(inventory.GetSelectedRemainingAmmo(), Is.EqualTo(stockBefore - 1));
-            Assert.That(simulation.IsAttackCommitted, Is.True);
+            Assert.That(simulation.IsAttackCommitted, Is.False, "placing the beam does not end the turn");
             Assert.That(terrain.Grid.IsSolidWorld(center), Is.True);
             terrain.RefreshMovingSpriteSurfaces();
             Assert.That(terrain.Grid.IsSolidWorld(center), Is.True);

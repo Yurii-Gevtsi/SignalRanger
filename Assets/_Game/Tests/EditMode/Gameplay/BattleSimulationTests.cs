@@ -1204,8 +1204,12 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(Vector2.Distance(deployed.Position, requestedCenter), Is.LessThan(0.001f),
                 "the confirmed beam must be placed exactly where its preview was");
             Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
-            Assert.That(harness.Simulation.IsAttackCommitted, Is.True);
+            Assert.That(harness.Simulation.IsAttackCommitted, Is.False, "placing the beam does not end the turn");
+            Assert.That(harness.State.Turn.ActionSpent, Is.False);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
             Assert.That(deployed.Size, Is.EqualTo(harness.Simulation.TitaniumBarrierBaseSize * 0.5f));
+            Assert.That(harness.Simulation.TitaniumBarrierBaseSize.x, Is.EqualTo(2f * 2f * 6.2f * 96f / 1080f).Within(0.001f),
+                "the base size is twice the button icon");
             Assert.That(harness.Simulation.ActiveInventory.GetSelectedRemainingAmmo(), Is.EqualTo(1));
             harness.Terrain.Dispose();
         }
@@ -2236,14 +2240,13 @@ namespace Game.Tests.EditMode.Gameplay
         private static AimState HopAim => new AimState(new Vector2(-4f, 1.2f), Vector2.right, 5f, true);
 
         [Test]
-        public void HoppingGrenade_BaseHasOneExtraJumpAllowedInFlightAndAtRest()
+        public void HoppingGrenade_BaseHasOneExtraJumpPressedInFlight()
         {
             var harness = CreateHopHarness();
             Assert.That(harness.Simulation.TryFire(HopAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
             var grenade = harness.Simulation.Projectiles[0];
             Assert.That(grenade.HopsRemaining, Is.EqualTo(1));
             TickMany(harness.Simulation, 10, 1f / 120f);
-            Assert.That(grenade.IsRestingFuse, Is.False, "still flying");
             Assert.That(harness.Simulation.CanContinueHoppingGrenade(), Is.True, "a jump is allowed in flight");
             Assert.That(harness.Simulation.TryFire(HopAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
             Assert.That(grenade.HopsRemaining, Is.Zero);
@@ -2254,32 +2257,35 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void HoppingGrenade_FuseStartsAtFirstContactRunsThreeSecondsThroughJumpsAndDetonatesAnyway()
+        public void HoppingGrenade_TheFirstContactWithGroundBlastsItAndEndsTheTurn()
         {
             var harness = CreateHopHarness(radiusPurchases: 4);
-            var impactTime = -1f;
-            var time = 0f;
-            harness.Simulation.ImpactResolved += _ => { if (impactTime < 0f) impactTime = time; };
+            var blasts = 0;
+            harness.Simulation.ImpactResolved += _ => blasts++;
             Assert.That(harness.Simulation.TryFire(HopAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
-            var grenade = harness.Simulation.Projectiles[0];
-            Assert.That(grenade.HopsRemaining, Is.EqualTo(5), "one jump plus four Radius purchases");
-            var contactTime = -1f;
-            var hopped = false;
-            for (var i = 0; i < 1200 && impactTime < 0f; i++)
+            Assert.That(harness.Simulation.Projectiles[0].HopsRemaining, Is.EqualTo(5), "one jump plus four Radius purchases");
+            for (var i = 0; i < 1200 && blasts == 0; i++)
             {
-                time += 1f / 120f;
                 harness.Simulation.Tick(1f / 120f);
-                if (contactTime < 0f && grenade.HasHopFuse) contactTime = time;
-                if (contactTime > 0f && !hopped && time > contactTime + 1f)
-                {
-                    hopped = true;
-                    Assert.That(harness.Simulation.TryFire(HopAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
-                }
             }
-            Assert.That(contactTime, Is.GreaterThan(0f));
-            Assert.That(impactTime - contactTime, Is.EqualTo(3f).Within(0.12f), "3 s from the first contact");
-            Assert.That(hopped, Is.True);
-            Assert.That(grenade.HopsRemaining, Is.EqualTo(4));
+
+            Assert.That(blasts, Is.EqualTo(1), "it blasted on landing instead of resting on a fuse");
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
+            Assert.That(harness.State.Turn.ActionSpent || harness.State.Turn.ActiveTeam == BattleTeamId.Opponent, Is.True);
+            TickMany(harness.Simulation, 3600, 1f / 120f);
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent), "the turn passes");
+        }
+
+        [Test]
+        public void HoppingGrenade_AHostileDroidInTheWayBlastsItOnContact()
+        {
+            var harness = CreateHopHarness();
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            var start = enemy.Health;
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-2.4f, 0.1f), Vector2.right, 12f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 240, 1f / 120f);
+            Assert.That(enemy.Health, Is.LessThan(start), "the droid it touched took the blast");
         }
 
         [Test]
@@ -2890,6 +2896,13 @@ namespace Game.Tests.EditMode.Gameplay
             return CreateHarness(field, opponentWeapon: carrier, playerWeaponProgress: progress);
         }
 
+        /// <summary>Where a shot flying right along the given height enters a sphere of this centre and radius.</summary>
+        private static float FieldEntryX(Vector2 center, float radius, float height)
+        {
+            var dy = height - center.y;
+            return center.x - Mathf.Sqrt(Mathf.Max(0f, radius * radius - dy * dy));
+        }
+
         private static void PlaceForceField(Harness harness)
         {
             Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
@@ -2912,6 +2925,8 @@ namespace Game.Tests.EditMode.Gameplay
             {
                 if (impact.Damage > 0) impacts++;
             };
+            var fieldCenter = Vector2.zero;
+            harness.Simulation.ForceFieldDeployed += evt => fieldCenter = evt.Point;
             PlaceForceField(harness);
             var player = harness.State.GetUnit("player.test.01");
             var shot = ProjectileDefinition.CreateRuntime("projectile." + carrierId, 0.1f, 0f, 3f, 24, 0.45f);
@@ -2922,7 +2937,8 @@ namespace Game.Tests.EditMode.Gameplay
             if (absorbed)
             {
                 Assert.That(absorbedAt.HasValue, Is.True);
-                Assert.That(absorbedAt.Value.x, Is.EqualTo(player.Position.x - 1.4f).Within(0.25f), "stopped on the boundary");
+                Assert.That(absorbedAt.Value.x, Is.EqualTo(FieldEntryX(fieldCenter, 1.4f, 0f)).Within(0.25f), "stopped on the boundary");
+                Assert.That(Vector2.Distance(fieldCenter, player.Position), Is.LessThan(1.2f), "the device stands beside its owner");
                 Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
                 Assert.That(impacts, Is.Zero, "no blast at all");
                 Assert.That(player.Health, Is.EqualTo(player.MaxHealth));
@@ -2960,7 +2976,8 @@ namespace Game.Tests.EditMode.Gameplay
             {
                 var harness = CreateForceFieldHarness("weapon.impulse", CreateForceFieldProgress(0, steps));
                 var seen = 0f;
-                harness.Simulation.ForceFieldDeployed += evt => seen = evt.Radius;
+                var center = Vector2.zero;
+                harness.Simulation.ForceFieldDeployed += evt => { seen = evt.Radius; center = evt.Point; };
                 var absorbedAt = default(Vector2?);
                 harness.Simulation.ForceFieldAbsorbed += (_, point) => absorbedAt = point;
                 PlaceForceField(harness);
@@ -2970,7 +2987,7 @@ namespace Game.Tests.EditMode.Gameplay
                     ProjectileDefinition.CreateRuntime("projectile.weapon.impulse", 0.1f, 0f, 3f, 24, 0.45f),
                     "opponent.test.01", new Vector2(-9f, 0f), Vector2.right * 8f, 0.2f, Color.white));
                 TickMany(harness.Simulation, 300, 1f / 120f);
-                Assert.That(absorbedAt.Value.x, Is.EqualTo(player.Position.x - expected).Within(0.25f));
+                Assert.That(absorbedAt.Value.x, Is.EqualTo(FieldEntryX(center, expected, 0f)).Within(0.25f));
             }
         }
 
@@ -3018,6 +3035,8 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Motors[opponent.UnitId].Teleport(opponent.Position);
             harness.Simulation.AdvanceTurnDueToNoUsableWeapon();            // the opponent acts first
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent));
+            var fieldCenter = Vector2.zero;
+            harness.Simulation.ForceFieldDeployed += evt => fieldCenter = evt.Point;
             Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
                 Is.EqualTo(BattleFireOutcome.UtilityUsed));
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
@@ -3028,8 +3047,9 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Simulation.ForceFieldAbsorbed += (_, point) => cutAt = point;
             Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 0f, true)).Outcome,
                 Is.EqualTo(BattleFireOutcome.Fired));
-            Assert.That(range, Is.EqualTo(1.6f).Within(0.02f), "x from -3 to the boundary at -1.4");
-            Assert.That(cutAt.Value.x, Is.EqualTo(-1.4f).Within(0.02f));
+            var entry = FieldEntryX(fieldCenter, 1.4f, 0f);
+            Assert.That(range, Is.EqualTo(entry + 3f).Within(0.05f), "from x -3 to where the beam enters the sphere");
+            Assert.That(cutAt.Value.x, Is.EqualTo(entry).Within(0.05f));
         }
 
         [Test]
@@ -3498,8 +3518,8 @@ namespace Game.Tests.EditMode.Gameplay
                 elapsed += 1f / 120f;
             }
 
-            Assert.That(triggeredAt, Is.EqualTo(0.7f).Within(0.2f), "it crawled about a second and attached");
-            Assert.That(blastAt - triggeredAt, Is.EqualTo(1.5f).Within(0.1f), "short fuse after attaching");
+            Assert.That(triggeredAt, Is.EqualTo(0.35f).Within(0.15f), "it crawls at twice the old speed and reaches the enemy");
+            Assert.That(blastAt - triggeredAt, Is.EqualTo(0f).Within(0.05f), "it blasts at once on contact");
             Assert.That(enemy.Health, Is.EqualTo(enemy.MaxHealth - 45), "the blast hurts the attached enemy");
             Assert.That(ally.Health, Is.EqualTo(ally.MaxHealth), "allies are immune to the blast");
             Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.False, "no element before the feature");
@@ -3510,7 +3530,7 @@ namespace Game.Tests.EditMode.Gameplay
         [Test]
         public void SpiderMine_WithNoOneAheadCrawlsForFiveSecondsAndBlastsAnyway()
         {
-            var harness = CreateSpiderHarness(new Vector2(9.5f, 0f));
+            var harness = CreateSpiderHarness(new Vector2(-9.5f, 0f));                      // nobody ahead
             var enemy = harness.State.GetUnit("opponent.test.01");
             var blastAt = -1f;
             var blastX = 0f;
@@ -3523,8 +3543,9 @@ namespace Game.Tests.EditMode.Gameplay
                 elapsed += 1f / 120f;
             }
 
-            Assert.That(blastAt, Is.EqualTo(5f).Within(0.3f), "the search lasts five seconds");
-            Assert.That(blastX, Is.EqualTo(-3f + 0.46f + 1.4f * 5f).Within(0.5f), "crawled at about 1.4 u/s");
+            Assert.That(blastAt, Is.GreaterThan(0f).And.LessThanOrEqualTo(5.3f),
+                "it blasts at the end of the search or where it can go no further");
+            Assert.That((blastX - (-3f + 0.46f)) / blastAt, Is.EqualTo(2.8f).Within(0.35f), "crawls at about 2.8 u/s");
             Assert.That(enemy.Health, Is.EqualTo(enemy.MaxHealth));
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "the retreat window follows the blast");
             TickMany(harness.Simulation, 480, 1f / 120f);
@@ -5610,36 +5631,6 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void HoppingGrenade_CanJumpAgainAfterLandingWithoutConsumingAnotherItem()
-        {
-            var grenade = CreateWeapon(
-                "weapon.hopping-grenade",
-                gravityScale: 1.1f,
-                timeoutSeconds: 3f,
-                ammo: 1);
-            var harness = CreateHarness(grenade);
-
-            Assert.AreEqual(
-                BattleFireOutcome.Fired,
-                harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.down, 6f, true)).Outcome);
-            for (var i = 0; i < 600 && !harness.Simulation.Projectiles[0].IsRestingFuse; i++)
-            {
-                harness.Simulation.Tick(1f / 120f);
-            }
-
-            Assert.IsTrue(harness.Simulation.CanContinueHoppingGrenade());
-            Assert.AreEqual(1, harness.Simulation.Projectiles.Count);
-            var projectile = harness.Simulation.Projectiles[0];
-            Assert.IsTrue(projectile.IsRestingFuse);
-
-            Assert.AreEqual(
-                BattleFireOutcome.Fired,
-                harness.Simulation.TryFire(new AimState(projectile.Position, Vector2.right, 1f, true)).Outcome);
-            Assert.IsFalse(projectile.IsRestingFuse);
-            Assert.Greater(projectile.Velocity.y, 0f);
-        }
-
-        [Test]
         public void IncendiaryGrenade_ImpactSpawnsFourLocalFirePuddles()
         {
             var grenade = CreateWeapon(
@@ -5657,7 +5648,11 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.AreEqual(4, blobs.Count);
             Assert.That(blobs, Has.All.Matches<FireBlobEvent>(blob =>
-                Vector2.Distance(blob.Origin, blob.ImpactPoint) <= 0.56f));
+                Vector2.Distance(blob.Origin, blob.ImpactPoint) <= 1.6f), "they land near the blast");
+            Assert.That(blobs, Has.All.Matches<FireBlobEvent>(blob =>
+                blob.TravelSeconds > 0f && blob.TravelSeconds < 0.6f), "they fall at once and fast, no pause in the air");
+            Assert.That(blobs, Has.All.Matches<FireBlobEvent>(blob => blob.ImpactPoint.y <= blob.Origin.y + 0.05f),
+                "every drop ends on the ground, none hangs above the crater");
         }
 
         [Test]

@@ -103,6 +103,33 @@ namespace Game.Gameplay.Battle.Runtime
         }
     }
 
+    /// <summary>A released cargo item falls straight down under gravity instead of jumping to the ground.</summary>
+    public sealed class CargoFallVisual : MonoBehaviour
+    {
+        private const float FallGravity = 14f;
+        private Vector2 _destination;
+        private float _speed;
+
+        public void Play(Vector2 origin, Vector2 destination)
+        {
+            _destination = destination;
+            _speed = 0f;
+            transform.position = origin;
+        }
+
+        private void Update()
+        {
+            _speed += FallGravity * Time.deltaTime;
+            var position = (Vector2)transform.position;
+            var next = Vector2.MoveTowards(position, _destination, _speed * Time.deltaTime);
+            transform.position = next;
+            if ((next - _destination).sqrMagnitude < 0.0001f)
+            {
+                Destroy(this);
+            }
+        }
+    }
+
     public sealed class GroundDropVisual : MonoBehaviour
     {
         private Vector2 _origin;
