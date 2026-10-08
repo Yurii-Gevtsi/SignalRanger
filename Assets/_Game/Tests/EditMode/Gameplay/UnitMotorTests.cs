@@ -45,6 +45,30 @@ namespace Game.Tests.EditMode.Gameplay
             }
         }
 
+        [Test]
+        public void SidewaysJumpIntoALedgeCornerAlwaysComesToRest()
+        {
+            // A ledge one body high on the right; the droid jumps sideways into its edge from many spots.
+            var failures = new System.Collections.Generic.List<string>();
+            for (var startX = -1.6f; startX <= -0.1f; startX += 0.05f)
+            {
+                foreach (var speedX in new[] { 2.5f, 4f, 6f })
+                {
+                    var grid = CreateFlatGround();
+                    grid.StampRect(new Vector2(2f, 0.45f), new Vector2(4f, 0.9f), true, out _);
+                    var motor = new UnitMotor(grid, CreateProfile(), new Vector2(startX, 0.5f), KillY);
+                    motor.AddImpulse(new Vector2(speedX, 3.2f));
+                    Simulate(motor, 4f, out var elapsed);
+                    if (!motor.IsStable)
+                    {
+                        failures.Add($"x {startX:F2} vx {speedX}: still moving at {motor.Position}");
+                    }
+                }
+            }
+
+            Assert.That(failures, Is.Empty, string.Join(System.Environment.NewLine, failures));
+        }
+
         private static MotorStepOutcome Simulate(UnitMotor motor, float maxSeconds, out float elapsed)
         {
             var outcome = MotorStepOutcome.Airborne;

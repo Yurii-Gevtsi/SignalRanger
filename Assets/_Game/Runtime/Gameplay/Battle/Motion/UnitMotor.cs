@@ -292,13 +292,74 @@ namespace Game.Gameplay.Battle.Motion
         {
             if (IsStable)
             {
+                _snagSeconds = 0f;
                 return MotorStepOutcome.Resting;
             }
 
-            if (_hovering)
+            if (_hovering || _hasRope)
             {
-                return StepHover(deltaTime);
+                _snagSeconds = 0f;
+                return _hovering ? StepHover(deltaTime) : StepAirborne(deltaTime);
             }
+
+            var outcome = StepAirborne(deltaTime);
+            return outcome == MotorStepOutcome.Airborne ? GuardAgainstSnag(deltaTime) : outcome;
+        }
+
+        /// <summary>
+        /// A body wedged against a ledge corner can keep bouncing between two blocked positions without ever
+        /// falling or landing, which would hold the turn forever. When an airborne body has barely moved for a
+        /// short while it is put down on the nearest free spot that has support (or where it is).
+        /// </summary>
+        private MotorStepOutcome GuardAgainstSnag(float deltaTime)
+        {
+            if ((Position - _snagAnchor).sqrMagnitude > SnagMovementTolerance * SnagMovementTolerance)
+            {
+                _snagAnchor = Position;
+                _snagSeconds = 0f;
+                return MotorStepOutcome.Airborne;
+            }
+
+            _snagSeconds += Mathf.Max(0f, deltaTime);
+            if (_snagSeconds < SnagSettleSeconds)
+            {
+                return MotorStepOutcome.Airborne;
+            }
+
+            _snagSeconds = 0f;
+            var cell = _terrain.CellSize;
+            var maxLift = Mathf.CeilToInt(_profile.HalfHeight * 2f / cell.y) + 2;
+            var maxSide = Mathf.CeilToInt(_profile.HalfWidth * 2f / cell.x) + 2;
+            for (var lift = 0; lift <= maxLift; lift++)
+            {
+                for (var side = 0; side <= maxSide; side++)
+                {
+                    for (var sign = -1; sign <= 1; sign += 2)
+                    {
+                        var candidate = Position + new Vector2(sign * side * cell.x, lift * cell.y);
+                        if (!IsBodyBlocked(candidate) && IsGrounded(candidate))
+                        {
+                            return Settle(candidate);
+                        }
+
+                        if (side == 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return Settle(Position);
+        }
+
+        private const float SnagMovementTolerance = 0.03f;
+        private const float SnagSettleSeconds = 0.5f;
+        private Vector2 _snagAnchor;
+        private float _snagSeconds;
+
+        private MotorStepOutcome StepAirborne(float deltaTime)
+        {
 
             if (IsJumping)
             {

@@ -91,6 +91,22 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
+        public void BotTurnController_APlacementThatDoesNotEndTheTurnIsFollowedByTheBotEndingIt()
+        {
+            var mine = System.Array.Find(PrototypeWeaponLibrary.CreateAll(), w => w.WeaponId == "weapon.mine");
+            var harness = CreateHarness(mine);
+            AdvanceToOpponentTurn(harness);
+            var controller = CreateController(harness, AiDifficulty.Normal, seed: 3);
+            for (var i = 0; i < 6000 && harness.State.Turn.ActiveTeam == BattleTeamId.Opponent; i++)
+            {
+                controller.Tick(TickSeconds);
+                harness.Simulation.Tick(TickSeconds);
+            }
+
+            Assert.AreEqual(BattleTeamId.Player, harness.State.Turn.ActiveTeam, "the bot does not wait forever after a mine");
+        }
+
+        [Test]
         public void BotTurnController_IsIdle_DuringPlayerTurn()
         {
             var harness = CreateHarness();
@@ -139,7 +155,7 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.AreEqual(BattleTeamId.Opponent, harness.State.Turn.ActiveTeam);
         }
 
-        private static Harness CreateHarness()
+        private static Harness CreateHarness(WeaponDefinition opponentWeapon = null)
         {
             var bounds = new Rect(-10f, -8f, 20f, 16f);
             var terrain = BattleTerrain.CreateProcedural(bounds);
@@ -166,9 +182,13 @@ namespace Game.Tests.EditMode.Gameplay
                 "weapon.test.botturn", "weapon.test.botturn.name", WeaponRole.ArcingExplosive,
                 10, 2.5f, 0.14f, 1f, 8f, 6f, 20f, -1, null, null);
             var playerInventory = new WeaponInventoryRuntime(new[] { weapon });
-            var opponentInventory = new WeaponInventoryRuntime(new[] { weapon });
+            var opponentInventory = new WeaponInventoryRuntime(new[] { opponentWeapon ?? weapon });
             var executor = new WeaponExecutor();
             var weaponsById = new Dictionary<string, WeaponDefinition>(System.StringComparer.Ordinal) { [weapon.WeaponId] = weapon };
+            if (opponentWeapon != null)
+            {
+                weaponsById[opponentWeapon.WeaponId] = opponentWeapon;
+            }
 
             var turnService = new TurnService();
             turnService.StartFirstTurn(state, BattleTeamId.Player);

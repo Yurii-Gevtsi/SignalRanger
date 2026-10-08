@@ -55,6 +55,8 @@ namespace Game.Gameplay.Battle.AI
         private readonly List<TrajectoryUnitBody> _bodies = new();
 
         private Phase _phase = Phase.Idle;
+        private float _doneTimer;
+        private const float DoneSettleSeconds = 0.6f;
         private float _aimTimer;
         private float _moveTimer;
         private float _stallTimer;
@@ -159,8 +161,18 @@ namespace Game.Gameplay.Battle.AI
                 case Phase.Firing:
                     Execute();
                     _phase = Phase.Done;
+                    _doneTimer = 0f;
                     break;
                 case Phase.Done:
+                    // A placement that does not end the turn (a mine, a guardian, a barrier) leaves the turn open:
+                    // once everything has settled the bot ends it itself instead of waiting forever.
+                    _doneTimer += deltaTime;
+                    if (_doneTimer >= DoneSettleSeconds && !_simulation.HasActiveWeaponEffect
+                        && state.Turn.TurnNumber == _plannedTurn)
+                    {
+                        _simulation.AdvanceTurnDueToNoUsableWeapon();
+                    }
+
                     break;
             }
         }
@@ -277,6 +289,7 @@ namespace Game.Gameplay.Battle.AI
             _plan ??= PlanShotFromCurrent();
             Execute();
             _phase = Phase.Done;
+            _doneTimer = 0f;
         }
 
         private void Execute()
