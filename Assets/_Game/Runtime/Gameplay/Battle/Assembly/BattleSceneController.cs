@@ -2349,7 +2349,17 @@ namespace Game.Gameplay.Battle.Assembly
                 && impact.OwnerUnitId.StartsWith("player.", System.StringComparison.Ordinal))
             {
                 _firstBattleGuide?.ObserveProjectileImpact();
-                if (ReturnsHeldWeaponAfterFlight(impactWeapon)
+                if (IsPlayerTurnShotSpent())
+                {
+                    // The turn's shot is spent: the next item stays out of the hands and there is nothing to aim.
+                    if (_playerWeaponSelected)
+                    {
+                        _playerWeaponSelected = false;
+                        ResetAimState();
+                        RefreshPlayerWeaponVisual();
+                    }
+                }
+                else if (ReturnsHeldWeaponAfterFlight(impactWeapon)
                     && _inventory?.Selected?.WeaponId == impactWeapon.WeaponId
                     && _inventory.GetSelectedRemainingAmmo() > 0)
                 {
@@ -2425,12 +2435,24 @@ namespace Game.Gameplay.Battle.Assembly
             var visual = new GameObject("Grounder Placed");
             _arenaObjects.Add(visual);
             _grounderVisuals[grounder.Id] = visual;
-            visual.transform.position = grounder.Point;
             visual.transform.localScale = Vector3.one * GrounderPlacedVisualScale;
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = LoadWeaponIconSprite(grounder.Weapon?.IconId ?? "grounder");
             renderer.sortingOrder = 27;
+            // The magnet's base stands on the ground instead of being half sunk into it.
+            visual.transform.position = grounder.Point + Vector2.up * GroundStandingLift(renderer.sprite, GrounderPlacedVisualScale);
         }
+
+        /// <summary>
+        /// How far above a ground deploy point (which sits <see cref="GroundDeployPointLift"/> over the surface) a
+        /// centre-pivoted device sprite of this world scale must be raised so its bottom edge rests on the surface.
+        /// </summary>
+        private static float GroundStandingLift(Sprite sprite, float worldScale)
+        {
+            return sprite == null ? 0f : -sprite.bounds.min.y * worldScale - GroundDeployPointLift;
+        }
+
+        private const float GroundDeployPointLift = 0.06f;
 
         private void OnSimulationForceFieldDeployed(ForceFieldDeployedEvent field)
         {
@@ -2455,6 +2477,9 @@ namespace Game.Gameplay.Battle.Assembly
             deviceRenderer.sortingOrder = 27;
             var parentScale = Mathf.Max(0.0001f, visual.transform.localScale.x);
             device.transform.localScale = Vector3.one * (GrounderPlacedVisualScale / parentScale);
+            // Its bottom rests on the surface; the sphere stays centred on the deploy point around it.
+            device.transform.localPosition = Vector3.up
+                * (GroundStandingLift(deviceRenderer.sprite, GrounderPlacedVisualScale) / parentScale);
         }
 
         private void OnSimulationForceFieldRemoved(int fieldId)
@@ -2817,7 +2842,7 @@ namespace Game.Gameplay.Battle.Assembly
         private System.Collections.IEnumerator RestoreSwordWeaponVisualAfterSwing()
         {
             yield return new WaitForSeconds(0.43f);
-            if (_inventory?.Selected?.WeaponId == "weapon.plasma-sword")
+            if (_inventory?.Selected?.WeaponId == "weapon.plasma-sword" && !IsPlayerTurnShotSpent())
             {
                 _playerWeaponSelected = true;
                 RefreshPlayerWeaponVisual();
@@ -3099,6 +3124,12 @@ namespace Game.Gameplay.Battle.Assembly
                 return _weaponsById.TryGetValue("weapon.ufo-carrier", out var carrier) ? carrier : null;
             }
 
+            // The thrown guardian body; without this it had no weapon and flew as a plain black ball.
+            if (projectileId == GuardianDeployProjectileId)
+            {
+                return _weaponsById.TryGetValue("weapon.guardian-drone", out var guardian) ? guardian : null;
+            }
+
             if (projectileId != null
                 && (projectileId.StartsWith("projectile.weapon.mortira.fragment", System.StringComparison.Ordinal)
                     || projectileId.StartsWith("projectile.weapon.mortira.cascade.", System.StringComparison.Ordinal)))
@@ -3179,6 +3210,22 @@ namespace Game.Gameplay.Battle.Assembly
             _playerWeaponSelected = false;
             ResetAimState();
             RefreshPlayerWeaponVisual();
+        }
+
+        /// <summary>
+        /// The player's shot of this turn is spent (only the retreat is left): the held skin and the aim stay hidden
+        /// until the turn passes. The blaster burst, the teleport's early trigger and a flying copter still need
+        /// their weapon for the follow-up press.
+        /// </summary>
+        private bool IsPlayerTurnShotSpent()
+        {
+            return _simulation != null
+                && _battleState != null
+                && _battleState.Turn.ActiveTeam == BattleTeamId.Player
+                && _battleState.Turn.ActionSpent
+                && !_simulation.CanContinueBlasterBurst
+                && !_simulation.CanTriggerTeleportEarly()
+                && !_simulation.HasPlayerCopter;
         }
 
         private static bool HidesHeldWeaponAfterUse(WeaponDefinition weapon)
@@ -4133,9 +4180,10 @@ namespace Game.Gameplay.Battle.Assembly
                         var facing = projectile.Velocity.x < -0.05f ? -1f : projectile.Velocity.x > 0.05f ? 1f : Mathf.Sign(body.localScale.x);
                         body.localScale = new Vector3(Mathf.Abs(body.localScale.x) * facing, body.localScale.y, body.localScale.z);
                     }
-                    else if (projectile.Definition.ProjectileId == "projectile.weapon.bomber.bomb")
+                    else if (projectile.Definition.ProjectileId == "projectile.weapon.bomber.bomb"
+                        || projectile.Definition.ProjectileId == GuardianDeployProjectileId)
                     {
-                        // Keeps its vertical pose; nothing to rotate.
+                        // Keeps its pose (the bomb vertical, the thrown guardian upright); nothing to rotate.
                     }
                     else if (projectileObject.transform.childCount > 0
                         && projectile.Velocity.sqrMagnitude > 0.01f
@@ -5736,7 +5784,8 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             if (!_playerWeaponSelected || _inventory?.Selected == null || _hideHeldWeaponForReusableThrow
-                || BattleSimulation.IsMarkedStrikeWeapon(_inventory.Selected))
+                || BattleSimulation.IsMarkedStrikeWeapon(_inventory.Selected)
+                || IsPlayerTurnShotSpent())
             {
                 presenter.ClearEquippedWeapon();
                 return;

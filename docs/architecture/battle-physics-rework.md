@@ -77,6 +77,9 @@ Assets/_Game/Runtime/Gameplay/Battle/
   чисто процедурних арен — фіксована (32 клітинки/од).
 - `CarveCircle(center, radius)` повертає dirty rect; `BattleTerrain`
   оновлює лише цю область текстури (`SetPixels32(x,y,w,h)` + `Apply`).
+  Оновлення 2026-10-09: `Apply` всієї текстури (арена ~3344×1882, ~25 МБ) щокадру давало ривки бурової ракети;
+  тепер вирви за кадр збираються в один брудний прямокутник, який іде на GPU через малу проміжну текстуру й
+  `Graphics.CopyTexture` (`BattleTerrain.FlushTextureUploads` з `LateUpdate`); без підтримки — повний `Apply`.
 - Укриття (`DeployCover`) — `StampRect` у ту саму маску.
 - Процедурні блоки нерушимі (як і зараз): кратер їх не вирізає.
 

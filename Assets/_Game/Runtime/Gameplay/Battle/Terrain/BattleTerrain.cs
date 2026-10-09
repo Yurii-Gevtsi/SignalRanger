@@ -557,11 +557,23 @@ namespace Game.Gameplay.Battle.Terrain
 
                 Texture.SetPixels32(TextureRectX + minX, TextureRectY + minY, width, height, region);
                 // Uploading the whole texture per crater stalled the drill rocket, which cuts a crater every
-                // few centimetres: the upload is deferred and done once per frame by FlushTextureUploads.
+                // few centimetres: the upload is deferred to FlushTextureUploads once per frame, and only the
+                // rectangle the craters changed is sent to the GPU.
+                _dirtyMinX = Mathf.Min(_dirtyMinX, TextureRectX + minX);
+                _dirtyMinY = Mathf.Min(_dirtyMinY, TextureRectY + minY);
+                _dirtyMaxX = Mathf.Max(_dirtyMaxX, TextureRectX + maxX);
+                _dirtyMaxY = Mathf.Max(_dirtyMaxY, TextureRectY + maxY);
                 HasPendingUpload = true;
             }
 
             public bool HasPendingUpload { get; private set; }
+
+            private int _dirtyMinX = int.MaxValue;
+            private int _dirtyMinY = int.MaxValue;
+            private int _dirtyMaxX = -1;
+            private int _dirtyMaxY = -1;
+            private Texture2D _uploadStaging;
+            private Color32[] _uploadStagingPixels;
 
             public void FlushUpload()
             {
@@ -571,7 +583,64 @@ namespace Game.Gameplay.Battle.Terrain
                 }
 
                 HasPendingUpload = false;
-                Texture.Apply(false, false);
+                var x = _dirtyMinX;
+                var y = _dirtyMinY;
+                var width = _dirtyMaxX - _dirtyMinX + 1;
+                var height = _dirtyMaxY - _dirtyMinY + 1;
+                _dirtyMinX = _dirtyMinY = int.MaxValue;
+                _dirtyMaxX = _dirtyMaxY = -1;
+                if (!TryUploadRegion(x, y, width, height))
+                {
+                    Texture.Apply(false, false);
+                }
+            }
+
+            /// <summary>
+            /// Sends only the changed rectangle to the GPU: it is written into a small staging texture and copied
+            /// into place on the GPU. A large arena texture (tens of megabytes) uploaded whole every frame is what
+            /// made the drill rocket stutter on phones. False when the device cannot copy regions or the rectangle
+            /// is so large that a whole upload costs about the same.
+            /// </summary>
+            private bool TryUploadRegion(int x, int y, int width, int height)
+            {
+                if ((SystemInfo.copyTextureSupport & UnityEngine.Rendering.CopyTextureSupport.Basic) == 0
+                    || width <= 0 || height <= 0
+                    || x < 0 || y < 0 || x + width > Texture.width || y + height > Texture.height
+                    || (long)width * height * 4 > (long)Texture.width * Texture.height)
+                {
+                    return false;
+                }
+
+                var stagingWidth = Mathf.NextPowerOfTwo(Mathf.Max(32, width));
+                var stagingHeight = Mathf.NextPowerOfTwo(Mathf.Max(32, height));
+                if (_uploadStaging == null || _uploadStaging.width < stagingWidth || _uploadStaging.height < stagingHeight)
+                {
+                    if (_uploadStaging != null)
+                    {
+                        stagingWidth = Mathf.Max(stagingWidth, _uploadStaging.width);
+                        stagingHeight = Mathf.Max(stagingHeight, _uploadStaging.height);
+                        DestroyRuntimeObject(_uploadStaging);
+                    }
+
+                    _uploadStaging = new Texture2D(stagingWidth, stagingHeight, TextureFormat.RGBA32, false)
+                    {
+                        hideFlags = HideFlags.HideAndDontSave,
+                        filterMode = Texture.filterMode,
+                        wrapMode = TextureWrapMode.Clamp
+                    };
+                    _uploadStagingPixels = new Color32[stagingWidth * stagingHeight];
+                }
+
+                var stride = _uploadStaging.width;
+                for (var row = 0; row < height; row++)
+                {
+                    System.Array.Copy(Pixels, (y + row) * Texture.width + x, _uploadStagingPixels, row * stride, width);
+                }
+
+                _uploadStaging.SetPixels32(_uploadStagingPixels);
+                _uploadStaging.Apply(false, false);
+                Graphics.CopyTexture(_uploadStaging, 0, 0, 0, 0, width, height, Texture, 0, 0, x, y);
+                return true;
             }
 
             public void Dispose()
@@ -584,6 +653,12 @@ namespace Game.Gameplay.Battle.Terrain
                 if (Texture != null)
                 {
                     DestroyRuntimeObject(Texture);
+                }
+
+                if (_uploadStaging != null)
+                {
+                    DestroyRuntimeObject(_uploadStaging);
+                    _uploadStaging = null;
                 }
             }
 

@@ -597,11 +597,13 @@ namespace Game.Tests.EditMode.Gameplay
 
                 var visuals = (Dictionary<int, GameObject>)visualsField.GetValue(controller);
                 Assert.That(visuals.TryGetValue(47, out visual), Is.True);
-                Assert.That(visual.transform.position, Is.EqualTo((Vector3)point));
                 var renderer = visual.GetComponent<SpriteRenderer>();
                 Assert.IsNotNull(renderer);
                 Assert.That(renderer.enabled, Is.True);
                 Assert.IsNotNull(renderer.sprite);
+                Assert.That(visual.transform.position.x, Is.EqualTo(point.x).Within(0.0001f));
+                // The deploy point sits 0.06 above the surface; the magnet's bottom edge rests on the surface.
+                Assert.That(renderer.bounds.min.y, Is.EqualTo(point.y - 0.06f).Within(0.001f), "it stands on the ground");
                 Assert.That(renderer.sprite.texture,
                     Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/grounder")));
 

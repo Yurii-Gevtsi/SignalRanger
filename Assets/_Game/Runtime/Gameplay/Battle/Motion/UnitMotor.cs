@@ -293,12 +293,14 @@ namespace Game.Gameplay.Battle.Motion
             if (IsStable)
             {
                 _snagSeconds = 0f;
+                _snagAnchor = Position;
                 return MotorStepOutcome.Resting;
             }
 
             if (_hovering || _hasRope)
             {
                 _snagSeconds = 0f;
+                _snagAnchor = Position;
                 return _hovering ? StepHover(deltaTime) : StepAirborne(deltaTime);
             }
 
@@ -307,13 +309,14 @@ namespace Game.Gameplay.Battle.Motion
         }
 
         /// <summary>
-        /// A body wedged against a ledge corner can keep bouncing between two blocked positions without ever
-        /// falling or landing, which would hold the turn forever. When an airborne body has barely moved for a
-        /// short while it is put down on the nearest free spot that has support (or where it is).
+        /// A body wedged against a ledge corner can keep bouncing between blocked positions without ever falling
+        /// or landing, which would hold the turn forever. A real flight or fall leaves a small area quickly; when an
+        /// airborne body has stayed inside one for too long it is put down on the nearest free spot that has
+        /// support (or, failing that, where it is).
         /// </summary>
         private MotorStepOutcome GuardAgainstSnag(float deltaTime)
         {
-            if ((Position - _snagAnchor).sqrMagnitude > SnagMovementTolerance * SnagMovementTolerance)
+            if ((Position - _snagAnchor).sqrMagnitude > SnagAreaRadius * SnagAreaRadius)
             {
                 _snagAnchor = Position;
                 _snagSeconds = 0f;
@@ -327,22 +330,38 @@ namespace Game.Gameplay.Battle.Motion
             }
 
             _snagSeconds = 0f;
+            _snagAnchor = Position;
             var cell = _terrain.CellSize;
             var maxLift = Mathf.CeilToInt(_profile.HalfHeight * 2f / cell.y) + 2;
             var maxSide = Mathf.CeilToInt(_profile.HalfWidth * 2f / cell.x) + 2;
-            for (var lift = 0; lift <= maxLift; lift++)
+            // Nearest first: small offsets before large ones, up before down.
+            for (var reach = 0; reach <= maxLift + maxSide; reach++)
             {
-                for (var side = 0; side <= maxSide; side++)
+                for (var liftStep = 0; liftStep <= reach; liftStep++)
                 {
-                    for (var sign = -1; sign <= 1; sign += 2)
+                    var side = reach - liftStep;
+                    if (side > maxSide || liftStep > maxLift)
                     {
-                        var candidate = Position + new Vector2(sign * side * cell.x, lift * cell.y);
-                        if (!IsBodyBlocked(candidate) && IsGrounded(candidate))
+                        continue;
+                    }
+
+                    for (var vertical = 1; vertical >= -1; vertical -= 2)
+                    {
+                        for (var sign = -1; sign <= 1; sign += 2)
                         {
-                            return Settle(candidate);
+                            var candidate = Position + new Vector2(sign * side * cell.x, vertical * liftStep * cell.y);
+                            if (!IsBodyBlocked(candidate) && IsGrounded(candidate))
+                            {
+                                return Settle(candidate);
+                            }
+
+                            if (side == 0)
+                            {
+                                break;
+                            }
                         }
 
-                        if (side == 0)
+                        if (liftStep == 0)
                         {
                             break;
                         }
@@ -353,8 +372,9 @@ namespace Game.Gameplay.Battle.Motion
             return Settle(Position);
         }
 
-        private const float SnagMovementTolerance = 0.03f;
-        private const float SnagSettleSeconds = 0.5f;
+        // A free fall leaves this area in about a quarter of a second and a jump arc in about half of one.
+        private const float SnagAreaRadius = 0.3f;
+        private const float SnagSettleSeconds = 0.9f;
         private Vector2 _snagAnchor;
         private float _snagSeconds;
 

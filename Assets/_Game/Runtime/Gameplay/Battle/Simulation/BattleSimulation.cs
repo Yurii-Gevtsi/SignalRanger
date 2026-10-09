@@ -200,8 +200,8 @@ namespace Game.Gameplay.Battle.Simulation
         private const int IncendiaryPuddleCount = 4;
         private const float IncendiaryPuddleSpreadRadius = 0.55f;
         private const float IncendiaryPuddleLifetimeSeconds = 2.5f;
-        private const float IncendiaryDropSpeed = 3.4f;
-        private const float IncendiaryDropGravityScale = 2.4f;
+        private const float IncendiaryDropSpeed = 7f;
+        private const float IncendiaryDropGravityScale = 3f;
         private const string RepairJammerWeaponId = "weapon.repair-jammer";
         private const int RepairJammerBaseDurationTurns = 2;
         private const string OrbitalRocketWeaponId = "weapon.orbital-rocket";
@@ -3889,14 +3889,14 @@ namespace Game.Gameplay.Battle.Simulation
             var baseDamage = totalDamage / IncendiaryPuddleCount;
             var remainder = totalDamage % IncendiaryPuddleCount;
 
-            // The drops fly out of the blast at once on a short, fast arc and land on the ground; there is no pause
-            // in the air before they fall.
+            // The drops shoot out of the blast at once, sideways and down, and reach the crater's ground within a
+            // fraction of a second: no rise and no pause in the air before they fall.
             var gravity = _projectileGravityPerScale * IncendiaryDropGravityScale;
             for (var index = 0; index < IncendiaryPuddleCount; index++)
             {
                 var side = index % 2 == 0 ? -1f : 1f;
                 var reach = index < 2 ? 0.55f : 1f;
-                var initialVelocity = new Vector2(side * IncendiaryDropSpeed * reach, IncendiaryDropSpeed * 0.45f);
+                var initialVelocity = new Vector2(side * IncendiaryDropSpeed * reach, -IncendiaryDropSpeed * 0.6f);
                 var origin = impact.Point + Vector2.up * 0.05f;
                 TraceFireBlobTrajectory(impact.OwnerUnitId, origin, initialVelocity, gravity,
                     out var endpoint, out var travelSeconds);

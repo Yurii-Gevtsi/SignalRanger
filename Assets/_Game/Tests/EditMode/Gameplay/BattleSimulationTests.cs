@@ -5635,6 +5635,7 @@ namespace Game.Tests.EditMode.Gameplay
         {
             var grenade = CreateWeapon(
                 "weapon.incendiary-grenade",
+                impactRadius: 1.4f,
                 gravityScale: 1.1f,
                 timeoutSeconds: 3f);
             var harness = CreateHarness(grenade);
@@ -5648,9 +5649,12 @@ namespace Game.Tests.EditMode.Gameplay
 
             Assert.AreEqual(4, blobs.Count);
             Assert.That(blobs, Has.All.Matches<FireBlobEvent>(blob =>
-                Vector2.Distance(blob.Origin, blob.ImpactPoint) <= 1.6f), "they land near the blast");
+                Vector2.Distance(blob.Origin, blob.ImpactPoint) <= 1.6f), "they land near the blast: "
+                + string.Join("; ", blobs.ConvertAll(blob => $"{blob.Origin}->{blob.ImpactPoint} in {blob.TravelSeconds:F2}s")));
             Assert.That(blobs, Has.All.Matches<FireBlobEvent>(blob =>
-                blob.TravelSeconds > 0f && blob.TravelSeconds < 0.6f), "they fall at once and fast, no pause in the air");
+                blob.TravelSeconds > 0f && blob.TravelSeconds < 0.2f), "they fall at once and fast, no pause in the air");
+            Assert.That(blobs, Has.All.Matches<FireBlobEvent>(blob => blob.InitialVelocity.y <= 0f),
+                "no drop rises out of the crater first");
             Assert.That(blobs, Has.All.Matches<FireBlobEvent>(blob => blob.ImpactPoint.y <= blob.Origin.y + 0.05f),
                 "every drop ends on the ground, none hangs above the crater");
         }
