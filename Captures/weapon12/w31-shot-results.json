@@ -1,0 +1,50 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "f4d32192bf0744b3b51001be40659a84",
+    "status": "succeeded",
+    "mode": "PlayMode",
+    "started_unix_ms": 1791311038877,
+    "finished_unix_ms": 1791311053493,
+    "last_update_unix_ms": 1791311053493,
+    "progress": {
+      "completed": 1,
+      "total": 1,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791311046209,
+      "last_finished_test_full_name": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ZZSkyHookScreenshot",
+      "last_finished_unix_ms": 1791311053411,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "PlayMode",
+      "summary": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 7.3583933,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "ZZSkyHookScreenshot",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ZZSkyHookScreenshot",
+          "state": "Passed",
+          "durationSeconds": 7.1923803,
+          "message": "shot taken",
+          "stackTrace": "at Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests+<ZZSkyHookScreenshot>d__16.MoveNext () [0x001ed] in C:\\Projects\\Game\\Assets\\_Game\\Tests\\PlayMode\\StarterWeaponsBattleSmokeTests.cs:576\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@f3e6c9a02477\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:44\r\n",
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}

@@ -1,0 +1,98 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "5cea3cbbb46245bba072d97ab67b7018",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791312574909,
+    "finished_unix_ms": 1791312587701,
+    "last_update_unix_ms": 1791312587701,
+    "progress": {
+      "completed": 537,
+      "total": 537,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791312587462,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.WeaponUiCatalogAvailabilityTests.WorkshopRequiresAnActiveWeaponAndAtLeastOneUpgradeNode",
+      "last_finished_unix_ms": 1791312587465,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleResultScreenFactoryTests.Create_Draw_AllowsContinueWithSmallReward",
+          "message": "  Expected string length 5 but was 0. Strings differ at index 0.\r\n  Expected: \"Нічия\"\r\n  But was:  <string.Empty>\r\n  -----------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleResultScreenFactoryTests.Create_OpponentWon_DisablesContinue",
+          "message": "  Expected string length 7 but was 0. Strings differ at index 0.\r\n  Expected: \"Поразка\"\r\n  But was:  <string.Empty>\r\n  -----------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleResultScreenFactoryTests.Create_PlayerWon_ReturnsVictoryStateWithReward",
+          "message": "  Expected string length 8 but was 0. Strings differ at index 0.\r\n  Expected: \"Перемога\"\r\n  But was:  <string.Empty>\r\n  -----------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.UnimplementedUtility_CannotHealOrTeleportThroughGenericFallback",
+          "message": "  weapon.virus\r\n  Expected: False\r\n  But was:  True\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.BattleHud_RopeControlsSeparateHorizontalInputAndHideWeaponReset",
+          "message": "System.NullReferenceException : Object reference not set to an instance of an object"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.BattleHud_UsesCompactAlignedTopBarAndBottomWeaponControls",
+          "message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.BattleHudResources_UseArsenalAndWeaponIconsWithoutDedicatedFireArt",
+          "message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.CameraFrameBottoms_AlignWithTheirArenaCanvasBottoms",
+          "message": "System.Collections.Generic.KeyNotFoundException : The given key 'arena.bones' was not present in the dictionary."
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.DroidRig_PlatformAnimatesOnlyWhenPresentedPositionChanges",
+          "message": "  Expected: RGBA(0.060, 1.000, 0.100, 1.000)\r\n  But was:  RGBA(0.059, 1.000, 0.102, 1.000)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.LagunaTheme_LowersOnlyBattleContentByFiftyPixels",
+          "message": "  Expected: (0.00, -0.20)\r\n  But was:  (0.00, -0.59)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.LoadingScreenPreview_BuildsMissionTextSpinnerAndPercent",
+          "message": "  Expected: (-420.00, 245.00)\r\n  But was:  (-420.00, 270.00)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.MonumentTheme_LowersOnlyBattleContentByFiftyPixels",
+          "message": "  Expected: (0.00, -0.20)\r\n  But was:  (0.00, -0.78)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.OpponentHealth_IsShownAsUnscaledRedNumberOnly",
+          "message": "  Expected: RGBA(1.000, 0.050, 0.030, 1.000)\r\n  But was:  RGBA(1.000, 0.051, 0.031, 1.000)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.TrainingArena_UsesOneImportedDestructibleSurfaceAndReusableAnimatedBackground",
+          "message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.WeaponsScreen_ShowsShelfActionsAndDetailsWithoutPurchaseButtons",
+          "message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.ImpulseSalvoWeaponEffectTests.Resolver_MapsRepairBranchesToProtectionAndRegenerationDurations",
+          "message": "  Expected: 2\r\n  But was:  1\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.UnitMotorTests.SafeSpawn_RejectsOneCellEdgeWithNoWalkableExit",
+          "message": "  Expected: False\r\n  But was:  True\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

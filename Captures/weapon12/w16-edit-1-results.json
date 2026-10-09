@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "30f9954123bd45d1ad76bf3e99f4974c",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791302113203,
+    "finished_unix_ms": 1791302119844,
+    "last_update_unix_ms": 1791302119844,
+    "progress": {
+      "completed": 188,
+      "total": 188,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791302119705,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers",
+      "last_finished_unix_ms": 1791302119706,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RailRifle_PassesThroughEveryDroidOnTheLineAndHurtsEachOnce",
+          "message": "  Expected: 0\r\n  But was:  1\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RailRifle_StopsWhenThePenetrationBudgetIsSpentAndEachPierceStepAddsTenPercent",
+          "message": "  6 units of ground at 6 u/s for one second\r\n  Expected: 5.0f +/- 0.300000012f\r\n  But was:  10.00002f\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

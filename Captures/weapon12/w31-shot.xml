@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 18:24:06Z" end-time="2026-10-06 18:24:13Z" duration="7,3583933">
+  <test-suite type="TestSuite" id="1061" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="45" result="Passed" start-time="2026-10-06 18:24:06Z" end-time="2026-10-06 18:24:13Z" duration="7.358393" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1054" name="Game.Tests.PlayMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.PlayMode.dll" runstate="Runnable" testcasecount="45" result="Passed" start-time="2026-10-06 18:24:06Z" end-time="2026-10-06 18:24:13Z" duration="7.283919" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1055" name="Game" fullname="Game" runstate="Runnable" testcasecount="45" result="Passed" start-time="2026-10-06 18:24:06Z" end-time="2026-10-06 18:24:13Z" duration="7.275336" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1056" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="45" result="Passed" start-time="2026-10-06 18:24:06Z" end-time="2026-10-06 18:24:13Z" duration="7.267931" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1057" name="PlayMode" fullname="Game.Tests.PlayMode" runstate="Runnable" testcasecount="45" result="Passed" start-time="2026-10-06 18:24:06Z" end-time="2026-10-06 18:24:13Z" duration="7.258839" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1005" name="StarterWeaponsBattleSmokeTests" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="42" result="Passed" start-time="2026-10-06 18:24:06Z" end-time="2026-10-06 18:24:13Z" duration="7.249231" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1042" name="ZZSkyHookScreenshot" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ZZSkyHookScreenshot" methodname="ZZSkyHookScreenshot" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="1950140243" result="Passed" start-time="2026-10-06 18:24:06Z" end-time="2026-10-06 18:24:13Z" duration="7.192380" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <reason>
+                  <message><![CDATA[shot taken]]></message>
+                </reason>
+                <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

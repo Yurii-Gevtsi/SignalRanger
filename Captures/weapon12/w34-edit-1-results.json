@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "8370c92f152544e3a1267325d5cea965",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791313383950,
+    "finished_unix_ms": 1791313396696,
+    "last_update_unix_ms": 1791313396696,
+    "progress": {
+      "completed": 280,
+      "total": 280,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791313396453,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+      "last_finished_unix_ms": 1791313396455,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Bomber_ABombBlastsOnTheGroundWithMineDamageAndOnAHostileDroidButFallsPastAnAlly",
+          "message": "  an ordinary mine blast\r\n  Expected: in range (48,54)\r\n  But was:  41\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Bomber_GroundCeilingWallsAndTheMapBorderStopTheCopterWithoutExploding",
+          "message": "  it never explodes by itself\r\n  Expected: True\r\n  But was:  False\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

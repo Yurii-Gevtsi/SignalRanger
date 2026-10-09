@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Game.Audio;
 using Game.App.Content;
 using Game.Core;
@@ -75,6 +76,15 @@ namespace Game.App
         {
             if (IsInitialized)
             {
+                // With domain reload disabled, static services outlive the runtime
+                // ScriptableObjects destroyed when the previous Play session ends.
+                if (Content == null || Missions == null || Missions.Length == 0
+                    || Missions.Any(mission => mission == null)
+                    || Content.Weapons.Any(weapon => weapon == null)
+                    || Content.Arenas.Any(arena => arena == null))
+                {
+                    InitializeRuntimeContent();
+                }
                 return;
             }
 
@@ -115,11 +125,7 @@ namespace Game.App
             ServerTime = new NoOpServerTimeService();
             PremiumStatus = new NoOpPremiumStatusService();
             Matchmaking = new LocalPvpMatchmakingService();
-            Content = DefaultGameContentCatalog.Create();
-            Missions = Content.Missions;
-            Campaign = new CampaignProgressionService(SaveService.Current, Missions, Economy);
-            Tutorial = new TutorialService(SaveService.Current, TutorialStepLibrary.CreateCampaignSteps());
-            Game.Core.BattleTutorialBridge.Feed = new AppBattleTutorialFeed(Tutorial, SaveService);
+            InitializeRuntimeContent();
             Game.Core.BattleFeedbackBridge.Sink = new AppBattleFeedbackSink(Audio);
             Game.Core.Battle.BattleHudFactoryBridge.Factory = new Game.UI.Battle.BattleHudViewFactory();
             Game.Core.Battle.BattleSettingsBridge.OpenHandler =
@@ -134,10 +140,19 @@ namespace Game.App
             Game.Core.BattleRewardBridge.CommanderExperienceResolver = () => Economy?.CommanderExperience ?? 0;
             Game.Core.BattleRewardBridge.ArenaRewardGranter = GrantRepeatableBattleReward;
             Game.Core.PvpSessionBridge.Resolver = () => PvpSession;
-            Session = new GameSessionService(SaveService.Current, Campaign, Content);
             LastMissionCompletionResult = default;
             SaveService.Save(SaveService.Current);
             IsInitialized = true;
+        }
+
+        private static void InitializeRuntimeContent()
+        {
+            Content = DefaultGameContentCatalog.Create();
+            Missions = Content.Missions;
+            Campaign = new CampaignProgressionService(SaveService.Current, Missions, Economy);
+            Tutorial = new TutorialService(SaveService.Current, TutorialStepLibrary.CreateCampaignSteps());
+            Game.Core.BattleTutorialBridge.Feed = new AppBattleTutorialFeed(Tutorial, SaveService);
+            Session = new GameSessionService(SaveService.Current, Campaign, Content);
         }
 
         /// <summary>

@@ -17,6 +17,56 @@ namespace Game.Tests.PlayMode
     public sealed class AppFlowSmokeTests
     {
         [Test]
+        public void Initialize_RebuildsDestroyedRuntimeContent()
+        {
+            AppServices.Initialize();
+            var previousCampaign = AppServices.Campaign;
+            Object.DestroyImmediate(AppServices.Missions[0]);
+
+            AppServices.Initialize();
+
+            Assert.That(AppServices.Campaign, Is.Not.SameAs(previousCampaign));
+            foreach (var mission in AppServices.Missions)
+            {
+                Assert.That(mission != null, Is.True, "Runtime missions must survive as live Unity objects.");
+            }
+            foreach (var weapon in AppServices.Content.Weapons)
+            {
+                Assert.That(weapon != null, Is.True);
+            }
+            foreach (var arena in AppServices.Content.Arenas)
+            {
+                Assert.That(arena != null, Is.True);
+            }
+            AppServices.Session.SelectMission(0);
+            Assert.That(AppServices.Session.SelectedMission != null, Is.True);
+            Assert.That(GameSessionContext.SelectedMissionId, Is.EqualTo("mission.training.01"));
+
+            var save = AppServices.SaveService.Current;
+            var adminBefore = save.settings.adminModeEnabled;
+            var progressBefore = save.campaign.highestUnlockedMissionIndex;
+            try
+            {
+                save.settings.adminModeEnabled = true;
+                var last = AppServices.Missions.Length - 1;
+                Assert.That(AppServices.Campaign.IsUnlocked(last), Is.True);
+                AppServices.Session.SelectMission(last);
+                Assert.That(AppServices.Session.SelectedMission != null, Is.True);
+                Assert.That(GameSessionContext.SelectedMissionId, Is.EqualTo(AppServices.Missions[last].MissionId));
+                Assert.That(save.campaign.highestUnlockedMissionIndex, Is.EqualTo(progressBefore));
+            }
+            finally
+            {
+                save.settings.adminModeEnabled = adminBefore;
+                AppServices.Session.SelectNextMission();
+            }
+
+            var rebuiltCampaign = AppServices.Campaign;
+            AppServices.Initialize();
+            Assert.That(AppServices.Campaign, Is.SameAs(rebuiltCampaign));
+        }
+
+        [Test]
         public void Initialize_WiresCoreServicesAndBridges()
         {
             AppServices.Initialize();

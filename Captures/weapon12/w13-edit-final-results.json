@@ -1,0 +1,130 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "6b3cc0804be54b3d85e8260bce62bc37",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791299204570,
+    "finished_unix_ms": 1791299225144,
+    "last_update_unix_ms": 1791299225144,
+    "progress": {
+      "completed": 704,
+      "total": 704,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791299224608,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Tutorial.TutorialServiceTests.FindNext_WaitsForRequiredSteps",
+      "last_finished_unix_ms": 1791299224610,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.App.GameSessionServiceTests.SelectMission_NewPlanetMissionPublishesItsDedicatedArena(8,\"mission.training.09\",\"arena.monument\",6)",
+          "message": "  String lengths are both 19. Strings differ at index 17.\r\n  Expected: \"mission.training.09\"\r\n  But was:  \"mission.training.15\"\r\n  ----------------------------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.App.GameSessionServiceTests.SelectMission_NewPlanetMissionPublishesItsDedicatedArena(10,\"mission.training.11\",\"arena.forest\",2)",
+          "message": "  String lengths are both 19. Strings differ at index 18.\r\n  Expected: \"mission.training.11\"\r\n  But was:  \"mission.training.12\"\r\n  -----------------------------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Data.JsonFileSaveServiceTests.LoadOrCreate_BacksUpCorruptSaveAndRecovers",
+          "message": "  Expected string length 7 but was 0. Strings differ at index 0.\r\n  Expected: \"Гравець\"\r\n  But was:  <string.Empty>\r\n  -----------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Data.JsonFileSaveServiceTests.LoadOrCreate_CreatesFileWhenMissing",
+          "message": "  Expected string length 7 but was 0. Strings differ at index 0.\r\n  Expected: \"Гравець\"\r\n  But was:  <string.Empty>\r\n  -----------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Data.SaveDataTests.CreateNew_FillsRequiredDefaults",
+          "message": "  Expected string length 7 but was 0. Strings differ at index 0.\r\n  Expected: \"Гравець\"\r\n  But was:  <string.Empty>\r\n  -----------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Economy.HistoricalPowerServiceTests.CurrentPowerIncludesLevelOwnershipRanksEvolutionAndDrone",
+          "message": "  Expected: 1350\r\n  But was:  1450\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleResultScreenFactoryTests.Create_Draw_AllowsContinueWithSmallReward",
+          "message": "  Expected string length 5 but was 0. Strings differ at index 0.\r\n  Expected: \"Нічия\"\r\n  But was:  <string.Empty>\r\n  -----------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleResultScreenFactoryTests.Create_OpponentWon_DisablesContinue",
+          "message": "  Expected string length 7 but was 0. Strings differ at index 0.\r\n  Expected: \"Поразка\"\r\n  But was:  <string.Empty>\r\n  -----------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleResultScreenFactoryTests.Create_PlayerWon_ReturnsVictoryStateWithReward",
+          "message": "  Expected string length 8 but was 0. Strings differ at index 0.\r\n  Expected: \"Перемога\"\r\n  But was:  <string.Empty>\r\n  -----------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.BattleHud_RopeControlsSeparateHorizontalInputAndHideWeaponReset",
+          "message": "System.NullReferenceException : Object reference not set to an instance of an object"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.BattleHud_UsesCompactAlignedTopBarAndBottomWeaponControls",
+          "message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.BattleHudResources_UseArsenalAndWeaponIconsWithoutDedicatedFireArt",
+          "message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.CameraFrameBottoms_AlignWithTheirArenaCanvasBottoms",
+          "message": "System.Collections.Generic.KeyNotFoundException : The given key 'arena.bones' was not present in the dictionary."
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.DroidRig_PlatformAnimatesOnlyWhenPresentedPositionChanges",
+          "message": "  Expected: RGBA(0.060, 1.000, 0.100, 1.000)\r\n  But was:  RGBA(0.059, 1.000, 0.102, 1.000)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.LagunaTheme_LowersOnlyBattleContentByFiftyPixels",
+          "message": "  Expected: (0.00, -0.20)\r\n  But was:  (0.00, -0.59)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.LoadingScreenPreview_BuildsMissionTextSpinnerAndPercent",
+          "message": "  Expected: (-420.00, 245.00)\r\n  But was:  (-420.00, 270.00)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.MonumentTheme_LowersOnlyBattleContentByFiftyPixels",
+          "message": "  Expected: (0.00, -0.20)\r\n  But was:  (0.00, -0.78)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.OpponentHealth_IsShownAsUnscaledRedNumberOnly",
+          "message": "  Expected: RGBA(1.000, 0.050, 0.030, 1.000)\r\n  But was:  RGBA(1.000, 0.051, 0.031, 1.000)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.TrainingArena_UsesOneImportedDestructibleSurfaceAndReusableAnimatedBackground",
+          "message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.WeaponsScreen_ShowsShelfActionsAndDetailsWithoutPurchaseButtons",
+          "message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.FirstBattleGuideStateTests.FirstMission_StartsWithLeftNavigationAndPausedTimer",
+          "message": "  Expected: MoveLeft\r\n  But was:  None\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.FirstBattleGuideStateTests.FirstMission_TeachesNavigationJumpsWeaponAndFirstShot",
+          "message": "  Expected: JumpRight\r\n  But was:  None\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.FirstBattleGuideStateTests.OpponentTurn_LeadsToFreeFinalInstruction",
+          "message": "  Expected: True\r\n  But was:  False\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.ImpulseSalvoWeaponEffectTests.Resolver_MapsMortarBranchesToFragmentsAndCascades",
+          "message": "  Expected: 4\r\n  But was:  0\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.ImpulseSalvoWeaponEffectTests.Resolver_MapsRepairBranchesToProtectionAndRegenerationDurations",
+          "message": "  Expected: 2\r\n  But was:  1\r\n"
+        }
+      ],
+      "failures_capped": true
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

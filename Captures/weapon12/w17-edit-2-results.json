@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "f28233720c814479add77a06aacb281f",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791302862433,
+    "finished_unix_ms": 1791302870481,
+    "last_update_unix_ms": 1791302870481,
+    "progress": {
+      "completed": 191,
+      "total": 191,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791302870375,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers",
+      "last_finished_unix_ms": 1791302870375,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CryoGrenade_RepeatHitRefreshesToTwoTurnsAndOnlyBoostsItsOwnDirectDamage",
+          "message": "  +25% to the direct damage only\r\n  Expected: 47 +/- 1\r\n  But was:  43\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

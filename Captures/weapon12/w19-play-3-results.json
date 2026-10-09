@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "6868a64206074934b6e3672b26c72c3a",
+    "status": "running",
+    "mode": "PlayMode",
+    "started_unix_ms": 1791304112150,
+    "finished_unix_ms": null,
+    "last_update_unix_ms": 1791304212525,
+    "progress": {
+      "completed": 27,
+      "total": 29,
+      "current_test_full_name": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)",
+      "current_test_started_unix_ms": 1791304212525,
+      "last_finished_test_full_name": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)",
+      "last_finished_unix_ms": 1791304212525,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

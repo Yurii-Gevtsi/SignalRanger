@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "7382942fbb4343a1a1daf128899f10f3",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791310529709,
+    "finished_unix_ms": 1791310537974,
+    "last_update_unix_ms": 1791310537974,
+    "progress": {
+      "completed": 261,
+      "total": 261,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791310537784,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+      "last_finished_unix_ms": 1791310537787,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_AHostileMagnetStopsTheRocketAndTheCarriedDroidJustFalls",
+          "message": "  it blasted at the magnet, not at the top\r\n  Expected: less than 3.0f\r\n  But was:  7.25f\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_CarriesTheFirstTouchedEnemyUpAndThrowsItSidewaysAtTheEnd",
+          "message": "  carried at the rocket's own speed\r\n  Expected: 24.0f +/- 1.5f\r\n  But was:  14.9076099f\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

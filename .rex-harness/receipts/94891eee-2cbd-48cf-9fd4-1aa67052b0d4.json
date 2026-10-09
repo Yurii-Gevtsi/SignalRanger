@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "94891eee-2cbd-48cf-9fd4-1aa67052b0d4",
+  "command": {
+    "executable": "node",
+    "args": [
+      ".rex-harness/checks/campaign-lifecycle-check.mjs"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "0447f84589fac11b432d7c66f71d87afa6e6068947c04011401400e81ca79e9c",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-10-08T10:19:28.510Z"
+}

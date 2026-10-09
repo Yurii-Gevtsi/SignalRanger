@@ -1,0 +1,50 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "c519512336f346ceaa8b336c98b943bd",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791309482819,
+    "finished_unix_ms": 1791309490587,
+    "last_update_unix_ms": 1791309490587,
+    "progress": {
+      "completed": 254,
+      "total": 254,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791309490413,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+      "last_finished_unix_ms": 1791309490417,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_CeilingStopsTheRiseAndTheTimerKeepsGoing",
+          "message": "  steering up does not enter it either\r\n  Expected: less than or equal to 1.75f\r\n  But was:  1.97166681f\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_ChargesAreTwoPlusOnePerLoadoutPurchaseAndTheTurnEndingCutsTheFuel",
+          "message": "  Expected: 4\r\n  But was:  2\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_SecondPressOrTheEndOfTimeLetsTheDroidFallAndLandWithoutSpendingTheAction",
+          "message": "  fell back to the surface\r\n  Expected: 0.0f +/- 0.100000001f\r\n  But was:  -0.4921875f\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_SteersInFourDirectionsAndWallsCeilingAndOtherDroidsStopThePart_ThatWouldPenetrate",
+          "message": "  right\r\n  Expected: 3.20000005f +/- 0.150000006f\r\n  But was:  0.0f\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.UnimplementedUtility_CannotHealOrTeleportThroughGenericFallback",
+          "message": "  weapon.boost\r\n  Expected: False\r\n  But was:  True\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

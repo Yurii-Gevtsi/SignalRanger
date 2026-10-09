@@ -1,0 +1,54 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "54afe57d74b848fa8456192b78707e34",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791311668511,
+    "finished_unix_ms": 1791311678948,
+    "last_update_unix_ms": 1791311678948,
+    "progress": {
+      "completed": 267,
+      "total": 267,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791311678576,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+      "last_finished_unix_ms": 1791311678582,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_CrawlsAheadAttachesToTheEnemyAndBlastsAfterTheShortFuseWithoutHurtingAllies",
+          "message": "  it crawled about a second and attached\r\n  Expected: 0.699999988f +/- 0.200000003f\r\n  But was:  0.00833333377f\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_RegistryOffersThreeElementsAtRankFiveAndPaysThemThroughTheService",
+          "message": "  spider-burn\r\n  Expected string length 25 but was 22. Strings differ at index 22.\r\n  Expected: \"UI/Weapons/spider_mine_5A\"\r\n  But was:  \"UI/Weapons/spider_mine\"\r\n  ---------------------------------^\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_TheChosenElementRunsTheSharedTwoTurnCycleOfTheMatchingGrenade(\"spider-freeze\",1)",
+          "message": "  only the direct blast so far, no instant tick\r\n  Expected: 45\r\n  But was:  0\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_TheChosenElementRunsTheSharedTwoTurnCycleOfTheMatchingGrenade(\"spider-burn\",2)",
+          "message": "  only the direct blast so far, no instant tick\r\n  Expected: 45\r\n  But was:  0\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_TheChosenElementRunsTheSharedTwoTurnCycleOfTheMatchingGrenade(\"spider-poison\",3)",
+          "message": "  only the direct blast so far, no instant tick\r\n  Expected: 45\r\n  But was:  0\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_WithNoOneAheadCrawlsForFiveSecondsAndBlastsAnyway",
+          "message": "  the search lasts five seconds\r\n  Expected: 5.0f +/- 0.300000012f\r\n  But was:  0.00833333377f\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}
