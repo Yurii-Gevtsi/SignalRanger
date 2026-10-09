@@ -140,8 +140,7 @@ namespace Game.Tests.PlayMode
                         Is.EqualTo(expectedSpeed).Within(0.001f));
                     var renderer = visuals[projectile.Id].GetComponentInChildren<SpriteRenderer>();
                     Assert.That(renderer.sprite, Is.Not.Null);
-                    if (weaponId == "weapon.ion-shotgun") Assert.That(renderer.sprite.texture,
-                        Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/blaster_shot")), "pellets fly the rail bolt skin");
+                    if (weaponId == "weapon.ion-shotgun") Assert.That(renderer.color, Is.EqualTo(Color.black), "black pellets");
                     if (weaponId == "weapon.mine") Assert.That(renderer.sprite.texture,
                         Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/mine_off")));
                     if (weaponId == "weapon.titanium-disc")
