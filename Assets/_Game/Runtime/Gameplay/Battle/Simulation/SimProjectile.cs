@@ -77,6 +77,21 @@ namespace Game.Gameplay.Battle.Simulation
             SkyHookCarriedUnitId = unitId ?? string.Empty;
         }
 
+        /// <summary>Seconds the signal rocket still stands at the owner's feet before it lifts off.</summary>
+        public float SkyHookArmingRemaining { get; private set; }
+
+        public bool IsSkyHookArming => SkyHookArmingRemaining > 0f;
+
+        internal void SetSkyHookArming(float seconds)
+        {
+            SkyHookArmingRemaining = Mathf.Max(0f, seconds);
+        }
+
+        internal void ReduceSkyHookArming(float deltaTime)
+        {
+            SkyHookArmingRemaining = Mathf.Max(0f, SkyHookArmingRemaining - Mathf.Max(0f, deltaTime));
+        }
+
         internal void SetSkyHookLaunchFacing(int facing)
         {
             SkyHookLaunchFacing = facing < 0 ? -1 : 1;

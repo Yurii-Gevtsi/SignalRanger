@@ -255,13 +255,9 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(harness.Motors[opponent.UnitId].Velocity.x, Is.GreaterThan(0f));
         }
 
-        [TestCase("weapon.impulse", 1f)]
-        [TestCase("weapon.impulse", 30f)]
-        [TestCase("weapon.granata", 1f)]
-        [TestCase("weapon.granata", 30f)]
         [TestCase("weapon.ion-shotgun", 1f)]
         [TestCase("weapon.ion-shotgun", 30f)]
-        public void StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(
+        public void StraightStarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(
             string weaponId, float inputPower)
         {
             var weapon = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
@@ -276,6 +272,30 @@ namespace Game.Tests.EditMode.Gameplay
             {
                 Assert.That(projectile.Velocity.magnitude, Is.EqualTo(12f).Within(0.0001f));
             }
+        }
+
+        [TestCase("weapon.impulse", 1f, 7f)]
+        [TestCase("weapon.impulse", 12f, 12f)]
+        [TestCase("weapon.impulse", 30f, 18f)]
+        [TestCase("weapon.granata", 1f, 7f)]
+        [TestCase("weapon.granata", 15f, 15f)]
+        [TestCase("weapon.granata", 30f, 18f)]
+        [TestCase("weapon.bur-rocket", 10f, 10f)]
+        [TestCase("weapon.mortira", 17f, 17f)]
+        public void ArcingProjectiles_LaunchWithThePulledPowerInsideTheirRange(
+            string weaponId, float inputPower, float expectedSpeed)
+        {
+            // Owner decision 2026-10-09: the arc's power is pulled like the sticky grenade's, 7 to 18.
+            var weapon = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
+                candidate => candidate.WeaponId == weaponId);
+            Assert.That(weapon.MinPower, Is.EqualTo(PrototypeWeaponLibrary.ArcMinPower));
+            Assert.That(weapon.MaxPower, Is.EqualTo(PrototypeWeaponLibrary.ArcMaxPower));
+            var harness = CreateHarness(weapon);
+
+            Assert.That(harness.Simulation.TryFire(new AimState(
+                new Vector2(-3f, 0f), new Vector2(1f, 1f).normalized, inputPower, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            Assert.That(harness.Simulation.Projectiles[0].Velocity.magnitude, Is.EqualTo(expectedSpeed).Within(0.0001f));
         }
 
         [TestCase(0, 8f)]
@@ -506,6 +526,7 @@ namespace Game.Tests.EditMode.Gameplay
                 new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
                 Is.EqualTo(BattleFireOutcome.UtilityUsed));
             Assert.That(removed, Is.Zero);
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon(); // the owner ends the turn the magnet kept open
 
             harness.Simulation.AdvanceTurnDueToNoUsableWeapon(); // opponent's first turn ends
             Assert.That(removed, Is.Zero);
@@ -538,6 +559,7 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(harness.Simulation.TryFire(
                 new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
                 Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon(); // the owner ends the turn the magnet kept open
 
             for (var opponentTurn = 1; opponentTurn <= 6; opponentTurn++)
             {
@@ -604,8 +626,9 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void Grounder_TwoPhysicalImpactsDestroyDeviceAndBothExplode()
+        public void Grounder_HasItsOwnersHealthAndCapturedBlastsWearItDown()
         {
+            // Owner decision 2026-10-09: the magnet has real health (for now the owner's full health) shown above it.
             var grounder = CreateWeapon("weapon.grounder", WeaponRole.DefensiveTool,
                 damage: 0, impactRadius: 1.4f, ammo: 1);
             var physicalShot = CreateWeapon("weapon.blaster-caset", WeaponRole.DirectProjectile,
@@ -614,8 +637,11 @@ namespace Game.Tests.EditMode.Gameplay
             var devicePosition = default(Vector2?);
             var removed = 0;
             var impacts = 0;
+            var health = new List<int>();
+            var fullHealth = 0;
             harness.Simulation.GrounderDeployed += evt => devicePosition = evt.Point;
             harness.Simulation.GrounderRemoved += _ => removed++;
+            harness.Simulation.PlacedDeviceHealthChanged += (_, left, full) => { health.Add(left); fullHealth = full; };
             harness.Simulation.ProjectileExploded += (_, impact) =>
             {
                 if (impact.ProjectileId == "projectile.weapon.blaster-caset")
@@ -627,21 +653,28 @@ namespace Game.Tests.EditMode.Gameplay
                 new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
                 Is.EqualTo(BattleFireOutcome.UtilityUsed));
             Assert.That(devicePosition.HasValue, Is.True);
-
             var player = harness.State.GetUnit("player.test.01");
+            Assert.That(fullHealth, Is.EqualTo(player.MaxHealth), "as much health as its owner's full health");
+            Assert.That(health, Is.EqualTo(new[] { player.MaxHealth }), "shown from the start");
+
             player.MoveTo(new Vector2(-8f, 0f));
             harness.Motors[player.UnitId].Teleport(player.Position);
             var shot = ProjectileDefinition.CreateRuntime(
                 "projectile.weapon.blaster-caset", 0.1f, 0f, 0.8f, 24, 0.45f);
-            for (var hit = 0; hit < 2; hit++)
+            var hits = 0;
+            while (removed == 0 && hits < 10)
             {
                 harness.Simulation.Spawn(new ProjectileSpawnRequest(
                     shot, "opponent.test.01", devicePosition.Value + new Vector2(1.4f, 1f),
                     Vector2.left * 5f, 0.2f, Color.white));
                 TickMany(harness.Simulation, 120, 1f / 120f);
-                Assert.That(impacts, Is.EqualTo(hit + 1));
-                Assert.That(removed, Is.EqualTo(hit == 0 ? 0 : 1));
+                hits++;
+                Assert.That(impacts, Is.EqualTo(hits), "each captured shot blasts at the magnet");
             }
+
+            Assert.That(removed, Is.EqualTo(1));
+            Assert.That(hits, Is.EqualTo(Mathf.CeilToInt(player.MaxHealth / 24f)), "worn down 24 at a time");
+            Assert.That(health[health.Count - 1], Is.Zero);
         }
 
         [TestCase("weapon.blaster-caset", true)]
@@ -700,6 +733,7 @@ namespace Game.Tests.EditMode.Gameplay
                 new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
                 Is.EqualTo(BattleFireOutcome.UtilityUsed));
             Assert.That(devicePosition.HasValue, Is.True);
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon(); // the owner ends the turn the magnet kept open
 
             var origin = devicePosition.Value + Vector2.up * 0.5f;
             Assert.That(harness.Simulation.TryFire(new AimState(
@@ -816,8 +850,9 @@ namespace Game.Tests.EditMode.Gameplay
         [Test]
         public void CryoGrenade_ChillsUnitsInsideItsBlast()
         {
+            // It flies past droids like the grenade and goes off on its fuse: 0.3 s at 20 u/s is the opponent's spot.
             var grenade = CreateWeapon("weapon.cryo-grenade", damage: 20,
-                impactRadius: 1.35f, gravityScale: 0f);
+                impactRadius: 1.35f, gravityScale: 0f, timeoutSeconds: 0.3f);
             var harness = CreateHarness(grenade);
             var opponent = harness.State.GetUnit("opponent.test.01");
             var aim = new AimState(new Vector2(-3f, 0.6f), Vector2.right, 20f, true);
@@ -2039,8 +2074,8 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Simulation.GrounderDeployed += evt => devicePosition = evt.Point;
             Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
                 Is.EqualTo(BattleFireOutcome.UtilityUsed));
-            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent),
-                "placing the magnet hands the turn to the opponent");
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "placing the magnet keeps the turn");
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
 
             var shardImpacts = new List<Vector2>();
             var trace = new List<string>();
@@ -2142,8 +2177,9 @@ namespace Game.Tests.EditMode.Gameplay
 
         private static Harness CreateCryoHarness(Vector2? ally = null, int damage = 40)
         {
+            // Like the grenade it flies past droids and goes off on its fuse: 0.45 s at 12 u/s from x -2.4 is the opponent.
             var cryo = CreateWeapon("weapon.cryo-grenade", WeaponRole.ArcingExplosive, damage: damage, impactRadius: 2.5f,
-                gravityScale: 0f, timeoutSeconds: 8f);
+                gravityScale: 0f, timeoutSeconds: 0.45f);
             return CreateHarness(cryo, secondPlayerPosition: ally);
         }
 
@@ -2206,6 +2242,24 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
             Assert.That(enemy.Health, Is.EqualTo(afterSecond - tick * 2), "two ticks in total, not three");
             Assert.That(harness.Simulation.IsUnitChilled(enemy.UnitId), Is.False);
+        }
+
+        [Test]
+        public void CryoGrenade_BouncesRollsAndRestsOnItsFuseLikeTheGrenade()
+        {
+            // Owner decision 2026-10-09: no blast on contact; it bounces, rolls and goes off when its fuse runs out.
+            var cryo = CreateWeapon("weapon.cryo-grenade", WeaponRole.ArcingExplosive, damage: 30, impactRadius: 1.35f,
+                gravityScale: 1f, timeoutSeconds: 3f);
+            var harness = CreateHarness(cryo);
+            var blasts = 0;
+            harness.Simulation.ImpactResolved += _ => blasts++;
+            Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0.3f), new Vector2(0.5f, 0.5f).normalized, 6f, true)).Outcome,
+                Is.EqualTo(BattleFireOutcome.Fired));
+            TickMany(harness.Simulation, 240, 1f / 120f);
+            Assert.That(blasts, Is.Zero, "touching the ground does not set it off");
+            Assert.That(harness.Simulation.ProjectilesInFlight, Is.EqualTo(1), "it is still there, rolling or resting");
+            TickMany(harness.Simulation, 240, 1f / 120f);
+            Assert.That(blasts, Is.EqualTo(1), "the fuse sets it off");
         }
 
         [Test]
@@ -2346,7 +2400,7 @@ namespace Game.Tests.EditMode.Gameplay
             var lateComer = harness.State.GetUnit("opponent.test.02");
             var start = lateComer.Health;
             ThrowAtOpponent(harness);
-            Assert.That(puddles, Is.EqualTo(4), "the flames are still shown");
+            Assert.That(puddles, Is.EqualTo(8), "the flames are still shown");
             // Walk a droid into the burning ground after the blast.
             var enemy = harness.State.GetUnit("opponent.test.01");
             lateComer.MoveTo(enemy.Position);
@@ -2778,6 +2832,9 @@ namespace Game.Tests.EditMode.Gameplay
                 Is.EqualTo(BattleFireOutcome.UtilityUsed));
             Assert.That(placed.HasValue, Is.True);
             devicePosition = placed.Value;
+            // Setting the magnet down keeps the turn (owner decision 2026-10-09); the owner then ends it.
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
             if (moveOwnerAway)
             {
                 var player = harness.State.GetUnit("player.test.01");
@@ -2903,10 +2960,14 @@ namespace Game.Tests.EditMode.Gameplay
             return center.x - Mathf.Sqrt(Mathf.Max(0f, radius * radius - dy * dy));
         }
 
+        /// <summary>Sets the field down (which keeps the turn, owner decision 2026-10-09) and then ends the turn.</summary>
         private static void PlaceForceField(Harness harness)
         {
+            var team = harness.State.Turn.ActiveTeam;
             Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
                 Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(team), "setting the field down keeps the turn");
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
         }
 
         [TestCase("weapon.impulse", true)]
@@ -2937,7 +2998,7 @@ namespace Game.Tests.EditMode.Gameplay
             if (absorbed)
             {
                 Assert.That(absorbedAt.HasValue, Is.True);
-                Assert.That(absorbedAt.Value.x, Is.EqualTo(FieldEntryX(fieldCenter, 1.4f, 0f)).Within(0.25f), "stopped on the boundary");
+                Assert.That(absorbedAt.Value.x, Is.EqualTo(FieldEntryX(fieldCenter, 2.1f, 0f)).Within(0.25f), "stopped on the boundary (1.5 x N0)");
                 Assert.That(Vector2.Distance(fieldCenter, player.Position), Is.LessThan(1.2f), "the device stands beside its owner");
                 Assert.That(harness.Simulation.ProjectilesInFlight, Is.Zero);
                 Assert.That(impacts, Is.Zero, "no blast at all");
@@ -2970,9 +3031,9 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void ForceField_RadiusIsN0AndEveryRadiusPurchaseAddsTenPercentOfIt()
+        public void ForceField_RadiusIsOneAndAHalfN0AndEveryRadiusPurchaseAddsTenPercentOfIt()
         {
-            foreach (var (steps, expected) in new[] { (0, 1.4f), (4, 1.96f) })
+            foreach (var (steps, expected) in new[] { (0, 2.1f), (4, 2.94f) })
             {
                 var harness = CreateForceFieldHarness("weapon.impulse", CreateForceFieldProgress(0, steps));
                 var seen = 0f;
@@ -3012,7 +3073,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void ForceField_IsOnePerBattleAndPlacingItHandsTheTurnOver()
+        public void ForceField_IsOnePerBattleAndPlacingItKeepsTheTurn()
         {
             var harness = CreateForceFieldHarness("weapon.impulse");
             Assert.That(harness.Simulation.CanUsePlayerWeapon(harness.Simulation.ActiveInventory.Selected), Is.True);
@@ -3039,6 +3100,8 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Simulation.ForceFieldDeployed += evt => fieldCenter = evt.Point;
             Assert.That(harness.Simulation.TryFire(new AimState(Vector2.zero, Vector2.zero, 0f, false)).Outcome,
                 Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Opponent), "setting it down keeps the turn");
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
 
             var range = -1f;
@@ -3047,7 +3110,7 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Simulation.ForceFieldAbsorbed += (_, point) => cutAt = point;
             Assert.That(harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.right, 0f, true)).Outcome,
                 Is.EqualTo(BattleFireOutcome.Fired));
-            var entry = FieldEntryX(fieldCenter, 1.4f, 0f);
+            var entry = FieldEntryX(fieldCenter, 2.1f, 0f);
             Assert.That(range, Is.EqualTo(entry + 3f).Within(0.05f), "from x -3 to where the beam enters the sphere");
             Assert.That(cutAt.Value.x, Is.EqualTo(entry).Within(0.05f));
         }
@@ -3326,11 +3389,13 @@ namespace Game.Tests.EditMode.Gameplay
             return harness;
         }
 
-        private const float SkyHookRocketX = -3f + 0.46f;   // set up beside the droid, which faces right
+        private const float SkyHookRocketX = -3f;           // set up at the droid's feet (owner decision 2026-10-09)
+        private const float SkyHookTouchX = -3f + 0.45f;    // a droid this close touches the rocket's body
+        private const int SkyHookArmingTicks = 361;         // three seconds at 120 Hz before lift-off
         private const float SkyHookApexY = 8f - 0.75f;      // the top of the test arena minus the margin
 
         [Test]
-        public void SkyHook_IsSetUpBesideTheDroidFliesStraightUpAtTwiceTheSharedSpeedAndBlastsBelowTheArenaTop()
+        public void SkyHook_StandsAtTheFeetForThreeSecondsThenFliesUpAtTheSharedSpeedAndBlastsBelowTheArenaTop()
         {
             var harness = CreateSkyHookHarness();
             var blast = default(Vector2?);
@@ -3338,8 +3403,12 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "no aim needed");
             var rocket = harness.Simulation.Projectiles[0];
             Assert.That(rocket.Velocity.x, Is.EqualTo(0f).Within(0.001f));
-            Assert.That(rocket.Velocity.y, Is.EqualTo(2f * PrototypeWeaponLibrary.SharedProjectileSpeed).Within(0.001f));
-            Assert.That(rocket.Position.x, Is.EqualTo(SkyHookRocketX).Within(0.1f), "beside the droid");
+            Assert.That(rocket.Velocity.y, Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed).Within(0.001f));
+            Assert.That(rocket.Position.x, Is.EqualTo(SkyHookRocketX).Within(0.1f), "at the droid's feet");
+            var standing = rocket.Position;
+            TickMany(harness.Simulation, 350, 1f / 120f);
+            Assert.That(rocket.Position, Is.EqualTo(standing), "it stands for three seconds");
+            Assert.That(harness.Simulation.CanAcceptMovementInput(), Is.True, "the owner may step away meanwhile");
             TickMany(harness.Simulation, 600, 1f / 120f);
             Assert.That(blast.HasValue, Is.True);
             Assert.That(blast.Value.y, Is.EqualTo(SkyHookApexY).Within(0.1f), "slightly below the top of the arena");
@@ -3357,7 +3426,7 @@ namespace Game.Tests.EditMode.Gameplay
             var blast = default(Vector2?);
             harness.Simulation.ProjectileExploded += (id, impact) => blast = impact.Point;
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
-            TickMany(harness.Simulation, 600, 1f / 120f);
+            TickMany(harness.Simulation, SkyHookArmingTicks + 600, 1f / 120f);
             Assert.That(blast.HasValue, Is.True);
             Assert.That(blast.Value.y, Is.EqualTo(SkyHookApexY).Within(0.1f), "five units of ground did not stop it");
             Assert.That(harness.Terrain.Grid.IsSolidWorld(new Vector2(SkyHookRocketX, 4f)), Is.False, "the channel is open");
@@ -3366,38 +3435,38 @@ namespace Game.Tests.EditMode.Gameplay
         [Test]
         public void SkyHook_CarriesTheFirstTouchedEnemyUpAndThrowsItSidewaysAtTheEnd()
         {
-            var harness = CreateSkyHookHarness(enemy: new Vector2(SkyHookRocketX, 0f));       // touching the rocket at its start
+            var harness = CreateSkyHookHarness(enemy: new Vector2(SkyHookTouchX, 0f));        // touching the rocket's body
             var enemy = harness.State.GetUnit("opponent.test.01");
             var health = enemy.Health;
             var thrown = Vector2.zero;
             harness.Simulation.ProjectileExploded += (id, impact) => thrown = harness.Motors[enemy.UnitId].Velocity;
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
-            TickMany(harness.Simulation, 12, 1f / 120f);
+            TickMany(harness.Simulation, SkyHookArmingTicks + 24, 1f / 120f);
             Assert.That(enemy.Position.y, Is.GreaterThan(1f), "lifted along with the rocket");
-            Assert.That(enemy.Position.x, Is.EqualTo(SkyHookRocketX).Within(0.05f));
+            Assert.That(enemy.Position.x, Is.EqualTo(SkyHookTouchX).Within(0.05f));
             var speedSeen = enemy.Position.y;
             TickMany(harness.Simulation, 12, 1f / 120f);
-            Assert.That((enemy.Position.y - speedSeen) / 0.1f, Is.EqualTo(2f * PrototypeWeaponLibrary.SharedProjectileSpeed).Within(1.5f),
+            Assert.That((enemy.Position.y - speedSeen) / 0.1f, Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed).Within(1.5f),
                 "carried at the rocket's own speed");
-            TickMany(harness.Simulation, 330, 1f / 120f);
+            TickMany(harness.Simulation, 600, 1f / 120f);
             Assert.That(enemy.Health, Is.LessThan(health), "the final blast hurts it");
             // The harpoon's final throw: 60 degrees up, about two rope lengths of range in free space.
             var expected = Mathf.Sqrt(2f * WeaponUpgradeChoiceResolver.RopeBaseLength * 8.6f / Mathf.Sin(120f * Mathf.Deg2Rad));
             Assert.That(thrown.magnitude, Is.EqualTo(expected).Within(0.3f));
             Assert.That(Mathf.Atan2(thrown.y, thrown.x) * Mathf.Rad2Deg, Is.EqualTo(60f).Within(2f), "sideways towards the owner's facing");
             TickMany(harness.Simulation, 1200, 1f / 120f);
-            Assert.That(enemy.Position.x, Is.GreaterThan(SkyHookRocketX + 4f), "it flew away and landed");
+            Assert.That(enemy.Position.x, Is.GreaterThan(SkyHookTouchX + 4f), "it flew away and landed");
             Assert.That(enemy.Position.y, Is.LessThan(2f), "and fell back down");
         }
 
         [Test]
         public void SkyHook_PicksUpOnlyTheFirstEnemyOnThePathAndNeverAnAlly()
         {
-            var harness = CreateSkyHookHarness(enemy: new Vector2(SkyHookRocketX, 3f), ally: new Vector2(SkyHookRocketX, 0.3f));
+            var harness = CreateSkyHookHarness(enemy: new Vector2(SkyHookTouchX, 3f), ally: new Vector2(SkyHookTouchX, 0.3f));
             var enemy = harness.State.GetUnit("opponent.test.01");
             var ally = harness.State.GetUnit("player.test.02");
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
-            TickMany(harness.Simulation, 60, 1f / 120f);
+            TickMany(harness.Simulation, SkyHookArmingTicks + 60, 1f / 120f);
             Assert.That(ally.Position.y, Is.EqualTo(0.3f).Within(0.5f), "an ally on the way is not carried (it may be pushed by gravity only)");
             Assert.That(enemy.Position.y, Is.GreaterThan(3.5f), "the enemy further up was picked up on the vertical path");
         }
@@ -3405,14 +3474,14 @@ namespace Game.Tests.EditMode.Gameplay
         [Test]
         public void SkyHook_CarriedDroidWhoMeetsAGroundOrCeilingLetsGoAndFallsWhileTheRocketGoesOn()
         {
-            var harness = CreateSkyHookHarness(enemy: new Vector2(SkyHookRocketX, 0.3f));
+            var harness = CreateSkyHookHarness(enemy: new Vector2(SkyHookTouchX, 0.3f));
             harness.Terrain.StampSolidRect(new Vector2(SkyHookRocketX, 3.5f), new Vector2(4f, 1.5f));   // a ceiling, y 2.75..4.25
             var enemy = harness.State.GetUnit("opponent.test.01");
             var blast = default(Vector2?);
             harness.Simulation.ProjectileExploded += (id, impact) => blast = impact.Point;
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
             var highest = enemy.Position.y;
-            for (var i = 0; i < 480; i++)
+            for (var i = 0; i < SkyHookArmingTicks + 480; i++)
             {
                 harness.Simulation.Tick(1f / 120f);
                 highest = Mathf.Max(highest, enemy.Position.y);
@@ -3432,9 +3501,10 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Simulation.ProjectileExploded += (id, impact) => blast = impact.Point;
             harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                       // the opponent acts
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));   // magnet at x = -1.66
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                       // which ends its turn
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
-            TickMany(harness.Simulation, 240, 1f / 120f);
+            TickMany(harness.Simulation, SkyHookArmingTicks + 240, 1f / 120f);
             Assert.That(blast.HasValue, Is.True);
             Assert.That(blast.Value.y, Is.LessThan(3f), "it blasted at the magnet, not at the top");
         }
@@ -3448,7 +3518,7 @@ namespace Game.Tests.EditMode.Gameplay
                 definition.LoadoutUpgradeLimit, definition.RadiusUpgradeLimit }, Is.EqualTo(new[] { 4, 0, 0, 0 }));
             var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
             Assert.That(weapon.AmmoCount, Is.EqualTo(1), "one per battle");
-            Assert.That(weapon.MinPower, Is.EqualTo(2f * PrototypeWeaponLibrary.SharedProjectileSpeed));
+            Assert.That(weapon.MinPower, Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed), "lifts off at V0");
             Assert.That(weapon.ImpactRadius, Is.EqualTo(PrototypeWeaponLibrary.SharedExplosionRadius), "the shared R0");
             Assert.That(BattleSimulation.RequiresAim(weapon), Is.False);
             Assert.That(BattleSimulation.IsBattleMechanicAvailable(weapon), Is.True);
@@ -3862,7 +3932,7 @@ namespace Game.Tests.EditMode.Gameplay
                 harness.Simulation.SetControlledProjectileInput(input);
                 TickMany(harness.Simulation, 60, 1f / 120f);                  // half a second
                 var moved = copter.Position - before;
-                Assert.That((axis == 'x' ? moved.x : moved.y) * sign, Is.EqualTo(2f).Within(0.1f), $"{input} at 4 u/s");
+                Assert.That((axis == 'x' ? moved.x : moved.y) * sign, Is.EqualTo(3f).Within(0.15f), $"{input} at 6 u/s");
             }
             Assert.That(Vector2.Distance(copter.Position, start), Is.LessThan(0.2f));
         }
@@ -3954,10 +4024,11 @@ namespace Game.Tests.EditMode.Gameplay
         {
             var grounder = CreateWeapon("weapon.grounder", WeaponRole.DefensiveTool, damage: 0, impactRadius: 1.4f, ammo: 1);
             var harness = CreateBomberHarness(enemy: new Vector2(-1.2f, -0.46f), opponentWeapon: grounder);
-            var removed = 0;
-            harness.Simulation.GrounderRemoved += _ => removed++;
+            var magnetHealth = new List<int>();
+            harness.Simulation.PlacedDeviceHealthChanged += (_, left, _) => magnetHealth.Add(left);
             harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                                // the opponent acts
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));  // magnet near x = -1.66
+            harness.Simulation.AdvanceTurnDueToNoUsableWeapon();                                // and ends its turn
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player));
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
             var copter = harness.Simulation.Projectiles[0];
@@ -3965,11 +4036,13 @@ namespace Game.Tests.EditMode.Gameplay
             TickMany(harness.Simulation, 40, 1f / 120f);                                        // above the magnet
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired), "a bomb");
             TickMany(harness.Simulation, 120, 1f / 120f);
-            Assert.That(removed, Is.EqualTo(1), "the bomb was caught and blasted at the magnet, which it destroys");
+            Assert.That(magnetHealth.Count, Is.GreaterThan(1), "the bomb was caught and blasted at the magnet");
+            Assert.That(magnetHealth[magnetHealth.Count - 1], Is.LessThan(magnetHealth[0]), "which wears the magnet down");
 
             var second = CreateBomberHarness(enemy: new Vector2(-1.2f, -0.46f), opponentWeapon: grounder);
             second.Simulation.AdvanceTurnDueToNoUsableWeapon();
             second.Simulation.TryFire(NoAim);
+            second.Simulation.AdvanceTurnDueToNoUsableWeapon();
             Assert.That(second.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
             second.Simulation.SetControlledProjectileInput(Vector2.right);
             TickMany(second.Simulation, 40, 1f / 120f);
@@ -4132,8 +4205,12 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.Fired));
             FlyCopterTo(harness, new Vector2(0f, 1.5f), 0.3f);                       // a neutral spot between the droids
             harness.Simulation.SetControlledProjectileInput(Vector2.zero);
+            var owner = harness.State.GetUnit("player.test.01");
+            var ownerBefore = owner.Position;
             TickMany(harness.Simulation, 1500, 1f / 120f);                          // past the ten-second window
             Assert.That(harness.Simulation.HasPlayerCopter, Is.False);
+            Assert.That(Vector2.Distance(owner.Position, ownerBefore), Is.LessThan(0.5f),
+                "the copter's blast is an ordinary blast: its owner is never moved to it");
             Assert.That(harness.Simulation.CopterHasCargo, Is.False, "the item was let go");
             Assert.That(impacts.Any(i => i.ProjectileId.EndsWith(".fall")), Is.True, "the copter fell and blasted");
             Assert.That(impacts.First(i => i.ProjectileId.EndsWith(".fall")).Damage,
@@ -4576,6 +4653,72 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(enemy.MaxHealth - enemy.Health, Is.EqualTo(weapon.Damage), "the base damage");
             Assert.That(spent, Is.EqualTo(1), "the beam is spent by one crossing");
             Assert.That(harness.State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "the struck active droid loses its turn");
+        }
+
+
+        [Test]
+        public void LaserFence_ABeamThroughTheFeetOfADroidStandingOverItHurtsIt()
+        {
+            // The beam runs near the ground; a droid's position is the centre of its body, half a body above it.
+            var harness = CreateLaserFencePair(out var nodes);
+            var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == "weapon.laser-fence");
+            var midpoint = (nodes[0].Point + nodes[1].Point) * 0.5f;
+            var enemy = harness.State.GetUnit("opponent.test.01");
+            PlaceDroidAt(harness, enemy.UnitId, midpoint + Vector2.up * 0.5f);
+            TickMany(harness.Simulation, 4, 1f / 120f);
+            Assert.That(enemy.MaxHealth - enemy.Health, Is.EqualTo(weapon.Damage), "the beam crosses its body");
+        }
+
+        [Test]
+        public void PlacedDevice_UnderABranchStandsOnTheGroundAtTheFeetNotOnTheBranch()
+        {
+            var grounder = CreateWeapon("weapon.grounder", WeaponRole.DefensiveTool, damage: 0, impactRadius: 1.4f, ammo: 1);
+            var harness = CreateHarness(grounder);
+            var owner = harness.State.GetUnit("player.test.01");
+            Assert.That(harness.Terrain.Grid.TryFindSurfaceBelow(owner.Position.x + 0.46f, owner.Position.y, 5f, out var groundY), Is.True);
+            // A branch over the droid's head.
+            harness.Terrain.StampSolidRect(new Vector2(owner.Position.x, owner.Position.y + 1.4f), new Vector2(3f, 0.3f));
+            var placed = Vector2.zero;
+            harness.Simulation.GrounderDeployed += evt => placed = evt.Point;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            Assert.That(placed.y, Is.EqualTo(groundY + 0.06f).Within(0.08f), "on the ground at the droid's feet");
+        }
+
+        [Test]
+        public void PlacedDevices_DropWhenTheGroundUnderThemIsBlownAway()
+        {
+            var grounder = CreateWeapon("weapon.grounder", WeaponRole.DefensiveTool, damage: 0, impactRadius: 1.4f, ammo: 1);
+            var harness = CreateHarness(grounder);
+            var placed = Vector2.zero;
+            var moved = default(Vector2?);
+            harness.Simulation.GrounderDeployed += evt => placed = evt.Point;
+            Assert.That(harness.Simulation.TryFire(NoAim).Outcome, Is.EqualTo(BattleFireOutcome.UtilityUsed));
+            harness.Simulation.GroundObjectRepositioned += evt => moved = evt.Point;
+            harness.Terrain.ApplyCraterAndGetDestroyedCellCount(placed + Vector2.down * 0.3f, 0.45f);
+            TickMany(harness.Simulation, 2, 1f / 120f);
+            Assert.That(moved.HasValue, Is.True, "the magnet dropped");
+            Assert.That(moved.Value.y, Is.LessThan(placed.y - 0.2f));
+            Assert.That(moved.Value.x, Is.EqualTo(placed.x).Within(0.001f), "straight down");
+        }
+
+        [Test]
+        public void Bounce_MirrorsTheShotOffTheSurfaceAngleInEqualsAngleOut()
+        {
+            var grid = new TerrainGrid(new Vector2(-5f, -5f), new Vector2(0.05f, 0.05f), 200, 200);
+            for (var y = 0; y < 100; y++)
+                for (var x = 0; x < 200; x++)
+                    grid.SetSolidCell(x, y, true);                                   // flat ground with its top at y = 0
+            var floor = ProjectileBounceRules.ReflectOffTerrain(grid, new Vector2(0f, -0.02f), new Vector2(3f, -4f), 0.1f, 0.05f);
+            Assert.That(floor.x, Is.EqualTo(3f).Within(0.3f), "keeps going the same way along the ground");
+            Assert.That(floor.y, Is.EqualTo(4f).Within(0.3f), "and leaves at the angle it came in");
+
+            var wall = new TerrainGrid(new Vector2(-5f, -5f), new Vector2(0.05f, 0.05f), 200, 200);
+            for (var y = 0; y < 200; y++)
+                for (var x = 100; x < 200; x++)
+                    wall.SetSolidCell(x, y, true);                                   // a wall from x = 0 rightwards
+            var off = ProjectileBounceRules.ReflectOffTerrain(wall, new Vector2(0.02f, 0f), new Vector2(4f, -3f), 0.1f, 0.05f);
+            Assert.That(off.x, Is.EqualTo(-4f).Within(0.3f), "a \\ shot into a wall comes back as /");
+            Assert.That(off.y, Is.EqualTo(-3f).Within(0.3f), "still going down, not back along its own path");
         }
 
         [Test]
@@ -5068,8 +5211,9 @@ namespace Game.Tests.EditMode.Gameplay
 
             var baseEnd = TunnelEnd(null);
             var steppedEnd = TunnelEnd(CreateRailProgress(4));
-            Assert.That(baseEnd, Is.EqualTo(5f).Within(0.3f), "6 units of ground at 6 u/s for one second");
-            Assert.That(steppedEnd - baseEnd, Is.EqualTo(2.4f).Within(0.3f), "four steps add 40% of the budget");
+            // Owner decision 2026-10-09: the budget is the drill rocket's ground distance at 2 x V0, i.e. 0.25 s.
+            Assert.That(baseEnd, Is.EqualTo(0.5f).Within(0.3f), "1.5 units of ground at 6 u/s for a quarter second");
+            Assert.That(steppedEnd - baseEnd, Is.EqualTo(0.6f).Within(0.3f), "four steps add 40% of the budget");
         }
 
         [Test]
@@ -5100,7 +5244,7 @@ namespace Game.Tests.EditMode.Gameplay
             var weapon = PrototypeWeaponLibrary.CreateAll().Single(w => w.WeaponId == id);
             Assert.That(WeaponEvolutionRuntimeResolver.Resolve(weapon, restored.inventory.GetOrCreateWeaponProgress(id))
                 .RailPierceSteps, Is.EqualTo(4));
-            Assert.That(weapon.MinPower, Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed), "shared base speed");
+            Assert.That(weapon.MinPower, Is.EqualTo(2f * PrototypeWeaponLibrary.SharedProjectileSpeed), "twice the shared speed");
             Assert.That(Resources.Load<Texture2D>("UI/Weapons/blaster_shot"), Is.Not.Null);
         }
 
@@ -5647,7 +5791,7 @@ namespace Game.Tests.EditMode.Gameplay
                 harness.Simulation.TryFire(new AimState(new Vector2(-3f, 0f), Vector2.down, 6f, true)).Outcome);
             TickMany(harness.Simulation, 600, 1f / 120f);
 
-            Assert.AreEqual(4, blobs.Count);
+            Assert.AreEqual(8, blobs.Count);
             Assert.That(blobs, Has.All.Matches<FireBlobEvent>(blob =>
                 Vector2.Distance(blob.Origin, blob.ImpactPoint) <= 1.6f), "they land near the blast: "
                 + string.Join("; ", blobs.ConvertAll(blob => $"{blob.Origin}->{blob.ImpactPoint} in {blob.TravelSeconds:F2}s")));
@@ -5732,22 +5876,22 @@ namespace Game.Tests.EditMode.Gameplay
             harness.Terrain.StampSolidRect(new Vector2(-0.75f, 4f), new Vector2(0.5f, 1.5f));
             harness.Terrain.StampSolidRect(new Vector2(5.25f, 4f), new Vector2(9.5f, 1.5f));
 
-            // Slow shot (3 m/s) so the 1 s drill budget genuinely runs out inside
-            // the long second section instead of the rocket tunnelling through.
-            var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.right, 3f, true));
+            // A 6 m/s shot: the half-second drill budget survives the thin first section and genuinely runs out
+            // inside the long second one instead of the rocket tunnelling through.
+            var result = harness.Simulation.TryFire(new AimState(new Vector2(-3f, 4f), Vector2.right, 6f, true));
             Assert.AreEqual(BattleFireOutcome.Fired, result.Outcome);
             Assert.That(
                 harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining,
-                Is.EqualTo(1f).Within(0.0001f));
+                Is.EqualTo(0.5f).Within(0.0001f));
 
-            TickMany(harness.Simulation, 120, 1f / 120f);
+            TickMany(harness.Simulation, 60, 1f / 120f);
             Assert.AreEqual(1, harness.Simulation.ProjectilesInFlight, "the rocket exits the first terrain section without exploding");
-            Assert.That(harness.Simulation.Projectiles[0].Velocity.magnitude, Is.EqualTo(3f).Within(0.01f));
-            Assert.Less(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 1f);
-            Assert.Greater(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 0.5f);
+            Assert.That(harness.Simulation.Projectiles[0].Velocity.magnitude, Is.EqualTo(6f).Within(0.01f));
+            Assert.Less(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 0.5f);
+            Assert.Greater(harness.Simulation.Projectiles[0].TerrainDrillTimeRemaining, 0f);
 
             TickMany(harness.Simulation, 600, 1f / 120f);
-            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight, "the rocket explodes after consuming one cumulative second inside terrain");
+            Assert.AreEqual(0, harness.Simulation.ProjectilesInFlight, "the rocket explodes after consuming half a cumulative second inside terrain");
         }
 
         [TestCase(TerrainMaterial.Soil)]
@@ -5762,7 +5906,7 @@ namespace Game.Tests.EditMode.Gameplay
                 new Vector2(0.5f, 1.5f), material);
 
             Assert.That(harness.Simulation.TryFire(new AimState(
-                new Vector2(-3f, 4f), Vector2.right, 1f, true)).Outcome,
+                new Vector2(-3f, 4f), Vector2.right, PrototypeWeaponLibrary.SharedProjectileSpeed, true)).Outcome,
                 Is.EqualTo(BattleFireOutcome.Fired));
             var projectile = harness.Simulation.Projectiles[0];
             Assert.That(projectile.Velocity.magnitude,
@@ -5775,9 +5919,9 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.That(harness.Terrain.Grid.IsSolidWorld(new Vector2(-0.75f, 4f)), Is.False);
         }
 
-        [TestCase(0, 1f)]
-        [TestCase(1, 1.1f)]
-        [TestCase(4, 1.4f)]
+        [TestCase(0, 0.5f)]
+        [TestCase(1, 0.55f)]
+        [TestCase(4, 0.7f)]
         public void CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(int purchases, float expectedSeconds)
         {
             var rocket = System.Array.Find(PrototypeWeaponLibrary.CreateAll(),
@@ -6048,9 +6192,9 @@ namespace Game.Tests.EditMode.Gameplay
             Assert.AreEqual(startHealth, player.Health);
         }
 
-        [TestCase(0, 3.25f)]
-        [TestCase(1, 3.575f)]
-        [TestCase(4, 4.55f)]
+        [TestCase(0, 4.875f)]
+        [TestCase(1, 5.3625f)]
+        [TestCase(4, 6.825f)]
         public void DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(int purchases, float expectedRange)
         {
             var drill = CreateWeapon("weapon.bur", WeaponRole.ShortRangeBurst, ammo: -1, gravityScale: 0f);
@@ -6776,7 +6920,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void GuardianDrone_NoticesWithinTheSharedN0AndEachRadiusPurchaseAddsTenPercent()
+        public void GuardianDrone_NoticesWithinTwiceN0AndEachRadiusPurchaseAddsTenPercent()
         {
             bool Triggers(float distance, int radiusPurchases)
             {
@@ -6805,9 +6949,10 @@ namespace Game.Tests.EditMode.Gameplay
                 return triggered;
             }
 
-            Assert.That(Triggers(1.3f, 0), Is.True, "inside the base N0 = 1.4");
-            Assert.That(Triggers(1.55f, 0), Is.False, "outside the base N0 (the old 1.6 is gone)");
-            Assert.That(Triggers(1.8f, 4), Is.True, "four Radius purchases: 1.96");
+            // Owner decision 2026-10-09: 2 x N0 = 2.8 (the drone's own art is about N0 wide).
+            Assert.That(Triggers(2.6f, 0), Is.True, "inside 2 x N0 = 2.8");
+            Assert.That(Triggers(3.1f, 0), Is.False, "outside 2 x N0");
+            Assert.That(Triggers(3.6f, 4), Is.True, "four Radius purchases: 3.92");
             var library = PrototypeWeaponLibrary.CreateAll();
             Assert.That(library.Single(w => w.WeaponId == "weapon.guardian-drone").Damage,
                 Is.EqualTo(library.Single(w => w.WeaponId == "weapon.mine").Damage), "the bullet hits like a mine");

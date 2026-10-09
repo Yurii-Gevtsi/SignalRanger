@@ -168,7 +168,7 @@ namespace Game.Tests.PlayMode
             FireAim(new Vector2(0.4f, 0.6f), 6f);
             for (var tick = 0; tick < 2400 && drops.Count == 0; tick++) Simulation.Tick(1f / 120f);
 
-            Assert.That(drops.Count, Is.EqualTo(4));
+            Assert.That(drops.Count, Is.EqualTo(8));
             Assert.That(drops, Has.All.Matches<FireBlobEvent>(drop => drop.TravelSeconds < 0.2f), "they land at once");
             Assert.That(drops, Has.All.Matches<FireBlobEvent>(drop => drop.InitialVelocity.y <= 0f), "none rises first");
             LogAssert.NoUnexpectedReceived();
@@ -244,6 +244,94 @@ namespace Game.Tests.PlayMode
                 EventSystem.current.RaycastAll(data, hits);
                 Assert.That(hits, Is.Empty, "no interface covers the arena at " + point);
             }
+        }
+
+        [UnityTest]
+        public IEnumerator PlacedMagnet_ShowsItsHealthAboveItAndKeepsTheTurn()
+        {
+            yield return Load();
+            Select("weapon.grounder");
+            Set("_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            Invoke("Fire");
+            Assert.That(State.Turn.ActiveTeam, Is.EqualTo(BattleTeamId.Player), "setting the magnet down keeps the turn");
+            var magnet = GameObject.Find("Grounder Placed").GetComponent<SpriteRenderer>();
+            var label = GameObject.Find("Device Health")?.GetComponent<TextMesh>();
+            Assert.That(label, Is.Not.Null, "its health is shown");
+            Assert.That(label.text, Is.EqualTo(State.GetTeam(BattleTeamId.Player).Units[0].MaxHealth.ToString()));
+            Assert.That(label.transform.position.y, Is.GreaterThan(magnet.bounds.max.y), "above the magnet");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator HoppingGrenade_TheAimIsNoLongerDrawnOnceItIsThrown()
+        {
+            yield return Load();
+            Select("weapon.hopping-grenade");
+            var unit = State.GetUnit(State.Turn.ActiveUnitId);
+            Set("_aimState", new AimState(unit.Position, new Vector2(0.6f, 0.8f).normalized, 9f, true));
+            Invoke("DrawTrajectoryPreview");
+            var dots = Get<List<SpriteRenderer>>("_trajectoryDots");
+            Assert.That(dots.Any(dot => dot.enabled), Is.True, "aimed before the throw");
+            Invoke("Fire");
+            Assert.That(Simulation.HasProjectilesInFlight, Is.True);
+            Assert.That(dots.Any(dot => dot.enabled), Is.False, "the arc is gone once it flies");
+            Assert.That(Simulation.CanContinueHoppingGrenade(), Is.True, "the extra jump is still there");
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator WeaponsWithoutAim_LeaveTheDragToTheCamera()
+        {
+            yield return Load();
+            foreach (var (weaponId, ownsTheDrag) in new[]
+                     { ("weapon.mine", false), ("weapon.plasma-sword", false), ("weapon.grounder", false),
+                       ("weapon.granata", true), (TitaniumBarrierRules.WeaponId, true) })
+            {
+                Select(weaponId);
+                Assert.That((bool)typeof(BattleSceneController).GetMethod("SelectedWeaponOwnsTheDrag", PrivateInstance)
+                    .Invoke(_controller, null), Is.EqualTo(ownsTheDrag), weaponId);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator TitaniumBarrier_TheNextBeamStartsOverTheDroidAgain()
+        {
+            yield return Load();
+            Select(TitaniumBarrierRules.WeaponId);
+            Inventory.SetRemainingAmmo(Inventory.Selected, 2);
+            Invoke("UpdateTitaniumBarrierPlacement");
+            var first = Get<AimState>("_aimState").Origin;
+            var grid = Get<BattleTerrain>("_battleTerrain").Grid;
+            Set("_aimState", new AimState(new Vector2(first.x, grid.WorldMaxY - 2f), Vector2.right, 1f, true));
+            Invoke("Fire");
+            Assert.That(Simulation.IsAttackCommitted, Is.False);
+            Invoke("UpdateTitaniumBarrierPlacement");
+            var second = Get<AimState>("_aimState").Origin;
+            var droid = State.GetTeam(BattleTeamId.Player).Units[0].Position;
+            Assert.That(Vector2.Distance(second, droid), Is.LessThan(2.5f), "over the droid, not in the middle of the map");
+            Assert.That(second, Is.Not.EqualTo(Vector2.zero));
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [UnityTest]
+        public IEnumerator SignalRocket_StandsAtTheFeetWhileTheDroidMayWalkAway()
+        {
+            yield return Load();
+            Select("weapon.sky-hook");
+            var droid = State.GetTeam(BattleTeamId.Player).Units[0];
+            Set("_aimState", new AimState(Vector2.zero, Vector2.zero, 0f, false));
+            Invoke("Fire");
+            Assert.That(Simulation.HasProjectilesInFlight, Is.True);
+            var rocket = Simulation.Projectiles[0];
+            Assert.That(Mathf.Abs(rocket.Position.x - droid.Position.x), Is.LessThan(0.1f), "under the droid's feet");
+            Assert.That(Simulation.IsActiveSkyHookArming, Is.True);
+            Assert.That(Simulation.CanAcceptMovementInput(), Is.True, "free to step away");
+            var start = rocket.Position;
+            for (var tick = 0; tick < 300; tick++) Simulation.Tick(1f / 120f);
+            Assert.That(rocket.Position, Is.EqualTo(start), "still standing after 2.5 s");
+            for (var tick = 0; tick < 120; tick++) Simulation.Tick(1f / 120f);
+            Assert.That(rocket.Position.y, Is.GreaterThan(start.y + 0.5f), "up it goes after three seconds");
+            LogAssert.NoUnexpectedReceived();
         }
 
         private IEnumerator Load(bool enabled = false, params string[] opponentWeapons)

@@ -38,7 +38,8 @@ namespace Game.Gameplay.Battle.Simulation
         private const string RailRifleWeaponId = "weapon.rail-rifle";
         private const float RailPierceDamageStep = 0.25f;
         private const float RailPierceMinimumDamageFactor = 0.25f;
-        private const float RailBasePierceSeconds = 1f;
+        // The rail bullet flies at 2 x V0 and goes as far through ground as the drill rocket does at V0.
+        private const float RailBasePierceSeconds = 0.25f;
         private const float RailPierceStepPercent = 0.10f;
         private const float RailTunnelRadius = 0.12f;
         private const string C4WeaponId = "weapon.c4";
@@ -74,7 +75,15 @@ namespace Game.Gameplay.Battle.Simulation
         private const float SkyHookApexMargin = 0.75f;
         private const string BoostWeaponId = "weapon.boost";
         private const string ForceFieldWeaponId = "weapon.force-field";
-        private const int GrounderBaseHealth = 45;
+        // Owner decision 2026-10-09: the magnet's capture range and the force field's sphere are 1.5 x N0.
+        private const float PlacedDeviceRadiusMultiplier = 1.5f;
+        // The guardian drone notices a droid within 2 x N0 (its own art is about N0 wide).
+        private const float GuardianDetectionMultiplier = 2f;
+        private const float SkyHookArmingSeconds = 3f;
+        // Half the rocket body's width and length: what touches a droid on the way up.
+        private const float SkyHookBodyHalfWidth = 0.16f;
+        private const float SkyHookBodyHalfLength = 0.38f;
+        private const float MortarFragmentContactSeconds = 0.3f;
         private const string GrenadeWeaponId = "weapon.granata";
         private const string IonShotgunWeaponId = "weapon.ion-shotgun";
         private const string FpvWeaponId = "weapon.fpv-drone";
@@ -197,7 +206,7 @@ namespace Game.Gameplay.Battle.Simulation
         private const float HoppingGrenadeFuseSeconds = 3f;
         private const float HoppingGrenadeVerticalSpeed = 3.8f;
         private const string IncendiaryGrenadeWeaponId = "weapon.incendiary-grenade";
-        private const int IncendiaryPuddleCount = 4;
+        private const int IncendiaryPuddleCount = 8;
         private const float IncendiaryPuddleSpreadRadius = 0.55f;
         private const float IncendiaryPuddleLifetimeSeconds = 2.5f;
         private const float IncendiaryDropSpeed = 7f;
@@ -404,6 +413,8 @@ namespace Game.Gameplay.Battle.Simulation
         public event Action<MineDeployedEvent> MineDeployed;
         public event Action<GrounderDeployedEvent> GrounderDeployed;
         public event Action<int> GrounderRemoved;
+        /// <summary>A placed magnet or force field device: id, health left, its full health.</summary>
+        public event Action<int, int, int> PlacedDeviceHealthChanged;
         /// <summary>A mine, guardian or laser-fence node was picked up (true) or let go (false) by the carrier.</summary>
         public event Action<int, bool> GroundObjectCarried;
         public event Action<ForceFieldDeployedEvent> ForceFieldDeployed;
@@ -698,14 +709,16 @@ namespace Game.Gameplay.Battle.Simulation
 
         public bool CanAcceptMovementInput()
         {
-            if (Result.IsFinished || HasProjectilesInFlight || HasActiveWeaponEffect)
+            // A signal rocket standing at the feet leaves its owner free to step away before it lifts off.
+            var skyHookArming = IsActiveSkyHookArming;
+            if (Result.IsFinished || HasProjectilesInFlight && !skyHookArming || HasActiveWeaponEffect)
             {
                 return false;
             }
 
             // A spent action normally freezes movement, except during the
             // retreat window: movement stays live while firing remains blocked.
-            if (_state.Turn.ActionSpent && !IsPlayerRetreatActive)
+            if (_state.Turn.ActionSpent && !IsPlayerRetreatActive && !skyHookArming)
             {
                 return false;
             }
@@ -965,9 +978,10 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             var projectilesBeforeFire = _projectiles.Count;
+            // The pulled power stays inside the weapon's own range, whatever the input.
             var launchSpeed = Mathf.Approximately(weapon.MinPower, weapon.MaxPower)
                 ? weapon.MinPower
-                : effectiveAim.Power;
+                : Mathf.Clamp(effectiveAim.Power, weapon.MinPower, weapon.MaxPower);
             var context = new WeaponFireContext(
                 weapon,
                 unit.UnitId,
@@ -1350,6 +1364,7 @@ namespace Game.Gameplay.Battle.Simulation
                 StepElectrifiedOverlayStates(_settings.SimulationTickSeconds);
                 StepVirusCarriers();
                 StepMines(_settings.SimulationTickSeconds);
+                StepPlacedDevices();
                 StepCharges(_settings.SimulationTickSeconds);
                 StepUnits();
                 StepLaserFenceLinks();
@@ -1518,7 +1533,7 @@ namespace Game.Gameplay.Battle.Simulation
                     {
                         var unit = team.Units[unitIndex];
                         if (unit.IsDefeated
-                            || !IsPointWithinLaserFenceLink(unit.Position, firstNode.Position, secondNode.Position))
+                            || !IsUnitBodyCrossingLaserFenceLink(unit, firstNode.Position, secondNode.Position))
                         {
                             continue;
                         }
@@ -1566,6 +1581,30 @@ namespace Game.Gameplay.Battle.Simulation
             var high = (uint)Mathf.Max(firstNodeId, secondNodeId);
             return ((ulong)high << 32) | low;
         }
+
+        /// <summary>
+        /// The beam runs near the ground while a droid's position is the centre of its body: the beam hits a droid
+        /// when it passes through the body (with a small margin), wherever along its height.
+        /// </summary>
+        private bool IsUnitBodyCrossingLaserFenceLink(BattleUnitState unit, Vector2 first, Vector2 second)
+        {
+            var halfWidth = _settings.UnitCollisionHalfWidth + LaserFenceBodyMargin;
+            var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f + LaserFenceBodyMargin;
+            var length = Vector2.Distance(first, second);
+            var samples = Mathf.Max(2, Mathf.CeilToInt(length / 0.05f));
+            for (var index = 0; index <= samples; index++)
+            {
+                var point = Vector2.Lerp(first, second, index / (float)samples);
+                if (Mathf.Abs(point.x - unit.Position.x) <= halfWidth && Mathf.Abs(point.y - unit.Position.y) <= halfHeight)
+                {
+                    return true;
+                }
+            }
+
+            return IsPointWithinLaserFenceLink(unit.Position, first, second);
+        }
+
+        private const float LaserFenceBodyMargin = 0.06f;
 
         private static bool IsPointWithinLaserFenceLink(Vector2 point, Vector2 first, Vector2 second)
         {
@@ -1760,7 +1799,7 @@ namespace Game.Gameplay.Battle.Simulation
             contact |= _terrain?.Grid.IsSolidWorld(position + Vector2.down * radius) == true;
             if (sequence.ProjectileIds[0] != projectile.Id) return;
             if (contact) sequence.ContactSeconds += deltaTime;
-            if (sequence.ContactSeconds < 0.8f && position.y >= _settings.FallDeathY - 2f
+            if (sequence.ContactSeconds < MortarFragmentContactSeconds && position.y >= _settings.FallDeathY - 2f
                 && projectile.RemainingLifetime > 0f) return;
             ResolveProjectileAt(index, position);
         }
@@ -2130,27 +2169,35 @@ namespace Game.Gameplay.Battle.Simulation
                 ProgressionFor(unit.TeamId).ResolveUpgradeCount(weapon.WeaponId, WeaponUpgradePath.Radius), 0, 4);
             var grounder = new ActiveGrounder(
                 ++_nextProjectileId, unit.TeamId, position, weapon,
-                remainingTurns: 2 + coreUpgrades, health: GrounderBaseHealth,
-                detectionRadius: weapon.ImpactRadius * (1f + radiusUpgrades * 0.10f));
+                remainingTurns: 2 + coreUpgrades, health: unit.MaxHealth,
+                detectionRadius: weapon.ImpactRadius * PlacedDeviceRadiusMultiplier * (1f + radiusUpgrades * 0.10f));
             _activeGrounders.Add(grounder);
             GrounderDeployed?.Invoke(new GrounderDeployedEvent(
                 grounder.Id, grounder.Position, weapon, unit.TeamId));
+            PlacedDeviceHealthChanged?.Invoke(grounder.Id, grounder.Health, grounder.MaxHealth);
+            // Owner decision 2026-10-09: setting the magnet down does not end the turn.
             _activeShotWeapon = weapon;
             _activeShotEndsTurn = false;
-            ShotFired?.Invoke(unit.TeamId, weapon, true);
-            _turnService.SpendAction(_state);
-            AdvanceTurnNow(TurnAdvanceReason.InstantActionCompleted);
+            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            UnitsMoved?.Invoke();
             return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, position);
         }
 
-        /// <summary>The signal rocket is set up beside the droid and goes straight up at twice the shared speed.</summary>
+        /// <summary>
+        /// Owner decision 2026-10-09: the signal rocket is set up at the droid's feet, stands for three seconds so the
+        /// droid can step away, then goes straight up at the shared speed.
+        /// </summary>
         private AimState CreateSkyHookAim(BattleUnitState unit)
         {
-            var facing = unit.FacingDirectionX >= 0 ? 1f : -1f;
-            var ground = ResolveGroundDeployPoint(unit.Position + new Vector2(facing * 0.46f, 0.12f), unit.TeamId);
+            var ground = ResolveGroundDeployPoint(unit.Position + new Vector2(0f, 0.12f), unit.TeamId);
             // The rocket's centre is half its length above the ground point.
-            return new AimState(ground + Vector2.up * 0.4f, Vector2.up, 2f * PrototypeWeaponLibrary.SharedProjectileSpeed, true);
+            return new AimState(ground + Vector2.up * 0.4f, Vector2.up, PrototypeWeaponLibrary.SharedProjectileSpeed, true);
         }
+
+        /// <summary>True while the active droid's signal rocket still stands at its feet before lift-off.</summary>
+        public bool IsActiveSkyHookArming => _projectiles.Count > 0
+            && _projectiles.TrueForAll(projectile => projectile.IsSkyHookArming
+                && projectile.OwnerUnitId == _state.Turn.ActiveUnitId);
 
         private BattleFireResult StartBoost(
             BattleUnitState unit,
@@ -2281,15 +2328,17 @@ namespace Game.Gameplay.Battle.Simulation
             var field = new ActiveForceField(
                 ++_nextProjectileId, unit.TeamId, devicePoint, weapon,
                 remainingTurns: 2 + coreUpgrades,
-                radius: weapon.ImpactRadius * (1f + radiusUpgrades * 0.10f));
+                radius: weapon.ImpactRadius * PlacedDeviceRadiusMultiplier * (1f + radiusUpgrades * 0.10f),
+                health: unit.MaxHealth);
             _activeForceFields.Add(field);
             ForceFieldDeployed?.Invoke(new ForceFieldDeployedEvent(
                 field.Id, field.Position, field.Radius, weapon, unit.TeamId));
+            PlacedDeviceHealthChanged?.Invoke(field.Id, field.Health, field.MaxHealth);
+            // Like the magnet, it is set down on the ground and the turn goes on.
             _activeShotWeapon = weapon;
             _activeShotEndsTurn = false;
-            ShotFired?.Invoke(unit.TeamId, weapon, true);
-            _turnService.SpendAction(_state);
-            AdvanceTurnNow(TurnAdvanceReason.InstantActionCompleted);
+            ShotFired?.Invoke(unit.TeamId, weapon, false);
+            UnitsMoved?.Invoke();
             return new BattleFireResult(BattleFireOutcome.UtilityUsed, unit.TeamId, weapon, devicePoint);
         }
 
@@ -3894,8 +3943,9 @@ namespace Game.Gameplay.Battle.Simulation
             var gravity = _projectileGravityPerScale * IncendiaryDropGravityScale;
             for (var index = 0; index < IncendiaryPuddleCount; index++)
             {
+                // Owner decision 2026-10-09: twice as many, smaller drops that fall nearly straight down in a tight bunch.
                 var side = index % 2 == 0 ? -1f : 1f;
-                var reach = index < 2 ? 0.55f : 1f;
+                var reach = 0.04f + (index / 2) * 0.05f;
                 var initialVelocity = new Vector2(side * IncendiaryDropSpeed * reach, -IncendiaryDropSpeed * 0.6f);
                 var origin = impact.Point + Vector2.up * 0.05f;
                 TraceFireBlobTrajectory(impact.OwnerUnitId, origin, initialVelocity, gravity,
@@ -4727,6 +4777,9 @@ namespace Game.Gameplay.Battle.Simulation
                 case WeaponRole.DefensiveTool:
                     RestoreFriendlyHealth(impact.Point, impact.OwnerUnitId, impactWeapon);
                     return false;
+                case WeaponRole.MovementTool when impactWeapon.WeaponId == CarrierWeaponId:
+                    // The carrier's end-of-flight blast is an ordinary blast; it must never move its owner there.
+                    return ResolveDamageImpact(impact, impactWeapon);
                 case WeaponRole.MovementTool:
                     RepositionOwner(impact.Point, impact.OwnerUnitId, impactWeapon, impact.SourceOrigin);
                     return false;
@@ -4883,6 +4936,7 @@ namespace Game.Gameplay.Battle.Simulation
                 }
             }
             DamageLaserFenceNodesInBlast(impact.Point, impact.ImpactRadius, effectiveDamage);
+            DamagePlacedDevicesInBlast(impact.Point, impact.ImpactRadius, effectiveDamage);
             ApplyExplosionKnockback(
                 impact.Point,
                 impact.Velocity,
@@ -6046,6 +6100,25 @@ namespace Game.Gameplay.Battle.Simulation
 
         private Vector2 ResolveGroundDeployPoint(Vector2 desiredPoint, BattleTeamId teamId)
         {
+            // The ground is searched from the droid's own height downwards: a branch or an overhang above the droid
+            // must not catch a device it sets down at its feet. A point inside a step is first lifted out of it.
+            if (_terrain != null)
+            {
+                var grid = _terrain.Grid;
+                var start = desiredPoint;
+                var maxLift = ArchetypeFor(teamId).BodyHeight;
+                for (var lift = 0f; lift < maxLift && grid.IsSolidWorld(start); lift += grid.CellSize.y)
+                {
+                    start.y += grid.CellSize.y;
+                }
+
+                if (!grid.IsSolidWorld(start)
+                    && grid.TryFindSurfaceBelow(start.x, start.y, _settings.GroundRayDistance, out var surfaceY))
+                {
+                    return new Vector2(start.x, surfaceY + 0.06f);
+                }
+            }
+
             var unitLanding = ResolveUnitLandingPosition(desiredPoint, teamId);
             return unitLanding + Vector2.down * (ArchetypeFor(teamId).BodyHeight * 0.5f - 0.06f);
         }
@@ -6438,6 +6511,7 @@ namespace Game.Gameplay.Battle.Simulation
             {
                 var launcher = _state.GetUnit(request.OwnerUnitId);
                 projectile.SetSkyHookLaunchFacing(launcher != null && launcher.FacingDirectionX < 0 ? -1 : 1);
+                projectile.SetSkyHookArming(SkyHookArmingSeconds);
             }
             else if (spawnedWeapon?.WeaponId == HoppingGrenadeWeaponId)
             {
@@ -6662,9 +6736,10 @@ namespace Game.Gameplay.Battle.Simulation
 
                     if (TryFindForceFieldForProjectile(projectile, projectileWeapon, position, out var forceField))
                     {
-                        // Absorbed whole: no blast, no damage, no status.
+                        // Absorbed whole: no blast and nothing reaches the droids; the device takes the charge's damage.
                         projectile.MoveTo(position);
                         ForceFieldAbsorbed?.Invoke(forceField.Id, position);
+                        DamageForceField(forceField, projectile.Definition.Damage);
                         DiscardProjectile(i, projectile);
                         break;
                     }
@@ -6825,7 +6900,7 @@ namespace Game.Gameplay.Battle.Simulation
                             break;
                         }
 
-                        if (projectileWeapon?.WeaponId == GrenadeWeaponId)
+                        if (projectileWeapon?.WeaponId is GrenadeWeaponId or CryoGrenadeWeaponId)
                         {
                             projectile.StartRestingFuse(position - step, projectile.RemainingLifetime);
                             break;
@@ -6845,6 +6920,7 @@ namespace Game.Gameplay.Battle.Simulation
                     }
 
                     var ignoresUnitsInFlight = projectileWeapon?.WeaponId == GrenadeWeaponId
+                        || projectileWeapon?.WeaponId == CryoGrenadeWeaponId
                         || (projectileWeapon?.WeaponId == TeleportWeaponId && !isInstantTouchTeleport)
                         || projectileWeapon?.WeaponId == SwapJumpWeaponId
                         || projectile.Definition.ProjectileId == MineDeployProjectileId
@@ -7001,6 +7077,13 @@ namespace Game.Gameplay.Battle.Simulation
         /// </summary>
         private void StepSkyHook(int projectileIndex, SimProjectile projectile, float deltaTime)
         {
+            if (projectile.IsSkyHookArming)
+            {
+                // It stands where it was set up; the owner may still move away.
+                projectile.ReduceSkyHookArming(deltaTime);
+                return;
+            }
+
             projectile.ReduceLifetime(deltaTime);
             var weapon = ResolveWeaponFromProjectileId(projectile.Definition.ProjectileId);
             var sourceTeam = ResolveTeamForOwner(projectile.OwnerUnitId);
@@ -7058,7 +7141,7 @@ namespace Game.Gameplay.Battle.Simulation
                         foreach (var unit in team.Units)
                         {
                             if (unit == null || unit.IsDefeated || !string.IsNullOrEmpty(projectile.SkyHookCarriedUnitId)
-                                || !IsTouchingUnitHitbox(position, radius, unit))
+                                || !IsSkyHookBodyTouching(position, unit))
                             {
                                 continue;
                             }
@@ -7094,6 +7177,14 @@ namespace Game.Gameplay.Battle.Simulation
                 ReleaseSkyHookCarried(projectile, throwAway: true, position);
                 ResolveProjectileAt(projectileIndex, position);
             }
+        }
+
+        /// <summary>The rocket's whole body, not just its tip, picks up a droid it touches.</summary>
+        private bool IsSkyHookBodyTouching(Vector2 rocketCenter, BattleUnitState unit)
+        {
+            var halfHeight = ArchetypeFor(unit.TeamId).BodyHeight * 0.5f;
+            return Mathf.Abs(rocketCenter.x - unit.Position.x) <= _settings.UnitCollisionHalfWidth + SkyHookBodyHalfWidth
+                && Mathf.Abs(rocketCenter.y - unit.Position.y) <= halfHeight + SkyHookBodyHalfLength;
         }
 
         private void CarrySkyHookTarget(SimProjectile projectile, Vector2 step)
@@ -7916,7 +8007,8 @@ namespace Game.Gameplay.Battle.Simulation
             if (mine.Weapon.WeaponId == GuardianDroneWeaponId)
             {
                 var radiusPurchases = ProgressionFor(mine.TeamId).ResolveUpgradeCount(GuardianDroneWeaponId, WeaponUpgradePath.Radius);
-                return PrototypeWeaponLibrary.SharedNearbyRadius * (1f + Mathf.Clamp(radiusPurchases, 0, 4) * 0.10f);
+                return PrototypeWeaponLibrary.SharedNearbyRadius * GuardianDetectionMultiplier
+                    * (1f + Mathf.Clamp(radiusPurchases, 0, 4) * 0.10f);
             }
 
             return mine.Weapon.ImpactRadius;
@@ -7994,7 +8086,7 @@ namespace Game.Gameplay.Battle.Simulation
             var terrainBounceLimit = projectile.Definition.TerrainBounceLimit;
             var usesDefaultBounceRules = weapon != null
                 && (weapon.WeaponId == TeleportWeaponId || weapon.WeaponId == SwapJumpWeaponId
-                    || weapon.WeaponId == GrenadeWeaponId);
+                    || weapon.WeaponId == GrenadeWeaponId || weapon.WeaponId == CryoGrenadeWeaponId);
             if (!usesDefaultBounceRules && terrainBounceLimit <= 0)
             {
                 return false;
@@ -8152,7 +8244,7 @@ namespace Game.Gameplay.Battle.Simulation
             var projectileId = projectile.Definition.ProjectileId;
             if (projectileId == MineDeployProjectileId)
             {
-                DamageGrounder(grounder, weapon?.Damage ?? 0);
+                // The mine's blast at the magnet wears it down like any blast in range.
                 ResolveProjectileAt(projectileIndex, contactPoint, interceptedMine: true);
                 return;
             }
@@ -8170,7 +8262,7 @@ namespace Game.Gameplay.Battle.Simulation
                 return;
             }
 
-            DamageGrounder(grounder, projectile.Definition.Damage);
+            // The captured shot blasts at the magnet; that blast wears it down like any blast in range.
             ResolveProjectileAt(projectileIndex, contactPoint);
         }
 
@@ -8240,6 +8332,7 @@ namespace Game.Gameplay.Battle.Simulation
             }
 
             grounder.Health = Mathf.Max(0, grounder.Health - Mathf.Max(0, damage));
+            PlacedDeviceHealthChanged?.Invoke(grounder.Id, grounder.Health, grounder.MaxHealth);
             if (grounder.Health > 0)
             {
                 return;
@@ -8247,6 +8340,71 @@ namespace Game.Gameplay.Battle.Simulation
 
             _activeGrounders.Remove(grounder);
             GrounderRemoved?.Invoke(grounder.Id);
+        }
+
+        private void DamageForceField(ActiveForceField field, int damage)
+        {
+            if (!_activeForceFields.Contains(field))
+            {
+                return;
+            }
+
+            field.Health = Mathf.Max(0, field.Health - Mathf.Max(0, damage));
+            PlacedDeviceHealthChanged?.Invoke(field.Id, field.Health, field.MaxHealth);
+            if (field.Health > 0)
+            {
+                return;
+            }
+
+            _activeForceFields.Remove(field);
+            ForceFieldRemoved?.Invoke(field.Id);
+        }
+
+        /// <summary>A blast wears placed magnets and force field devices down like droids.</summary>
+        private void DamagePlacedDevicesInBlast(Vector2 point, float radius, int damage)
+        {
+            if (damage <= 0 || radius <= 0f)
+            {
+                return;
+            }
+
+            for (var index = _activeGrounders.Count - 1; index >= 0; index--)
+            {
+                if (Vector2.Distance(_activeGrounders[index].Position, point) <= radius)
+                {
+                    DamageGrounder(_activeGrounders[index], damage);
+                }
+            }
+
+            for (var index = _activeForceFields.Count - 1; index >= 0; index--)
+            {
+                if (Vector2.Distance(_activeForceFields[index].Position, point) <= radius)
+                {
+                    DamageForceField(_activeForceFields[index], damage);
+                }
+            }
+        }
+
+        /// <summary>Placed magnets and force field devices are ground objects: they drop when the ground under them goes.</summary>
+        private void StepPlacedDevices()
+        {
+            foreach (var grounder in _activeGrounders)
+            {
+                if (TryFindGroundObjectLanding(grounder.Position, out var landing))
+                {
+                    grounder.Position = landing;
+                    GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(grounder.Id, landing));
+                }
+            }
+
+            foreach (var field in _activeForceFields)
+            {
+                if (TryFindGroundObjectLanding(field.Position, out var landing))
+                {
+                    field.Position = landing;
+                    GroundObjectRepositioned?.Invoke(new GroundObjectRepositionedEvent(field.Id, landing));
+                }
+            }
         }
 
         private static bool IsForceFieldEnergyCarrier(WeaponDefinition weapon)
@@ -8776,7 +8934,7 @@ namespace Game.Gameplay.Battle.Simulation
         private sealed class ActiveForceField
         {
             public ActiveForceField(int id, BattleTeamId teamId, Vector2 position,
-                WeaponDefinition weapon, int remainingTurns, float radius)
+                WeaponDefinition weapon, int remainingTurns, float radius, int health = 1)
             {
                 Id = id;
                 TeamId = teamId;
@@ -8784,11 +8942,15 @@ namespace Game.Gameplay.Battle.Simulation
                 Weapon = weapon;
                 RemainingTurns = remainingTurns;
                 Radius = radius;
+                Health = Mathf.Max(1, health);
+                MaxHealth = Health;
             }
 
             public int Id { get; }
             public BattleTeamId TeamId { get; }
-            public Vector2 Position { get; }
+            public Vector2 Position { get; set; }
+            public int Health { get; set; }
+            public int MaxHealth { get; }
             public WeaponDefinition Weapon { get; }
             public int RemainingTurns { get; set; }
             public float Radius { get; }
@@ -8805,12 +8967,14 @@ namespace Game.Gameplay.Battle.Simulation
                 Weapon = weapon;
                 RemainingTurns = remainingTurns;
                 Health = health;
+                MaxHealth = Mathf.Max(1, health);
                 DetectionRadius = detectionRadius;
             }
 
             public int Id { get; }
             public BattleTeamId TeamId { get; }
-            public Vector2 Position { get; }
+            public Vector2 Position { get; set; }
+            public int MaxHealth { get; }
             public WeaponDefinition Weapon { get; }
             public int RemainingTurns { get; set; }
             public int Health { get; set; }

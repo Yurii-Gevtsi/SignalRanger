@@ -132,11 +132,16 @@ namespace Game.Tests.PlayMode
                 Assert.That(visuals.Count, Is.EqualTo(expected));
                 foreach (var projectile in simulation.Projectiles)
                 {
+                    // Straight shots fly at the shared V0; arcing ones at the pulled power kept inside their 7-18 range.
+                    var selected = inventory.Selected;
+                    var expectedSpeed = Mathf.Approximately(selected.MinPower, selected.MaxPower)
+                        ? selected.MinPower : Mathf.Clamp(1f, selected.MinPower, selected.MaxPower);
                     if (weaponId != "weapon.mine") Assert.That(projectile.Velocity.magnitude,
-                        Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed).Within(0.001f));
+                        Is.EqualTo(expectedSpeed).Within(0.001f));
                     var renderer = visuals[projectile.Id].GetComponentInChildren<SpriteRenderer>();
                     Assert.That(renderer.sprite, Is.Not.Null);
-                    if (weaponId == "weapon.ion-shotgun") Assert.That(renderer.color, Is.EqualTo(Color.black));
+                    if (weaponId == "weapon.ion-shotgun") Assert.That(renderer.sprite.texture,
+                        Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/blaster_shot")), "pellets fly the rail bolt skin");
                     if (weaponId == "weapon.mine") Assert.That(renderer.sprite.texture,
                         Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/mine_off")));
                     if (weaponId == "weapon.titanium-disc")
@@ -209,7 +214,7 @@ namespace Game.Tests.PlayMode
             Invoke(controller, "Fire");
             Assert.That(simulation.ProjectilesInFlight, Is.EqualTo(1));
             Assert.That(simulation.Projectiles[0].Velocity.magnitude,
-                Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed).Within(0.001f));
+                Is.EqualTo(PrototypeWeaponLibrary.ArcMinPower).Within(0.001f), "a weak pull is the bottom of the 7-18 range");
             for (var frame = 0; frame < 30 && shards == 0; frame++)
             {
                 for (var tick = 0; tick < 60; tick++) simulation.Tick(1f / 120f);
@@ -424,7 +429,7 @@ namespace Game.Tests.PlayMode
             var renderer = placed.GetComponent<SpriteRenderer>();
             Assert.That(renderer.sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/force_field_sphere")));
             Assert.That(renderer.sprite.bounds.size.x * placed.transform.localScale.x,
-                Is.EqualTo(PrototypeWeaponLibrary.SharedNearbyRadius * 2f).Within(0.01f), "diameter = 2 x N0");
+                Is.EqualTo(PrototypeWeaponLibrary.SharedNearbyRadius * 1.5f * 2f).Within(0.01f), "diameter = 2 x 1.5 N0");
             Assert.That(inventory.GetSelectedRemainingAmmo(), Is.Zero, "one per battle");
 
             var enemy = Get<BattleState>(controller, "_battleState").GetTeam(BattleTeamId.Opponent).Units[0];
@@ -1115,7 +1120,7 @@ namespace Game.Tests.PlayMode
             Assert.That(simulation.ProjectilesInFlight, Is.EqualTo(1));
             Assert.That(shown.sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/blaster_shot")));
             Assert.That(simulation.Projectiles[0].Velocity.magnitude,
-                Is.EqualTo(PrototypeWeaponLibrary.SharedProjectileSpeed).Within(0.001f));
+                Is.EqualTo(2f * PrototypeWeaponLibrary.SharedProjectileSpeed).Within(0.001f), "twice the shared speed");
             Assert.That(shown.transform.localScale.x, Is.LessThan(0.03f), "a small bolt, not a grenade-sized sprite");
             Assert.That(Mathf.DeltaAngle(shown.transform.eulerAngles.z,
                 Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg), Is.EqualTo(0f).Within(1f));

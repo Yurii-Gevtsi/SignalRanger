@@ -5,16 +5,21 @@ namespace Game.Gameplay.Battle.Weapons
         public const float SharedProjectileSpeed = 12f;
         public const float SharedExplosionRadius = 1.55f;
         public const float SharedNearbyRadius = 1.4f;
+        // Owner decision 2026-10-09: arcing shots get a pull-controlled launch power, the same range as the sticky grenade.
+        public const float ArcMinPower = 7f;
+        public const float ArcMaxPower = 18f;
+        // Copters fly 50% faster under the arrow buttons than the former 4 u/s.
+        public const float CopterSpeed = 6f;
 
         public static WeaponDefinition[] CreateAll()
         {
             return new[]
             {
                 Weapon("weapon.bur", WeaponRole.ShortRangeBurst, 18, 0.7f, 0.08f, 0f, 1.2f, 3f, 3f, -1, "bur", "straight-close", "engineering", "drill"),
-                Weapon("weapon.impulse", WeaponRole.ArcingExplosive, 34, SharedExplosionRadius, 0.12f, 1f, 8f, SharedProjectileSpeed, SharedProjectileSpeed, -1, "impulse", "arc", "starter"),
+                Weapon("weapon.impulse", WeaponRole.ArcingExplosive, 34, SharedExplosionRadius, 0.12f, 1f, 8f, ArcMinPower, ArcMaxPower, -1, "impulse", "arc", "starter"),
                 // Timeout doubles as the grenade fuse: it counts from the throw
                 // (reference behaviour), whether the grenade is rolling or resting.
-                Weapon("weapon.granata", WeaponRole.ArcingExplosive, 42, SharedExplosionRadius, 0.14f, 1.1f, 4.5f, SharedProjectileSpeed, SharedProjectileSpeed, 3, "granata", "arc", "grenade"),
+                Weapon("weapon.granata", WeaponRole.ArcingExplosive, 42, SharedExplosionRadius, 0.14f, 1.1f, 4.5f, ArcMinPower, ArcMaxPower, 3, "granata", "arc", "grenade"),
                 Weapon("weapon.rope", WeaponRole.MovementTool, 0, 0.1f, 0.08f, 0f, 2f, 1f, 1f, -1, "rope", "straight-close", "engineering", "rope", "traversal"),
                 Weapon("weapon.plasma-sword", WeaponRole.ShortRangeBurst, 45, 0.55f, 0.08f, 0f, 0.7f, 2f, 2f, -1, "plasma_sword", "straight-close", "melee"),
                 Weapon("weapon.ion-shotgun", WeaponRole.DirectProjectile, 38, 0.85f, 0.1f, 0f, 2.5f, SharedProjectileSpeed, SharedProjectileSpeed, 3, "ion_shotgun", "straight-close", "shotgun"),
@@ -22,12 +27,12 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.mine", WeaponRole.ArcingExplosive, 54, SharedExplosionRadius, 0.14f, 1.05f, 8f, 3f, 10f, 4, "mine_off", "ground", "mine"),
                 Weapon("weapon.heal", WeaponRole.DefensiveTool, 25, 1.4f, 0.12f, 0.65f, 6f, 3f, 9f, 1, "heal", "bonus", "repair"),
                 Weapon("weapon.titanium-disc", WeaponRole.DirectProjectile, 35, SharedExplosionRadius, 0.1f, 0f, 5f, SharedProjectileSpeed, SharedProjectileSpeed, 3, "titanium_disc", "straight-long", "ricochet"),
-                Weapon("weapon.bur-rocket", WeaponRole.ArcingExplosive, 46, SharedExplosionRadius, 0.12f, 0.8f, 8f, SharedProjectileSpeed, SharedProjectileSpeed, 2, "bur_rocket", "arc-special", "drill"),
+                Weapon("weapon.bur-rocket", WeaponRole.ArcingExplosive, 46, SharedExplosionRadius, 0.12f, 0.8f, 8f, ArcMinPower, ArcMaxPower, 2, "bur_rocket", "arc-special", "drill"),
                 Weapon("weapon.titanium-barrier", WeaponRole.CoverTool, 0, TitaniumBarrierRules.BaseWidth, 0.1f, 0f, 6f, 1f, 1f, 2, "titanium_barrier", "ground", "barrier"),
-                Weapon("weapon.mortira", WeaponRole.ArcingExplosive, 48, 1.8f, 0.16f, 1.15f, 9f, 12f, 12f, 2, "mortira", "arc", "fragment"),
+                Weapon("weapon.mortira", WeaponRole.ArcingExplosive, 48, 1.8f, 0.16f, 1.15f, 9f, ArcMinPower, ArcMaxPower, 2, "mortira", "arc", "fragment"),
                 Weapon("weapon.sticky-grenade", WeaponRole.ArcingExplosive, 40, 1.45f, 0.13f, 1.05f, 5f, 7f, 18f, 2, "sticky_grenade", "arc", "toxic"),
                 Weapon("weapon.teleport", WeaponRole.MovementTool, 0, 2.5f, 0.11f, 1.1f, 8f, 8f, 24f, 2, "teleport", "arc-utility", "teleport"),
-                Weapon("weapon.rail-rifle", WeaponRole.DirectProjectile, 52, 0.35f, 0.07f, 0f, 5f, SharedProjectileSpeed, SharedProjectileSpeed, 2, "rail_rifle", "straight-long", "penetration"),
+                Weapon("weapon.rail-rifle", WeaponRole.DirectProjectile, 52, 0.35f, 0.07f, 0f, 5f, 2f * SharedProjectileSpeed, 2f * SharedProjectileSpeed, 2, "rail_rifle", "straight-long", "penetration"),
                 Weapon("weapon.cryo-grenade", WeaponRole.ArcingExplosive, 34, 1.35f, 0.12f, 1.05f, 6f, 5f, 14f, 2, "cryo_grenade", "arc", "freeze"),
                 Weapon("weapon.hopping-grenade", WeaponRole.ArcingExplosive, 37, 1.25f, 0.12f, 1.05f, 7f, 5f, 14f, 3, "hopping_grenade", "arc", "hopping"),
                 Weapon("weapon.incendiary-grenade", WeaponRole.ArcingExplosive, 38, 1.4f, 0.12f, 1.05f, 6f, 5f, 14f, 2, "incendiary_grenade", "arc", "fire"),
@@ -42,14 +47,14 @@ namespace Game.Gameplay.Battle.Weapons
                 Weapon("weapon.grounder", WeaponRole.DefensiveTool, 0, 1.4f, 0.1f, 0f, 5f, 4f, 8f, 1, "grounder", "ground", "grounder"),
                 Weapon("weapon.force-field", WeaponRole.DefensiveTool, 0, SharedNearbyRadius, 0.1f, 0f, 6f, 4f, 8f, 1, "force_field", "ground", "shield"),
                 Weapon("weapon.boost", WeaponRole.MovementTool, 0, 0.1f, 0.08f, 0f, 6f, 1f, 1f, 2, "boost", "bonus", "boost"),
-                Weapon("weapon.sky-hook", WeaponRole.DirectProjectile, 46, SharedExplosionRadius, 0.1f, 0f, 5f,
-                    2f * SharedProjectileSpeed, 2f * SharedProjectileSpeed, 1, "sky_hook", "straight-long", "hook"),
+                Weapon("weapon.sky-hook", WeaponRole.DirectProjectile, 46, SharedExplosionRadius, 0.1f, 0f, 8f,
+                    SharedProjectileSpeed, SharedProjectileSpeed, 1, "sky_hook", "straight-long", "hook"),
                 Weapon("weapon.spider-mine", WeaponRole.ArcingExplosive, 45, 1.45f, 0.13f, 1.05f, 7f, 3f, 10f, 2, "spider_mine", "ground", "mine"),
                 Weapon("weapon.virus", WeaponRole.DirectProjectile, 42, 0.75f, 0.09f, 0f, 4f, 12f, 12f, 1, "virus", "straight-long", "virus"),
-                // Each bomb is an ordinary mine blast (54, the shared R0); 10 s of flight at 4 u/s, four bombs per flight.
-                Weapon("weapon.bomber", WeaponRole.ArcingExplosive, 54, SharedExplosionRadius, 0.14f, 0f, 10f, 4f, 4f, 1, "bomber", "controlled", "bomber"),
+                // Each bomb is an ordinary mine blast (54, the shared R0); 10 s of flight, four bombs per flight.
+                Weapon("weapon.bomber", WeaponRole.ArcingExplosive, 54, SharedExplosionRadius, 0.14f, 0f, 10f, CopterSpeed, CopterSpeed, 1, "bomber", "controlled", "bomber"),
                 // The copter's emergency blast after its window is an ordinary mine blast (54, the shared R0).
-                Weapon("weapon.ufo-carrier", WeaponRole.MovementTool, 54, SharedExplosionRadius, 0.1f, 0f, 10f, 4f, 4f, 1, "ufo_carrier", "controlled", "carrier"),
+                Weapon("weapon.ufo-carrier", WeaponRole.MovementTool, 54, SharedExplosionRadius, 0.1f, 0f, 10f, CopterSpeed, CopterSpeed, 1, "ufo_carrier", "controlled", "carrier"),
                 // 1.5 x the shared explosion radius; the owner is sacrificed by the protocol itself, whatever the damage.
                 Weapon("weapon.self-destruct", WeaponRole.ShortRangeBurst, 72, 1.5f * SharedExplosionRadius, 0.16f, 0f, 3f, 1f, 1f, 1, "self_destruct", "ground", "self-destruct"),
                 // The orbital scenario with a bigger blast: 55% of the cap against the orbital rocket's 48% (65), radius 2 x the

@@ -12,7 +12,8 @@ namespace Game.Gameplay.Battle.Weapons
     /// </summary>
     public static class WeaponUpgradeChoiceResolver
     {
-        public const float DrillLaserBaseRange = 3.25f;
+        // Owner decision 2026-10-09: the drill laser reaches 50% further than the former 3.25.
+        public const float DrillLaserBaseRange = 4.875f;
         public const float RopeBaseLength = 8f;
         private const float DrillLaserRangePerUpgrade = 0.10f;
         private const int BaseAccuracy = 70;
@@ -99,10 +100,13 @@ namespace Game.Gameplay.Battle.Weapons
                 (1f + Math.Min(Math.Max(radiusUpgrades, 0), 4) * DrillLaserRangePerUpgrade);
         }
 
+        /// <summary>Owner decision 2026-10-09: half the former second inside ground; every Radius purchase adds 10% of it.</summary>
         public static float ResolveDrillRocketTerrainSeconds(int radiusUpgrades)
         {
-            return 1f + Math.Clamp(radiusUpgrades, 0, 4) * 0.10f;
+            return DrillRocketBaseTerrainSeconds * (1f + Math.Clamp(radiusUpgrades, 0, 4) * 0.10f);
         }
+
+        public const float DrillRocketBaseTerrainSeconds = 0.5f;
 
         public static float ResolveRepairHealPercent(int coreUpgrades)
         {

@@ -151,6 +151,8 @@ namespace Game.Gameplay.Battle.Assembly
         private readonly Dictionary<int, GameObject> _mineVisuals = new();
         private readonly Dictionary<int, GameObject> _grounderVisuals = new();
         private readonly Dictionary<int, GameObject> _forceFieldVisuals = new();
+        private readonly Dictionary<int, TextMesh> _deviceHealthLabels = new();
+        private readonly Dictionary<int, BattleTeamId> _deviceTeams = new();
         private readonly Dictionary<int, GameObject> _laserFenceNodeVisuals = new();
         private readonly HashSet<(int, int)> _spentLaserFenceLinks = new();
         private readonly Dictionary<int, float> _forceFieldPulseUntil = new();
@@ -614,7 +616,7 @@ namespace Game.Gameplay.Battle.Assembly
             }
 
             if (HasActiveMotion || HasActiveWeaponEffect
-                || HasProjectilesInFlight && !CanContinueMinePlacementInput())
+                || HasProjectilesInFlight && !CanContinueMinePlacementInput() && !_simulation.IsActiveSkyHookArming)
             {
                 UpdateRopeTraversalInput();
                 _simulation.Tick(Time.deltaTime);
@@ -808,6 +810,7 @@ namespace Game.Gameplay.Battle.Assembly
             simulation.MineDeployed += OnSimulationMineDeployed;
             simulation.MineTriggered += OnSimulationMineTriggered;
             simulation.GrounderDeployed += OnSimulationGrounderDeployed;
+            simulation.PlacedDeviceHealthChanged += OnSimulationPlacedDeviceHealthChanged;
             simulation.GrounderRemoved += OnSimulationGrounderRemoved;
             simulation.GroundObjectCarried += OnSimulationGroundObjectCarried;
             simulation.LaserFenceLinkSpent += OnSimulationLaserFenceLinkSpent;
@@ -997,7 +1000,7 @@ namespace Game.Gameplay.Battle.Assembly
                 || _battleState == null
                 || _battleState.Turn.ActiveTeam != BattleTeamId.Player
                 || _simulation == null
-                || _playerWeaponSelected && !_simulation.HasActiveControlledProjectile
+                || _playerWeaponSelected && SelectedWeaponOwnsTheDrag() && !_simulation.HasActiveControlledProjectile
                 || _simulation.Result.IsFinished
                 || TryGetPinchDistance(out _))
             {
@@ -1031,6 +1034,18 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 _cameraPanActive = false;
             }
+        }
+
+        /// <summary>
+        /// A dragged finger aims (or places the beam) only for weapons that use it; with a mine, a sword or a device
+        /// selected the finger moves the camera instead.
+        /// </summary>
+        private bool SelectedWeaponOwnsTheDrag()
+        {
+            var weapon = _inventory?.Selected;
+            return weapon != null
+                && (weapon.WeaponId == TitaniumBarrierRules.WeaponId
+                    || BattleSimulation.RequiresAim(weapon) && !BattleSimulation.IsMarkedStrikeWeapon(weapon));
         }
 
         private bool TryGetPinchDistance(out float distance)
@@ -1562,6 +1577,8 @@ namespace Game.Gameplay.Battle.Assembly
             _mineVisuals.Clear();
             _grounderVisuals.Clear();
             _forceFieldVisuals.Clear();
+            _deviceHealthLabels.Clear();
+            _deviceTeams.Clear();
             _laserFenceNodeVisuals.Clear();
             _spentLaserFenceLinks.Clear();
             _forceFieldPulseUntil.Clear();
@@ -2334,6 +2351,9 @@ namespace Game.Gameplay.Battle.Assembly
 
             if (impactWeapon?.WeaponId != "weapon.teleport"
                 && impactWeapon?.WeaponId != "weapon.ion-shotgun"
+                // Attaching the virus or the repair jammer is not an explosion.
+                && impactWeapon?.WeaponId != "weapon.virus"
+                && impactWeapon?.WeaponId != "weapon.repair-jammer"
                 && impact.ProjectileId != "projectile.weapon.mine.deploy"
                 && impact.ProjectileId != "projectile.weapon.laser-fence.deploy")
             {
@@ -2435,6 +2455,7 @@ namespace Game.Gameplay.Battle.Assembly
             var visual = new GameObject("Grounder Placed");
             _arenaObjects.Add(visual);
             _grounderVisuals[grounder.Id] = visual;
+            _deviceTeams[grounder.Id] = grounder.Team;
             visual.transform.localScale = Vector3.one * GrounderPlacedVisualScale;
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = LoadWeaponIconSprite(grounder.Weapon?.IconId ?? "grounder");
@@ -2459,6 +2480,7 @@ namespace Game.Gameplay.Battle.Assembly
             var visual = new GameObject("Force Field Placed");
             _arenaObjects.Add(visual);
             _forceFieldVisuals[field.Id] = visual;
+            _deviceTeams[field.Id] = field.Team;
             visual.transform.position = field.Point;
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = LoadWeaponIconSprite("force_field_sphere");
@@ -2493,6 +2515,7 @@ namespace Game.Gameplay.Battle.Assembly
             _forceFieldVisuals.Remove(fieldId);
             _arenaObjects.Remove(visual);
             Destroy(visual);
+            RemoveDeviceHealthLabel(fieldId);
         }
 
         private void OnSimulationForceFieldAbsorbed(int fieldId, Vector2 point)
@@ -2549,6 +2572,75 @@ namespace Game.Gameplay.Battle.Assembly
             _grounderVisuals.Remove(grounderId);
             _arenaObjects.Remove(visual);
             Destroy(visual);
+            RemoveDeviceHealthLabel(grounderId);
+        }
+
+        /// <summary>A placed magnet or force field shows its health above it, like a droid.</summary>
+        private void OnSimulationPlacedDeviceHealthChanged(int deviceId, int health, int maxHealth)
+        {
+            if (!_deviceHealthLabels.TryGetValue(deviceId, out var label) || label == null)
+            {
+                var labelObject = new GameObject("Device Health");
+                _arenaObjects.Add(labelObject);
+                labelObject.transform.localScale = new Vector3(0.11f, 0.11f, 1f);
+                label = labelObject.AddComponent<TextMesh>();
+                label.alignment = TextAlignment.Center;
+                label.anchor = TextAnchor.MiddleCenter;
+                label.fontSize = 30;
+                label.fontStyle = FontStyle.Bold;
+                var font = Resources.Load<Font>("Fonts/Orbitron");
+                if (font != null)
+                {
+                    label.font = font;
+                    labelObject.GetComponent<MeshRenderer>().sharedMaterial = font.material;
+                }
+
+                labelObject.GetComponent<MeshRenderer>().sortingOrder = 33;
+                _deviceHealthLabels[deviceId] = label;
+            }
+
+            var team = _deviceTeams.TryGetValue(deviceId, out var owner) ? owner : BattleTeamId.Player;
+            label.color = team == BattleTeamId.Player ? new Color(0.06f, 1f, 0.10f, 1f) : new Color(1f, 0.05f, 0.03f, 1f);
+            label.text = Mathf.Max(0, health).ToString();
+            PlaceDeviceHealthLabel(deviceId);
+        }
+
+        private void PlaceDeviceHealthLabel(int deviceId)
+        {
+            if (!_deviceHealthLabels.TryGetValue(deviceId, out var label) || label == null)
+            {
+                return;
+            }
+
+            SpriteRenderer device = null;
+            if (_grounderVisuals.TryGetValue(deviceId, out var grounder) && grounder != null)
+            {
+                device = grounder.GetComponent<SpriteRenderer>();
+            }
+            else if (_forceFieldVisuals.TryGetValue(deviceId, out var field) && field != null)
+            {
+                device = field.transform.Find("Force Field Device")?.GetComponent<SpriteRenderer>();
+            }
+
+            if (device != null)
+            {
+                // Just over the device, below the droid's own number.
+                label.transform.position = new Vector3(device.bounds.center.x, device.bounds.max.y + 0.08f, 0f);
+            }
+        }
+
+        private void RemoveDeviceHealthLabel(int deviceId)
+        {
+            _deviceTeams.Remove(deviceId);
+            if (_deviceHealthLabels.TryGetValue(deviceId, out var label))
+            {
+                _deviceHealthLabels.Remove(deviceId);
+                if (label != null)
+                {
+                    _arenaObjects.Remove(label.gameObject);
+                    Destroy(label.gameObject);
+                }
+            }
         }
 
         private void OnSimulationLaserFenceNodeDeployed(LaserFenceNodeDeployedEvent node)
@@ -2744,6 +2836,23 @@ namespace Game.Gameplay.Battle.Assembly
                 return;
             }
 
+            // A magnet or a force field whose ground was blown away drops with it (its art stands on the point).
+            if (_grounderVisuals.TryGetValue(groundObject.ObjectId, out var grounderVisual) && grounderVisual != null)
+            {
+                var renderer = grounderVisual.GetComponent<SpriteRenderer>();
+                grounderVisual.transform.position = groundObject.Point
+                    + Vector2.up * GroundStandingLift(renderer != null ? renderer.sprite : null, GrounderPlacedVisualScale);
+                PlaceDeviceHealthLabel(groundObject.ObjectId);
+                return;
+            }
+
+            if (_forceFieldVisuals.TryGetValue(groundObject.ObjectId, out var fieldVisual) && fieldVisual != null)
+            {
+                fieldVisual.transform.position = groundObject.Point;
+                PlaceDeviceHealthLabel(groundObject.ObjectId);
+                return;
+            }
+
             if (!_mineVisuals.TryGetValue(groundObject.ObjectId, out var visual) || visual == null)
             {
                 return;
@@ -2868,7 +2977,8 @@ namespace Game.Gameplay.Battle.Assembly
                 effect.ImpactPoint,
                 effect.TravelSeconds,
                 effect.LifetimeSeconds);
-            visual.transform.localScale = Vector3.one * 0.072f;
+            // Half the former size: the incendiary grenade now throws twice as many smaller drops.
+            visual.transform.localScale = Vector3.one * (effect.Weapon?.WeaponId == "weapon.incendiary-grenade" ? 0.036f : 0.072f);
             _firePuddleVisuals[effect.PuddleId] = mover;
             Destroy(visual, effect.TravelSeconds + effect.LifetimeSeconds + 0.25f);
         }
@@ -2960,7 +3070,8 @@ namespace Game.Gameplay.Battle.Assembly
             return weapon.WeaponId switch
             {
                 "weapon.blaster-caset" => Vector3.one * (diameter * 0.42f),
-                "weapon.ion-shotgun" => Vector3.one * 0.02f,
+                // The pellets fly the rail rifle's bolt skin at its size.
+                "weapon.ion-shotgun" => Vector3.one * 0.0145f,
                 // blaster_shot is 1254 px wide (opaque bolt 781x241 px): this scale gives a bolt about 0.035 world units thick, close to a shotgun pellet.
                 "weapon.rail-rifle" => Vector3.one * 0.0145f,
                 "weapon.impulse" => Vector3.one * (diameter * 0.40572f),
@@ -3031,6 +3142,7 @@ namespace Game.Gameplay.Battle.Assembly
                 // it was fired from the character.
                 "weapon.blaster-caset" => "blaster_shot",
                 "weapon.rail-rifle" => "blaster_shot",
+                "weapon.ion-shotgun" => "blaster_shot",
                 "weapon.impulse" => "impulse_shot",
                 "weapon.mortira" => "mortira_shot",
                 "weapon.guardian-drone" => "mortira_shot",
@@ -3191,6 +3303,17 @@ namespace Game.Gameplay.Battle.Assembly
                     && !(weapon?.WeaponId == "weapon.teleport" && _simulation.CanTriggerTeleportEarly())))
             {
                 ResetAimState();
+            }
+            else if (weapon?.WeaponId is "weapon.hopping-grenade" or "weapon.teleport")
+            {
+                // The aim is kept for the follow-up press (a jump, the early trigger) but no longer drawn.
+                HideTrajectoryPreview();
+            }
+
+            if (team == BattleTeamId.Player && weapon?.WeaponId == TitaniumBarrierRules.WeaponId)
+            {
+                // The next beam starts over the droid again, not where the reset aim left it.
+                _barrierPlacementInitialized = false;
             }
             EmitFeedback(BattleFeedbackEventType.ShotFired);
         }
@@ -5141,8 +5264,11 @@ namespace Game.Gameplay.Battle.Assembly
             var move = new Vector2(_controlledUiHorizontalInput, -_ropeVerticalInput);
             if (move.sqrMagnitude > 0.01f)
             {
-                var candidate = pointNow + move.normalized * (1.65f * Time.deltaTime);
-                if (_battleTerrain?.Grid.IsSolidWorld(candidate) != true)
+                // 50% faster than the former 1.65 (owner decision 2026-10-09). The preview does not slide into ground
+                // or into a beam already placed, unless it is already stuck in one and moving out.
+                var candidate = pointNow + move.normalized * (2.5f * Time.deltaTime);
+                if (IsTitaniumBarrierPreviewClear(candidate, _aimState.Direction)
+                    || !IsTitaniumBarrierPreviewClear(pointNow, _aimState.Direction))
                 {
                     SetTitaniumBarrierPlacement(candidate, _aimState.Direction);
                     pointNow = candidate;
@@ -5163,6 +5289,33 @@ namespace Game.Gameplay.Battle.Assembly
             {
                 SetTitaniumBarrierPlacement(pointNow, direction.normalized);
             }
+        }
+
+        /// <summary>The beam's shape at this spot overlaps neither ground nor a beam placed before (both are solid cells).</summary>
+        private bool IsTitaniumBarrierPreviewClear(Vector2 center, Vector2 direction)
+        {
+            var grid = _battleTerrain?.Grid;
+            if (grid == null || _simulation == null)
+            {
+                return true;
+            }
+
+            var axisX = direction.sqrMagnitude > 0.001f ? direction.normalized : Vector2.right;
+            var axisY = new Vector2(-axisX.y, axisX.x);
+            var size = _simulation.TitaniumBarrierBaseSize * _barrierPlacementScale * 0.8f;
+            for (var i = 0; i <= 8; i++)
+            {
+                for (var j = 0; j <= 2; j++)
+                {
+                    var point = center + axisX * ((i / 8f - 0.5f) * size.x) + axisY * ((j / 2f - 0.5f) * size.y);
+                    if (grid.IsSolidWorld(point))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private void SetTitaniumBarrierPlacement(Vector2 point, Vector2 direction)
@@ -5200,6 +5353,9 @@ namespace Game.Gameplay.Battle.Assembly
 
             _barrierPlacementPreview.SetActive(true);
             _barrierPlacementPreview.transform.position = point;
+            // Red where the beam cannot stand (in ground or over another beam).
+            _barrierPlacementPreview.GetComponent<SpriteRenderer>().color =
+                IsTitaniumBarrierPreviewClear(point, _aimState.Direction) ? Color.white : new Color(1f, 0.35f, 0.35f, 0.85f);
             var previewSprite = _barrierPlacementPreview.GetComponent<SpriteRenderer>().sprite;
             var size = _simulation.TitaniumBarrierBaseSize * _barrierPlacementScale;
             _barrierPlacementPreview.transform.localScale = new Vector3(size.x / previewSprite.bounds.size.x,
@@ -5865,7 +6021,8 @@ namespace Game.Gameplay.Battle.Assembly
                 "weapon.freeze" => (Vector2.one, new Vector2(-0.55f, 0.42f), 10f),
                 "weapon.fire-gun" => (Vector2.one * 1.5f, new Vector2(-0.68f, 0.42f), 0f),
                 "weapon.missle" => (Vector2.one * 1.5f, new Vector2(-0.54f, 0.30f), 0f),
-                "weapon.plasma-sword" => (Vector2.one * 2f, new Vector2(-0.56f, 0.45f), 0f),
+                // Raised and moved forward so the hand grips the hilt rather than the middle of the blade.
+                "weapon.plasma-sword" => (Vector2.one * 2f, new Vector2(-0.36f, 0.68f), 0f),
                 "weapon.rail-rifle" => (new Vector2(1f, 1.5f), new Vector2(-0.62f, 0.39f), 0f),
                 "weapon.heal" => (Vector2.one, new Vector2(-0.54f, 0.38f), 180f),
                 "weapon.fpv-drone" => (Vector2.one, new Vector2(-0.28f, 1.08f), 0f),

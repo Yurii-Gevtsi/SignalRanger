@@ -459,7 +459,7 @@ namespace Game.Tests.EditMode.Gameplay
         }
 
         [Test]
-        public void IonShotgun_FlyingPelletsAreTinyBlackCirclesWithoutShotArt()
+        public void IonShotgun_FlyingPelletsUseTheRailBoltSkin()
         {
             var root = new GameObject("Ion Shotgun Pellet Visual Test");
             try
@@ -476,11 +476,13 @@ namespace Game.Tests.EditMode.Gameplay
                 Assert.That(colorMethod, Is.Not.Null);
                 Assert.That(scaleMethod, Is.Not.Null);
 
-                Assert.That(spriteMethod.Invoke(controller, new object[] { null, shotgun }), Is.Null);
-                Assert.That((Color)colorMethod.Invoke(controller, new object[] { shotgun }), Is.EqualTo(Color.black));
+                // Owner decision 2026-10-09: the old 0.02 black circle was invisible; pellets fly the rail bolt skin.
+                var sprite = (Sprite)spriteMethod.Invoke(controller, new object[] { null, shotgun });
+                Assert.That(sprite, Is.Not.Null);
+                Assert.That(sprite.texture, Is.EqualTo(Resources.Load<Texture2D>("UI/Weapons/blaster_shot")));
                 Assert.That((Vector3)scaleMethod.Invoke(null,
                     new object[] { shotgun, shotgun.ProjectileRadius * 2f }),
-                    Is.EqualTo(Vector3.one * 0.02f));
+                    Is.EqualTo(Vector3.one * 0.0145f));
             }
             finally
             {

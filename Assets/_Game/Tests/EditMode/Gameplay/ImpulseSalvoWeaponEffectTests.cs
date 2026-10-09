@@ -124,7 +124,7 @@ namespace Game.Tests.EditMode.Gameplay
             }
         }
 
-        [TestCase("weapon.bur", WeaponUpgradePath.Radius, 3.25f)]
+        [TestCase("weapon.bur", WeaponUpgradePath.Radius, 4.875f)]
         [TestCase("weapon.impulse", WeaponUpgradePath.Aim, 70f)]
         [TestCase("weapon.rope", WeaponUpgradePath.Aim, 45f)]
         [TestCase("weapon.rope", WeaponUpgradePath.Radius, 8f)]

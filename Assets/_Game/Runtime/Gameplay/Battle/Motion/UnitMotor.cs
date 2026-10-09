@@ -90,7 +90,8 @@ namespace Game.Gameplay.Battle.Motion
         public const float HoverRiseSpeed = 4.5f;
 
         /// <summary>World units per second of the directional control while hovering.</summary>
-        public const float HoverMoveSpeed = 3.2f;
+        // 50% faster than the former 3.2 under the arrow buttons (owner decision 2026-10-09).
+        public const float HoverMoveSpeed = 4.8f;
 
         /// <summary>
         /// Jet-trail scale over the designed jump arc: it grows toward the apex,
