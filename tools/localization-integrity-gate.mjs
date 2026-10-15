@@ -73,7 +73,9 @@ function walk(directory, predicate, output = []) {
 function stagedAddedLines() {
     const diff = execFileSync("git", ["diff", "--cached", "--unified=0", "--", "Assets/_Game/Runtime"], {
         cwd: root,
-        encoding: "utf-8"
+        encoding: "utf-8",
+        // Large refactors (moved files) produce diffs well past the 1 MB default.
+        maxBuffer: 256 * 1024 * 1024
     });
     return diff.split(/\r?\n/)
         .filter(line => line.startsWith("+") && !line.startsWith("+++"))
