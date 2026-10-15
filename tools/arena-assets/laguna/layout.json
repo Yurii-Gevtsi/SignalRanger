@@ -1,0 +1,39 @@
+{
+  "arena_id": "arena.laguna",
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "crop": [
+        0,
+        179,
+        874,
+        1048
+      ],
+      "sorting_order": -8
+    },
+    {
+      "id": "center",
+      "crop": [
+        596,
+        406,
+        1444,
+        1050
+      ],
+      "sorting_order": -7
+    },
+    {
+      "id": "right",
+      "crop": [
+        1156,
+        143,
+        2048,
+        1055
+      ],
+      "sorting_order": -6
+    }
+  ]
+}

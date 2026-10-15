@@ -1,0 +1,509 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "e1d53b48f2fb4c279138a29004669517",
+    "status": "succeeded",
+    "mode": "PlayMode",
+    "started_unix_ms": 1791358294497,
+    "finished_unix_ms": 1791358526234,
+    "last_update_unix_ms": 1791358526234,
+    "progress": {
+      "completed": 52,
+      "total": 52,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791358521666,
+      "last_finished_test_full_name": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Virus_ProductionSceneShowsTheVirusIconOnTheInfectedDroidOnly",
+      "last_finished_unix_ms": 1791358525887,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "PlayMode",
+      "summary": {
+        "total": 52,
+        "passed": 52,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 213.0515868,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "Bomber_ProductionSceneShowsTheCopterAndVerticalBombsAndBlastsOnTheGround",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Bomber_ProductionSceneShowsTheCopterAndVerticalBombsAndBlastsOnTheGround",
+          "state": "Passed",
+          "durationSeconds": 11.8910222,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Boost_ProductionSceneLiftsTheDroidSteersItAndASecondPressDropsIt",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Boost_ProductionSceneLiftsTheDroidSteersItAndASecondPressDropsIt",
+          "state": "Passed",
+          "durationSeconds": 4.7016076,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Carrier_ProductionSceneAnimatesTheCopterAndDrawsAHeldMineOverIt",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Carrier_ProductionSceneAnimatesTheCopterAndDrawsAHeldMineOverIt",
+          "state": "Passed",
+          "durationSeconds": 4.2367822,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(False)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(False)",
+          "state": "Passed",
+          "durationSeconds": 4.2760386,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(True)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ElectricHarpoon_ProductionSceneShowsTheHookSkinForTheBaseAndPurchasedBody(True)",
+          "state": "Passed",
+          "durationSeconds": 4.1443645,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_ProductionSceneShowsTheSphereAbsorbsAnEnemyChargeAndRemovesItAfterTwoEnemyTurns",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ForceField_ProductionSceneShowsTheSphereAbsorbsAnEnemyChargeAndRemovesItAfterTwoEnemyTurns",
+          "state": "Passed",
+          "durationSeconds": 4.2752003,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_ProductionScenePlacesTheMagnetSkinHandsTheTurnOverAndRemovesItAfterTwoEnemyTurns",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Grounder_ProductionScenePlacesTheMagnetSkinHandsTheTurnOverAndRemovesItAfterTwoEnemyTurns",
+          "state": "Passed",
+          "durationSeconds": 4.1479787,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GuardianDrone_ProductionSceneHidesAStealthDroneOnlyFromTheEnemyObserver",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.GuardianDrone_ProductionSceneHidesAStealthDroneOnlyFromTheEnemyObserver",
+          "state": "Passed",
+          "durationSeconds": 2.0904646,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "LaserFence_ProductionSceneDrawsSmallHullsAndALongBeamThatVanishesWithAWreckedHull",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.LaserFence_ProductionSceneDrawsSmallHullsAndALongBeamThatVanishesWithAWreckedHull",
+          "state": "Passed",
+          "durationSeconds": 4.1007698,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "LavaGun_ProductionSceneThrowsAnimatedDropsBurnsTheDroidWithTheSharedStatusAndEndsTheTurn",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.LavaGun_ProductionSceneThrowsAnimatedDropsBurnsTheDroidWithTheSharedStatusAndEndsTheTurn",
+          "state": "Passed",
+          "durationSeconds": 5.2144006,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(0)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(0)",
+          "state": "Passed",
+          "durationSeconds": 4.216248,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(1)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(1)",
+          "state": "Passed",
+          "durationSeconds": 4.57873,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(2)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(2)",
+          "state": "Passed",
+          "durationSeconds": 4.0620911,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(3)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(3)",
+          "state": "Passed",
+          "durationSeconds": 4.182043,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(4)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(4)",
+          "state": "Passed",
+          "durationSeconds": 4.0547171,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(5)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(5)",
+          "state": "Passed",
+          "durationSeconds": 4.2296124,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Nuclear_ProductionSceneDropsTheBombNoseDownAfterTheEnemyTurn",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Nuclear_ProductionSceneDropsTheBombNoseDownAfterTheEnemyTurn",
+          "state": "Passed",
+          "durationSeconds": 4.0149824,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OrbitalRocket_ProductionSceneMarkerDraftConfirmAndDelayedStrike",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.OrbitalRocket_ProductionSceneMarkerDraftConfirmAndDelayedStrike",
+          "state": "Passed",
+          "durationSeconds": 4.2646651,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RailRifle_ProductionSceneFiresASmallBoltAlongTheShotAndItLeavesTheArena",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.RailRifle_ProductionSceneFiresASmallBoltAlongTheShotAndItLeavesTheArena",
+          "state": "Passed",
+          "durationSeconds": 4.1703196,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairJammer_ProductionSceneShowsTheNoRepairIconOnTheAffectedDroid",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.RepairJammer_ProductionSceneShowsTheNoRepairIconOnTheAffectedDroid",
+          "state": "Passed",
+          "durationSeconds": 4.6579122,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.bur\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.bur\")",
+          "state": "Passed",
+          "durationSeconds": 2.5252787,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.impulse\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.impulse\")",
+          "state": "Passed",
+          "durationSeconds": 2.118017,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.granata\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.granata\")",
+          "state": "Passed",
+          "durationSeconds": 2.2023696,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.rope\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.rope\")",
+          "state": "Passed",
+          "durationSeconds": 1.9725561,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.plasma-sword\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.plasma-sword\")",
+          "state": "Passed",
+          "durationSeconds": 2.0875682,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.ion-shotgun\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.ion-shotgun\")",
+          "state": "Passed",
+          "durationSeconds": 2.1219413,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.c4\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.c4\")",
+          "state": "Passed",
+          "durationSeconds": 1.954536,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.mine\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.mine\")",
+          "state": "Passed",
+          "durationSeconds": 1.9897859,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.heal\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.heal\")",
+          "state": "Passed",
+          "durationSeconds": 2.1360533,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.titanium-disc\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.titanium-disc\")",
+          "state": "Passed",
+          "durationSeconds": 2.1959263,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.bur-rocket\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.bur-rocket\")",
+          "state": "Passed",
+          "durationSeconds": 13.020992,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.titanium-barrier\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.titanium-barrier\")",
+          "state": "Passed",
+          "durationSeconds": 4.3181596,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.mortira\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelectionAndFire_CreateTheCorrectBattleEffect(\"weapon.mortira\")",
+          "state": "Passed",
+          "durationSeconds": 2.2700792,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelfDestruct_ProductionSceneMarksTheDroidWithAnIconAndKeepsTheTurn",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SelfDestruct_ProductionSceneMarksTheDroidWithAnIconAndKeepsTheTurn",
+          "state": "Passed",
+          "durationSeconds": 3.8681511,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SkyHook_ProductionSceneShowsTheUprightRocketWithItsTailAndItBlastsAtTheTop",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SkyHook_ProductionSceneShowsTheUprightRocketWithItsTailAndItBlastsAtTheTop",
+          "state": "Passed",
+          "durationSeconds": 4.3003793,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SpiderMine_ProductionSceneAnimatesTheBaseOrThePurchasedBodyAndItBlasts(False)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SpiderMine_ProductionSceneAnimatesTheBaseOrThePurchasedBodyAndItBlasts(False)",
+          "state": "Passed",
+          "durationSeconds": 4.3674,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SpiderMine_ProductionSceneAnimatesTheBaseOrThePurchasedBodyAndItBlasts(True)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.SpiderMine_ProductionSceneAnimatesTheBaseOrThePurchasedBodyAndItBlasts(True)",
+          "state": "Passed",
+          "durationSeconds": 4.0441789,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin(False)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin(False)",
+          "state": "Passed",
+          "durationSeconds": 4.0030965,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin(True)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.StickyGrenade_ProductionSceneThrowsTheBaseOrPurchasedBodySkin(True)",
+          "state": "Passed",
+          "durationSeconds": 4.2991092,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt",
+          "state": "Passed",
+          "durationSeconds": 4.8757287,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.cryo-grenade:cryo_grenade\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.cryo-grenade:cryo_grenade\")",
+          "state": "Passed",
+          "durationSeconds": 4.3221073,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.hopping-grenade:hopping_grenade\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.hopping-grenade:hopping_grenade\")",
+          "state": "Passed",
+          "durationSeconds": 4.4817761,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.incendiary-grenade:incendiary_grenade\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.incendiary-grenade:incendiary_grenade\")",
+          "state": "Passed",
+          "durationSeconds": 4.7562824,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.missle:missle_fly\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.missle:missle_fly\")",
+          "state": "Passed",
+          "durationSeconds": 4.2694687,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.emp:emp_shot\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.emp:emp_shot\")",
+          "state": "Passed",
+          "durationSeconds": 4.3080554,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.freeze:ice_shot\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.freeze:ice_shot\")",
+          "state": "Passed",
+          "durationSeconds": 4.3649889,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.toxic:toxic_shot\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.toxic:toxic_shot\")",
+          "state": "Passed",
+          "durationSeconds": 4.1313401,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.swap-jump:teleport_5_10_A\")",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.ThrownGrenadeBody_ProductionSceneShowsTheWeaponBodyAndItDetonates(\"weapon.swap-jump:teleport_5_10_A\")",
+          "state": "Passed",
+          "durationSeconds": 4.3991781,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(-1)",
+          "state": "Passed",
+          "durationSeconds": 2.659637,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(0)",
+          "state": "Passed",
+          "durationSeconds": 4.2090903,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)",
+          "state": "Passed",
+          "durationSeconds": 4.1970072,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Virus_ProductionSceneShowsTheVirusIconOnTheInfectedDroidOnly",
+          "fullName": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Virus_ProductionSceneShowsTheVirusIconOnTheInfectedDroidOnly",
+          "state": "Passed",
+          "durationSeconds": 4.2210774,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}

@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "4136c93e83bc4332bffa9826eb95b254",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791304691212,
+    "finished_unix_ms": 1791304700057,
+    "last_update_unix_ms": 1791304700057,
+    "progress": {
+      "completed": 204,
+      "total": 204,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791304699867,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers",
+      "last_finished_unix_ms": 1791304699867,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_ClimbsSmoothlyOverAnObstacleOnItsWayToTheTarget",
+          "message": "  it flew over the wall and hit the droid\r\n  Expected: less than 100\r\n  But was:  100\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_KeepsSteeringToTheTargetWithBoundedTurnRateAndHurtsButDoesNotKillAHealthyDroid",
+          "message": "  it homed in on the target\r\n  Expected: less than 100\r\n  But was:  100\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

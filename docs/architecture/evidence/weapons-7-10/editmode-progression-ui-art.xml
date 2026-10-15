@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="44" result="Passed" total="44" passed="44" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:02Z" duration="1,035411">
+  <test-suite type="TestSuite" id="1025" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="676" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:02Z" duration="1.035411" total="44" passed="44" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1814" name="Game.Tests.EditMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.EditMode.dll" runstate="Runnable" testcasecount="676" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:02Z" duration="0.930976" total="44" passed="44" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="23304" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1815" name="Game" fullname="Game" runstate="Runnable" testcasecount="676" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:02Z" duration="0.926915" total="44" passed="44" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1816" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="676" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:02Z" duration="0.820440" total="44" passed="44" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1817" name="EditMode" fullname="Game.Tests.EditMode" runstate="Runnable" testcasecount="676" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:02Z" duration="0.819592" total="44" passed="44" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1828" name="App" fullname="Game.Tests.EditMode.App" runstate="Runnable" testcasecount="46" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.233257" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1775" name="WorkshopBaseStatDescriptionKeyResolverTests" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" testcasecount="28" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.232383" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1780" name="GrounderCore_DescribesAddedDuration" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.GrounderCore_DescribesAddedDuration" methodname="GrounderCore_DescribesAddedDuration" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="502305236" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.005998" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1805" name="Radius_UsesTheGenericDescriptionWhenNoOverrideExists" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheGenericDescriptionWhenNoOverrideExists" methodname="Radius_UsesTheGenericDescriptionWhenNoOverrideExists" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1876314543" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000615" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1804" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" testcasecount="23" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.011410" total="23" passed="23" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1781" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.rope&quot;,&quot;architect.detail.radius.rope&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.rope&quot;,&quot;architect.detail.radius.rope&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="476449821" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.001095" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1782" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.ion-shotgun&quot;,&quot;architect.detail.radius.ionShotgun&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.ion-shotgun&quot;,&quot;architect.detail.radius.ionShotgun&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1402158722" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000331" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1783" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.titanium-disc&quot;,&quot;architect.detail.radius.titaniumDisc&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.titanium-disc&quot;,&quot;architect.detail.radius.titaniumDisc&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="980730233" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000213" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1784" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.bur&quot;,&quot;architect.detail.radius.drillRocket&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.bur&quot;,&quot;architect.detail.radius.drillRocket&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1613640310" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000195" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1785" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.bur-rocket&quot;,&quot;architect.detail.radius.drillRocket&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.bur-rocket&quot;,&quot;architect.detail.radius.drillRocket&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1059695141" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000159" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1786" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.boost&quot;,&quot;architect.detail.radius.boost&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.boost&quot;,&quot;architect.detail.radius.boost&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1238987613" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000194" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1787" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.guardian-drone&quot;,&quot;architect.detail.radius.guardianDrone&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.guardian-drone&quot;,&quot;architect.detail.radius.guardianDrone&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="992482963" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000250" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1788" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.spider-mine&quot;,&quot;architect.detail.radius.spiderMine&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.spider-mine&quot;,&quot;architect.detail.radius.spiderMine&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="993341612" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000380" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1789" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.emp&quot;,&quot;architect.detail.radius.emp&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.emp&quot;,&quot;architect.detail.radius.emp&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="496938712" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000329" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1790" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.titanium-barrier&quot;,&quot;architect.detail.radius.titaniumBarrier&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.titanium-barrier&quot;,&quot;architect.detail.radius.titaniumBarrier&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1598044597" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000332" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1791" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.electric-harpoon&quot;,&quot;architect.detail.radius.electricHarpoon&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.electric-harpoon&quot;,&quot;architect.detail.radius.electricHarpoon&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="97732963" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000218" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1792" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.hopping-grenade&quot;,&quot;architect.detail.radius.hoppingGrenade&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.hopping-grenade&quot;,&quot;architect.detail.radius.hoppingGrenade&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="61478581" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000212" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1793" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.cryo-grenade&quot;,&quot;architect.detail.radius.cryoGrenade&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.cryo-grenade&quot;,&quot;architect.detail.radius.cryoGrenade&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="929639496" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000196" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1794" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.toxic&quot;,&quot;architect.detail.radius.toxic&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.toxic&quot;,&quot;architect.detail.radius.toxic&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="210961144" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000163" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1795" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.incendiary-grenade&quot;,&quot;architect.detail.radius.incendiaryGrenade&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.incendiary-grenade&quot;,&quot;architect.detail.radius.incendiaryGrenade&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1505217103" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000147" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1796" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.freeze&quot;,&quot;architect.detail.radius.cryoCannon&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.freeze&quot;,&quot;architect.detail.radius.cryoCannon&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1968360650" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000160" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1797" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.fire-gun&quot;,&quot;architect.detail.radius.lavaCannon&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.fire-gun&quot;,&quot;architect.detail.radius.lavaCannon&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1690565983" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000131" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1798" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.repair-jammer&quot;,&quot;architect.detail.radius.repairJammer&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.repair-jammer&quot;,&quot;architect.detail.radius.repairJammer&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1620418335" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000263" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1799" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.laser-fence&quot;,&quot;architect.detail.radius.laserFence&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.laser-fence&quot;,&quot;architect.detail.radius.laserFence&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1365900750" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000132" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1800" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.grounder&quot;,&quot;architect.detail.radius.grounder&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.grounder&quot;,&quot;architect.detail.radius.grounder&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1154066725" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000119" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1801" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.bomber&quot;,&quot;architect.detail.radius.bomber&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.bomber&quot;,&quot;architect.detail.radius.bomber&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="113848699" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000117" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1802" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.ufo-carrier&quot;,&quot;architect.detail.radius.transporter&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.ufo-carrier&quot;,&quot;architect.detail.radius.transporter&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="307594903" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000114" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1803" name="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.force-field&quot;,&quot;architect.detail.radius.forceField&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.Radius_UsesTheWeaponSpecificDescriptionWhenConfigured(&quot;weapon.force-field&quot;,&quot;architect.detail.radius.forceField&quot;)" methodname="Radius_UsesTheWeaponSpecificDescriptionWhenConfigured" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="2104933389" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000138" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1779" name="SharedBasePaths_UseTheirSharedDescriptionKeys" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.SharedBasePaths_UseTheirSharedDescriptionKeys" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.101457" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1776" name="SharedBasePaths_UseTheirSharedDescriptionKeys(Core,&quot;weapon.rope&quot;,&quot;architect.detail.coreDescription&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.SharedBasePaths_UseTheirSharedDescriptionKeys(Core,&quot;weapon.rope&quot;,&quot;architect.detail.coreDescription&quot;)" methodname="SharedBasePaths_UseTheirSharedDescriptionKeys" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="39938616" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000982" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1777" name="SharedBasePaths_UseTheirSharedDescriptionKeys(Aim,&quot;weapon.rope&quot;,&quot;architect.detail.aimDescription&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.SharedBasePaths_UseTheirSharedDescriptionKeys(Aim,&quot;weapon.rope&quot;,&quot;architect.detail.aimDescription&quot;)" methodname="SharedBasePaths_UseTheirSharedDescriptionKeys" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="117314410" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000219" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1778" name="SharedBasePaths_UseTheirSharedDescriptionKeys(Loadout,&quot;weapon.rope&quot;,&quot;architect.detail.loadoutDescription&quot;)" fullname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests.SharedBasePaths_UseTheirSharedDescriptionKeys(Loadout,&quot;weapon.rope&quot;,&quot;architect.detail.loadoutDescription&quot;)" methodname="SharedBasePaths_UseTheirSharedDescriptionKeys" classname="Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests" runstate="Runnable" seed="1490191209" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:01Z" duration="0.000163" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="1824" name="Gameplay" fullname="Game.Tests.EditMode.Gameplay" runstate="Runnable" testcasecount="402" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:02Z" duration="0.431945" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1613" name="NewWeaponArtResourceTests" fullname="Game.Tests.EditMode.Gameplay.NewWeaponArtResourceTests" classname="Game.Tests.EditMode.Gameplay.NewWeaponArtResourceTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:02Z" duration="0.297903" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1614" name="NewWeaponArt_IsImportedWithRealAlpha" fullname="Game.Tests.EditMode.Gameplay.NewWeaponArtResourceTests.NewWeaponArt_IsImportedWithRealAlpha" methodname="NewWeaponArt_IsImportedWithRealAlpha" classname="Game.Tests.EditMode.Gameplay.NewWeaponArtResourceTests" runstate="Runnable" seed="416272802" result="Passed" start-time="2026-09-28 07:54:01Z" end-time="2026-09-28 07:54:02Z" duration="0.190229" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1691" name="WeaponDefinitionTests" fullname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests" classname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.037264" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1696" name="CreateAimSettings_UsesWeaponPowerRange" fullname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests.CreateAimSettings_UsesWeaponPowerRange" methodname="CreateAimSettings_UsesWeaponPowerRange" classname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests" runstate="Runnable" seed="440782649" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.003124" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1692" name="PrototypeWeapons_AreValidAndHaveFortyOneDistinctIds" fullname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests.PrototypeWeapons_AreValidAndHaveFortyOneDistinctIds" methodname="PrototypeWeapons_AreValidAndHaveFortyOneDistinctIds" classname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests" runstate="Runnable" seed="50187310" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.012306" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1695" name="PrototypeWeapons_CannotOneShotFullHealthUnit" fullname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests.PrototypeWeapons_CannotOneShotFullHealthUnit" methodname="PrototypeWeapons_CannotOneShotFullHealthUnit" classname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests" runstate="Runnable" seed="254174171" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.003513" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1694" name="PrototypeWeapons_ContainNoRetiredOrDropOnlyEntries" fullname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests.PrototypeWeapons_ContainNoRetiredOrDropOnlyEntries" methodname="PrototypeWeapons_ContainNoRetiredOrDropOnlyEntries" classname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests" runstate="Runnable" seed="1591398422" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.006484" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1693" name="PrototypeWeapons_CoverTheRequiredTacticalRoles" fullname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests.PrototypeWeapons_CoverTheRequiredTacticalRoles" methodname="PrototypeWeapons_CoverTheRequiredTacticalRoles" classname="Game.Tests.EditMode.Gameplay.WeaponDefinitionTests" runstate="Runnable" seed="603571457" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.008256" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1713" name="WeaponPresentationTextTests" fullname="Game.Tests.EditMode.Gameplay.WeaponPresentationTextTests" classname="Game.Tests.EditMode.Gameplay.WeaponPresentationTextTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.094665" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1714" name="PrototypeWeapons_HaveReadableRoleAndHintPresentation" fullname="Game.Tests.EditMode.Gameplay.WeaponPresentationTextTests.PrototypeWeapons_HaveReadableRoleAndHintPresentation" methodname="PrototypeWeapons_HaveReadableRoleAndHintPresentation" classname="Game.Tests.EditMode.Gameplay.WeaponPresentationTextTests" runstate="Runnable" seed="294108021" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.057505" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1715" name="PrototypeWeapons_UseMechanicCategoryLabels" fullname="Game.Tests.EditMode.Gameplay.WeaponPresentationTextTests.PrototypeWeapons_UseMechanicCategoryLabels" methodname="PrototypeWeapons_UseMechanicCategoryLabels" classname="Game.Tests.EditMode.Gameplay.WeaponPresentationTextTests" runstate="Runnable" seed="1536557940" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.035426" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestSuite" id="1819" name="Progression" fullname="Game.Tests.EditMode.Progression" runstate="Runnable" testcasecount="48" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.046301" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1080" name="WeaponProgressionCatalogTests" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.044564" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1086" name="BaseTthCannotBePurchasedBeyondItsCanonicalLimit" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.BaseTthCannotBePurchasedBeyondItsCanonicalLimit" methodname="BaseTthCannotBePurchasedBeyondItsCanonicalLimit" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="922997314" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.013643" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1081" name="CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" methodname="CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1335823753" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.011889" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1083" name="Grounder_AllowsFourCoreAndFourRadiusUpgrades" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_AllowsFourCoreAndFourRadiusUpgrades" methodname="Grounder_AllowsFourCoreAndFourRadiusUpgrades" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="232803185" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.000691" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1084" name="Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" methodname="Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="2006321363" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.001868" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1082" name="RepairJammer_AllowsExactlyTwoDurationUpgrades" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades" methodname="RepairJammer_AllowsExactlyTwoDurationUpgrades" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1767668392" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.000542" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1088" name="ResetClearsBothBaseAndSpecialPurchaseHistory" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.ResetClearsBothBaseAndSpecialPurchaseHistory" methodname="ResetClearsBothBaseAndSpecialPurchaseHistory" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1991752095" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.003297" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1087" name="SelectedMortarSpecialCanBePurchasedFourTimesAndThenStops" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.SelectedMortarSpecialCanBePurchasedFourTimesAndThenStops" methodname="SelectedMortarSpecialCanBePurchasedFourTimesAndThenStops" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="543925539" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.007205" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1085" name="UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" methodname="UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1700934002" result="Passed" start-time="2026-09-28 07:54:02Z" end-time="2026-09-28 07:54:02Z" duration="0.002125" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

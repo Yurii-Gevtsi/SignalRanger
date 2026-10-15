@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "message": "Test job started.",
+  "error": null,
+  "data": {
+    "job_id": "b08f3716a82c4c8980fa29500c8e69ab",
+    "status": "running",
+    "mode": "EditMode",
+    "include_details": false,
+    "include_failed_tests": true
+  },
+  "hint": null
+}

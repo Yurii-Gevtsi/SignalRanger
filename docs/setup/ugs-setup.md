@@ -1,0 +1,298 @@
+# UGS: покрокове налаштування
+
+Практична інструкція до `docs/architecture/backend-online-services.md`.
+Виконується на етапі 1 (фундамент онлайну); секції IAP/Economy — на етапі 1.5,
+PvP — на етапі 2.
+
+## 0. Що вже готово в коді (2026-07-23)
+
+Клієнт повністю підготовлений; після створення акаунтів достатньо
+**залінкувати Project ID** — далі все підхоплюється саме:
+
+- пакети `services.core` 1.18.0, `authentication` 3.7.3, `cloudsave` 3.4.1,
+  `remote-config` 4.2.5 вже в `Packages/manifest.json`;
+- збірка `Game.Infrastructure.Ugs` (адаптери) компілюється лише за наявності
+  пакетів (defineConstraints) і сама стартує через
+  `UgsOnlineBootstrap` (RuntimeInitializeOnLoad): ініціалізація UGS
+  (environment `development` у dev-білдах/редакторі, `production` у релізі),
+  анонімний вхід, підміна no-op сервісів живими;
+- без залінкованого проєкту/мережі ініціалізація тихо падає у warning
+  і гра лишається офлайн — нічого не ламається;
+- дзеркало сейву: пуш у Cloud Save (ключ `save`) після кожного локального
+  збереження, зведення при вході за `CloudSyncPolicy`
+  (новіший виграє; розбіжність >24h → рішення гравця, поки що консервативний no-op);
+- Remote Config читається через наявний `IRemoteConfigService`.
+
+**Хендофф-чекліст: що потрібно від вас після створення акаунтів**
+
+1. Unity Cloud: створити org + проєкт → в Unity Editor
+   **Project Settings → Services** увійти й залінкувати проєкт (це все;
+   Project ID запишеться в `ProjectSettings/ProjectVersion`-сусідні файли
+   і потрапить у git звичайним комітом).
+2. Dashboard: створити environment `development`, увімкнути
+   Authentication, Cloud Save, Remote Config (див. §1, §4–6).
+3. Додати платіжну картку + алерти free tier (§1.4).
+4. (пізніше, для GPGS-автовходу) Play Console + Web Client ID/Secret → §4.2;
+   тоді ж у код додається `LinkWithGooglePlayGamesAsync` — місце позначене
+   в `UgsAuthService`.
+5. (пізніше, етап 1.5) service account для CI → §10; ключі **не** в репозиторій
+   (патерни вже в `.gitignore`).
+
+## 1. Unity Cloud проєкт
+
+1. [cloud.unity.com](https://cloud.unity.com) → створити організацію (якщо нема) і проєкт.
+2. В Unity Editor: **Project Settings → Services** → залінкувати проєкт
+   (з'явиться Project ID — він публічний, у репозиторії йому бути можна).
+3. **Dashboard → Projects → Environments**: створити environment `development`
+   (дефолтний `production` вже є). Уся розробка і тести — тільки в `development`.
+4. **Організація → Billing**: додати платіжну картку (без неї перевищення
+   free tier може загейтити API) і ввімкнути алерти free tier (75% / 100%).
+
+## 2. Пакети в Unity
+
+Через Package Manager (етап 1):
+
+- `com.unity.services.core` — базова ініціалізація
+- `com.unity.services.authentication`
+- `com.unity.services.cloudsave`
+- `com.unity.remote-config`
+- `com.unity.services.deployment` — деплой конфігів із репозиторію
+
+Етап 1.5: `com.unity.purchasing` (Unity IAP), `com.unity.services.economy`,
+`com.unity.services.cloudcode`.
+
+Етап 2: `com.unity.services.lobby`, `com.unity.services.relay`,
+`com.unity.netcode.gameobjects`, (опц.) `com.unity.services.matchmaker`.
+
+## 3. Ініціалізація в коді
+
+У `GameBootstrapper`, до будь-якого використання сервісів:
+
+```csharp
+var options = new InitializationOptions();
+options.SetEnvironmentName(BuildConfig.IsRelease ? "production" : "development");
+await UnityServices.InitializeAsync(options);
+```
+
+Потім автентифікація (див. нижче), потім усі інші UGS-виклики.
+Помилка ініціалізації/відсутність мережі → composition root збирає
+no-op реалізації, гра працює офлайн.
+
+## 4. Authentication
+
+### 4.1 Анонімний вхід (база, працює одразу)
+
+Dashboard → **Authentication** → увімкнути. У коді:
+
+```csharp
+await AuthenticationService.Instance.SignInAnonymouslyAsync();
+```
+
+Session token кешується на пристрої — повторні запуски повертають
+того самого гравця без жодних дій. Нічого більше вмикати не треба.
+
+### 4.2 Автоматичний вхід Google Play Games (GPGS v2)
+
+Це той самий «гра сама прив'язала мій Google Play акаунт при першому
+запуску». Auto sign-in робить сам GPGS SDK при старті гри; наш код лише
+підхоплює результат і обмінює його на UGS-сесію.
+
+**Google Play Console:**
+
+1. Створити застосунок (якщо ще нема) → **Grow → Play Games Services →
+   Setup and management → Configuration** → створити проєкт PGS
+   (він прив'яжеться до Google Cloud проєкту).
+2. **Credentials**: додати два OAuth-клієнти в Google Cloud:
+   - тип **Android** — package name + SHA-1 відбитки. Потрібні всі три:
+     debug keystore, upload key і **Play App Signing key**
+     (Play Console → Setup → App signing) — без останнього автовхід
+     не працюватиме в білдах зі стору;
+   - тип **Web application** — його **Client ID і Client Secret**
+     потрібні для UGS (redirect URI не потрібен).
+3. Додати себе в тестери PGS, поки застосунок не опубліковано.
+
+**UGS Dashboard:**
+
+**Authentication → Identity providers → Google Play Games** → вставити
+Web Client ID + Client Secret.
+
+**Unity:**
+
+1. Встановити [Google Play Games plugin for Unity](https://github.com/playgameservices/play-games-plugin-for-unity) (v2, GPGS v11+).
+2. **Window → Google Play Games → Setup → Android setup**: вставити
+   resources XML із Play Console і Web Client ID.
+3. Потік при старті:
+
+```csharp
+PlayGamesPlatform.Activate();
+PlayGamesPlatform.Instance.Authenticate(async status =>
+{
+    if (status == SignInStatus.Success)
+    {
+        PlayGamesPlatform.Instance.RequestServerSideAccess(false, async authCode =>
+        {
+            await AuthenticationService.Instance
+                .SignInWithGooglePlayGamesAsync(authCode);
+        });
+    }
+    else
+    {
+        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+    }
+});
+```
+
+`Authenticate` при запуску відпрацьовує тихо (без діалогів), якщо гравець
+не вимкнув auto sign-in у застосунку Play Games. Для анонімних гравців
+у налаштуваннях — кнопка прив'язки через
+`LinkWithGooglePlayGamesAsync(authCode)`.
+
+**Типові граблі:** автовхід «працює в editor/devbuild, не працює з Play
+Market» — майже завжди відсутній SHA-1 ключа Play App Signing
+у Android OAuth-клієнті.
+
+## 5. Cloud Save
+
+Dashboard → **Cloud Save** → увімкнути. Конфігурувати нічого не треба —
+ключі створюються з коду. Домовленості:
+
+- `save` — серіалізований `SaveData` (пише клієнт);
+- protected-ключі (`premiumExpiresAt`, пізніше цінності) — пише **тільки
+  Cloud Code** через Access Class `protected`; клієнт лише читає.
+
+## 6. Remote Config
+
+Dashboard → **Remote Config** → увімкнути. Конфіг тримати в репозиторії
+(Deployment package створює `.rc`-файли) і деплоїти через
+**Window → Deployment** або UGS CLI — не редагувати руками в дашборді.
+Розділяти значення по environments (`development` для експериментів).
+
+## 7. Economy (етап 1.5)
+
+Dashboard → **Economy** → увімкнути. Ресурси описуються файлами
+(`*.ecc` — currencies, `*.ecp` — purchases) в репозиторії і деплояться
+через Deployment. Нарахування/списання з боку клієнта заборонити
+дизайном: усі зміни балансу — через Cloud Code.
+
+## 8. Cloud Code (етап 1.5)
+
+Dashboard → **Cloud Code** → увімкнути. Використовувати **C# modules**
+(не JS-скрипти) — спільна мова з проєктом, нормальні тести.
+Модулі лежать у репозиторії, деплой через Deployment/UGS CLI.
+
+Мінімальний набір функцій:
+
+- `ValidatePurchase` — перевірка IAP-чека, видача товару/валюти;
+- `GrantPremiumPass` — запис `premiumExpiresAt` (+30 днів або продовження);
+- `GetServerTime` — серверний час для клієнта;
+- `SubmitBattleResult` — нарахування нагород із sanity-перевірками.
+
+## 9. Unity IAP (етап 1.5)
+
+1. Play Console → **Monetize → Products**: створити consumable
+   «Преміум-пропуск 30 днів» + інші товари.
+2. Пакет `com.unity.purchasing`, каталог товарів — своїм конфігом
+   за `IPurchaseService`.
+3. Чек кожної покупки відправляти в `ValidatePurchase` (Cloud Code);
+   клієнт нічого не видає сам. Для серверної перевірки в Google
+   Cloud Code-модулю знадобиться Google service account із доступом
+   Android Publisher API (ключ — тільки в секретах Cloud Code, не в репо).
+
+## 10. Service Account (деплой/CI)
+
+Dashboard → організація → **Service Accounts** → створити акаунт для CI
+з ролями Deployment/Economy/Cloud Code/Remote Config editor.
+
+**Key ID + Secret Key нікуди в репозиторій не комітити** — тільки
+змінні середовища CI або локальний конфіг поза git
+(додати відповідні шляхи в `.gitignore`). У самому клієнті гри
+жодних секретів немає взагалі: клієнт користується лише Project ID
+і токеном гравця з Authentication.
+
+UGS CLI для деплою з CI:
+
+```bash
+ugs config set project-id <PROJECT_ID>
+ugs config set environment development
+# ключі — через змінні середовища UGS_CLI__SERVICE_KEY_ID / SECRET_KEY
+ugs deploy ./UgsConfig
+```
+
+## 11. PvP-сервіси (етап 2)
+
+Dashboard: увімкнути **Lobby** і **Relay** (працюють одразу, конфігури
+мінімальні). **Matchmaker** — коли простий підбір через Lobby перестане
+влаштовувати. Netcode бере Relay-транспорт
+(`UnityTransport` + Relay allocation з коду).
+
+### 11.1 Що вже готове в коді
+
+Мережева модель — хост-авторитет із корекцією на межі ходу (обґрунтування:
+`../design/raid-and-pvp-battle-modes.md`, фаза 5). Усе, що не потребує
+пакетів, уже написане й покрите тестами:
+
+| Готове | Роль |
+|---|---|
+| `BattleCommand` + `BattleCommandCodec` | команда ходу як дані, <64 байти |
+| `BattleUnitAuthority` | «командир → юніти», основа для 2×2/3×3 |
+| `BattleCommandDispatcher` | чужі юніти, застарілі ходи, дублі, перестановки |
+| `BattleTurnSnapshot` + кодек | авторитетна межа ходу; ландшафт — кратерами |
+| `BattleStateHash` | детекція розбіжності, квант 1 см |
+| `BattleTurnReconciler` | підтягування клієнта під хоста |
+| `IPvpSessionService` | транспортний контракт (байти, без знання про бій) |
+| `LoopbackPvpSessionService` | два ендпоінти в процесі, керована затримка |
+| `IMatchmakingService` + `LocalPvpMatchmakingService` | смуги ±10%/±20%, бек-філ на 45 с |
+
+### 11.2 Пакети
+
+Standalone `com.unity.services.lobby` і `com.unity.services.relay` **застарілі** —
+Unity згорнула Lobby, Relay і Matchmaker у спільний Sessions API. Актуальний набір
+(звірено з базою рекомендацій `com.unity.multiplayer.center` для Unity 6.5):
+
+```text
+com.unity.services.multiplayer      2.3.0   Sessions = Lobby + Relay + Matchmaker
+com.unity.netcode.gameobjects       2.13.1
+com.unity.transport                         (залежність Netcode)
+com.unity.multiplayer.playmode      2.0.2   кілька віртуальних гравців в одному редакторі
+```
+
+### 11.3 Адаптери (написані, компілюються)
+
+Збірка `Game.Infrastructure.Multiplayer` з `defineConstraints`
+`UGS_MULTIPLAYER`/`UGS_NETCODE`: без пакетів вона просто випадає зі збірки, гра
+лишається на офлайн-адаптерах.
+
+- `UgsMatchmakerService : IMatchmakingService` — `MatchmakeSessionAsync` із
+  quick-join фільтром по `FilterField.NumberIndex1` (там лежить historicalPower),
+  `CreateSession = true`, `WithRelayNetwork()`. Смуга ±10% до 20 с, потім ±20%,
+  на 45-й секунді — бот-заповнювач. Профіль суперника читається з його
+  player properties, включно зі списком звільнених арен (без нього не працює
+  правило проти спойлерів).
+- `MultiplayerPvpSessionService : IPvpSessionService` — байтова труба поверх
+  named messages Netcode (`ReliableSequenced`). Хто хост — читається з
+  `ISession.IsHost`, а не задається клієнтом.
+- `MultiplayerOnlineBootstrap` — підписується на `AppServices.OnlineServicesAttached`
+  і підміняє офлайн-адаптери після входу.
+
+**Ці адаптери жодного разу не працювали проти живого UGS** — вони перевірені
+тільки компіляцією проти API пакетів. Перший запуск робити через Multiplayer
+Play Mode з двома віртуальними гравцями.
+
+### 11.4 Що ще лишилось
+
+1. Винести `PvpMatchmakingPolicy` (смуги, поріг 45 с) у Remote Config.
+2. Прив'язати `BattleSceneController` до `IBattleCommandTarget` і збирати
+   кратери ходу для снапшота.
+3. `SubmitBattleResult` у Cloud Code: приймає `IsBotBackfill`, бій із
+   заповнювачем не рухає рейтинг.
+4. Міграція хоста і політика розривів — обов'язково до кланових 3×3.
+
+## 12. Чекліст безпеки
+
+- [ ] Секрети (service account keys, OAuth client secret, Android Publisher
+      key) — ніколи в репозиторії
+- [ ] Цінності пишуться тільки Cloud Code (protected keys / Economy)
+- [ ] Таймери цінностей — тільки за серверним часом
+- [ ] Уся розробка в environment `development`; `production` — тільки релізи
+- [ ] Платіжна картка додана, алерти free tier увімкнені
+- [ ] SHA-1 всіх трьох ключів (debug/upload/Play App Signing) в OAuth-клієнті

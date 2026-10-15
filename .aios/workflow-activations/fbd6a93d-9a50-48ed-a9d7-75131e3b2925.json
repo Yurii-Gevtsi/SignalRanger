@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "kind": "aios.rex-activation.v1",
+  "outcome": "next",
+  "activation": {
+    "schemaVersion": 1,
+    "activationId": "fbd6a93d-9a50-48ed-a9d7-75131e3b2925",
+    "capabilityId": "software.testing.design",
+    "recipeId": "software.testing.design.recipe",
+    "reasonCode": "behavior-change",
+    "triggerEvidenceRefs": [
+      "request:current"
+    ],
+    "status": "active",
+    "stageIndex": 1,
+    "stageId": "decide-testability",
+    "completedStages": [
+      "design-tests"
+    ],
+    "evidence": [
+      {
+        "kind": "test-scope-contract-recorded",
+        "refs": [
+          "artifact:battle-droid-collision-test-scope"
+        ]
+      },
+      {
+        "kind": "acceptance-test-mapping-recorded",
+        "refs": [
+          "artifact:battle-droid-collision-test-mapping"
+        ]
+      },
+      {
+        "kind": "test-seam-recorded",
+        "refs": [
+          "artifact:battle-droid-collision-test-seams"
+        ]
+      }
+    ]
+  },
+  "command": {
+    "schemaVersion": 1,
+    "type": "provider.invoke",
+    "activationId": "fbd6a93d-9a50-48ed-a9d7-75131e3b2925",
+    "capabilityId": "software.testing.design",
+    "recipeId": "software.testing.design.recipe",
+    "stageId": "decide-testability",
+    "reasonCode": "behavior-change",
+    "triggerEvidenceRefs": [
+      "request:current"
+    ],
+    "provider": {
+      "kind": "skill",
+      "id": "rex-test-design",
+      "source": "bundled",
+      "instructionsRef": "skill-sources/rex-test-design/SKILL.md"
+    },
+    "objective": "基于真实公共场景基线，明确是否存在诚实的 RED；没有行为差异时转入加固验证，验收不可观察时明确阻塞。",
+    "expectedEvidence": [
+      "testability-decision-recorded"
+    ],
+    "executionToken": "f66d78e8-61bd-40b4-8e86-cebf879a5c1d"
+  },
+  "workflowActivationId": "aios-8b4ab86b-3469-4c06-a4c9-6f9055ef050a",
+  "missingEvidence": [],
+  "artifacts": {},
+  "workItemKey": "turn:cli:anonymous:a43e33c93a9f8ee5",
+  "request": {
+    "message": "Fix battle projectile/droid collision and droid terrain contact support behavior",
+    "explicitIntent": null
+  },
+  "updatedAt": "2026-09-02T09:12:55.386Z"
+}

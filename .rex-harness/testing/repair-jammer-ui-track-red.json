@@ -1,0 +1,8 @@
+{
+  "test": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades",
+  "receipt": "receipt:836d8a29-7a14-4130-9d62-d6f480d93ba2",
+  "input": "The public progression catalog is queried for weapon.repair-jammer.",
+  "expected": "RadiusUpgradeLimit is 2.",
+  "observed": "The current catalog reports 4.",
+  "failureClassification": "Expected behavioral RED: the purchase limit does not encode the approved 2→3→4 duration progression."
+}

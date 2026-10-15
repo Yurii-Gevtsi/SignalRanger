@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "b3710a5c0036490586d43a176235a672",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791310607461,
+    "finished_unix_ms": 1791310614780,
+    "last_update_unix_ms": 1791310614780,
+    "progress": {
+      "completed": 261,
+      "total": 261,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791310614646,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+      "last_finished_unix_ms": 1791310614648,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_CarriesTheFirstTouchedEnemyUpAndThrowsItSidewaysAtTheEnd",
+          "message": "  thrown towards the owner's facing, sideways\r\n  Expected: greater than 5.0f\r\n  But was:  2.65800261f\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

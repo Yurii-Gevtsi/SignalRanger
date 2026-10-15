@@ -1,0 +1,2390 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "54740793730f466b8582125f8426600b",
+    "status": "succeeded",
+    "mode": "EditMode",
+    "started_unix_ms": 1791310665507,
+    "finished_unix_ms": 1791310672466,
+    "last_update_unix_ms": 1791310672466,
+    "progress": {
+      "completed": 261,
+      "total": 261,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791310672315,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+      "last_finished_unix_ms": 1791310672317,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "EditMode",
+      "summary": {
+        "total": 261,
+        "passed": 261,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 3.3512129,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount(6)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount(6)",
+          "state": "Passed",
+          "durationSeconds": 0.1356213,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount(9)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_EvolvedQuantityBranchExtendsBurstToConfiguredShotCount(9)",
+          "state": "Passed",
+          "durationSeconds": 0.0100016,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Blaster_KeepsBurstAvailableUntilThirdResolvedShot",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_KeepsBurstAvailableUntilThirdResolvedShot",
+          "state": "Passed",
+          "durationSeconds": 0.0064916,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Blaster_OutOfAmmoMidBurst_EndsTurnAfterImpact",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_OutOfAmmoMidBurst_EndsTurnAfterImpact",
+          "state": "Passed",
+          "durationSeconds": 0.0073112,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Blaster_RicochetEvolutionSetsProjectileBounceLimit",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Blaster_RicochetEvolutionSetsProjectileBounceLimit",
+          "state": "Passed",
+          "durationSeconds": 0.0068819,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Boost_CeilingStopsTheRiseAndTheTimerKeepsGoing",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_CeilingStopsTheRiseAndTheTimerKeepsGoing",
+          "state": "Passed",
+          "durationSeconds": 0.0240175,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Boost_ChargesRunOutAndTheTurnEndingCutsTheFuel",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_ChargesRunOutAndTheTurnEndingCutsTheFuel",
+          "state": "Passed",
+          "durationSeconds": 0.0516851,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Boost_LastsFiveSecondsAndEveryRadiusPurchaseAddsOne",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_LastsFiveSecondsAndEveryRadiusPurchaseAddsOne",
+          "state": "Passed",
+          "durationSeconds": 0.1248952,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Boost_RegistryLimitsRadiusSecondsLoadoutChargesAndArtMatchTheCard",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_RegistryLimitsRadiusSecondsLoadoutChargesAndArtMatchTheCard",
+          "state": "Passed",
+          "durationSeconds": 0.0639446,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Boost_RisesStraightUpToTheTopOfAJumpAndHangsWithoutGravity",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_RisesStraightUpToTheTopOfAJumpAndHangsWithoutGravity",
+          "state": "Passed",
+          "durationSeconds": 0.1195722,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Boost_SecondPressOrTheEndOfTimeLetsTheDroidFallAndLandWithoutSpendingTheAction",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_SecondPressOrTheEndOfTimeLetsTheDroidFallAndLandWithoutSpendingTheAction",
+          "state": "Passed",
+          "durationSeconds": 0.0049261,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Boost_SteersInFourDirectionsAndOtherDroidsBlockTheBody",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Boost_SteersInFourDirectionsAndOtherDroidsBlockTheBody",
+          "state": "Passed",
+          "durationSeconds": 0.0070912,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "C4_DropsWithoutAim_AllowsEscape_ThenExplodesAndEndsTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4_DropsWithoutAim_AllowsEscape_ThenExplodesAndEndsTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0136489,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(0,65,1.9375f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(0,65,1.9375f)",
+          "state": "Passed",
+          "durationSeconds": 0.0073199,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(1,98,2.13125f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(1,98,2.13125f)",
+          "state": "Passed",
+          "durationSeconds": 0.0056962,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(4,650,2.7125f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4_PurchasedCoreAndRadiusAffectRealExplosionWithoutAim(4,650,2.7125f)",
+          "state": "Passed",
+          "durationSeconds": 0.0052398,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "C4Evolutions_ApplyConfiguredDamageRadiusAndKnockback",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.C4Evolutions_ApplyConfiguredDamageRadiusAndKnockback",
+          "state": "Passed",
+          "durationSeconds": 0.0072706,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0886375,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0606381,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0606812,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0642136,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_FireUsesThePreviewCenter(0.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(0.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0391019,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_FireUsesThePreviewCenter(90.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(90.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0364469,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive",
+          "state": "Passed",
+          "durationSeconds": 0.002163,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction",
+          "state": "Passed",
+          "durationSeconds": 0.1136522,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0471441,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0384505,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)",
+          "state": "Passed",
+          "durationSeconds": 0.0398102,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)",
+          "state": "Passed",
+          "durationSeconds": 0.0473671,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)",
+          "state": "Passed",
+          "durationSeconds": 0.0389058,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)",
+          "state": "Passed",
+          "durationSeconds": 0.0522164,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)",
+          "state": "Passed",
+          "durationSeconds": 0.0535321,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalDisc_HasSharedExplosionRadius",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDisc_HasSharedExplosionRadius",
+          "state": "Passed",
+          "durationSeconds": 0.0031787,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalDisc_TwoRealRicochetsAddLinearDamage(0,52)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDisc_TwoRealRicochetsAddLinearDamage(0,52)",
+          "state": "Passed",
+          "durationSeconds": 0.0122023,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalDisc_TwoRealRicochetsAddLinearDamage(4,525)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDisc_TwoRealRicochetsAddLinearDamage(4,525)",
+          "state": "Passed",
+          "durationSeconds": 0.004189,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(0,1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(0,1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0066918,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(1,1.1f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(1,1.1f)",
+          "state": "Passed",
+          "durationSeconds": 0.0034196,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(4,1.4f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_RadiusPurchasesExtendGroundTimeOnly(4,1.4f)",
+          "state": "Passed",
+          "durationSeconds": 0.0033349,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(Soil)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(Soil)",
+          "state": "Passed",
+          "durationSeconds": 0.0071812,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(LightMetal)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(LightMetal)",
+          "state": "Passed",
+          "durationSeconds": 0.0039829,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(Titanium)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalDrillRocket_UsesSharedShotAndDrillsEveryTerrain(Titanium)",
+          "state": "Passed",
+          "durationSeconds": 0.002797,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(False,False)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(False,False)",
+          "state": "Passed",
+          "durationSeconds": 0.0152503,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(True,False)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(True,False)",
+          "state": "Passed",
+          "durationSeconds": 0.0056698,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(False,True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_ActualDamageInterruptsEitherSideAndEscapeAvoidsIt(False,True)",
+          "state": "Passed",
+          "durationSeconds": 0.0053151,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_AllFourPlacementsLeaveARegularAttackAvailable",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_AllFourPlacementsLeaveARegularAttackAvailable",
+          "state": "Passed",
+          "durationSeconds": 0.0069439,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_HasFourChargesAndNoLoadoutPurchases",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_HasFourChargesAndNoLoadoutPurchases",
+          "state": "Passed",
+          "durationSeconds": 0.0020987,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe(False)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe(False)",
+          "state": "Passed",
+          "durationSeconds": 0.0046944,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe(True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedAlliedSafetyKeepsAlliesSafe(True)",
+          "state": "Passed",
+          "durationSeconds": 0.0038126,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(0,54,1.55f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(0,54,1.55f)",
+          "state": "Passed",
+          "durationSeconds": 0.0056948,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(1,81,1.705f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(1,81,1.705f)",
+          "state": "Passed",
+          "durationSeconds": 0.0043716,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(4,540,2.17f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMine_PurchasedCoreAndRadiusAffectItsActualExplosion(4,540,2.17f)",
+          "state": "Passed",
+          "durationSeconds": 0.0053013,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_BaseWeapon_SpawnsTwoFragmentsWithoutCascade",
+          "state": "Passed",
+          "durationSeconds": 0.0059645,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_HasOnlyOneFivePurchaseFeatureAndTheExistingSkin",
+          "state": "Passed",
+          "durationSeconds": 0.0247862,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_HostileSequentialShardsAreInterceptedByTheMagnetAndTheQueueClears",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_HostileSequentialShardsAreInterceptedByTheMagnetAndTheQueueClears",
+          "state": "Passed",
+          "durationSeconds": 0.0247636,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(1,2)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(1,2)",
+          "state": "Passed",
+          "durationSeconds": 0.0215805,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(2,3)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(2,3)",
+          "state": "Passed",
+          "durationSeconds": 0.0209942,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(3,4)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(3,4)",
+          "state": "Passed",
+          "durationSeconds": 0.0246618,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(4,5)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(4,5)",
+          "state": "Passed",
+          "durationSeconds": 0.0159807,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(5,6)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_PaidChargesRemainPhysicalAndDigSequentially(5,6)",
+          "state": "Passed",
+          "durationSeconds": 0.0183598,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_RadiusPurchasesUseTheSharedTenPercentStep",
+          "state": "Passed",
+          "durationSeconds": 0.0008642,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalRepair_CapsHealingAndStillGrantsProtectionAtFullHp",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CapsHealingAndStillGrantsProtectionAtFullHp",
+          "state": "Passed",
+          "durationSeconds": 0.005986,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(100,0,25)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(100,0,25)",
+          "state": "Passed",
+          "durationSeconds": 0.0029987,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,0,250)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,0,250)",
+          "state": "Passed",
+          "durationSeconds": 0.0019259,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,1,275)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,1,275)",
+          "state": "Passed",
+          "durationSeconds": 0.0019423,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,4,350)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_CoreScalesHealingFromOwnerMaxHp(1000,4,350)",
+          "state": "Passed",
+          "durationSeconds": 0.0020957,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalRepair_HealsOnlyOwnerFromMaxHealth",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalRepair_HealsOnlyOwnerFromMaxHealth",
+          "state": "Passed",
+          "durationSeconds": 0.0030031,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CommandScript_ReplaysWithMatchingHashes",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CommandScript_ReplaysWithMatchingHashes",
+          "state": "Passed",
+          "durationSeconds": 0.008971,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CoverWeapon_Fired_StampsTerrainMask",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CoverWeapon_Fired_StampsTerrainMask",
+          "state": "Passed",
+          "durationSeconds": 0.0046994,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CryoGrenade_AppliesTheSharedTwoTurnColdCycleToEveryDroidInTheBlast",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CryoGrenade_AppliesTheSharedTwoTurnColdCycleToEveryDroidInTheBlast",
+          "state": "Passed",
+          "durationSeconds": 0.0082829,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CryoGrenade_ChillsUnitsInsideItsBlast",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CryoGrenade_ChillsUnitsInsideItsBlast",
+          "state": "Passed",
+          "durationSeconds": 0.0024588,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CryoGrenade_RepeatHitRefreshesToTwoTurnsAndOnlyBoostsItsOwnDirectDamage",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CryoGrenade_RepeatHitRefreshesToTwoTurnsAndOnlyBoostsItsOwnDirectDamage",
+          "state": "Passed",
+          "durationSeconds": 0.0112159,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CryoGrenade_UsesFourTthPathsHasNoFeatureAndKeepsItsOwnBody",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CryoGrenade_UsesFourTthPathsHasNoFeatureAndKeepsItsOwnBody",
+          "state": "Passed",
+          "durationSeconds": 0.0037099,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillLaser_CarvesEveryDestructibleMaterial(Soil)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_CarvesEveryDestructibleMaterial(Soil)",
+          "state": "Passed",
+          "durationSeconds": 0.0077743,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillLaser_CarvesEveryDestructibleMaterial(LightMetal)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_CarvesEveryDestructibleMaterial(LightMetal)",
+          "state": "Passed",
+          "durationSeconds": 0.0017321,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillLaser_CarvesEveryDestructibleMaterial(Titanium)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_CarvesEveryDestructibleMaterial(Titanium)",
+          "state": "Passed",
+          "durationSeconds": 0.0015885,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillLaser_DoesNotDamageOwner",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_DoesNotDamageOwner",
+          "state": "Passed",
+          "durationSeconds": 0.0032099,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(0,3.25f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(0,3.25f)",
+          "state": "Passed",
+          "durationSeconds": 0.0024782,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(1,3.575f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(1,3.575f)",
+          "state": "Passed",
+          "durationSeconds": 0.0008486,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(4,4.55f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_RadiusPurchasesIncreaseBattleAndWorkshopRange(4,4.55f)",
+          "state": "Passed",
+          "durationSeconds": 0.000747,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillLaser_StarterDefinitionHasUnlimitedAmmo",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillLaser_StarterDefinitionHasUnlimitedAmmo",
+          "state": "Passed",
+          "durationSeconds": 0.001986,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillRocket_CarriesRemainingDrillTimeBetweenTerrainSections",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillRocket_CarriesRemainingDrillTimeBetweenTerrainSections",
+          "state": "Passed",
+          "durationSeconds": 0.0049029,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DrillRocket_PassesThroughLightMetalWithoutEvolution",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.DrillRocket_PassesThroughLightMetalWithoutEvolution",
+          "state": "Passed",
+          "durationSeconds": 0.0019183,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ElectricHarpoon_BlockedTargetKeepsTheRopeForFiveSecondsThenLetsGoWithoutAFinalAction",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ElectricHarpoon_BlockedTargetKeepsTheRopeForFiveSecondsThenLetsGoWithoutAFinalAction",
+          "state": "Passed",
+          "durationSeconds": 0.0141878,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ElectricHarpoon_DoubleGrabHoldsTwoDroidsEachWithItsOwnCycle",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ElectricHarpoon_DoubleGrabHoldsTwoDroidsEachWithItsOwnCycle",
+          "state": "Passed",
+          "durationSeconds": 0.0046688,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ElectricHarpoon_HitDealsXAtOnceThenPullsAlongTheGroundAtDoubleSpeed",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ElectricHarpoon_HitDealsXAtOnceThenPullsAlongTheGroundAtDoubleSpeed",
+          "state": "Passed",
+          "durationSeconds": 0.0029235,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ElectricHarpoon_ImpactPullAddsTheFinalBlowAndAThrowAtSixtyDegrees",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ElectricHarpoon_ImpactPullAddsTheFinalBlowAndAThrowAtSixtyDegrees",
+          "state": "Passed",
+          "durationSeconds": 0.0032664,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ElectricHarpoon_RegistryRopeLengthAndSkinsMatchTheCard",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ElectricHarpoon_RegistryRopeLengthAndSkinsMatchTheCard",
+          "state": "Passed",
+          "durationSeconds": 0.0357547,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ElectricHarpoon_WithoutImpactPullTheContactEndsTheCycleWithNoFinalBlowOrThrow",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ElectricHarpoon_WithoutImpactPullTheContactEndsTheCycleWithNoFinalBlowOrThrow",
+          "state": "Passed",
+          "durationSeconds": 0.0048079,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EmpCannon_AppliesTheSharedTwoTurnElectricCycleWithoutAnyBanInItsBase",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.EmpCannon_AppliesTheSharedTwoTurnElectricCycleWithoutAnyBanInItsBase",
+          "state": "Passed",
+          "durationSeconds": 0.0087208,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EmpCannon_RegistryAndSkinsMatchTheCatalogWhileTheBansAwaitTheOwner",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.EmpCannon_RegistryAndSkinsMatchTheCatalogWhileTheBansAwaitTheOwner",
+          "state": "Passed",
+          "durationSeconds": 0.0115454,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EmpCannon_RepeatHitRefreshesWithoutStackingAndBoostsOnlyTheDirectDamage",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.EmpCannon_RepeatHitRefreshesWithoutStackingAndBoostsOnlyTheDirectDamage",
+          "state": "Passed",
+          "durationSeconds": 0.0091709,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ExplosionNearOwner_DamagesOwnerAtNormalStrength",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ExplosionNearOwner_DamagesOwnerAtNormalStrength",
+          "state": "Passed",
+          "durationSeconds": 0.0084336,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FallOutOfBounds_DefeatsUnit_AndFinishesBattle",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.FallOutOfBounds_DefeatsUnit_AndFinishesBattle",
+          "state": "Passed",
+          "durationSeconds": 0.0043335,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Fire_TicksProjectile_DamagesAndKnocksBackTarget_AndAdvancesTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Fire_TicksProjectile_DamagesAndKnocksBackTarget_AndAdvancesTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0104971,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.impulse\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.impulse\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0072183,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.emp\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.emp\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.001931,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.granata\",False)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.granata\",False)",
+          "state": "Passed",
+          "durationSeconds": 0.0023041,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.missle\",False)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.missle\",False)",
+          "state": "Passed",
+          "durationSeconds": 0.0040628,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.mortira\",False)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.mortira\",False)",
+          "state": "Passed",
+          "durationSeconds": 0.001945,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_CutsAnEnergyBeamWhereItEntersAndNotABeamThatStartsInside",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_CutsAnEnergyBeamWhereItEntersAndNotABeamThatStartsInside",
+          "state": "Passed",
+          "durationSeconds": 0.0021049,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_IgnoresFriendlyEnergyAndKeepsAlreadyAppliedStatuses",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_IgnoresFriendlyEnergyAndKeepsAlreadyAppliedStatuses",
+          "state": "Passed",
+          "durationSeconds": 0.0016222,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_IsOnePerBattleAndPlacingItHandsTheTurnOver",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_IsOnePerBattleAndPlacingItHandsTheTurnOver",
+          "state": "Passed",
+          "durationSeconds": 0.0014409,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_LastsTwoEnemyTurnsAndEachCorePurchaseAddsOneUpToSix",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_LastsTwoEnemyTurnsAndEachCorePurchaseAddsOneUpToSix",
+          "state": "Passed",
+          "durationSeconds": 0.0027192,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_RadiusIsN0AndEveryRadiusPurchaseAddsTenPercentOfIt",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_RadiusIsN0AndEveryRadiusPurchaseAddsTenPercentOfIt",
+          "state": "Passed",
+          "durationSeconds": 0.0050471,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ForceField_RegistryPaidCoreAndRadiusStepsLimitsDescriptionAndArtMatchTheCard",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_RegistryPaidCoreAndRadiusStepsLimitsDescriptionAndArtMatchTheCard",
+          "state": "Passed",
+          "durationSeconds": 0.0144128,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Fpv_HoversWithoutInput_AndMovesOnlyWhileDirected",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Fpv_HoversWithoutInput_AndMovesOnlyWhileDirected",
+          "state": "Passed",
+          "durationSeconds": 0.0096971,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grenade_FuseCountsFromThrow_AndExplodesWhileResting",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_FuseCountsFromThrow_AndExplodesWhileResting",
+          "state": "Passed",
+          "durationSeconds": 0.0071623,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grenade_GravityPullAtRestAttractsAFreeProjectileBeforeDetonation",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_GravityPullAtRestAttractsAFreeProjectileBeforeDetonation",
+          "state": "Passed",
+          "durationSeconds": 0.0166844,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grenade_RadiusPurchasesAffectTheActualBlast(0,1.55f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_RadiusPurchasesAffectTheActualBlast(0,1.55f)",
+          "state": "Passed",
+          "durationSeconds": 0.0094783,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grenade_RadiusPurchasesAffectTheActualBlast(1,1.705f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_RadiusPurchasesAffectTheActualBlast(1,1.705f)",
+          "state": "Passed",
+          "durationSeconds": 0.0065783,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grenade_RadiusPurchasesAffectTheActualBlast(4,2.17f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_RadiusPurchasesAffectTheActualBlast(4,2.17f)",
+          "state": "Passed",
+          "durationSeconds": 0.0059276,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grenade_TargetPullSteersTowardEnemyWithoutSelectingACloserAlly",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grenade_TargetPullSteersTowardEnemyWithoutSelectingACloserAlly",
+          "state": "Passed",
+          "durationSeconds": 0.0060145,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.granata\",\"projectile.weapon.granata\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.granata\",\"projectile.weapon.granata\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0075849,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.ion-shotgun\",\"projectile.weapon.ion-shotgun\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.ion-shotgun\",\"projectile.weapon.ion-shotgun\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0069073,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.c4\",\"projectile.weapon.c4\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.c4\",\"projectile.weapon.c4\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0131494,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.titanium-disc\",\"projectile.weapon.titanium-disc\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.titanium-disc\",\"projectile.weapon.titanium-disc\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.026816,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.bur-rocket\",\"projectile.weapon.bur-rocket\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.bur-rocket\",\"projectile.weapon.bur-rocket\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0226403,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.mortira\",\"projectile.weapon.mortira\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.mortira\",\"projectile.weapon.mortira\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0469642,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.mortira\",\"projectile.weapon.mortira.fragment.1\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.mortira\",\"projectile.weapon.mortira.fragment.1\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.046027,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.sticky-grenade\",\"projectile.weapon.sticky-grenade\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.sticky-grenade\",\"projectile.weapon.sticky-grenade\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0014079,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.teleport\",\"projectile.weapon.teleport\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.teleport\",\"projectile.weapon.teleport\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0012749,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.swap-jump\",\"projectile.weapon.swap-jump\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.swap-jump\",\"projectile.weapon.swap-jump\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0013159,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.cryo-grenade\",\"projectile.weapon.cryo-grenade\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.cryo-grenade\",\"projectile.weapon.cryo-grenade\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0013172,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.hopping-grenade\",\"projectile.weapon.hopping-grenade\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.hopping-grenade\",\"projectile.weapon.hopping-grenade\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0013327,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.incendiary-grenade\",\"projectile.weapon.incendiary-grenade\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.incendiary-grenade\",\"projectile.weapon.incendiary-grenade\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0039093,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.repair-jammer\",\"projectile.weapon.repair-jammer\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.repair-jammer\",\"projectile.weapon.repair-jammer\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0013919,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.missle\",\"projectile.weapon.missle\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.missle\",\"projectile.weapon.missle\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.001732,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.orbital-rocket\",\"projectile.weapon.orbital-rocket\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.orbital-rocket\",\"projectile.weapon.orbital-rocket\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0014392,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.impulse\",\"projectile.weapon.impulse\",False)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.impulse\",\"projectile.weapon.impulse\",False)",
+          "state": "Passed",
+          "durationSeconds": 0.0013618,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.emp\",\"projectile.weapon.emp\",False)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_CatchesEveryHostilePhysicalCarrierAndNeverTheEnergyOnes(\"weapon.emp\",\"projectile.weapon.emp\",False)",
+          "state": "Passed",
+          "durationSeconds": 0.0012617,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_DestroysInterceptedNonExplosiveDeployable(\"weapon.guardian-drone\",\"projectile.weapon.guardian-drone.deploy\")",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_DestroysInterceptedNonExplosiveDeployable(\"weapon.guardian-drone\",\"projectile.weapon.guardian-drone.deploy\")",
+          "state": "Passed",
+          "durationSeconds": 0.00356,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_DestroysInterceptedNonExplosiveDeployable(\"weapon.laser-fence\",\"projectile.weapon.laser-fence.deploy\")",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_DestroysInterceptedNonExplosiveDeployable(\"weapon.laser-fence\",\"projectile.weapon.laser-fence.deploy\")",
+          "state": "Passed",
+          "durationSeconds": 0.0011693,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_DetonatesInterceptedMineInsteadOfDeployingIt",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_DetonatesInterceptedMineInsteadOfDeployingIt",
+          "state": "Passed",
+          "durationSeconds": 0.0030123,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_ExpiresAfterTwoOpposingTurns",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_ExpiresAfterTwoOpposingTurns",
+          "state": "Passed",
+          "durationSeconds": 0.0014481,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_FourCorePurchasesExtendLifetimeToSixOpposingTurns",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_FourCorePurchasesExtendLifetimeToSixOpposingTurns",
+          "state": "Passed",
+          "durationSeconds": 0.0017631,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots(\"weapon.blaster-caset\",True)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots(\"weapon.blaster-caset\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0038236,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots(\"weapon.impulse\",False)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_IgnoresFriendlyPhysicalAndHostileEnergyShots(\"weapon.impulse\",False)",
+          "state": "Passed",
+          "durationSeconds": 0.0017286,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_InterceptedBlastHurtsTheOwnerOnlyIfTheOwnerStandsInsideThePhysicalRadius",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_InterceptedBlastHurtsTheOwnerOnlyIfTheOwnerStandsInsideThePhysicalRadius",
+          "state": "Passed",
+          "durationSeconds": 0.0045495,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_InterceptsHostilePhysicalHookBeforeItAttaches(\"weapon.rope\")",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_InterceptsHostilePhysicalHookBeforeItAttaches(\"weapon.rope\")",
+          "state": "Passed",
+          "durationSeconds": 0.0039776,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_InterceptsHostilePhysicalHookBeforeItAttaches(\"weapon.electric-harpoon\")",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_InterceptsHostilePhysicalHookBeforeItAttaches(\"weapon.electric-harpoon\")",
+          "state": "Passed",
+          "durationSeconds": 0.0010425,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_NeutralizesInterceptedTeleportSphere(\"weapon.teleport\")",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_NeutralizesInterceptedTeleportSphere(\"weapon.teleport\")",
+          "state": "Passed",
+          "durationSeconds": 0.0028354,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_NeutralizesInterceptedTeleportSphere(\"weapon.swap-jump\")",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_NeutralizesInterceptedTeleportSphere(\"weapon.swap-jump\")",
+          "state": "Passed",
+          "durationSeconds": 0.0011516,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_PlacesWithoutAimAndDoesNotHealOwner",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PlacesWithoutAimAndDoesNotHealOwner",
+          "state": "Passed",
+          "durationSeconds": 0.0014586,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_PullsHostilePhysicalShotIntoDevice",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PullsHostilePhysicalShotIntoDevice",
+          "state": "Passed",
+          "durationSeconds": 0.0029001,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_RadiusPurchasesCapturePhysicalShotOutsideBaseRange",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_RadiusPurchasesCapturePhysicalShotOutsideBaseRange",
+          "state": "Passed",
+          "durationSeconds": 0.0034333,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_RegistryLimitsPaidCoreAndRadiusStepsAndAHealthPointBudgetOfFortyFive",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_RegistryLimitsPaidCoreAndRadiusStepsAndAHealthPointBudgetOfFortyFive",
+          "state": "Passed",
+          "durationSeconds": 0.045664,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_TwoPhysicalImpactsDestroyDeviceAndBothExplode",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_TwoPhysicalImpactsDestroyDeviceAndBothExplode",
+          "state": "Passed",
+          "durationSeconds": 0.0045044,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GuardianDrone_AHostileMagnetInterceptsItsBulletInsteadOfTheGuaranteedHit",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_AHostileMagnetInterceptsItsBulletInsteadOfTheGuaranteedHit",
+          "state": "Passed",
+          "durationSeconds": 0.0090265,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GuardianDrone_DeadTargetBeforeTheShotLandsHurtsNobodyElse",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_DeadTargetBeforeTheShotLandsHurtsNobodyElse",
+          "state": "Passed",
+          "durationSeconds": 0.0031831,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GuardianDrone_DeploysAndGuaranteedShotEndsTriggeredTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_DeploysAndGuaranteedShotEndsTriggeredTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0032752,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GuardianDrone_HasOneStealthStepFourTwoFourPurchasesAndItsArt",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_HasOneStealthStepFourTwoFourPurchasesAndItsArt",
+          "state": "Passed",
+          "durationSeconds": 0.0145133,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GuardianDrone_StealthIsAnObserverPropertyAndTheDeviceStillWorks",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_StealthIsAnObserverPropertyAndTheDeviceStillWorks",
+          "state": "Passed",
+          "durationSeconds": 0.0109881,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GuardianDrone_TargetCannotEscapeAfterActivationAndADeadTargetShiftsTheShotToNobody",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_TargetCannotEscapeAfterActivationAndADeadTargetShiftsTheShotToNobody",
+          "state": "Passed",
+          "durationSeconds": 0.0038701,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges(2)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges(2)",
+          "state": "Passed",
+          "durationSeconds": 0.0083842,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges(3)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_BallisticEvolution_SplitsIntoConfiguredCharges(3)",
+          "state": "Passed",
+          "durationSeconds": 0.0049865,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HomingMissile_ClimbsSmoothlyOverAnObstacleOnItsWayToTheTarget",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_ClimbsSmoothlyOverAnObstacleOnItsWayToTheTarget",
+          "state": "Passed",
+          "durationSeconds": 0.007348,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HomingMissile_IsASingleUseRocketWithoutKitPurchases",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_IsASingleUseRocketWithoutKitPurchases",
+          "state": "Passed",
+          "durationSeconds": 0.009515,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HomingMissile_KeepsSteeringToTheTargetWithBoundedTurnRateAndHurtsButDoesNotKillAHealthyDroid",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_KeepsSteeringToTheTargetWithBoundedTurnRateAndHurtsButDoesNotKillAHealthyDroid",
+          "state": "Passed",
+          "durationSeconds": 0.0041336,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HomingMissile_ManeuverEvolution_CreatesDetourAroundTerrainObstacle",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HomingMissile_ManeuverEvolution_CreatesDetourAroundTerrainObstacle",
+          "state": "Passed",
+          "durationSeconds": 0.0032055,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HoppingGrenade_BaseHasOneExtraJumpAllowedInFlightAndAtRest",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HoppingGrenade_BaseHasOneExtraJumpAllowedInFlightAndAtRest",
+          "state": "Passed",
+          "durationSeconds": 0.0036444,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HoppingGrenade_CanJumpAgainAfterLandingWithoutConsumingAnotherItem",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HoppingGrenade_CanJumpAgainAfterLandingWithoutConsumingAnotherItem",
+          "state": "Passed",
+          "durationSeconds": 0.0021572,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HoppingGrenade_FuseStartsAtFirstContactRunsThreeSecondsThroughJumpsAndDetonatesAnyway",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HoppingGrenade_FuseStartsAtFirstContactRunsThreeSecondsThroughJumpsAndDetonatesAnyway",
+          "state": "Passed",
+          "durationSeconds": 0.0034329,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HoppingGrenade_RadiusPurchasesBuyJumpsNotBlastRadiusAndFeatureIsAbsent",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.HoppingGrenade_RadiusPurchasesBuyJumpsNotBlastRadiusAndFeatureIsAbsent",
+          "state": "Passed",
+          "durationSeconds": 0.0065342,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IncendiaryGrenade_AppliesTheSharedTwoTurnFireCycleToEveryDroidInTheBlast",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IncendiaryGrenade_AppliesTheSharedTwoTurnFireCycleToEveryDroidInTheBlast",
+          "state": "Passed",
+          "durationSeconds": 0.0085541,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IncendiaryGrenade_GroundFlamesArePresentationOnlyAndNeverIgniteLateComers",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IncendiaryGrenade_GroundFlamesArePresentationOnlyAndNeverIgniteLateComers",
+          "state": "Passed",
+          "durationSeconds": 0.0068398,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IncendiaryGrenade_ImpactSpawnsFourLocalFirePuddles",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IncendiaryGrenade_ImpactSpawnsFourLocalFirePuddles",
+          "state": "Passed",
+          "durationSeconds": 0.0062392,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IncendiaryGrenade_RepeatHitRefreshesWithoutStackingAndBoostsOnlyTheDirectDamage",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IncendiaryGrenade_RepeatHitRefreshesWithoutStackingAndBoostsOnlyTheDirectDamage",
+          "state": "Passed",
+          "durationSeconds": 0.0087188,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IncendiaryGrenade_UsesFourTthPathsHasNoFeatureAndKeepsItsOwnBody",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IncendiaryGrenade_UsesFourTthPathsHasNoFeatureAndKeepsItsOwnBody",
+          "state": "Passed",
+          "durationSeconds": 0.0410306,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage(0,38)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage(0,38)",
+          "state": "Passed",
+          "durationSeconds": 0.0040231,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage(4,380)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_CorePurchasesIncreaseTheFivePelletsTotalDamage(4,380)",
+          "state": "Passed",
+          "durationSeconds": 0.0019006,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion(-1.2f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion(-1.2f)",
+          "state": "Passed",
+          "durationSeconds": 0.0048534,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion(1.5f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_EachContactDealsFullPelletDamageWithoutExplosion(1.5f)",
+          "state": "Passed",
+          "durationSeconds": 0.003766,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount(0,0.1f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount(0,0.1f)",
+          "state": "Passed",
+          "durationSeconds": 0.0033772,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount(4,0.132f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_RadiusPurchasesExpandPelletContactWithoutChangingPelletCount(4,0.132f)",
+          "state": "Passed",
+          "durationSeconds": 0.0020685,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IonShotgun_TerrainContactCarvesCraterTwicePelletRadius(0,0.2f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_TerrainContactCarvesCraterTwicePelletRadius(0,0.2f)",
+          "state": "Passed",
+          "durationSeconds": 0.0060126,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IonShotgun_TerrainContactCarvesCraterTwicePelletRadius(4,0.264f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.IonShotgun_TerrainContactCarvesCraterTwicePelletRadius(4,0.264f)",
+          "state": "Passed",
+          "durationSeconds": 0.0034552,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "JumpAgainstWall_SettlesAndUnblocksInput(0.0f,-1)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.0f,-1)",
+          "state": "Passed",
+          "durationSeconds": 0.0057714,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "JumpAgainstWall_SettlesAndUnblocksInput(0.0f,1)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.0f,1)",
+          "state": "Passed",
+          "durationSeconds": 0.0046074,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "JumpAgainstWall_SettlesAndUnblocksInput(0.04f,-1)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.04f,-1)",
+          "state": "Passed",
+          "durationSeconds": 0.0047554,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "JumpAgainstWall_SettlesAndUnblocksInput(0.04f,1)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.04f,1)",
+          "state": "Passed",
+          "durationSeconds": 0.0043622,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "JumpAgainstWall_SettlesAndUnblocksInput(0.08f,-1)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.08f,-1)",
+          "state": "Passed",
+          "durationSeconds": 0.0044857,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "JumpAgainstWall_SettlesAndUnblocksInput(0.08f,1)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.08f,1)",
+          "state": "Passed",
+          "durationSeconds": 0.0045848,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "JumpAgainstWall_SettlesAndUnblocksInput(0.12f,-1)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.12f,-1)",
+          "state": "Passed",
+          "durationSeconds": 0.004672,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "JumpAgainstWall_SettlesAndUnblocksInput(0.12f,1)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpAgainstWall_SettlesAndUnblocksInput(0.12f,1)",
+          "state": "Passed",
+          "durationSeconds": 0.0043958,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "JumpUnderOverhang_SettlesAndUnblocksInput",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.JumpUnderOverhang_SettlesAndUnblocksInput",
+          "state": "Passed",
+          "durationSeconds": 0.0054952,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "LaserFence_DeploysTwoGroundNodesFromRealCombatShots",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_DeploysTwoGroundNodesFromRealCombatShots",
+          "state": "Passed",
+          "durationSeconds": 0.0091578,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0055514,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Mine_IsAvailableOnFirstTurn_AndKeepsTurnOpenAfterPlacement",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Mine_IsAvailableOnFirstTurn_AndKeepsTurnOpenAfterPlacement",
+          "state": "Passed",
+          "durationSeconds": 0.0021774,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Mine_IsThrownBeforeItBecomesDeployed",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Mine_IsThrownBeforeItBecomesDeployed",
+          "state": "Passed",
+          "durationSeconds": 0.0016813,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MineEvolution_AllowsFourSequentialPlacementsInOneTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.MineEvolution_AllowsFourSequentialPlacementsInOneTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0029319,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OrbitalRocket_DefersImpactUntilOpponentTurnEnds",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds",
+          "state": "Passed",
+          "durationSeconds": 0.0047903,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OrbitalRocket_DoesNotFallOnceTheBattleHasAlreadyEnded",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_DoesNotFallOnceTheBattleHasAlreadyEnded",
+          "state": "Passed",
+          "durationSeconds": 0.0012806,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OrbitalRocket_IsStrongerThanTheHomingRocketAndUsesTheMissileBody",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_IsStrongerThanTheHomingRocketAndUsesTheMissileBody",
+          "state": "Passed",
+          "durationSeconds": 0.0251766,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OrbitalRocket_WithoutAMarkerNeedsATargetAndSpendsNothing",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_WithoutAMarkerNeedsATargetAndSpendsNothing",
+          "state": "Passed",
+          "durationSeconds": 0.001408,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PlasmaSword_HitsOneNearbyEnemyForConfiguredFixedDamage",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlasmaSword_HitsOneNearbyEnemyForConfiguredFixedDamage",
+          "state": "Passed",
+          "durationSeconds": 0.0046708,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PlasmaSword_PurchasedCoreChangesTheActualMeleeDamage",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlasmaSword_PurchasedCoreChangesTheActualMeleeDamage",
+          "state": "Passed",
+          "durationSeconds": 0.0021787,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PlayerTurnTimer_ContinuesWhileJumping",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlayerTurnTimer_ContinuesWhileJumping",
+          "state": "Passed",
+          "durationSeconds": 0.0012089,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PlayerTurnTimer_Expiring_AdvancesTurnToOpponent",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlayerTurnTimer_Expiring_AdvancesTurnToOpponent",
+          "state": "Passed",
+          "durationSeconds": 0.010564,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Projectile_GrazingDroidUpperBody_DetonatesBeforePassingThrough",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Projectile_GrazingDroidUpperBody_DetonatesBeforePassingThrough",
+          "state": "Passed",
+          "durationSeconds": 0.001817,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ProjectileIgnoresOwnerDuringLaunch",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ProjectileIgnoresOwnerDuringLaunch",
+          "state": "Passed",
+          "durationSeconds": 0.001298,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ProjectileTimeout_ExplodesAndAdvancesTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ProjectileTimeout_ExplodesAndAdvancesTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0023521,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RailRifle_FeatureIsFourPaidStepsAndSurvivesJson",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RailRifle_FeatureIsFourPaidStepsAndSurvivesJson",
+          "state": "Passed",
+          "durationSeconds": 0.0089239,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RailRifle_PassesThroughEveryDroidOnTheLineAndHurtsEachOnce",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RailRifle_PassesThroughEveryDroidOnTheLineAndHurtsEachOnce",
+          "state": "Passed",
+          "durationSeconds": 0.0171668,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RailRifle_StopsWhenThePenetrationBudgetIsSpentAndEachPierceStepAddsTenPercent",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RailRifle_StopsWhenThePenetrationBudgetIsSpentAndEachPierceStepAddsTenPercent",
+          "state": "Passed",
+          "durationSeconds": 0.0078718,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RailRifle_TunnelsANarrowChannelThroughGroundAndHitsTheDroidBehind",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RailRifle_TunnelsANarrowChannelThroughGroundAndHitsTheDroidBehind",
+          "state": "Passed",
+          "durationSeconds": 0.003188,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairJammer_BlocksTheAffectedEnemyHealingForTwoOwnTurns",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_BlocksTheAffectedEnemyHealingForTwoOwnTurns",
+          "state": "Passed",
+          "durationSeconds": 0.0052415,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairJammer_BlocksTimedRegenerationUntilItsBaseDurationExpires",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_BlocksTimedRegenerationUntilItsBaseDurationExpires",
+          "state": "Passed",
+          "durationSeconds": 0.0049432,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairJammer_HasTwoLoadoutAndTwoDurationPurchasesAndNothingElse",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_HasTwoLoadoutAndTwoDurationPurchasesAndNothingElse",
+          "state": "Passed",
+          "durationSeconds": 0.003484,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage",
+          "state": "Passed",
+          "durationSeconds": 0.0020476,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairJammer_StatusAppearsAfterOnePointFiveSecondsAndTheDeviceLeavesNoBlastOrCrater",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_StatusAppearsAfterOnePointFiveSecondsAndTheDeviceLeavesNoBlastOrCrater",
+          "state": "Passed",
+          "durationSeconds": 0.0024324,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairJammer_TwoDurationUpgradesKeepTheTargetJammedForFourOwnTurns",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_TwoDurationUpgradesKeepTheTargetJammedForFourOwnTurns",
+          "state": "Passed",
+          "durationSeconds": 0.0040164,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairJammer_WithoutAnEnemyNearbyIsUnavailableAndSpendsNothing",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_WithoutAnEnemyNearbyIsUnavailableAndSpendsNothing",
+          "state": "Passed",
+          "durationSeconds": 0.0012233,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairKit_UsesWithoutAimAndKeepsPlayerTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairKit_UsesWithoutAimAndKeepsPlayerTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0010912,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Rope_LengthFollowsPurchasedRadiusNotRank(0,8.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Rope_LengthFollowsPurchasedRadiusNotRank(0,8.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0031669,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Rope_LengthFollowsPurchasedRadiusNotRank(1,8.8f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Rope_LengthFollowsPurchasedRadiusNotRank(1,8.8f)",
+          "state": "Passed",
+          "durationSeconds": 0.001833,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Rope_LengthFollowsPurchasedRadiusNotRank(4,11.2f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Rope_LengthFollowsPurchasedRadiusNotRank(4,11.2f)",
+          "state": "Passed",
+          "durationSeconds": 0.0018327,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SameTotalTickTime_WithDifferentChunks_ProducesSameFinalState",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SameTotalTickTime_WithDifferentChunks_ProducesSameFinalState",
+          "state": "Passed",
+          "durationSeconds": 0.0036793,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SkyHook_AHostileMagnetStopsTheRocketAndTheCarriedDroidJustFalls",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_AHostileMagnetStopsTheRocketAndTheCarriedDroidJustFalls",
+          "state": "Passed",
+          "durationSeconds": 0.0068212,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SkyHook_CarriedDroidWhoMeetsAGroundOrCeilingLetsGoAndFallsWhileTheRocketGoesOn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_CarriedDroidWhoMeetsAGroundOrCeilingLetsGoAndFallsWhileTheRocketGoesOn",
+          "state": "Passed",
+          "durationSeconds": 0.00449,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SkyHook_CarriesTheFirstTouchedEnemyUpAndThrowsItSidewaysAtTheEnd",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_CarriesTheFirstTouchedEnemyUpAndThrowsItSidewaysAtTheEnd",
+          "state": "Passed",
+          "durationSeconds": 0.0088693,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SkyHook_ErasesGroundWithoutALimitOnTheWayUp",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_ErasesGroundWithoutALimitOnTheWayUp",
+          "state": "Passed",
+          "durationSeconds": 0.0063001,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SkyHook_IsSetUpBesideTheDroidFliesStraightUpAtTwiceTheSharedSpeedAndBlastsBelowTheArenaTop",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_IsSetUpBesideTheDroidFliesStraightUpAtTwiceTheSharedSpeedAndBlastsBelowTheArenaTop",
+          "state": "Passed",
+          "durationSeconds": 0.0151601,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SkyHook_PicksUpOnlyTheFirstEnemyOnThePathAndNeverAnAlly",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_PicksUpOnlyTheFirstEnemyOnThePathAndNeverAnAlly",
+          "state": "Passed",
+          "durationSeconds": 0.0089983,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SkyHook_RegistryOnePerBattleCorePurchasesAndArtMatchTheCard",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SkyHook_RegistryOnePerBattleCorePurchasesAndArtMatchTheCard",
+          "state": "Passed",
+          "durationSeconds": 0.0078348,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StandardJump_HorizontalLaunchSpeedStaysBelowRunningSpeed",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_HorizontalLaunchSpeedStaysBelowRunningSpeed",
+          "state": "Passed",
+          "durationSeconds": 0.0016307,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StandardJump_LeftMirrorsRight",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_LeftMirrorsRight",
+          "state": "Passed",
+          "durationSeconds": 0.0398176,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StandardJump_OpponentJumps_DuringOpponentTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_OpponentJumps_DuringOpponentTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0041666,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StandardJump_TurnsUnitTowardsJumpDirection",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_TurnsUnitTowardsJumpDirection",
+          "state": "Passed",
+          "durationSeconds": 0.0017551,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StandardJump_WhileAirborne_IsRejected",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StandardJump_WhileAirborne_IsRejected",
+          "state": "Passed",
+          "durationSeconds": 0.0017575,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.impulse\",1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.impulse\",1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0042224,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.impulse\",30.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.impulse\",30.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0022911,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.granata\",1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.granata\",1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0022207,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.granata\",30.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.granata\",30.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0026794,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.ion-shotgun\",1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.ion-shotgun\",1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0024349,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.ion-shotgun\",30.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StarterProjectiles_IgnoreInputPowerAndUseSharedLaunchSpeed(\"weapon.ion-shotgun\",30.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0025256,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StickyGrenade_BaseSticksToTheTargetAndExplodesAfterTheFuseWithoutPoison",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StickyGrenade_BaseSticksToTheTargetAndExplodesAfterTheFuseWithoutPoison",
+          "state": "Passed",
+          "durationSeconds": 0.0049241,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StickyGrenade_ToxicReleaseAppliesTheSharedTwoTurnPoisonCycleToEveryDroidInTheBlast",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StickyGrenade_ToxicReleaseAppliesTheSharedTwoTurnPoisonCycleToEveryDroidInTheBlast",
+          "state": "Passed",
+          "durationSeconds": 0.0066701,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StickyGrenade_ToxicReleaseIsOneFeatureStoredThroughThePaidServiceAndSurvivesJson",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.StickyGrenade_ToxicReleaseIsOneFeatureStoredThroughThePaidServiceAndSurvivesJson",
+          "state": "Passed",
+          "durationSeconds": 0.0267526,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SwapJump_ExchangePutsTheEnemyAtTheThrowOriginAndEndsTheTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_ExchangePutsTheEnemyAtTheThrowOriginAndEndsTheTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0205706,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SwapJump_ExchangesClosestEnemyUsingThrowOrigin",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_ExchangesClosestEnemyUsingThrowOrigin",
+          "state": "Passed",
+          "durationSeconds": 0.0028965,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SwapJump_NearbyDistanceIsTheSharedN0AndEveryRadiusPurchaseAddsTenPercentOfIt",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_NearbyDistanceIsTheSharedN0AndEveryRadiusPurchaseAddsTenPercentOfIt",
+          "state": "Passed",
+          "durationSeconds": 0.0052587,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SwapJump_PlainTransferEndsTheTurnAndTheChargeIsGone",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_PlainTransferEndsTheTurnAndTheChargeIsGone",
+          "state": "Passed",
+          "durationSeconds": 0.0111975,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SwapJump_RegistryPaidAimAndRadiusStepsLimitsAndArtMatchTheCard",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_RegistryPaidAimAndRadiusStepsLimitsAndArtMatchTheCard",
+          "state": "Passed",
+          "durationSeconds": 0.0283658,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SwapJump_SphereBouncesOffTheGroundLikeTheTeleportSphereBeforeItLands",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_SphereBouncesOffTheGroundLikeTheTeleportSphereBeforeItLands",
+          "state": "Passed",
+          "durationSeconds": 0.0048687,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SwapJump_WithoutNearbyEnemy_RepositionsOwnerOnly",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_WithoutNearbyEnemy_RepositionsOwnerOnly",
+          "state": "Passed",
+          "durationSeconds": 0.0022326,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Teleport_IntoTightSpot_CarvesArrivalPocketInsteadOfClimbingOnTop",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Teleport_IntoTightSpot_CarvesArrivalPocketInsteadOfClimbingOnTop",
+          "state": "Passed",
+          "durationSeconds": 0.0051112,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Teleport_RepositionsWhenProjectileStopsWithoutExtraDelay",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Teleport_RepositionsWhenProjectileStopsWithoutExtraDelay",
+          "state": "Passed",
+          "durationSeconds": 0.0033261,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TeleportSphere_BaseBouncesOnFirstContactWhileInstantTouchTeleportsAtOnce",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.TeleportSphere_BaseBouncesOnFirstContactWhileInstantTouchTeleportsAtOnce",
+          "state": "Passed",
+          "durationSeconds": 0.0081262,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TeleportSphere_EarlyTriggerSecondPressTeleportsToTheCurrentSpherePointWithoutASecondCharge",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.TeleportSphere_EarlyTriggerSecondPressTeleportsToTheCurrentSpherePointWithoutASecondCharge",
+          "state": "Passed",
+          "durationSeconds": 0.0036711,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TeleportSphere_FeaturesAreBoughtThroughThePaidServiceKeepTheSphereBodyAndSurviveJson",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.TeleportSphere_FeaturesAreBoughtThroughThePaidServiceKeepTheSphereBodyAndSurviveJson",
+          "state": "Passed",
+          "durationSeconds": 0.011598,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TeleportSphere_InstantTouchOnACeilingLeavesTheDroidOnTheFreeSideAndItFalls",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.TeleportSphere_InstantTouchOnACeilingLeavesTheDroidOnTheFreeSideAndItFalls",
+          "state": "Passed",
+          "durationSeconds": 0.0033961,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TeleportSphere_InstantTouchOnAWallDoesNotJumpOntoTheObstacle",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.TeleportSphere_InstantTouchOnAWallDoesNotJumpOntoTheObstacle",
+          "state": "Passed",
+          "durationSeconds": 0.0025976,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TeleportSphere_WithoutTheEarlyTriggerSecondPressIsBlockedAndContactStillWorks",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.TeleportSphere_WithoutTheEarlyTriggerSecondPressIsBlockedAndContactStillWorks",
+          "state": "Passed",
+          "durationSeconds": 0.0019749,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ToxicEvolutionResolver_ReturnsConfiguredArmorWeakenAndMovementDamageValues",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicEvolutionResolver_ReturnsConfiguredArmorWeakenAndMovementDamageValues",
+          "state": "Passed",
+          "durationSeconds": 0.0015917,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ToxicWeapon_AppliesTwoEndOfVictimTurnTicksEqualToTwentyPercentOfImpactDamage",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeapon_AppliesTwoEndOfVictimTurnTicksEqualToTwentyPercentOfImpactDamage",
+          "state": "Passed",
+          "durationSeconds": 0.0026305,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ToxicWeapon_StatusDurationStaysAtTwoVictimTurnsDespiteLegacyDurationEvolution",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeapon_StatusDurationStaysAtTwoVictimTurnsDespiteLegacyDurationEvolution",
+          "state": "Passed",
+          "durationSeconds": 0.0016519,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ToxicWeaponBranchB_DealsExtraDamage_WhilePoisonedTargetMoves",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeaponBranchB_DealsExtraDamage_WhilePoisonedTargetMoves",
+          "state": "Passed",
+          "durationSeconds": 0.0069274,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "UnimplementedUtility_CannotHealOrTeleportThroughGenericFallback",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.UnimplementedUtility_CannotHealOrTeleportThroughGenericFallback",
+          "state": "Passed",
+          "durationSeconds": 0.0021238,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "WalkIntent_AccumulatesAcrossFramesShorterThanOneTick",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_AccumulatesAcrossFramesShorterThanOneTick",
+          "state": "Passed",
+          "durationSeconds": 0.0032274,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "WalkIntent_MovesOpponentUnit_DuringOpponentTurn",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesOpponentUnit_DuringOpponentTurn",
+          "state": "Passed",
+          "durationSeconds": 0.0032418,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+          "state": "Passed",
+          "durationSeconds": 0.0022002,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}

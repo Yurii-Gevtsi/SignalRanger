@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "97df2b49-b73f-4bfa-aa14-65b5dcc14ad6",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-toxic-status-compliance",
+  "profile": "default",
+  "request": {
+    "message": "Complete the canonical toxic status behavior: its duration is exactly two endings of the affected unit's turns even with legacy evolution data, and a same-element hit refreshes the single status's two-turn duration and tick damage without stacking parallel ticks.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-22T16:45:36.067Z",
+  "updatedAt": "2026-09-22T16:45:36.067Z"
+}

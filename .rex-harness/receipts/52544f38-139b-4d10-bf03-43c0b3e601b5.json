@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "52544f38-139b-4d10-bf03-43c0b3e601b5",
+  "command": {
+    "executable": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Unity.exe",
+    "args": [
+      "-batchmode",
+      "-nographics",
+      "-quit",
+      "-projectPath",
+      "C:\\Projects\\Game",
+      "-runTests",
+      "-testPlatform",
+      "EditMode",
+      "-testFilter",
+      "Game.Tests.EditMode.Gameplay.WeaponEvolutionIconResolverTests",
+      "-testResults",
+      "Temp\\weapon-evolution-icon-red.xml",
+      "-logFile",
+      "Temp\\weapon-evolution-icon-red.log"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "678ceb5948483b6ba81072094ca82ab0e07614b6b4d9fee48fdc102406095140",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-16T15:46:47.486Z"
+}

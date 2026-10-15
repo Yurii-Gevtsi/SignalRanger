@@ -1,0 +1,95 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "25180e4a6b8248be8e9349dd77565ab1",
+    "status": "succeeded",
+    "mode": "EditMode",
+    "started_unix_ms": 1791308939760,
+    "finished_unix_ms": 1791308943847,
+    "last_update_unix_ms": 1791308943847,
+    "progress": {
+      "completed": 6,
+      "total": 6,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791308943760,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Localization.LocalizationCoverageTests.UkrainianDictionaryUsesStrictUtf8WithoutLossMarkers",
+      "last_finished_unix_ms": 1791308943763,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "EditMode",
+      "summary": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 0.3775693,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "CampaignSectorAndPlanetNamesExistInEveryDictionary",
+          "fullName": "Game.Tests.EditMode.Localization.LocalizationCoverageTests.CampaignSectorAndPlanetNamesExistInEveryDictionary",
+          "state": "Passed",
+          "durationSeconds": 0.0586825,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EveryGameTextKeyExistsInEveryDictionary",
+          "fullName": "Game.Tests.EditMode.Localization.LocalizationCoverageTests.EveryGameTextKeyExistsInEveryDictionary",
+          "state": "Passed",
+          "durationSeconds": 0.0368462,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EveryLanguageCarriesTheSameKeysAsTheBaseDictionary",
+          "fullName": "Game.Tests.EditMode.Localization.LocalizationCoverageTests.EveryLanguageCarriesTheSameKeysAsTheBaseDictionary",
+          "state": "Passed",
+          "durationSeconds": 0.0327819,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EveryQuestAndMissionHasItsTextInEveryDictionary",
+          "fullName": "Game.Tests.EditMode.Localization.LocalizationCoverageTests.EveryQuestAndMissionHasItsTextInEveryDictionary",
+          "state": "Passed",
+          "durationSeconds": 0.083013,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NoDictionaryEntryIsLeftEmpty",
+          "fullName": "Game.Tests.EditMode.Localization.LocalizationCoverageTests.NoDictionaryEntryIsLeftEmpty",
+          "state": "Passed",
+          "durationSeconds": 0.0317994,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "UkrainianDictionaryUsesStrictUtf8WithoutLossMarkers",
+          "fullName": "Game.Tests.EditMode.Localization.LocalizationCoverageTests.UkrainianDictionaryUsesStrictUtf8WithoutLossMarkers",
+          "state": "Passed",
+          "durationSeconds": 0.0025963,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}

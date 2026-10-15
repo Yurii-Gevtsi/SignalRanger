@@ -1,0 +1,58 @@
+{
+  "canvas": {
+    "width": 1672,
+    "height": 941
+  },
+  "production_scale": 2,
+  "source_overlap_radius_px": 1,
+  "pieces": [
+    {
+      "id": "section_01",
+      "x": 1034,
+      "y": 28,
+      "width": 605,
+      "height": 450,
+      "target_width": 1210,
+      "target_height": 900,
+      "sorting_order": -9,
+      "source": "forest_section_01_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_02",
+      "x": 89,
+      "y": 288,
+      "width": 483,
+      "height": 613,
+      "target_width": 966,
+      "target_height": 1226,
+      "sorting_order": -8,
+      "source": "forest_section_02_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_03",
+      "x": 1151,
+      "y": 408,
+      "width": 476,
+      "height": 507,
+      "target_width": 952,
+      "target_height": 1014,
+      "sorting_order": -7,
+      "source": "forest_section_03_source.png",
+      "overlap_radius_px": 1
+    },
+    {
+      "id": "section_04",
+      "x": 496,
+      "y": 593,
+      "width": 701,
+      "height": 277,
+      "target_width": 1402,
+      "target_height": 554,
+      "sorting_order": -6,
+      "source": "forest_section_04_source.png",
+      "overlap_radius_px": 1
+    }
+  ]
+}

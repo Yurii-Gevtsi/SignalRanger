@@ -1,0 +1,3 @@
+# Grounder health interception invariants
+
+`DamageGrounder` checks that the device remains registered before subtracting HP. A zero-HP result removes it once and invokes `GrounderRemoved`; the caller still resolves the physical projectile's ordinary impact and explosion. The added Unity test uses public events and checks both explosion counts plus removal after each hit. It does not expose private health or weaken existing assertions. The health constant extraction keeps the 45-HP prototype behavior unchanged. Review scope: new grounder health guard, constant, and two-hit test only; unrelated dirty weapon edits are outside this slice.

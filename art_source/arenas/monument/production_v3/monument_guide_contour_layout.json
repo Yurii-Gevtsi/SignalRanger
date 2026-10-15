@@ -1,0 +1,45 @@
+{
+  "canvas": {
+    "width": 2048,
+    "height": 1152
+  },
+  "production_scale": 2,
+  "pieces": [
+    {
+      "id": "section_01",
+      "x": 1147,
+      "y": 85,
+      "width": 424,
+      "height": 591,
+      "sorting_order": -9,
+      "reference": "monument_section_01_reference.png"
+    },
+    {
+      "id": "section_02",
+      "x": 584,
+      "y": 91,
+      "width": 924,
+      "height": 956,
+      "sorting_order": -8,
+      "reference": "monument_section_02_reference.png"
+    },
+    {
+      "id": "section_03",
+      "x": 1379,
+      "y": 383,
+      "width": 667,
+      "height": 672,
+      "sorting_order": -7,
+      "reference": "monument_section_03_reference.png"
+    },
+    {
+      "id": "section_04",
+      "x": 3,
+      "y": 447,
+      "width": 839,
+      "height": 606,
+      "sorting_order": -6,
+      "reference": "monument_section_04_reference.png"
+    }
+  ]
+}

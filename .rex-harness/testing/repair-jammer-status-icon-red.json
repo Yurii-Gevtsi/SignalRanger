@@ -1,0 +1,7 @@
+{
+  "phase": "red",
+  "test": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.RepairJammerStatus_UsesTheApprovedTransparentIconResource",
+  "receiptRef": "receipt:640b1e92-68e6-4903-a1e4-d8dad025c6df",
+  "observed": "The focused Unity EditMode test failed because Resources.Load<Texture2D>(\"UI/Common/no-repair-2\") returned null.",
+  "failureReason": "The approved repair-jammer status icon has not been imported into Assets/_Game/Content/Resources/UI/Common."
+}

@@ -1,0 +1,39 @@
+{
+  "arena_id": "arena.monument",
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "crop": [
+        0,
+        256,
+        844,
+        1062
+      ],
+      "sorting_order": -8
+    },
+    {
+      "id": "center",
+      "crop": [
+        496,
+        77,
+        1534,
+        1058
+      ],
+      "sorting_order": -7
+    },
+    {
+      "id": "right",
+      "crop": [
+        1186,
+        236,
+        2048,
+        1063
+      ],
+      "sorting_order": -6
+    }
+  ]
+}

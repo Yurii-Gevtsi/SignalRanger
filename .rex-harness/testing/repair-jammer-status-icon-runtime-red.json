@@ -1,0 +1,7 @@
+{
+  "phase": "red",
+  "test": "Game.Tests.EditMode.Gameplay.BattleUnitViewTests.RepairJammerStatusIcon_TracksActiveState",
+  "receiptRef": "receipt:1535d2cb-7aab-47df-98f0-66e72865f830",
+  "observed": "The focused Unity EditMode test failed because BattleUnitView does not expose SetRepairJammerActive.",
+  "failureReason": "The battle unit presentation has no state entry to create, show, and hide the repair-jammer status icon."
+}

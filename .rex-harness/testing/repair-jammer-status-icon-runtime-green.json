@@ -1,0 +1,11 @@
+{
+  "phase": "green",
+  "test": "Game.Tests.EditMode.Gameplay.BattleUnitViewTests.RepairJammerStatusIcon_TracksActiveState",
+  "receiptRef": "receipt:a9c63a59-e557-4a4d-8a90-56ff7402d277",
+  "implementation": [
+    "BattleUnitView lazily creates one world-space Repair Jammer Status Icon SpriteRenderer from UI/Common/no-repair-2, positions it beside Health Label, and toggles it through SetRepairJammerActive.",
+    "BattleUnitPresenter forwards the repair-jammer visual state and BattleSceneController refreshes it from BattleSimulation.IsUnitRepairJammed during RefreshUnitViews.",
+    "LaserFenceNodeDeployedEvent exposes a read-only Position compatibility alias for Point so the existing test assembly compiles without changing event semantics."
+  ],
+  "scope": "No changes were made to repair-jammer duration, damage, healing, input, or other status effects."
+}

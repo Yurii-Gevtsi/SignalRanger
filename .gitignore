@@ -86,6 +86,8 @@ crashlytics-build.properties
 
 # TestRunner generated files
 InitTestScene*.unity*
+/Assets/Resources/PerformanceTestRunInfo.json*
+/Assets/Resources/PerformanceTestRunSettings.json*
 
 # Addressables default ignores, before user customizations
 /ServerData
@@ -105,3 +107,46 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Local decompilation/analysis tooling (large binaries, not part of the project)
+/.tools/
+
+# Player build outputs dropped at the repo root (named after the executable,
+# so the template's /Build/ rules do not catch them)
+*_BurstDebugInformation_DoNotShip/
+*_BackUpThisFolder_ButDontShipItWithYourGame/
+*.symbols.zip
+
+# JetBrains Rider project metadata
+.idea/
+
+# UGS/бекенд секрети: ключі service account, ключі Android Publisher тощо.
+# Секрети живуть у змінних середовища CI або локально поза репозиторієм.
+*.service-account.json
+ugs-credentials*
+.ugs/
+
+# AIOS — регенеровані/машинно-локальні артефакти. Сам механізм і корисні
+# конфіги (model-registry.json, MCP config, rex-* role cards, workflow doc)
+# лишаються в репо; тут — тільки кеші й одноразовий локальний стан.
+.aios/install-state.json
+.aios/codemap.json
+.aios/.locks/
+.code-review-graph/
+.claude/.backups/
+.claude/settings.local.json
+.claude/skills/
+.codex/skills/
+.gemini/
+GEMINI.md
+.claude/.aios-native-sync.json
+.codex/.aios-native-sync.json
+
+# Local AIOS session data and Python bytecode caches.
+/.aios/context-db/
+/.aios/evidence/
+/.aios/interception/
+/.aios/memo/
+/.contextdb-enable
+/tools/arena-assets/__pycache__/
+/.local-trash/

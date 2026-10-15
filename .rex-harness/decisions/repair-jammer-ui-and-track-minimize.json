@@ -1,0 +1,42 @@
+{
+  "workItem": "weapon-combat-repair-jammer-ui-and-track",
+  "reuseLadder": [
+    {
+      "level": 1,
+      "option": "Remove the visible-status requirement",
+      "decision": "rejected",
+      "evidence": "docs/design/weapon-combat-specification.md:121 explicitly requires no-repair-2 beside HP during the status."
+    },
+    {
+      "level": 2,
+      "option": "Reuse BattleSimulation.IsUnitRepairJammed and the unit view",
+      "decision": "selected",
+      "evidence": "BattleSimulation.cs exposes the status query; BattleUnitView.cs already owns the world-space health label and follows the droid."
+    },
+    {
+      "level": 3,
+      "option": "Use Unity SpriteRenderer and Resources.Load",
+      "decision": "selected",
+      "evidence": "BattleUnitView and BattleSceneController already create SpriteRenderer children and load Resource sprites."
+    },
+    {
+      "level": 4,
+      "option": "Add a package or third-party overlay system",
+      "decision": "rejected",
+      "evidence": "No new dependency is needed for one world-space icon."
+    },
+    {
+      "level": 5,
+      "option": "Controller-only polling with no view method",
+      "decision": "rejected",
+      "evidence": "It would duplicate unit-view positioning and leak visual ownership into the scene controller."
+    },
+    {
+      "level": 6,
+      "option": "Add one BattleUnitView status-icon child controlled by one scene-controller refresh loop",
+      "decision": "selected",
+      "evidence": "This is the smallest local construction that keeps positioning, sorting and lifecycle with the unit view."
+    }
+  ],
+  "progressionTrack": "WeaponProgressionCatalog already owns the jammer's path ceilings; change its Radius count from 4 to 2, which the existing runtime resolver caps to the corresponding +0/+1/+2 duration bonus."
+}

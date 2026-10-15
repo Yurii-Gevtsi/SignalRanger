@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "4faa155e-f02c-4d54-8062-99d4fda836a7",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.Grounder_DeploymentShowsItsSkinAndRemovalClearsIt"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "fcf0ec8595ccc1b18a90e2b8d55d915e95f9d924d1b0ed96b25e5bb91a03e55d",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-26T14:23:10.971Z"
+}

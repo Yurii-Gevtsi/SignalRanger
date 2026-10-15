@@ -1,0 +1,20 @@
+{
+  "workItem": "weapon-combat-orbital-rocket-presentation",
+  "userGoal": "Complete the battle-scene affordance for the verified orbital strike: no held weapon, double-tap target selection, visible red cross draft marker, clear marker when intent changes or confirmation fires, and a missile skin during the delayed fall.",
+  "inScope": [
+    "BattleSceneController target-input routing and draft-marker lifetime.",
+    "BattleSceneController held-weapon suppression and projectile-sprite mapping.",
+    "Focused resource/presentation contract and the existing end-to-end simulation test."
+  ],
+  "outOfScope": ["New raster art", "Other weapon mechanics", "Changes to deferred-strike simulation rules"],
+  "completionCriteria": [
+    "Orbital rocket has no generic aim drag or equipped item beside the droid.",
+    "Two close arena taps create one red cross through BattleSimulation.TrySetOrbitalTarget.",
+    "Selecting another weapon, turn expiry, or confirmation removes the visible draft marker.",
+    "The spawned orbital projectile resolves its explicit missile asset instead of the generic circle."
+  ],
+  "prohibitedTestWeakening": [
+    "Do not make a marker only in the scene without setting the simulation target.",
+    "Do not validate only the asset file while retaining the generic fallback renderer."
+  ]
+}

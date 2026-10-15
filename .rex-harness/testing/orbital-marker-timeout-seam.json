@@ -1,0 +1,1 @@
+{"seam":"BattleSceneController.OnSimulationTurnAdvanced is the turn-boundary owner of scene state; current EditMode harness lacks a fully initialized controller fixture for input/UI state.","focusedCommand":"node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.OrbitalRocket_UsesMissileFlightResource"}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "d64e5aa1-9a4f-4876-b34e-8732275c8561",
+  "command": {
+    "executable": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Unity.exe",
+    "args": [
+      "-batchmode",
+      "-nographics",
+      "-quit",
+      "-projectPath",
+      "C:\\Projects\\Game",
+      "-runTests",
+      "-testPlatform",
+      "EditMode",
+      "-testFilter",
+      "Game.Tests.EditMode.Gameplay.WeaponUiCatalogAvailabilityTests",
+      "-testResults",
+      "Temp\\weapon-ui-catalog-green.xml",
+      "-logFile",
+      "Temp\\weapon-ui-catalog-green.log"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "97ed2df735f3812a0e04b7464d18954f8faa98ea495288c707effa1b180d332f",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-16T16:13:09.359Z"
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "1fe017b0-56e3-4edb-ba3e-6701d181f476",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.RepairJammerStatus_UsesTheApprovedTransparentIconResource"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "0d3cbf4e496c3840536fe26c87aeb04de707eec05c70e91ad1d09347b0dad464",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-23T05:35:26.496Z"
+}

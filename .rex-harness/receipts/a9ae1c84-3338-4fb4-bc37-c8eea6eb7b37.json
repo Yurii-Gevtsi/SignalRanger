@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "a9ae1c84-3338-4fb4-bc37-c8eea6eb7b37",
+  "command": {
+    "executable": "powershell",
+    "args": [
+      "-NoProfile",
+      "-Command",
+      "$h=@{Accept=application/json,",
+      "text/event-stream; mcp-session-id=d4a1a88457bb42ddbe4510005eb80a20}; $b={\"jsonrpc\":\"2.0\",\"id\":10,\"method\":\"tools/call\",\"params\":{\"name\":\"get_test_job\",\"arguments\":{\"job_id\":\"4b7b48a7d6ad4572a147c6b7504c7c64\",\"include_failed_tests\":true,\"include_details\":true}}}; $r=(Invoke-WebRequest -Uri http://127.0.0.1:8080/mcp -Method Post -ContentType application/json -Headers $h -Body $b -UseBasicParsing -TimeoutSec 30).Content; Write-Output $r; if($r -match \"status\":\"failed\"){exit 1}; exit 2"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "78d164180e579fc664132808983544cd526993e2addb9979d5a0c64e833973de",
+  "observedAt": "2026-09-17T05:21:17.877Z"
+}

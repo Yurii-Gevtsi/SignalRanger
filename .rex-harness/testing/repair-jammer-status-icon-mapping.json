@@ -1,0 +1,15 @@
+{
+  "acceptanceMapping": [
+    {
+      "behavior": "An active jammer shows no-repair-2 by HP",
+      "entry": "BattleUnitView.SetRepairJammerActive(true)",
+      "observable": "The status SpriteRenderer is enabled and has the no-repair-2 sprite."
+    },
+    {
+      "behavior": "Expiry hides the indicator",
+      "entry": "BattleUnitView.SetRepairJammerActive(false)",
+      "observable": "The same renderer is disabled."
+    }
+  ],
+  "antiGaming": "The test observes the rendered SpriteRenderer state; it does not assert a private boolean."
+}

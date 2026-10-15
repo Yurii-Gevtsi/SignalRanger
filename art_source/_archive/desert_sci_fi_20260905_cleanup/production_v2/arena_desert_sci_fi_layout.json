@@ -1,0 +1,24 @@
+{
+  "arena_id": "arena.desert-sci-fi",
+  "source_master": "art_source/arenas/desert_sci_fi/master/\u043a\u0430\u043d\u044c\u0439\u043e\u043d.png",
+  "master_width_px": 2048,
+  "master_height_px": 1152,
+  "production_scale": 2,
+  "production_canvas_width_px": 4096,
+  "production_canvas_height_px": 2304,
+  "runtime_pixels_per_unit": 256,
+  "pivot": [
+    0.5,
+    0.5
+  ],
+  "small_platform_reuse": "cluster_06 is referenced by two instances with identical source visual and mask",
+  "source_master_size_px": [
+    1672,
+    941
+  ],
+  "normalized_master_size_px": [
+    2048,
+    1152
+  ],
+  "visual_generation": "individual image-to-image enhancement from exact fixed-layout reference crops"
+}

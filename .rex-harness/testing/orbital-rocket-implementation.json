@@ -1,0 +1,21 @@
+{
+  "scope": "Orbital rocket simulation lifecycle",
+  "changedFiles": [
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs",
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/SimProjectile.cs",
+    "Assets/_Game/Tests/EditMode/Gameplay/BattleSimulationTests.cs"
+  ],
+  "behavior": [
+    "Orbital rocket is available and does not require a generic aim vector.",
+    "TrySetOrbitalTarget records only an unconfirmed player marker; changing intent can call ClearOrbitalTarget and timer expiry clears it.",
+    "Fire confirmation consumes ammo, ends the player's turn, and records a deferred strike.",
+    "When the opponent turn ends, a vertical projectile is spawned above the marked point and its impact does not consume the new player turn."
+  ],
+  "design": "BattleSimulation owns pending strike state and projectile lifecycle. SimProjectile carries the narrow suppress-turn-advance flag because only deferred system impacts must preserve the already-open turn.",
+  "preEdit": {
+    "baseline": "Worktree was already dirty with unrelated game, assets, documentation, localization, and harness edits; no pull, reset, stash, or revert was performed.",
+    "structuralSearch": "The code graph MCP was unavailable in this session, so targeted rg inspection covered BattleSimulation, SimProjectile, controller projectile presentation, existing teleport marker handling, and BattleSimulationTests.",
+    "focusedVerification": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds"
+  },
+  "limitations": "Scene input and target-marker presentation are the next bounded slice; the simulation API is already public for that layer."
+}

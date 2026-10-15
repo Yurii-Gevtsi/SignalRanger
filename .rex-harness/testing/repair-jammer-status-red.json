@@ -1,0 +1,1 @@
+{"test":"Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_BlocksTheAffectedEnemyHealingForTwoOwnTurns","expected":"HP remains 60","observed":"HP became 90","failureReason":"No status blocks healing","receiptRef":"receipt:e78af9a3-6c06-4977-a8ef-b8e8719492e9"}

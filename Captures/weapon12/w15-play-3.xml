@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Failed(Child)" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 15:47:03Z" end-time="2026-10-06 15:47:09Z" duration="6,0232048">
+  <test-suite type="TestSuite" id="1042" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="28" result="Failed" site="Child" start-time="2026-10-06 15:47:03Z" end-time="2026-10-06 15:47:09Z" duration="6.023205" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1035" name="Game.Tests.PlayMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.PlayMode.dll" runstate="Runnable" testcasecount="28" result="Failed" site="Child" start-time="2026-10-06 15:47:03Z" end-time="2026-10-06 15:47:09Z" duration="5.998134" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1036" name="Game" fullname="Game" runstate="Runnable" testcasecount="28" result="Failed" site="Child" start-time="2026-10-06 15:47:03Z" end-time="2026-10-06 15:47:09Z" duration="5.993852" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1037" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="28" result="Failed" site="Child" start-time="2026-10-06 15:47:03Z" end-time="2026-10-06 15:47:09Z" duration="5.990549" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1038" name="PlayMode" fullname="Game.Tests.PlayMode" runstate="Runnable" testcasecount="28" result="Failed" site="Child" start-time="2026-10-06 15:47:03Z" end-time="2026-10-06 15:47:09Z" duration="5.984864" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1005" name="StarterWeaponsBattleSmokeTests" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" testcasecount="25" result="Failed" site="Child" start-time="2026-10-06 15:47:03Z" end-time="2026-10-06 15:47:09Z" duration="5.974266" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1030" name="TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt" fullname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt" methodname="TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt" classname="Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests" runstate="Runnable" seed="835412999" result="Failed" start-time="2026-10-06 15:47:03Z" end-time="2026-10-06 15:47:09Z" duration="5.939399" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  the second press consumed the sphere; before=1 now=projectile.weapon.teleport#1@(1.05, 12.29) early=True
+  Expected: 0
+  But was:  1
+]]></message>
+                  <stack-trace><![CDATA[at Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests+<TeleportSphere_ProductionSceneKeepsTheSphereBodyAndTheSecondPressTriggersIt>d__10.MoveNext () [0x0036f] in C:\Projects\Game\Assets\_Game\Tests\PlayMode\StarterWeaponsBattleSmokeTests.cs:321
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@f3e6c9a02477\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -1,0 +1,10 @@
+{
+  "publicEntry": "BattleSimulation.TryFire and Tick",
+  "setup": "Player fires swap-jump toward an enemy within N0. The test records the sphere's ProjectileExploded impact coordinate before movement resolves.",
+  "command": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.SwapJump_ExchangesClosestEnemyUsingThrowOrigin",
+  "expected": "Owner x equals sphere impact x within 0.05, and the enemy moves to the player's throw-time origin.",
+  "observed": "Unity EditMode test failed: sphere x=-1.4166677, owner x=-1.5, matching the enemy's previous x.",
+  "failureReason": "ExchangeTeleportPositions sends the owner to target.Position, contrary to the swap-jump landing contract.",
+  "receiptRef": "receipt:2a63a1d6-bd4d-4d4a-8ad3-7edeb3bff7d3",
+  "exitCode": 1
+}

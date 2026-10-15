@@ -1,0 +1,1 @@
+{"test":"BattleVisualResourceTests.OrbitalRocket_TimerExpiryInvalidatesTheVisibleDraftMarker","review":["The test distinguishes timer expiry from ordinary instant action, so cleanup cannot become unconditional.","The controller calls cleanup at its single turn-boundary event after simulation has invalidated the draft."],"result":"No behavior constraint weakened."}

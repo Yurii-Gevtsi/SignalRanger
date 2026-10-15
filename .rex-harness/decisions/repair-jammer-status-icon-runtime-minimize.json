@@ -1,0 +1,47 @@
+{
+  "workItem": "weapon-combat-repair-jammer-status-icon-runtime-v2",
+  "requestedBehavior": "A jammed droid shows the approved no-repair-2 icon beside its HP exactly while BattleSimulation reports the repair-jammer status.",
+  "baseline": {
+    "worktree": "dirty with unrelated arena, UI, localization, and combat changes; this slice is restricted to BattleUnitView, BattleUnitPresenter, BattleSceneController, a focused view test, and Rex evidence.",
+    "graph": "No code-review-graph MCP tool is available in this agent session, so targeted source inspection and rg are the fallback."
+  },
+  "reuseLadder": [
+    {
+      "level": 1,
+      "option": "Remove the requirement",
+      "decision": "rejected",
+      "reason": "The approved combat specification explicitly requires the status icon beside HP."
+    },
+    {
+      "level": 2,
+      "option": "Reuse BattleUnitView status overlays",
+      "decision": "selected",
+      "reason": "BattleUnitView already owns lazy child SpriteRenderer creation and state toggling for freeze, poison, lava, and electro effects."
+    },
+    {
+      "level": 3,
+      "option": "Use Unity Resources and Sprite.Create",
+      "decision": "selected",
+      "reason": "The approved texture is already in the established UI Resources family and existing runtime views use Unity sprite renderers."
+    },
+    {
+      "level": 4,
+      "option": "Add a package or UI framework",
+      "decision": "rejected",
+      "reason": "No dependency is needed for a single world-space status sprite."
+    },
+    {
+      "level": 5,
+      "option": "Call the view directly from the controller",
+      "decision": "rejected",
+      "reason": "BattleUnitPresenter already encapsulates state-to-view presentation, so it should expose a narrow status forwarding method."
+    },
+    {
+      "level": 6,
+      "option": "Add one repair-jammer sprite renderer and a presenter forwarding method",
+      "decision": "selected",
+      "reason": "This is the smallest complete extension: the controller queries the existing simulation status during RefreshUnitViews, presenter forwards it, and the view owns only its visual child."
+    }
+  ],
+  "verification": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleUnitViewTests.RepairJammerStatusIcon_TracksActiveState"
+}

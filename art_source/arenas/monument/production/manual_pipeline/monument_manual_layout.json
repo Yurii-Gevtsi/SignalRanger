@@ -1,0 +1,14 @@
+{
+  "canvas_width_px": 4096,
+  "canvas_height_px": 2304,
+  "production_scale": 2,
+  "source_canvas_width_px": 2048,
+  "source_canvas_height_px": 1152,
+  "alpha_policy": "original_manual_alpha_locked",
+  "draw_order": ["section_01", "section_02", "section_03"],
+  "pieces": [
+    { "id": "section_01", "visual": "enhanced/monument_section_01_visual.png", "mask": "enhanced/monument_section_01_mask.png", "x_px": 28, "y_px": 838, "width_px": 1554, "height_px": 1266 },
+    { "id": "section_02", "visual": "enhanced/monument_section_02_visual.png", "mask": "enhanced/monument_section_02_mask.png", "x_px": 1100, "y_px": 140, "width_px": 2034, "height_px": 2006 },
+    { "id": "section_03", "visual": "enhanced/monument_section_03_visual.png", "mask": "enhanced/monument_section_03_mask.png", "x_px": 2826, "y_px": 670, "width_px": 1378, "height_px": 1476, "clip_to_canvas": true }
+  ]
+}

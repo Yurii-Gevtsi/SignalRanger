@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/repair-jammer-status-icon-runtime-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleUnitView.SetRepairJammerActive(bool)",
+    "setup": "Instantiate a real BattleUnitView in the Unity EditMode fixture and request the active status state.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Gameplay.BattleUnitViewTests.RepairJammerStatusIcon_TracksActiveState"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "The public view state entry exists and makes the approved status sprite visible beside HP.",
+    "observed": "The test failed because BattleUnitView exposes no SetRepairJammerActive method.",
+    "failureReason": "Combat presentation has no public repair-jammer status visual boundary.",
+    "receiptRef": "receipt:1535d2cb-7aab-47df-98f0-66e72865f830"
+  }
+}

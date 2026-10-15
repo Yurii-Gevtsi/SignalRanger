@@ -1,0 +1,19 @@
+{
+  "workItem": "weapon-combat-repair-jammer-ui-and-track",
+  "userGoal": "The repair jammer has exactly two duration upgrades and shows no-repair-2 by the affected droid's HP while the combat status is active.",
+  "inScope": [
+    "WeaponProgressionCatalog exposes only two Radius purchases for weapon.repair-jammer.",
+    "BattleUnitView can show and hide one status icon that follows the unit and is rendered above its HP area.",
+    "BattleSceneController refreshes this view state from BattleSimulation.IsUnitRepairJammed."
+  ],
+  "outOfScope": [
+    "Other status icons and other weapons.",
+    "Changing the already verified repair-jammer combat timing.",
+    "Changing the source PNG artwork."
+  ],
+  "completionCriteria": [
+    "The progression definition reports a radius/duration upgrade limit of two.",
+    "A view test observes a visible icon with the imported no-repair-2 sprite, then observes it hidden.",
+    "The scene controller calls the view behavior from the existing simulation status query."
+  ]
+}

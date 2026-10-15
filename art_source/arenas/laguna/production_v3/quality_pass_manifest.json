@@ -1,0 +1,55 @@
+{
+  "rule": "Every fragment is individually enhanced after the guide-contour crop; resize-only output cannot be promoted.",
+  "pieces": [
+    {
+      "id": "section_01",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "3c7597b159e70f0887d8101579900d735b783ba35ce407d93613156561a31ba2",
+      "enhanced_sha256": "50489d36c7d6f9f31c4ed2cd61dcc68b11878c7a4b30fb8f862ea5b3ddc0bcf0",
+      "final_visual_sha256": "7e3e7cfc653bf532153017a5d699fa94c5fe6802b953bb282d005928fd59a417",
+      "width": 1586,
+      "height": 1116,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "id": "section_02",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "39e50c6b230ab2f935f6174a373703c511c0c3563a179aff74165eeaf46a22e7",
+      "enhanced_sha256": "0445278dbd22f428d4ed5d656f8ad128669b3f085b0c5c7d8217baaf60f573a8",
+      "final_visual_sha256": "d22b70751c64deb77b99501201afb2ef6fd27a59e2f62abfd88899c0d1f665c2",
+      "width": 1372,
+      "height": 1018,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "id": "section_03",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "8084cb95177fc8d67ca07e754285663083b5633732e328c428458e568fd26b31",
+      "enhanced_sha256": "79b609b521d1df7184a02995f207a6d9fce3c9cda64f701623c625c5908b2a0b",
+      "final_visual_sha256": "e2c7d37c5f5834c8988a7187f47a8df213787a7f5c4e982206688be08ba23552",
+      "width": 1280,
+      "height": 1392,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "id": "section_04",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "59d897c8240a190d02400391540b24ce4374aa9acd9d1651cc19743dee5c5219",
+      "enhanced_sha256": "6e2bd9795a9908abb3ce25eba84a1627b77b4bf5597c72ef762b39b0f510fe88",
+      "final_visual_sha256": "30d4a62ab4c972ecc29dbe048270c7eb7cfc11e0c2162a213e765aac6ad75e07",
+      "width": 1178,
+      "height": 822,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "id": "section_05",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_sha256": "7d25cb6270c3166c4196486c0e38e3a89a3c7deb09e8b1c8fafbdc0455fbedf6",
+      "enhanced_sha256": "e34c03589a08757f4ea66c914c3342891bd92375258b49c4de26dc2a4bac64b3",
+      "final_visual_sha256": "2500b5d31258c51e27579b07556c6c919a5c47f0b2de27aa0304abe71a0b88a0",
+      "width": 1954,
+      "height": 738,
+      "alpha_source": "reference_crop"
+    }
+  ]
+}

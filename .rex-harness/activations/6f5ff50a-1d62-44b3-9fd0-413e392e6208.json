@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "6f5ff50a-1d62-44b3-9fd0-413e392e6208",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-12-titanium-barrier-closure",
+  "profile": "default",
+  "request": {
+    "message": "Implement and verify weapon 12 titanium barrier: opaque matching sprite, placement controls, pinch shrink and level five size unlock with 10 percent initial and four increments to 50 percent, fixed terrain geometry.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 3,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design",
+    "software.testing.tdd",
+    "software.review.standards-spec"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "b0b000ab-8cca-41f0-ace4-01ba0e8bd933",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-test-contract.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-test-contract.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-test-contract.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-testability.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "89effe52-e61d-4f37-a74a-4d0703ea6729",
+      "capabilityId": "software.testing.tdd",
+      "recipeId": "software.testing.tdd.recipe",
+      "reasonCode": "honest-red-candidate",
+      "triggerEvidenceRefs": [
+        "request:current",
+        "activation:software.testing.design:completed",
+        "file:docs/architecture/weapon-12-testability.json",
+        "receipt:b2594a83-5671-4c3e-b4e4-2b278f2f1c00"
+      ],
+      "status": "completed",
+      "stageIndex": 3,
+      "stageId": "",
+      "completedStages": [
+        "red",
+        "green",
+        "refactor"
+      ],
+      "evidence": [
+        {
+          "kind": "failing-test-observed",
+          "refs": [
+            "receipt:b2594a83-5671-4c3e-b4e4-2b278f2f1c00"
+          ]
+        },
+        {
+          "kind": "red-failure-reason-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-testability.json"
+          ]
+        },
+        {
+          "kind": "passing-test-observed",
+          "refs": [
+            "receipt:35532862-4a1c-4c7e-b41a-4e275cb33b19"
+          ]
+        },
+        {
+          "kind": "implementation-diff-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-implementation-review.md"
+          ]
+        },
+        {
+          "kind": "refactor-check-recorded",
+          "refs": [
+            "receipt:6d59d796-6ff7-49d8-a1de-1859e81e6dc5"
+          ]
+        },
+        {
+          "kind": "test-diff-review-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-test-review.md"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "90bc1cb1-f3ba-4c51-8f5d-469f71a3659f",
+      "capabilityId": "software.review.standards-spec",
+      "recipeId": "software.review.standards-spec.recipe",
+      "reasonCode": "diff-ready",
+      "triggerEvidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "review"
+      ],
+      "evidence": [
+        {
+          "kind": "standards-review-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-final-validation-2026-10-06.md"
+          ]
+        },
+        {
+          "kind": "spec-review-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-12-final-validation-2026-10-06.md"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:docs/architecture/weapon-12-testability.json",
+        "receipt:b2594a83-5671-4c3e-b4e4-2b278f2f1c00"
+      ]
+    },
+    {
+      "kind": "diff-ready",
+      "evidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:docs/architecture/weapon-12-testability.json",
+    "redCandidate": {
+      "publicEntry": "BattleSimulation.TryFire and WeaponProgressionDefinition.TryGetEvolutionOption",
+      "setup": "Canonical titanium barrier; confirm a half-size preview at center (0,3), rotated 0 or 90 degrees; query its rank-five paid size feature.",
+      "command": {
+        "executable": "powershell",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "Temp/weapon12-run.ps1",
+          "red",
+          "EditMode",
+          "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "Placed center equals preview center; rank-five size-unlock exists with one purchase.",
+      "observed": "Three failed Unity EditMode cases: center errors 1.285496 and 1.55000019 world units; size-unlock option absent.",
+      "receiptRef": "receipt:b2594a83-5671-4c3e-b4e4-2b278f2f1c00",
+      "failureReason": "Generic cover placement adds a launch-distance offset and stamps a fixed rectangle; catalog lacks the approved paid feature."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design",
+      "software.testing.tdd",
+      "software.review.standards-spec"
+    ]
+  },
+  "createdAt": "2026-10-06T12:32:57.379Z",
+  "updatedAt": "2026-10-06T13:19:13.736Z"
+}

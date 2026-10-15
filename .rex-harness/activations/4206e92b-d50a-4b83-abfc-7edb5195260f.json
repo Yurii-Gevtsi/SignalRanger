@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "4206e92b-d50a-4b83-abfc-7edb5195260f",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-ui-catalog-synchronization-v2",
+  "profile": "default",
+  "request": {
+    "message": "Implement the requested synchronization of Shop, Workshop, and Arsenal: current skins; current localized upgrade descriptions; core shop only; hide future Arena/Dungeon/boss items from Shop; Workshop contains owned upgradeable weapons from any source; Arsenal contains all owned weapons. Repair existing Architect compile errors that block validation.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "active",
+  "stepIndex": 1,
+  "phaseId": "delivery",
+  "currentCapabilityId": "software.testing.tdd",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "d03a030d-2e73-466d-93b2-08e15a565e54",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-ui-catalog-synchronization-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-ui-catalog-synchronization-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-ui-catalog-synchronization-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-ui-catalog-synchronization-v2-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": {
+    "schemaVersion": 1,
+    "activationId": "0a5e9d48-44c7-4b6a-9512-b4eaa19e49ba",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/weapon-ui-catalog-synchronization-v2-testability.json",
+      "receipt:8653113c-3ab4-4de1-bf61-f823f9422f62"
+    ],
+    "status": "active",
+    "stageIndex": 1,
+    "stageId": "green",
+    "completedStages": [
+      "red"
+    ],
+    "evidence": [
+      {
+        "kind": "failing-test-observed",
+        "refs": [
+          "receipt:8653113c-3ab4-4de1-bf61-f823f9422f62"
+        ]
+      },
+      {
+        "kind": "red-failure-reason-recorded",
+        "refs": [
+          "file:docs/architecture/weapon-ui-catalog-synchronization-v2-testability.json"
+        ]
+      },
+      {
+        "kind": "implementation-diff-recorded",
+        "refs": [
+          "file:Assets/_Game/Runtime/Data/Progression/WeaponCatalogAvailability.cs",
+          "file:Assets/_Game/Runtime/Gameplay/Battle/Weapons/WeaponEvolutionIconResolver.cs"
+        ]
+      }
+    ]
+  },
+  "currentCommand": {
+    "schemaVersion": 1,
+    "type": "provider.invoke",
+    "activationId": "0a5e9d48-44c7-4b6a-9512-b4eaa19e49ba",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "stageId": "green",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/weapon-ui-catalog-synchronization-v2-testability.json",
+      "receipt:8653113c-3ab4-4de1-bf61-f823f9422f62"
+    ],
+    "provider": {
+      "kind": "skill",
+      "id": "rex-tdd",
+      "source": "bundled",
+      "instructionsRef": "skill-sources/rex-tdd/SKILL.md"
+    },
+    "objective": "实施使目标测试通过的最小代码变更，并记录有边界的实现差异。",
+    "expectedEvidence": [
+      "passing-test-observed",
+      "implementation-diff-recorded"
+    ],
+    "executionToken": "bfce7e36-df50-406e-8a49-75a649d43507"
+  },
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:docs/architecture/weapon-ui-catalog-synchronization-v2-testability.json",
+        "receipt:8653113c-3ab4-4de1-bf61-f823f9422f62"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:docs/architecture/weapon-ui-catalog-synchronization-v2-testability.json",
+    "redCandidate": {
+      "publicEntry": "Unity EditMode test Game.Tests.EditMode.Gameplay.WeaponEvolutionIconResolverTests",
+      "setup": "Run the focused EditMode test against the current project with Unity closed.",
+      "command": {
+        "executable": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Unity.exe",
+        "args": [
+          "-batchmode",
+          "-nographics",
+          "-quit",
+          "-projectPath",
+          "C:\\Projects\\Game",
+          "-runTests",
+          "-testPlatform",
+          "EditMode",
+          "-testFilter",
+          "Game.Tests.EditMode.Gameplay.WeaponEvolutionIconResolverTests",
+          "-testResults",
+          "Temp\\weapon-evolution-icon-red.xml",
+          "-logFile",
+          "Temp\\weapon-evolution-icon-red.log"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "The project compiles and the focused test verifies that the first selected unique property determines the skin even after a later rank-10 selection.",
+      "observed": "Unity compilation fails before the test runs: ArchitectScreenController.cs has CS7036 at line 753, CS0136 at line 802, and CS0165 at line 806.",
+      "receiptRef": "receipt:8653113c-3ab4-4de1-bf61-f823f9422f62",
+      "failureReason": "The requested Workshop synchronization cannot be observed until the currently broken Workshop source compiles; the desired first-special skin behavior is also not implemented in the current resolver."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design",
+      "software.testing.tdd"
+    ]
+  },
+  "createdAt": "2026-09-16T16:08:25.181Z",
+  "updatedAt": "2026-09-16T16:25:05.635Z"
+}

@@ -1,0 +1,20 @@
+{
+  "kind": "behavior-delta",
+  "decisionRef": "file:docs/architecture/weapons-7-10-testability.json",
+  "redCandidate": {
+    "publicEntry": "PrototypeWeaponLibrary.CreateAll and BattleSimulation.TryFire",
+    "setup": "Canonical mine/disc configuration and two damaged allied units; activate owner repair without aim.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "Temp/weapon-mcp-run.mjs",
+        "Temp/weapons-7-10-red.json"
+      ],
+      "cwd": "C:/Projects/Game"
+    },
+    "expected": "Mine4 ammo,no Loadout;disc radius1.55;owner HP45 and ally20 after repair.",
+    "observed": "Three actual failures:mine ammo2,disc radius0.8,owner repaired to54 instead45.",
+    "failureReason": "Current runtime contradicts the fixed stock, common radius and owner MaxHP healing contract.",
+    "receiptRef": "receipt:3bc42588-484c-4023-8f20-2e9ba64cf5a8"
+  }
+}

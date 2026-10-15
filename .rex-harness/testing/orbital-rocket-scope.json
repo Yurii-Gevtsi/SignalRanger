@@ -1,0 +1,19 @@
+{
+  "workItem": "weapon-combat-orbital-rocket",
+  "userGoal": "A player double-taps the arena to mark an orbital strike, confirms it, yields the turn, and the missile impacts only after the opponent turn ends.",
+  "inScope": [
+    "Simulation state for a pending orbital target and deferred strike.",
+    "No held weapon and no generic aim requirement for orbital rocket.",
+    "Arena double-tap marker and confirmation flow.",
+    "One falling missile visual and explosion after the opponent handoff.",
+    "Focused Unity EditMode simulation test."
+  ],
+  "outOfScope": ["Nuclear charge", "Other unavailable weapons", "Team battle turn-transfer", "New art generation"],
+  "completionCriteria": [
+    "Orbital rocket cannot use the generic projectile fallback.",
+    "The confirmed target does not damage units during the firing turn.",
+    "The impact fires after the opponent turn completes and uses the configured damage and radius.",
+    "Cancelling before confirmation removes the draft marker without consuming the action."
+  ],
+  "prohibitedTestWeakening": ["Do not replace the turn lifecycle with a direct impact helper.", "Do not assert only a private pending flag."]
+}

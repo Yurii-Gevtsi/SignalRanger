@@ -1,0 +1,6 @@
+{
+  "scope": "Orbital rocket battle-scene presentation",
+  "changedFiles": ["Assets/_Game/Runtime/Gameplay/Battle/Assembly/BattleSceneController.cs", "Assets/_Game/Tests/EditMode/Gameplay/BattleVisualResourceTests.cs"],
+  "behavior": ["Double tap routes a target into BattleSimulation.TrySetOrbitalTarget and draws one red cross.", "Weapon selection and fire confirmation clear the draft marker.", "Orbital rocket hides its held item and resolves missle_fly with an explicit falling scale."],
+  "test": "receipt:3092f862-bbd2-4741-8dee-bb7bad750633"
+}

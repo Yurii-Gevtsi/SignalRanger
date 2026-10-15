@@ -1,0 +1,13 @@
+{
+  "kind": "behavior-delta",
+  "decisionRef": "file:docs/architecture/campaign-runtime-lifecycle-testability.json",
+  "redCandidate": {
+    "publicEntry": "AppServices.Initialize / Session.SelectMission",
+    "setup": "Initialize real Unity content, destroy first mission, initialize again. PlayMode runner itself raised a framework NullReferenceException; invoke the same NUnit test in the editor through execute_code instead.",
+    "command": { "executable": "node", "args": [".rex-harness/checks/campaign-lifecycle-check.mjs"], "cwd": "C:/Projects/Game" },
+    "expected": "Recreate live campaign content and allow valid mission selection; repeated initialization with live content stays idempotent.",
+    "observed": "NUnit AssertionException: Expected not same CampaignProgressionService, but was same. Real running menu independently shows all 27 missions compare equal to Unity null and cannot be selected.",
+    "failureReason": "IsInitialized skips rebuilding destroyed runtime content across Play sessions with domain reload disabled.",
+    "receiptRef": "receipt:94891eee-2cbd-48cf-9fd4-1aa67052b0d4"
+  }
+}

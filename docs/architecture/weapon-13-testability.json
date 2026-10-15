@@ -1,0 +1,13 @@
+{
+  "kind": "behavior-delta",
+  "decisionRef": "file:docs/architecture/weapon-13-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire/Tick/ProjectileSpawned",
+    "setup": "Base mortar, short deterministic main timeout, count subsequent physical fragments.",
+    "command": { "executable": "node", "args": ["Captures/weapon12/run-mcp-tests.mjs", "mortar-red", "EditMode", "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar"], "cwd": "C:/Projects/Game" },
+    "expected": "Exactly two side fragments without cascade.",
+    "observed": "Expected 2 but was 5; one failed Unity EditMode test in Captures/weapon12/mortar-red.xml.",
+    "failureReason": "Main impact forces at least five fragments regardless of approved baseline count.",
+    "receiptRef": "receipt:dff698a6-2dcb-4e47-8684-332cf82dbbfd"
+  }
+}

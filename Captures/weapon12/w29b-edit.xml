@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="53" result="Failed(Child)" total="53" passed="48" failed="5" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-06 17:54:22Z" end-time="2026-10-06 17:54:23Z" duration="0,6616718">
+  <test-suite type="TestSuite" id="1000" name="Signal Ranger" fullname="Signal Ranger" runstate="Runnable" testcasecount="789" result="Failed" site="Child" start-time="2026-10-06 17:54:22Z" end-time="2026-10-06 17:54:23Z" duration="0.661672" total="53" passed="48" failed="5" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1910" name="Game.Tests.EditMode.dll" fullname="C:/Projects/Game/Library/ScriptAssemblies/Game.Tests.EditMode.dll" runstate="Runnable" testcasecount="789" result="Failed" site="Child" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.586362" total="53" passed="48" failed="5" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36756" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1911" name="Game" fullname="Game" runstate="Runnable" testcasecount="789" result="Failed" site="Child" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.572591" total="53" passed="48" failed="5" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1912" name="Tests" fullname="Game.Tests" runstate="Runnable" testcasecount="789" result="Failed" site="Child" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.558956" total="53" passed="48" failed="5" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1913" name="EditMode" fullname="Game.Tests.EditMode" runstate="Runnable" testcasecount="789" result="Failed" site="Child" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.546003" total="53" passed="48" failed="5" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestSuite" id="1915" name="Progression" fullname="Game.Tests.EditMode.Progression" runstate="Runnable" testcasecount="53" result="Failed" site="Child" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.527612" total="53" passed="48" failed="5" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1006" name="ActivityProgressServiceTests" fullname="Game.Tests.EditMode.Progression.ActivityProgressServiceTests" classname="Game.Tests.EditMode.Progression.ActivityProgressServiceTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.104819" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1009" name="DailyQuestSelectionIsStableForTheWholePeriod" fullname="Game.Tests.EditMode.Progression.ActivityProgressServiceTests.DailyQuestSelectionIsStableForTheWholePeriod" methodname="DailyQuestSelectionIsStableForTheWholePeriod" classname="Game.Tests.EditMode.Progression.ActivityProgressServiceTests" runstate="Runnable" seed="1709454166" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.062543" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1008" name="NewDayResetsDailyCountersButKeepsWeeklyCounters" fullname="Game.Tests.EditMode.Progression.ActivityProgressServiceTests.NewDayResetsDailyCountersButKeepsWeeklyCounters" methodname="NewDayResetsDailyCountersButKeepsWeeklyCounters" classname="Game.Tests.EditMode.Progression.ActivityProgressServiceTests" runstate="Runnable" seed="1424933632" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.009476" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1007" name="RecordsGameplayMetricsForDailyAndWeeklyPeriods" fullname="Game.Tests.EditMode.Progression.ActivityProgressServiceTests.RecordsGameplayMetricsForDailyAndWeeklyPeriods" methodname="RecordsGameplayMetricsForDailyAndWeeklyPeriods" classname="Game.Tests.EditMode.Progression.ActivityProgressServiceTests" runstate="Runnable" seed="1421458876" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.002992" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1010" name="AppBattleTutorialFeedTests" fullname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests" classname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests" runstate="Runnable" testcasecount="5" result="Failed" site="Child" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.029437" total="5" passed="3" failed="2" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1013" name="ReportTrigger_ReturnsEmptyForUnknownKey" fullname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests.ReportTrigger_ReturnsEmptyForUnknownKey" methodname="ReportTrigger_ReturnsEmptyForUnknownKey" classname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests" runstate="Runnable" seed="2068611864" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.007193" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1012" name="ReportTrigger_ReturnsEmptyWhenAlreadyCompleted" fullname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests.ReportTrigger_ReturnsEmptyWhenAlreadyCompleted" methodname="ReportTrigger_ReturnsEmptyWhenAlreadyCompleted" classname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests" runstate="Runnable" seed="201911468" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.003139" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1011" name="ReportTrigger_ReturnsMessageAndCompletesStep_OnFirstObservation" fullname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests.ReportTrigger_ReturnsMessageAndCompletesStep_OnFirstObservation" methodname="ReportTrigger_ReturnsMessageAndCompletesStep_OnFirstObservation" classname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests" runstate="Runnable" seed="813700529" result="Failed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.013476" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: not <empty>
+  But was:  <string.Empty>
+]]></message>
+                    <stack-trace><![CDATA[at Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests.ReportTrigger_ReturnsMessageAndCompletesStep_OnFirstObservation () [0x00082] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Progression\AppBattleTutorialFeedTests.cs:53
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1014" name="ReportTrigger_UsesMissionSpecificTutorialSteps" fullname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests.ReportTrigger_UsesMissionSpecificTutorialSteps" methodname="ReportTrigger_UsesMissionSpecificTutorialSteps" classname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests" runstate="Runnable" seed="302379645" result="Failed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001306" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: not <empty>
+  But was:  <string.Empty>
+]]></message>
+                    <stack-trace><![CDATA[at Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests.ReportTrigger_UsesMissionSpecificTutorialSteps () [0x0006a] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Progression\AppBattleTutorialFeedTests.cs:97
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1015" name="SkipActiveMissionTutorial_CompletesAndSavesEveryMissionStep" fullname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests.SkipActiveMissionTutorial_CompletesAndSavesEveryMissionStep" methodname="SkipActiveMissionTutorial_CompletesAndSavesEveryMissionStep" classname="Game.Tests.EditMode.Progression.AppBattleTutorialFeedTests" runstate="Runnable" seed="1398713328" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001702" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1016" name="CampaignContentPlanTests" fullname="Game.Tests.EditMode.Progression.CampaignContentPlanTests" classname="Game.Tests.EditMode.Progression.CampaignContentPlanTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.013237" total="2" passed="1" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1018" name="PacingTargetsMatchApprovedBaseline" fullname="Game.Tests.EditMode.Progression.CampaignContentPlanTests.PacingTargetsMatchApprovedBaseline" methodname="PacingTargetsMatchApprovedBaseline" classname="Game.Tests.EditMode.Progression.CampaignContentPlanTests" runstate="Runnable" seed="673265765" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.000940" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1017" name="ReservedPlanetPlanContainsTwoOrderedFutureChapters" fullname="Game.Tests.EditMode.Progression.CampaignContentPlanTests.ReservedPlanetPlanContainsTwoOrderedFutureChapters" methodname="ReservedPlanetPlanContainsTwoOrderedFutureChapters" classname="Game.Tests.EditMode.Progression.CampaignContentPlanTests" runstate="Runnable" seed="1538234387" result="Failed" label="Error" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.005359" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[System.ArgumentException : Property Count was not found
+Parameter name: name]]></message>
+                    <stack-trace><![CDATA[  at NUnit.Framework.Constraints.PropertyConstraint.ApplyTo (System.Object actual) [0x00050] in <8b63e8ac0a4746599ed207982825ae6c>:0 
+  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression, System.String message, System.Object[] args) [0x0000e] in <8b63e8ac0a4746599ed207982825ae6c>:0 
+  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression) [0x00001] in <8b63e8ac0a4746599ed207982825ae6c>:0 
+  at Game.Tests.EditMode.Progression.CampaignContentPlanTests.ReservedPlanetPlanContainsTwoOrderedFutureChapters () [0x00000] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Progression\CampaignContentPlanTests.cs:11 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <816f70bc2a9c4332b0bd119906a8d40e>:0 ]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1019" name="CampaignProgressionServiceTests" fullname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests" classname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.024801" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1020" name="CompleteMission_AppliesRewardAndUnlocksNextMission" fullname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests.CompleteMission_AppliesRewardAndUnlocksNextMission" methodname="CompleteMission_AppliesRewardAndUnlocksNextMission" classname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests" runstate="Runnable" seed="217788090" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.012101" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1022" name="CompleteMission_AppliesWeaponUnlockOnce" fullname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests.CompleteMission_AppliesWeaponUnlockOnce" methodname="CompleteMission_AppliesWeaponUnlockOnce" classname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests" runstate="Runnable" seed="1086336383" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.002188" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1021" name="CompleteMission_DoesNotApplyRewardTwice" fullname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests.CompleteMission_DoesNotApplyRewardTwice" methodname="CompleteMission_DoesNotApplyRewardTwice" classname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests" runstate="Runnable" seed="1344815630" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.002179" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1023" name="CompleteMission_RecordsLedgerTransaction" fullname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests.CompleteMission_RecordsLedgerTransaction" methodname="CompleteMission_RecordsLedgerTransaction" classname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests" runstate="Runnable" seed="1173185330" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001987" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1025" name="CompletingEasyMission_OpensNextPlanetsEasyMissionAndKeepsOptionalMissionsOpen" fullname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests.CompletingEasyMission_OpensNextPlanetsEasyMissionAndKeepsOptionalMissionsOpen" methodname="CompletingEasyMission_OpensNextPlanetsEasyMissionAndKeepsOptionalMissionsOpen" classname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests" runstate="Runnable" seed="1590359451" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001326" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1024" name="GetNextMission_UsesHighestUnlockedMissionIndex" fullname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests.GetNextMission_UsesHighestUnlockedMissionIndex" methodname="GetNextMission_UsesHighestUnlockedMissionIndex" classname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests" runstate="Runnable" seed="1721901850" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001223" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1026" name="IsUnlocked_AdminModeAllowsEveryValidMissionWithoutChangingProgress" fullname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests.IsUnlocked_AdminModeAllowsEveryValidMissionWithoutChangingProgress" methodname="IsUnlocked_AdminModeAllowsEveryValidMissionWithoutChangingProgress" classname="Game.Tests.EditMode.Progression.CampaignProgressionServiceTests" runstate="Runnable" seed="599878990" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001147" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1027" name="DefaultGameContentCatalogTests" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" testcasecount="15" result="Failed" site="Child" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.231421" total="15" passed="14" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1028" name="DefaultCatalog_HasValidCrossReferences" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.DefaultCatalog_HasValidCrossReferences" methodname="DefaultCatalog_HasValidCrossReferences" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="1867526201" result="Failed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.073590" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Campaign chapter 'chapter.basics' is invalid.
+Campaign chapter 'chapter.basics' references missing featured weapon 'weapon.blaster-caset'.
+Campaign chapter 'chapter.tactical-tools' is invalid.
+Campaign chapter 'chapter.city' is invalid.
+Campaign chapter 'chapter.city' references missing featured weapon 'weapon.blaster-caset'.
+Campaign chapter 'chapter.grib' is invalid.
+Campaign chapter 'chapter.laguna' is invalid.
+Campaign chapter 'chapter.monument' is invalid.
+Campaign chapter 'chapter.kraken' is invalid.
+Campaign chapter 'chapter.vines' is invalid.
+Campaign chapter 'chapter.robots' is invalid.
+Enemy loadout 'enemy.training.direct' references missing weapon 'weapon.blaster-caset'.
+  Expected: <empty>
+  But was:  < "Campaign chapter 'chapter.basics' is invalid.", "Campaign chapter 'chapter.basics' references missing featured weapon 'weapon.blaster-caset'.", "Campaign chapter 'chapter.tactical-tools' is invalid.", "Campaign chapter 'chapter.city' is invalid.", "Campaign chapter 'chapter.city' references missing featured weapon 'weapon.blaster-caset'.", "Campaign chapter 'chapter.grib' is invalid.", "Campaign chapter 'chapter.laguna' is invalid.", "Campaign chapter 'chapter.monument' is invalid.", "Campaign chapter 'chapter.kraken' is invalid.", "Campaign chapter 'chapter.vines' is invalid."... >
+]]></message>
+                    <stack-trace><![CDATA[at Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.DefaultCatalog_HasValidCrossReferences () [0x0000d] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Progression\DefaultGameContentCatalogTests.cs:18
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1029" name="DefaultCatalog_OrganizesCurrentCampaignIntoTeachingChapters" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.DefaultCatalog_OrganizesCurrentCampaignIntoTeachingChapters" methodname="DefaultCatalog_OrganizesCurrentCampaignIntoTeachingChapters" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="1531567776" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.005227" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1044" name="EveryImplementedCampaignPlanet_HasExactlyThreeFixedDifficultyMissions" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.EveryImplementedCampaignPlanet_HasExactlyThreeFixedDifficultyMissions" methodname="EveryImplementedCampaignPlanet_HasExactlyThreeFixedDifficultyMissions" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="2057409874" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.008070" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1043" name="EveryImplementedCampaignPlanet_OwnsOnlyMissionsForItsArena" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.EveryImplementedCampaignPlanet_OwnsOnlyMissionsForItsArena" methodname="EveryImplementedCampaignPlanet_OwnsOnlyMissionsForItsArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="1264370513" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.004410" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1030" name="FirstKerionMission_UsesKerionsBattleArena" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.FirstKerionMission_UsesKerionsBattleArena" methodname="FirstKerionMission_UsesKerionsBattleArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="879057594" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.006214" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1037" name="ForestArena_FillsTheZoomOutFrameAndStartsAtItsUpperEdge" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.ForestArena_FillsTheZoomOutFrameAndStartsAtItsUpperEdge" methodname="ForestArena_FillsTheZoomOutFrameAndStartsAtItsUpperEdge" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="902861142" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.017410" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1042" name="ImplementedPlanetPlaceholder_UsesThePlanetArena" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.ImplementedPlanetPlaceholder_UsesThePlanetArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.064007" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1038" name="ImplementedPlanetPlaceholder_UsesThePlanetArena(&quot;chapter.monument&quot;,&quot;mission.placeholder.monument&quot;,&quot;mission.placeholder.monument.02&quot;,&quot;mission.placeholder.monument.03&quot;,&quot;arena.monument&quot;,6)" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.ImplementedPlanetPlaceholder_UsesThePlanetArena(&quot;chapter.monument&quot;,&quot;mission.placeholder.monument&quot;,&quot;mission.placeholder.monument.02&quot;,&quot;mission.placeholder.monument.03&quot;,&quot;arena.monument&quot;,6)" methodname="ImplementedPlanetPlaceholder_UsesThePlanetArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="108072705" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.006496" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1039" name="ImplementedPlanetPlaceholder_UsesThePlanetArena(&quot;chapter.kraken&quot;,&quot;mission.placeholder.kraken&quot;,&quot;mission.placeholder.kraken.02&quot;,&quot;mission.placeholder.kraken.03&quot;,&quot;arena.kraken&quot;,7)" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.ImplementedPlanetPlaceholder_UsesThePlanetArena(&quot;chapter.kraken&quot;,&quot;mission.placeholder.kraken&quot;,&quot;mission.placeholder.kraken.02&quot;,&quot;mission.placeholder.kraken.03&quot;,&quot;arena.kraken&quot;,7)" methodname="ImplementedPlanetPlaceholder_UsesThePlanetArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="1686149584" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.013297" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1040" name="ImplementedPlanetPlaceholder_UsesThePlanetArena(&quot;chapter.vines&quot;,&quot;mission.placeholder.vines&quot;,&quot;mission.placeholder.vines.02&quot;,&quot;mission.placeholder.vines.03&quot;,&quot;arena.vines&quot;,8)" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.ImplementedPlanetPlaceholder_UsesThePlanetArena(&quot;chapter.vines&quot;,&quot;mission.placeholder.vines&quot;,&quot;mission.placeholder.vines.02&quot;,&quot;mission.placeholder.vines.03&quot;,&quot;arena.vines&quot;,8)" methodname="ImplementedPlanetPlaceholder_UsesThePlanetArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="1130169952" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.007989" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1041" name="ImplementedPlanetPlaceholder_UsesThePlanetArena(&quot;chapter.robots&quot;,&quot;mission.placeholder.robots&quot;,&quot;mission.placeholder.robots.02&quot;,&quot;mission.placeholder.robots.03&quot;,&quot;arena.robots&quot;,9)" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.ImplementedPlanetPlaceholder_UsesThePlanetArena(&quot;chapter.robots&quot;,&quot;mission.placeholder.robots&quot;,&quot;mission.placeholder.robots.02&quot;,&quot;mission.placeholder.robots.03&quot;,&quot;arena.robots&quot;,9)" methodname="ImplementedPlanetPlaceholder_UsesThePlanetArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="1425071777" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.009067" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1031" name="KerionCampaignMissions_AfterTheTutorial_UseTrainingArena" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.KerionCampaignMissions_AfterTheTutorial_UseTrainingArena" methodname="KerionCampaignMissions_AfterTheTutorial_UseTrainingArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="1825031000" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.009041" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1036" name="NewPlanetCampaignMissions_UseTheirDedicatedArena" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.NewPlanetCampaignMissions_UseTheirDedicatedArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.027889" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1033" name="NewPlanetCampaignMissions_UseTheirDedicatedArena(&quot;chapter.city&quot;,&quot;mission.training.09&quot;,&quot;mission.training.10&quot;,&quot;mission.training.15&quot;,&quot;arena.monument&quot;,6)" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.NewPlanetCampaignMissions_UseTheirDedicatedArena(&quot;chapter.city&quot;,&quot;mission.training.09&quot;,&quot;mission.training.10&quot;,&quot;mission.training.15&quot;,&quot;arena.monument&quot;,6)" methodname="NewPlanetCampaignMissions_UseTheirDedicatedArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="2070504207" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.007974" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1034" name="NewPlanetCampaignMissions_UseTheirDedicatedArena(&quot;chapter.grib&quot;,&quot;mission.training.11&quot;,&quot;mission.training.12&quot;,&quot;mission.training.16&quot;,&quot;arena.forest&quot;,2)" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.NewPlanetCampaignMissions_UseTheirDedicatedArena(&quot;chapter.grib&quot;,&quot;mission.training.11&quot;,&quot;mission.training.12&quot;,&quot;mission.training.16&quot;,&quot;arena.forest&quot;,2)" methodname="NewPlanetCampaignMissions_UseTheirDedicatedArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="1906162875" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.006347" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1035" name="NewPlanetCampaignMissions_UseTheirDedicatedArena(&quot;chapter.laguna&quot;,&quot;mission.training.13&quot;,&quot;mission.training.14&quot;,&quot;mission.training.17&quot;,&quot;arena.laguna&quot;,5)" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.NewPlanetCampaignMissions_UseTheirDedicatedArena(&quot;chapter.laguna&quot;,&quot;mission.training.13&quot;,&quot;mission.training.14&quot;,&quot;mission.training.17&quot;,&quot;arena.laguna&quot;,5)" methodname="NewPlanetCampaignMissions_UseTheirDedicatedArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="809411085" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.007983" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1032" name="SecondPlanetCampaignMissions_UseBonesArena" fullname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.SecondPlanetCampaignMissions_UseBonesArena" methodname="SecondPlanetCampaignMissions_UseBonesArena" classname="Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests" runstate="Runnable" seed="975807843" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.006994" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1045" name="MvpMissionLibraryTests" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.032451" total="8" passed="7" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1047" name="CreateAll_EachPlanetHasFixedEasyNormalHardSequence" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests.CreateAll_EachPlanetHasFixedEasyNormalHardSequence" methodname="CreateAll_EachPlanetHasFixedEasyNormalHardSequence" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" seed="1164664887" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.002445" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1049" name="CreateAll_FirstChapterFormsAPolishedTeachingSlice" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests.CreateAll_FirstChapterFormsAPolishedTeachingSlice" methodname="CreateAll_FirstChapterFormsAPolishedTeachingSlice" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" seed="288233721" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.003502" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1046" name="CreateAll_ProducesValidMissionsWithDistinctIds" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests.CreateAll_ProducesValidMissionsWithDistinctIds" methodname="CreateAll_ProducesValidMissionsWithDistinctIds" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" seed="953931598" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.005863" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1048" name="CreateAll_UsesOnlyLocalizedDifficultyMissionText" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests.CreateAll_UsesOnlyLocalizedDifficultyMissionText" methodname="CreateAll_UsesOnlyLocalizedDifficultyMissionText" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" seed="245714756" result="Failed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001683" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Expected: not <empty>
+  But was:  <string.Empty>
+]]></message>
+                    <stack-trace><![CDATA[at Game.Tests.EditMode.Progression.MvpMissionLibraryTests.CreateAll_UsesOnlyLocalizedDifficultyMissionText () [0x00055] in C:\Projects\Game\Assets\_Game\Tests\EditMode\Progression\MvpMissionLibraryTests.cs:57
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1054" name="PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests.PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.012602" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1050" name="PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet(&quot;mission.placeholder.monument&quot;,&quot;chapter.monument&quot;,&quot;arena.monument&quot;)" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests.PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet(&quot;mission.placeholder.monument&quot;,&quot;chapter.monument&quot;,&quot;arena.monument&quot;)" methodname="PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" seed="966366135" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.003227" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1051" name="PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet(&quot;mission.placeholder.kraken&quot;,&quot;chapter.kraken&quot;,&quot;arena.kraken&quot;)" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests.PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet(&quot;mission.placeholder.kraken&quot;,&quot;chapter.kraken&quot;,&quot;arena.kraken&quot;)" methodname="PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" seed="828711647" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001438" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1052" name="PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet(&quot;mission.placeholder.vines&quot;,&quot;chapter.vines&quot;,&quot;arena.vines&quot;)" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests.PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet(&quot;mission.placeholder.vines&quot;,&quot;chapter.vines&quot;,&quot;arena.vines&quot;)" methodname="PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" seed="1340778120" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001342" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1053" name="PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet(&quot;mission.placeholder.robots&quot;,&quot;chapter.robots&quot;,&quot;arena.robots&quot;)" fullname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests.PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet(&quot;mission.placeholder.robots&quot;,&quot;chapter.robots&quot;,&quot;arena.robots&quot;)" methodname="PlaceholderMission_ProvidesAPlayableArenaForEveryImplementedPlanet" classname="Game.Tests.EditMode.Progression.MvpMissionLibraryTests" runstate="Runnable" seed="296812498" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001130" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+              </test-suite>
+              <test-suite type="TestFixture" id="1055" name="WeaponProgressionCatalogTests" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.088108" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1066" name="BaseTthCannotBePurchasedBeyondItsCanonicalLimit" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.BaseTthCannotBePurchasedBeyondItsCanonicalLimit" methodname="BaseTthCannotBePurchasedBeyondItsCanonicalLimit" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1071768139" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.008901" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1057" name="CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" methodname="CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="800179089" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.006277" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1059" name="Grounder_AllowsFourCoreAndFourRadiusUpgrades" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_AllowsFourCoreAndFourRadiusUpgrades" methodname="Grounder_AllowsFourCoreAndFourRadiusUpgrades" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="198873475" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.000313" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1060" name="Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" methodname="Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1049583816" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.003426" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1056" name="Mortar_FivePaidFeatureStepsSurviveSaveAndDoNotInventTthPurchases" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Mortar_FivePaidFeatureStepsSurviveSaveAndDoNotInventTthPurchases" methodname="Mortar_FivePaidFeatureStepsSurviveSaveAndDoNotInventTthPurchases" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="92116341" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.040662" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1064" name="NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.010872" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties />
+                  <test-case id="1061" name="NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps(&quot;weapon.force-field&quot;,Core,4,6.0f)" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps(&quot;weapon.force-field&quot;,Core,4,6.0f)" methodname="NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="696923017" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.004392" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1062" name="NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps(&quot;weapon.force-field&quot;,Radius,4,1.96f)" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps(&quot;weapon.force-field&quot;,Radius,4,1.96f)" methodname="NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1421953495" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.000428" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1063" name="NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps(&quot;weapon.swap-jump&quot;,Radius,4,1.96f)" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps(&quot;weapon.swap-jump&quot;,Radius,4,1.96f)" methodname="NearbyDistanceDevices_ShowTheirDurationAndTenPercentRadiusSteps" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1626395230" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.000341" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1058" name="RepairJammer_AllowsExactlyTwoDurationUpgrades" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades" methodname="RepairJammer_AllowsExactlyTwoDurationUpgrades" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="353109778" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.000397" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1068" name="ResetClearsBothBaseAndSpecialPurchaseHistory" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.ResetClearsBothBaseAndSpecialPurchaseHistory" methodname="ResetClearsBothBaseAndSpecialPurchaseHistory" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="574089619" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001979" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1067" name="SelectedMortarSpecialCanBePurchasedFiveTimesAndThenStops" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.SelectedMortarSpecialCanBePurchasedFiveTimesAndThenStops" methodname="SelectedMortarSpecialCanBePurchasedFiveTimesAndThenStops" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="301827741" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.001013" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1069" name="TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService" methodname="TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1770692512" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.005821" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1065" name="UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" fullname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" methodname="UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers" classname="Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests" runstate="Runnable" seed="1512634467" result="Passed" start-time="2026-10-06 17:54:23Z" end-time="2026-10-06 17:54:23Z" duration="0.000819" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/Yurii/AppData/LocalLow/GY Signal Studio/Signal Ranger\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

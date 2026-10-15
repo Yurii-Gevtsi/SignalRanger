@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "input": "C:\\Users\\Yurii\\.codex\\generated_images\\01a06bc4-3a78-79d2-aa34-5e07e034428b\\exec-9eccd21e-1bc0-47bb-a429-0bee9f06ccf5.png",
+  "output": "C:\\Projects\\Game\\art_source\\arenas\\forest\\production\\segments\\forest_section_03_visual.png",
+  "background_rgb": [
+    255,
+    0,
+    255
+  ],
+  "threshold": 72.0,
+  "feather_threshold": 108.0,
+  "trimmed": false,
+  "padding": 0,
+  "width": 1211,
+  "height": 1299,
+  "transparent_pixels": 829455,
+  "opaque_pixels": 743634
+}

@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "1c5ad32836124ed594db3cf356ef16ee",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791302919142,
+    "finished_unix_ms": 1791302924805,
+    "last_update_unix_ms": 1791302924805,
+    "progress": {
+      "completed": 191,
+      "total": 191,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791302924698,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers",
+      "last_finished_unix_ms": 1791302924698,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CryoGrenade_RepeatHitRefreshesToTwoTurnsAndOnlyBoostsItsOwnDirectDamage",
+          "message": "  two ticks in total, not three\r\n  Expected: -9\r\n  But was:  0\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

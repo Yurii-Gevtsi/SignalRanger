@@ -1,0 +1,6 @@
+{
+  "test": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds",
+  "receiptRef": "receipt:65088892-f1bb-42dd-9562-915137aea494",
+  "failure": "BattleSimulation exposes no TrySetOrbitalTarget(Vector2), so the player cannot create the required orbital-strike marker before confirmation.",
+  "source": "Assets/_Game/Tests/EditMode/Gameplay/BattleSimulationTests.cs:1640"
+}

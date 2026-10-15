@@ -1,0 +1,39 @@
+{
+  "arena_id": "arena.city",
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "crop": [
+        0,
+        60,
+        874,
+        1131
+      ],
+      "sorting_order": -8
+    },
+    {
+      "id": "center",
+      "crop": [
+        596,
+        411,
+        1444,
+        1138
+      ],
+      "sorting_order": -7
+    },
+    {
+      "id": "right",
+      "crop": [
+        1166,
+        159,
+        2048,
+        1138
+      ],
+      "sorting_order": -6
+    }
+  ]
+}

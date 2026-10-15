@@ -1,0 +1,10 @@
+instance_id,asset_id,x_px,y_px,scale_x,scale_y,reused_asset
+cluster_01,arena_desert_sci_fi_upper_left_01,0,6,1.0,1.0,False
+cluster_02,arena_desert_sci_fi_inner_left_01,778,688,1.0,1.0,False
+cluster_03,arena_desert_sci_fi_lower_left_01,0,1408,1.0,1.0,False
+cluster_04,arena_desert_sci_fi_center_01,1098,858,1.0,1.0,False
+cluster_05,arena_desert_sci_fi_floating_large_01,1138,406,1.0,1.0,False
+cluster_07,arena_desert_sci_fi_upper_right_01,3328,108,1.0,1.0,False
+cluster_08,arena_desert_sci_fi_lower_right_01,2668,1018,1.0,1.0,False
+cluster_06_a,arena_desert_sci_fi_floating_small_01,2156,720,1.0,1.0,False
+cluster_06_b,arena_desert_sci_fi_floating_small_01,2868,452,1.0,1.0,True

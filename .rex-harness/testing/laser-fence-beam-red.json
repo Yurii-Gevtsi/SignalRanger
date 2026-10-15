@@ -1,0 +1,10 @@
+{
+  "test": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn",
+  "command": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_EnemyCrossingLinkTakesBaseDamageOnceAndLosesTheActiveTurn",
+  "input": "Two real placement shots establish a pair of nodes; an opponent is placed at their midpoint and begins the active turn.",
+  "expected": "The opponent loses 42 HP once and its turn ends.",
+  "observed": "The opponent stayed at 100 HP.",
+  "exitCode": 1,
+  "failureReason": "The simulation does not yet evaluate active laser-fence links during Tick.",
+  "receiptRef": "receipt:64edc865-37f2-477a-bb7a-57233c3562f0"
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "60bd77b5-9aba-4685-a31c-1455a9866650",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "training-arena-recompose-camera-fit",
+  "profile": "default",
+  "request": {
+    "message": "Recompose the existing training arena generated fragments without new generation, preserve the collision mask, reimport the visual, and make the full arena occupy roughly 80 percent of the battle scene without changing droid-to-arena scale.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-13T14:40:33.962Z",
+  "updatedAt": "2026-09-13T14:40:33.962Z"
+}

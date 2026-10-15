@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "a52d815e-819e-4ade-8f84-290caee9886d",
+  "command": {
+    "executable": "powershell",
+    "args": [
+      "-NoProfile",
+      "-Command",
+      "& 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\DotNetSdk\\dotnet.exe' 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\DotNetSdk\\sdk\\8.0.318\\Roslyn\\bincore\\csc.dll' /noconfig /nostdlib /target:library /out:Temp\\WorkshopCardPresentationStateResolverTests.dll /reference:'C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\MonoBleedingEdge\\lib\\mono\\4.7.1-api\\mscorlib.dll' /reference:'C:\\Projects\\Game\\Library\\PackageCache\\com.unity.ext.nunit@44f7d31723bd\\net472\\unity-custom\\nunit.framework.dll' Assets\\_Game\\Runtime\\App\\WorkshopCardPresentationStateResolver.cs Assets\\_Game\\Tests\\EditMode\\App\\WorkshopCardPresentationStateResolverTests.cs; if ( -ne 0) { exit  }; & 'Temp\\run-workshop-card-presentation-tests.ps1'"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "b73b9c9af58ec40d260a32ef2d164a969e1de2907e251f3a93a03eb7f68fc02f",
+  "stderrSha256": "ab8fc12762e400bc2ba9783ff9b76990d8f078a80549f9793cd18faafec5ceec",
+  "observedAt": "2026-09-19T15:25:52.986Z"
+}

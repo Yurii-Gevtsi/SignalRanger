@@ -1,0 +1,1 @@
+{"scope":["BattleSceneController timer cleanup rule"],"checks":["cleanup occurs only at PlayerTimerExpired","the visual object is removed from arena ownership before destruction","simulation state is not redundantly mutated at this boundary"],"findings":[],"verdict":"pass"}

@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "ea2fac1044df4e37965479c39da7d7fa",
+    "status": "failed",
+    "mode": "PlayMode",
+    "started_unix_ms": 1791303939586,
+    "finished_unix_ms": 1791304056826,
+    "last_update_unix_ms": 1791304056826,
+    "progress": {
+      "completed": 29,
+      "total": 29,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791304052488,
+      "last_finished_test_full_name": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier_TwoTouchesResizeAndFireCommitsTheVisibleShape(4)",
+      "last_finished_unix_ms": 1791304056656,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.Mortar_ProductionSceneCreatesAllChargesWithTheirShotSkin(0)",
+          "message": "Unhandled log message: '[Log] [Multiplayer] Duel matchmaking and transport attached.'. Use UnityEngine.TestTools.LogAssert.Expect"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

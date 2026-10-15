@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "b55bbda3-21d7-4a34-867a-58ff21920d39",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-runtime-catalog-41",
+  "profile": "default",
+  "request": {
+    "message": "Migrate all 41 canonical weapons into runtime progression and acquisition data. Show only coreShop weapons in the base shop; keep arenaShop and dungeonShop hidden from it. Preserve all player-facing localization and implement canonical per-weapon upgrade limits and special rules.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 1,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "f994a6f1-7961-49b5-9225-541cbdb730d5",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-runtime-catalog-41-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:docs/architecture/weapon-runtime-catalog-41-testability.json",
+    "reason": "Unity has two active Editor processes (PIDs 1492 and 2788) holding the project. Running batchmode tests concurrently would not provide an isolated public scenario and can corrupt the project lock state.",
+    "missingAcceptance": "Close the Unity Editors, then run the focused EditMode catalog tests against C:\\Projects\\Game and record the resulting receipt before implementing the migration."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-16T18:47:30.724Z",
+  "updatedAt": "2026-09-16T18:49:26.624Z"
+}

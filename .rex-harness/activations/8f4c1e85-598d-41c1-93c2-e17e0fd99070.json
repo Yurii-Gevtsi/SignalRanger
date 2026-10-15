@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "8f4c1e85-598d-41c1-93c2-e17e0fd99070",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-repair-jammer-ui-and-track",
+  "profile": "default",
+  "request": {
+    "message": "Implement two unresolved verified requirements for weapon.repair-jammer: (1) configure exactly two Duration upgrades, yielding target-turn values 2, 3, and 4; (2) display UI/Common/no-repair-2 as a world-space status icon next to HP while BattleSimulation.IsUnitRepairJammed is true and remove it at expiry. Add focused tests for the progression ceiling and battle presentation lifecycle.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 4,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.implementation.minimize",
+    "software.testing.design",
+    "software.testing.tdd",
+    "software.review.standards-spec"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "87ed6a1e-1b9d-4a49-9073-f0f110c6b7ce",
+      "capabilityId": "software.implementation.minimize",
+      "recipeId": "software.implementation.minimize.recipe",
+      "reasonCode": "new-construct-proposed",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "minimize"
+      ],
+      "evidence": [
+        {
+          "kind": "reuse-ladder-evaluated",
+          "refs": [
+            "file:.rex-harness/decisions/repair-jammer-ui-and-track-minimize.json"
+          ]
+        },
+        {
+          "kind": "minimal-option-recorded",
+          "refs": [
+            "file:.rex-harness/decisions/repair-jammer-ui-and-track-minimize.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "beb55b69-a5cd-4a16-899b-b93975e5e44c",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-ui-track-scope.json"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-ui-track-mapping.json"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-ui-track-seam.json"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-ui-track-testability.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "3b323258-7d09-4753-8212-2be1fdbcaeb1",
+      "capabilityId": "software.testing.tdd",
+      "recipeId": "software.testing.tdd.recipe",
+      "reasonCode": "honest-red-candidate",
+      "triggerEvidenceRefs": [
+        "request:current",
+        "activation:software.testing.design:completed",
+        "file:.rex-harness/testing/repair-jammer-ui-track-testability.json",
+        "receipt:80359e9b-d432-4594-b32f-5c09f2a77624"
+      ],
+      "status": "completed",
+      "stageIndex": 3,
+      "stageId": "",
+      "completedStages": [
+        "red",
+        "green",
+        "refactor"
+      ],
+      "evidence": [
+        {
+          "kind": "failing-test-observed",
+          "refs": [
+            "receipt:836d8a29-7a14-4130-9d62-d6f480d93ba2"
+          ]
+        },
+        {
+          "kind": "red-failure-reason-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-ui-track-red.json"
+          ]
+        },
+        {
+          "kind": "passing-test-observed",
+          "refs": [
+            "receipt:ea67654a-18f1-47af-90b9-bae70057692d"
+          ]
+        },
+        {
+          "kind": "implementation-diff-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-ui-track-green.json"
+          ]
+        },
+        {
+          "kind": "refactor-check-recorded",
+          "refs": [
+            "receipt:2cb9d0e6-7b98-44c0-88e9-037c0a46e87f"
+          ]
+        },
+        {
+          "kind": "test-diff-review-recorded",
+          "refs": [
+            "file:.rex-harness/testing/repair-jammer-ui-track-refactor.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "cc2a5899-83ff-4c53-9636-dfae22281f9b",
+      "capabilityId": "software.review.standards-spec",
+      "recipeId": "software.review.standards-spec.recipe",
+      "reasonCode": "diff-ready",
+      "triggerEvidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "review"
+      ],
+      "evidence": [
+        {
+          "kind": "standards-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/repair-jammer-track-review.json"
+          ]
+        },
+        {
+          "kind": "spec-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/repair-jammer-track-review.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "new-construct-proposed",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:.rex-harness/testing/repair-jammer-ui-track-testability.json",
+        "receipt:80359e9b-d432-4594-b32f-5c09f2a77624"
+      ]
+    },
+    {
+      "kind": "diff-ready",
+      "evidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:.rex-harness/testing/repair-jammer-ui-track-testability.json",
+    "redCandidate": {
+      "publicEntry": "WeaponProgressionCatalog.TryGet",
+      "setup": "Read the public progression definition for weapon.repair-jammer.",
+      "command": {
+        "executable": "node",
+        "args": [
+          "tools/run-unity-mcp-editmode-test.mjs",
+          "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "RadiusUpgradeLimit is 2.",
+      "observed": "The focused test failed because the current limit is 4.",
+      "receiptRef": "receipt:80359e9b-d432-4594-b32f-5c09f2a77624",
+      "failureReason": "The progression catalog does not yet encode the approved two-purchase duration track."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.implementation.minimize",
+      "software.testing.design",
+      "software.testing.tdd",
+      "software.review.standards-spec"
+    ]
+  },
+  "createdAt": "2026-09-23T05:16:30.110Z",
+  "updatedAt": "2026-09-23T05:28:39.738Z"
+}

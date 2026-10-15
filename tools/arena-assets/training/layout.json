@@ -1,0 +1,11 @@
+{
+  "arena_id": "arena.training-meadow",
+  "layout_master": "source/layout_master.png",
+  "master_width_px": 4096,
+  "master_height_px": 2304,
+  "master_pixels_per_unit": 245.0,
+  "master_scale": 1.8,
+  "master_world_position": [0.0, -2.42],
+  "runtime_pixels_per_unit": 256.0,
+  "notes": "Initial single-ground evaluation. Runtime positions preserve the approved layout master composition."
+}

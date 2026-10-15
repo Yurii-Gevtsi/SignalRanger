@@ -1,0 +1,5 @@
+# Grounder RED observation
+
+Public input: player selects `weapon.grounder` with one ammo, 80/100 HP, no aim, then calls `BattleSimulation.TryFire` in a real Unity EditMode test. Expected: `UtilityUsed`, no healing, one charge consumed. Actual in `TestResults.xml` at 2026-09-26 07:59 UTC: `Grounder_PlacesWithoutAimAndDoesNotHealOwner` Failed, `Expected: UtilityUsed / But was: Blocked` at `BattleSimulationTests.cs:240`. Exact command: `node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_PlacesWithoutAimAndDoesNotHealOwner`; exit 1, receipt `089032b5-315e-40cc-9adb-716048c09334`. Cause: `BattleSimulation.IsBattleMechanicAvailable` explicitly blocks grounder.
+
+Later repetition at 08:11 UTC also exited 1 (`receipt:247a2924-3f2e-4a34-b364-b93bc85a6ef3`), but because MCP port 8080 refused connection. That later result is infrastructure failure and is **not** the behavioral RED. The earlier Unity result is retained as the valid focused RED; current Unity MCP must be restored before GREEN.

@@ -1,0 +1,39 @@
+{
+  "arena_id": "arena.kraken",
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "crop": [
+        0,
+        128,
+        794,
+        1143
+      ],
+      "sorting_order": -8
+    },
+    {
+      "id": "center",
+      "crop": [
+        566,
+        64,
+        1394,
+        1152
+      ],
+      "sorting_order": -7
+    },
+    {
+      "id": "right",
+      "crop": [
+        1096,
+        207,
+        2048,
+        1152
+      ],
+      "sorting_order": -6
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "workItem": "weapon-combat-guardian-drone",
+  "stage": "red",
+  "receiptRef": "receipt:cbcbf58a-f009-4ffa-acdd-ee795985bced",
+  "command": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.GuardianDrone_DeploysAndGuaranteedShotEndsTriggeredTurn",
+  "exitCode": 1,
+  "expected": "Fired deployment followed by a guaranteed guardian shot that damages the triggering opponent and advances to the player turn.",
+  "observed": "Expected Fired, but was Blocked.",
+  "reason": "The availability gate rejects weapon.guardian-drone; this matches the missing requested combat behavior."
+}

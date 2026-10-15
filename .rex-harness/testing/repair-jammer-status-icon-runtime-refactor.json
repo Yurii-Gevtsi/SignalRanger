@@ -1,0 +1,6 @@
+{
+  "phase": "refactor",
+  "decision": "No additional abstraction is needed: status visual ownership remains in BattleUnitView, presenter forwards one explicit state, and controller supplies the existing simulation query during the normal refresh loop.",
+  "testDiffReview": "The test retains assertions for the real approved texture, enabled active state, position beside the real HP label, and disabled inactive state. It does not replace the resource with a test double or weaken status-lifetime visibility.",
+  "testReceiptRef": "receipt:b2ba8b2d-483f-4c87-bbf5-3a24c67a4866"
+}

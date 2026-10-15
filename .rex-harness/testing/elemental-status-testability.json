@@ -1,0 +1,7 @@
+{
+  "kind": "blocked",
+  "decision": "blocked",
+  "decisionRef": "file:.rex-harness/testing/elemental-status-testability.json",
+  "reason": "The only approved Unity EditMode public seam is currently non-responsive after the source and test refresh. The focused runner command starts but returns no job result within the available execution window, so it cannot honestly provide the required actual RED observation.",
+  "missingAcceptance": "A completed Unity Test Runner result for Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeapon_AppliesTwoEndOfVictimTurnTicksEqualToTwentyPercentOfImpactDamage, including the assertion output before implementation."
+}

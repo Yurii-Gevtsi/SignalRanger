@@ -1,0 +1,49 @@
+{
+  "arena_id": "arena.grib",
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "crop": [
+        0,
+        0,
+        744,
+        1151
+      ],
+      "sorting_order": -8
+    },
+    {
+      "id": "center",
+      "crop": [
+        506,
+        286,
+        1344,
+        1152
+      ],
+      "sorting_order": -7
+    },
+    {
+      "id": "right",
+      "crop": [
+        1056,
+        119,
+        1824,
+        1152
+      ],
+      "sorting_order": -6
+    },
+    {
+      "id": "far_right",
+      "crop": [
+        1576,
+        336,
+        2048,
+        1141
+      ],
+      "sorting_order": -5
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "9fe5f036-367a-42b8-a66e-ca3ead9ca7ae",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-elemental-statuses",
+  "profile": "default",
+  "request": {
+    "message": "Implement and verify the documented elemental status mechanics shared by all weapons: apply to every unit in initial damage area, fixed per-target tick damage at 20 percent of resolved direct damage, two victim-turn duration, same-element refresh, and no damage to later entrants into visual zones.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 1,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "8ccdac4f-6a26-4b5c-8717-280cd30517ea",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "doc:docs/architecture/elemental-status-runtime-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "doc:docs/architecture/elemental-status-runtime-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "doc:docs/architecture/elemental-status-runtime-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:.rex-harness/testing/elemental-status-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:.rex-harness/testing/elemental-status-testability.json",
+    "reason": "The only approved Unity EditMode public seam is currently non-responsive after the source and test refresh. The focused runner command starts but returns no job result within the available execution window, so it cannot honestly provide the required actual RED observation.",
+    "missingAcceptance": "A completed Unity Test Runner result for Game.Tests.EditMode.Gameplay.BattleSimulationTests.ToxicWeapon_AppliesTwoEndOfVictimTurnTicksEqualToTwentyPercentOfImpactDamage, including the assertion output before implementation."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-22T16:28:37.737Z",
+  "updatedAt": "2026-09-22T16:36:17.214Z"
+}

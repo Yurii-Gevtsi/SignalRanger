@@ -1,0 +1,10 @@
+{
+  "test": "BattleVisualResourceTests.OrbitalRocket_UsesMissileFlightResource",
+  "review": [
+    "The test creates an actual SimProjectile and invokes the existing resolver seam; it cannot pass merely because the sprite asset exists.",
+    "The expectation remains missle_fly, the same resource used by the homing missile.",
+    "The test does not replace the simulation lifecycle test, which separately proves the delayed strike and preserved next player turn.",
+    "The red marker is created only after TrySetOrbitalTarget succeeds; cleanup uses the same controller path for selection and confirmation."
+  ],
+  "result": "No user-visible constraint was weakened."
+}

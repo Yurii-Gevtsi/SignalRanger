@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "da3ffc4a-14bb-4b40-aef5-81dd4fa4892e",
+  "command": {
+    "executable": "node",
+    "args": [
+      "Captures/weapon12/run-mcp-tests.mjs",
+      "mortar-red",
+      "EditMode",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "4c8d199e8065346bfeda6770d4543e1e82a1bde55af77838196a1d84b389c791",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-10-06T13:29:27.726Z"
+}

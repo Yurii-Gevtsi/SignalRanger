@@ -1,0 +1,48 @@
+{
+  "kind": "rex.standards-spec-review.v1",
+  "workItem": "weapon-combat-guardian-drone",
+  "fixedPoint": "HEAD (uncommitted worktree review; this repository has no work-item targetRef)",
+  "nonEmptyDiffRef": "git diff -- Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs Assets/_Game/Runtime/Gameplay/Battle/Simulation/SimProjectile.cs Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulationEvents.cs Assets/_Game/Runtime/Gameplay/Battle/Assembly/BattleSceneController.cs Assets/_Game/Tests/EditMode/Gameplay/BattleVisualResourceTests.cs",
+  "specSource": "docs/design/weapon-combat-specification.md, section 23 and shared rule at line 13",
+  "standards": {
+    "scope": "guardian-specific hunks only; shared files contain substantial pre-existing unrelated worktree changes",
+    "findings": [],
+    "checked": [
+      "Mysterious Name: no issue; guardian lifecycle and target-bound projectile names state purpose.",
+      "Duplicated Code: no issue; ground placement reuses ActiveMine and target binding is specialized behavior.",
+      "Feature Envy: no issue.",
+      "Data Clumps: no issue.",
+      "Primitive Obsession: judgement accepted; existing projectile identifiers are string-based across BattleSimulation.",
+      "Repeated Switches: no new repeated decision structure.",
+      "Shotgun Surgery: contained to simulation, presentation, events, and focused tests.",
+      "Divergent Change: no guardian-unrelated responsibility added.",
+      "Speculative Generality: no issue; GuaranteedTargetUnitId has a current concrete guardian caller.",
+      "Message Chains: no issue.",
+      "Middle Man: no issue.",
+      "Refused Bequest: no inheritance involved."
+    ]
+  },
+  "spec": {
+    "findings": [
+      {
+        "location": "BattleSimulation.cs:4668-4723",
+        "evidence": "The specification reserves a guardian guaranteed-hit interaction with active specialized defensive devices for the attack-class implementation.",
+        "severity": "judgement",
+        "recommendation": "When grounder/force-field interception is implemented, classify GuardianDroneShotProjectileId as physical and route its committed impact through that defense boundary before direct damage."
+      }
+    ],
+    "confirmed": [
+      "Mine-like short fall: DeployGuardianDrone creates a gravity-driven deploy projectile at 1700-1731.",
+      "N0 detection and persistence: ActiveMine guardian state is retained and checked using weapon impact radius at 2371-2393.",
+      "Observer stealth: deployed opponent visual is hidden while player-owned visual remains shown at BattleSceneController.cs:2286-2293.",
+      "No retarget after activation: Target id is recorded, and a missing/dead target discards the shot at BattleSimulation.cs:4668-4676.",
+      "Fast small mortira_shot: presentation resolver maps guardian to mortira_shot at BattleSceneController.cs:2635.",
+      "Turn end after damage: guardian damage advances only the damaged active target turn at BattleSimulation.cs:4705-4721."
+    ]
+  },
+  "verdict": "pass-with-known-dependency",
+  "evidenceRefs": [
+    "receipt:79580677-069a-485b-b7dd-3c1e4dd2dca1",
+    "Unity TestResults.xml visual test pass at 2026-09-23T09:47:41Z"
+  ]
+}

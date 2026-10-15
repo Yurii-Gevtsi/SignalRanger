@@ -1,24 +1,26 @@
-# Target Architecture
+# Цільова архітектура
 
-## Product Direction
+## Продуктовий напрям
 
-Build an original mobile 2D tactical artillery game in Unity. The first version should feel lighter and friendlier than older genre examples:
+Ми будуємо оригінальну мобільну 2D тактичну artillery-гру в Unity. Перша версія має бути легшою для входу, ніж старі перевантажені жанрові приклади:
 
-- short matches;
-- small teams;
-- few early weapons;
-- clean touch controls;
-- guided first session;
-- readable UI;
-- progression that starts simple and expands over time.
+- короткі матчі;
+- малі команди;
+- небагато зброї на старті;
+- чисте touch-керування;
+- перша сесія з м’яким навчанням;
+- читабельний UI;
+- прогресія, яка починається просто і з часом росте.
 
-The long-term structure should support more weapons, character upgrades, events, cosmetics, monetization, live tuning, and optional online services without forcing those concerns into core gameplay.
+Довгострокова структура має підтримувати більше зброї, архетипи персонажів, апгрейди, події, косметику, монетизацію, live tuning і optional online services, але ці шари не повинні проникати в core gameplay напряму.
 
-The product direction from player-review research is: preserve a clean battle-first experience, add long-term progression gradually, and treat fairness/trust as a core feature. The target is not a huge meta-game at launch; it is a satisfying tactical duel that can grow without becoming noisy.
+Висновок із аналізу відгуків: спочатку потрібне чисте бойове ядро, потім поступова прогресія. Fairness і trust є core feature, а не “поліруванням потім”.
 
-## Proposed Unity Folder Structure
+Перед реалізацією кожної великої системи треба перевіряти відповідники в `Examples/`, виписувати принципи та ризики, а потім робити власну реалізацію.
 
-Recommended project-owned root:
+## Рекомендована структура Unity-проєкту
+
+Проєктний root:
 
 ```text
 Assets/_Game/
@@ -51,49 +53,49 @@ Assets/_Game/
   Editor/
 ```
 
-This is our own structure and should not mirror the unpacked examples.
+Це наша власна структура. Вона може бути натхненна спостереженнями з прикладів, але не має повторювати їхню точну структуру.
 
-## Layers
+## Шари
 
 `Core`
-: Shared interfaces, result types, events, time abstractions, lightweight service registration, and domain models that do not depend on Unity scene objects when possible.
+: Спільні інтерфейси, базові result/event типи, time abstractions, легкий service registry, domain models без залежності від сцен, UI або SDK.
 
 `App`
-: Bootstrap, service composition, application flow, scene loading, platform startup, and lifecycle handling.
+: Bootstrap, composition root, application flow, scene loading, platform lifecycle.
 
 `Gameplay`
-: Battle rules, turns, unit control, weapon execution, projectiles, terrain interaction, win/loss conditions, and battle camera behavior.
+: Battle rules, turn flow, unit control, weapon execution, projectiles, terrain interaction, damage, win/loss, battle camera.
 
 `Progression`
-: Player journey, level unlocks, chapters, mission goals, difficulty ramps, and feature gates.
+: Кампанія, місії, unlock-и, chapters, difficulty ramp, feature gates.
 
 `Economy`
-: Soft currency, reward grants, sinks, pricing models, and transaction validation for local gameplay.
+: Soft currency, rewards, sinks, pricing models, transaction validation для локальної гри.
 
 `Inventory`
-: Owned weapons, consumables, cosmetics, upgrades, and loadouts.
+: Owned weapons, loadout, cosmetics, consumables, upgrades.
 
 `Rewards`
-: Match rewards, daily rewards, first-time bonuses, event rewards, and reward presentation.
+: Match rewards, first-time rewards, daily rewards later, event rewards.
 
 `Tutorial`
-: Step-based onboarding, contextual prompts, tutorial battle constraints, and feature unlock explanations.
+: Step-based onboarding, contextual prompts, tutorial constraints, feature explanations.
 
 `UI`
-: Screens, panels, navigation, presenters/view models, reusable widgets, and HUD controllers.
+: Screens, HUD, navigation, presenters/view models, reusable widgets.
 
 `Audio`
-: Music, SFX, mixer routing, user volume settings, and battle audio cues.
+: Music, SFX, mixer routing, user settings, battle cues.
 
 `Data`
-: Save data, authored configs, local defaults, migrations, and repositories.
+: Save data, authored configs, local defaults, migrations, repositories.
 
 `Infrastructure`
-: Concrete adapters for ads, IAP, analytics, remote config, notifications, platform APIs, and backend clients.
+: Concrete adapters for ads, IAP, analytics, remote config, notifications, backend, platform APIs.
 
-## Core Services
+## Основні сервіси
 
-Initial service set:
+Початковий набір:
 
 - `SceneLoadingService`
 - `GameSessionService`
@@ -113,40 +115,41 @@ Initial service set:
 - `RemoteConfigService`
 - `NotificationService`
 
-SDK-facing services should expose project-owned interfaces. UI and gameplay must call our interfaces, not SDK APIs directly.
+SDK-facing сервіси мають бути за власними інтерфейсами. UI і gameplay не повинні напряму викликати Firebase, Ads, Billing, Android plugins або backend SDK.
 
 ## MVP Scope
 
-Recommended MVP:
+Рекомендований MVP:
 
 - Boot scene.
 - Main menu.
 - Battle scene.
-- One tutorial battle.
-- One simple progression path with 8-12 handcrafted missions.
-- 4-6 original weapons.
-- 2-3 original unit archetypes.
+- Один tutorial battle.
+- Проста campaign path з 8-12 handcrafted missions.
+- 4-6 оригінальних видів зброї.
+- 2-3 оригінальні архетипи юнітів.
 - Local save.
-- Simple soft currency.
+- Одна soft currency.
 - Basic inventory/loadout.
-- Settings for audio and language-ready text keys.
-- Analytics interface with a local/no-op implementation.
-- Ads/IAP/remote config interfaces with no-op implementations.
+- Settings для audio.
+- Language-ready text keys.
+- Analytics interface з local/no-op реалізацією.
+- Ads/IAP/remote config interfaces з no-op реалізаціями.
 
-Review-informed launch direction after the prototype is proven:
+Після перевіреного прототипу launch direction:
 
-- 12-16 original weapons;
-- 4-6 original character archetypes;
-- 4-6 arenas;
-- one soft currency;
-- account level, character growth, and weapon mastery as the only early progression layers;
-- early access to PvP or a safe PvP-like equivalent;
-- normalized competitive power if ranked PvP exists.
+- 12-16 оригінальних видів зброї;
+- 4-6 оригінальних character archetypes;
+- 4-6 арен;
+- одна soft currency;
+- account level, character growth, weapon mastery як ранні progression layers;
+- ранній доступ до casual PvP або safe PvP-like equivalent;
+- normalized competitive power, якщо буде ranked PvP.
 
-Defer until the core loop is fun:
+Відкласти до моменту, коли core loop стане fun:
 
-- real ads SDK;
-- real billing SDK;
+- реальний Ads SDK;
+- реальний Billing/IAP SDK;
 - push notifications;
 - backend login;
 - clans/social features;
@@ -155,16 +158,16 @@ Defer until the core loop is fun:
 - many currencies;
 - heavy upgrade trees.
 
-Avoid permanently:
+Уникати постійно:
 
-- paid/VIP combat advantage in ranked play;
-- aggressive forced ads after every match;
-- progression that creates large new-player versus old-player power gaps;
-- account, save, or purchase flows without recovery/restore plans.
+- paid/VIP combat advantage в ranked play;
+- forced ads після кожного матчу;
+- progression power gap між новими й старими гравцями;
+- account/save/purchase flows без restore/recovery plan.
 
 ## Data Strategy
 
-Use ScriptableObjects for authored content in early development:
+Для early development використовувати ScriptableObjects:
 
 - weapon definitions;
 - unit archetypes;
@@ -174,11 +177,11 @@ Use ScriptableObjects for authored content in early development:
 - tutorial steps;
 - UI theme references.
 
-Use JSON or a versioned serializable model for local saves. Save data must store player progress and ownership, not direct references to proprietary sample content.
+Для local save використовувати JSON або versioned serializable model. Save data має зберігати прогрес і ownership нашого гравця, а не посилання на чужий контент.
 
-## Dependency Direction
+## Напрям залежностей
 
-Preferred dependency direction:
+Бажаний dependency direction:
 
 ```text
 UI -> App/Core interfaces
@@ -188,11 +191,22 @@ Infrastructure -> Core interfaces
 App -> composes concrete implementations
 ```
 
-Avoid direct dependencies from gameplay into ads, purchases, Firebase, Android plugins, or backend code.
+Gameplay не залежить напряму від ads, purchases, Firebase, Android plugins або backend.
 
-## Architecture Decisions To Revisit
+## Передфічевий research checkpoint
 
-- Whether to use Addressables after content volume grows.
-- Whether to add a dependency injection framework or keep a lightweight project-owned composition root.
-- Whether battle terrain uses Unity 2D colliders, tilemaps, generated meshes, or a custom destructible mask.
-- Whether multiplayer is local/offline first, asynchronous later, or real-time later.
+Для кожної суттєвої системи:
+
+1. Знайти аналоги або сигнали у двох reference packages в `Examples/`.
+2. Подивитися APK/XAPK structure, assets categories, layouts/configs/classes, якщо релевантно.
+3. Виписати 3-7 високорівневих уроків: що взяти як принцип, що спростити, чого уникати.
+4. Не переносити names, values, files, layouts або logic 1:1.
+5. Створити власну модель/інтерфейс/config.
+6. Оновити docs, якщо фіча змінює архітектурний напрям.
+
+## Рішення, які треба переглянути пізніше
+
+- Чи використовувати Addressables після росту content volume.
+- Чи додавати dependency injection framework або лишити легкий власний composition root.
+- Який terrain approach обрати: Unity 2D colliders, tilemaps, generated meshes, destructible mask.
+- Який multiplayer path: offline/local first, async later або real-time later.

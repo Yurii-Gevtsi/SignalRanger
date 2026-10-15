@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "a07d6a87-0b56-4673-b36a-f29d6d83f47f",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "unity-editmode-runner-recovery",
+  "profile": "default",
+  "request": {
+    "message": "Restore a reliable Unity MCP EditMode test execution result for the current project so focused BattleSimulation tests return completed pass or failure output after source changes.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-22T16:36:26.672Z",
+  "updatedAt": "2026-09-22T16:36:26.672Z"
+}

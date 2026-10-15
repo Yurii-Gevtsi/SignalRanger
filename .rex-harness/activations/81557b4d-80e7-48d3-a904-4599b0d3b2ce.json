@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "81557b4d-80e7-48d3-a904-4599b0d3b2ce",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-full-implementation",
+  "profile": "default",
+  "request": {
+    "message": "Implement the documented runtime combat mechanics for all 41 weapons, including projectile physics, weapon upgrades, elemental statuses, traps, controlled devices, UI input behavior, save state, and automated verification.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 1,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "805a9396-a5e5-4ebc-9579-e5f2fd3455bc",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-combat-runtime-plan.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-combat-runtime-plan.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-combat-runtime-plan.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:.rex-harness/testing/weapon-combat-full-implementation-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:.rex-harness/testing/weapon-combat-full-implementation-testability.json",
+    "reason": "The public simulation seam is suitable and the changed plasma-sword test expresses a real behavior delta, but no runner produced an executable behavioral result. Unity MCP at 127.0.0.1:8080 refused the connection. The direct Unity batch runner compiled the project and exited 0 without creating the requested test-results XML or running the filter. The only failed receipt, receipt:baaf2211-ea92-4d21-a65c-1269a777265e, records MCP infrastructure failure rather than the expected combat assertion, so it cannot be used as an honest RED.",
+    "missingAcceptance": "A runnable Unity EditMode test result for the public BattleSimulation.TryFire and Tick scenario."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-22T15:44:45.914Z",
+  "updatedAt": "2026-09-22T15:56:04.097Z"
+}

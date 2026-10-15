@@ -1,0 +1,7 @@
+{
+  "scope": "Swap-jump owner destination only",
+  "file": "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs",
+  "change": "ExchangeTeleportPositions accepts an optional ownerDestinationOverride. Swap-jump passes the sphere impact landing to it, while the normal teleport exchange keeps its existing target-position default. ResolveTeleportLanding shares the terrain-aware arrival rule with the non-exchange teleport path.",
+  "redReceipt": "receipt:2a63a1d6-bd4d-4d4a-8ad3-7edeb3bff7d3",
+  "greenReceipt": "receipt:17fe8c58-b61c-45aa-9096-4cc3f638ecdf"
+}

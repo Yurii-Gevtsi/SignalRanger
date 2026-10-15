@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/weapon-combat-full-implementation-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire followed by Tick through the EditMode BattleSimulation harness.",
+    "setup": "A player with plasma sword attacks one nearby opponent with configured damage 45.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlasmaSword_HitsOneNearbyEnemyForConfiguredFixedDamage"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "The opponent loses the configured fixed 45 damage and has 55 HP.",
+    "observed": "The opponent has 65 HP because the current implementation takes 35% of current health.",
+    "failureReason": "The public combat result violates the documented fixed-damage plasma sword mechanic.",
+    "receiptRef": "receipt:ceb2fa23-2062-49cc-b325-876bc8311eb0"
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "09ee5e9f-d4aa-477d-a43a-9872aeba3c71",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "workshop-special-purchase-and-header-layout",
+  "profile": "default",
+  "request": {
+    "message": "Fix the workshop evolution purchase NullReferenceException for the impulse cannon, keep a purchased one-time special card accessible for its details, and implement the inspected left-panel weapon-name/level single-row layout.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "active",
+  "stepIndex": 1,
+  "phaseId": "delivery",
+  "currentCapabilityId": "software.testing.tdd",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "e15baa0f-721e-438a-a078-d93ef46e3b77",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-special-purchase-and-header-layout-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-special-purchase-and-header-layout-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-special-purchase-and-header-layout-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-special-purchase-and-header-layout-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": {
+    "schemaVersion": 1,
+    "activationId": "0791d590-50c0-46e6-9f21-0ae9cd509a98",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/workshop-special-purchase-and-header-layout-testability.json",
+      "receipt:33dfd0ea-dd37-4a7f-beda-0d69f187742e"
+    ],
+    "status": "active",
+    "stageIndex": 1,
+    "stageId": "green",
+    "completedStages": [
+      "red"
+    ],
+    "evidence": [
+      {
+        "kind": "failing-test-observed",
+        "refs": [
+          "receipt:33dfd0ea-dd37-4a7f-beda-0d69f187742e"
+        ]
+      },
+      {
+        "kind": "red-failure-reason-recorded",
+        "refs": [
+          "file:docs/architecture/workshop-special-purchase-and-header-layout-testability.json"
+        ]
+      }
+    ]
+  },
+  "currentCommand": {
+    "schemaVersion": 1,
+    "type": "provider.invoke",
+    "activationId": "0791d590-50c0-46e6-9f21-0ae9cd509a98",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "stageId": "green",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/workshop-special-purchase-and-header-layout-testability.json",
+      "receipt:33dfd0ea-dd37-4a7f-beda-0d69f187742e"
+    ],
+    "provider": {
+      "kind": "skill",
+      "id": "rex-tdd",
+      "source": "bundled",
+      "instructionsRef": "skill-sources/rex-tdd/SKILL.md"
+    },
+    "objective": "实施使目标测试通过的最小代码变更，并记录有边界的实现差异。",
+    "expectedEvidence": [
+      "passing-test-observed",
+      "implementation-diff-recorded"
+    ],
+    "executionToken": "5edbf466-0701-48c7-9a0d-95d36710545e"
+  },
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:docs/architecture/workshop-special-purchase-and-header-layout-testability.json",
+        "receipt:33dfd0ea-dd37-4a7f-beda-0d69f187742e"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:docs/architecture/workshop-special-purchase-and-header-layout-testability.json",
+    "redCandidate": {
+      "publicEntry": "Unity EditMode test Game.Tests.EditMode.App.WorkshopSpecialCardStateResolverTests",
+      "setup": "Compile the focused test fixture against the current Game.App assembly.",
+      "command": {
+        "executable": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\DotNetSdk\\dotnet.exe",
+        "args": [
+          "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\DotNetSdk\\sdk\\8.0.318\\Roslyn\\bincore\\csc.dll",
+          "/noconfig",
+          "/nostdlib",
+          "/target:library",
+          "/out:Temp\\WorkshopSpecialCardStateResolverTests.red.dll",
+          "/reference:C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\MonoBleedingEdge\\lib\\mono\\4.7.1-api\\mscorlib.dll",
+          "/reference:Library\\ScriptAssemblies\\Game.App.dll",
+          "/reference:C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\Resources\\PackageManager\\BuiltInPackages\\com.unity.ext.nunit\\net472\\unity-custom\\nunit.framework.dll",
+          "Assets\\_Game\\Tests\\EditMode\\App\\WorkshopSpecialCardStateResolverTests.cs"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "The special-card resolver distinguishes locked, currently purchasable, and fully purchased one-time special states.",
+      "observed": "Compilation fails with CS0103 because WorkshopSpecialCardStateResolver does not exist.",
+      "receiptRef": "receipt:33dfd0ea-dd37-4a7f-beda-0d69f187742e",
+      "failureReason": "The Workshop currently has no pure state policy that keeps a completed one-time special inspectable."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design",
+      "software.testing.tdd"
+    ]
+  },
+  "createdAt": "2026-09-19T14:29:31.644Z",
+  "updatedAt": "2026-09-19T14:35:52.580Z"
+}

@@ -1,0 +1,5 @@
+{
+  "seam": "Use BattleSimulation public targeting and firing APIs through the existing EditMode harness, then advance the opponent turn through the real turn lifecycle.",
+  "focusedCommand": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds",
+  "whySufficient": "This smallest vertical slice proves the player-action delay and actual deferred damage without relying on UI implementation details."
+}

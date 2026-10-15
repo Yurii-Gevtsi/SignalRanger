@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "e17248f5-a5c3-4a29-b332-4ab555ca9804",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "implement-workshop-stat-card-max-details",
+  "profile": "default",
+  "request": {
+    "message": "Implement the approved Workshop UI change now: stat cards show their own path rank (0 to 1 for no purchases), maxed base stat cards stay selectable, and their detail panel shows the final rank, current final value, localized maximum-reached text, and no purchase controls. Add a focused pure presentation resolver and EditMode tests.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "active",
+  "stepIndex": 1,
+  "phaseId": "delivery",
+  "currentCapabilityId": "software.testing.design",
+  "completedCapabilities": [
+    "software.implementation.minimize"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "aac776bf-431a-40de-bf9e-7363fb0d7b40",
+      "capabilityId": "software.implementation.minimize",
+      "recipeId": "software.implementation.minimize.recipe",
+      "reasonCode": "new-construct-proposed",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "minimize"
+      ],
+      "evidence": [
+        {
+          "kind": "reuse-ladder-evaluated",
+          "refs": [
+            "file:docs/architecture/workshop-stat-card-max-state-test-scope.md"
+          ]
+        },
+        {
+          "kind": "minimal-option-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-stat-card-max-state-test-scope.md"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": {
+    "schemaVersion": 1,
+    "activationId": "bc9de2bf-b29d-419c-aff3-8c27e5a19776",
+    "capabilityId": "software.testing.design",
+    "recipeId": "software.testing.design.recipe",
+    "reasonCode": "behavior-change",
+    "triggerEvidenceRefs": [
+      "request:current"
+    ],
+    "status": "active",
+    "stageIndex": 1,
+    "stageId": "decide-testability",
+    "completedStages": [
+      "design-tests"
+    ],
+    "evidence": [
+      {
+        "kind": "test-scope-contract-recorded",
+        "refs": [
+          "file:docs/architecture/workshop-stat-card-max-state-test-scope.md"
+        ]
+      },
+      {
+        "kind": "acceptance-test-mapping-recorded",
+        "refs": [
+          "file:docs/architecture/workshop-stat-card-max-state-test-scope.md"
+        ]
+      },
+      {
+        "kind": "test-seam-recorded",
+        "refs": [
+          "file:docs/architecture/workshop-stat-card-max-state-test-scope.md"
+        ]
+      }
+    ]
+  },
+  "currentCommand": {
+    "schemaVersion": 1,
+    "type": "provider.invoke",
+    "activationId": "bc9de2bf-b29d-419c-aff3-8c27e5a19776",
+    "capabilityId": "software.testing.design",
+    "recipeId": "software.testing.design.recipe",
+    "stageId": "decide-testability",
+    "reasonCode": "behavior-change",
+    "triggerEvidenceRefs": [
+      "request:current"
+    ],
+    "provider": {
+      "kind": "skill",
+      "id": "rex-test-design",
+      "source": "bundled",
+      "instructionsRef": "skill-sources/rex-test-design/SKILL.md"
+    },
+    "objective": "基于真实公共场景基线，明确是否存在诚实的 RED；没有行为差异时转入加固验证，验收不可观察时明确阻塞。",
+    "expectedEvidence": [
+      "testability-decision-recorded"
+    ],
+    "executionToken": "01347a16-6c3b-4650-aae0-9b0d6c64aad0"
+  },
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "new-construct-proposed",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.implementation.minimize",
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-17T13:14:15.273Z",
+  "updatedAt": "2026-09-17T13:15:04.956Z"
+}

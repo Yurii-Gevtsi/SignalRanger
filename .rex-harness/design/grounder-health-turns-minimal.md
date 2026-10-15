@@ -1,0 +1,7 @@
+# Grounder health and turn lifecycle: minimal construction
+
+Requirement from `docs/design/weapon-combat-specification.md:159-163`: placed magnet has finite HP and survives two turns, extended by four core upgrades to six. Current `BattleSimulation.ActiveGrounder` already stores `Health` and `RemainingTurns`, and `DamageGrounder` removes at zero; `AdvanceTurnNow` has the shared turn boundary. The missing observable behavior is damage state and expiry.
+
+Reuse ladder: (1) cannot delete finite life or HP without contradicting the spec; (2) reuse `ActiveGrounder`, `_activeGrounders`, `DamageGrounder`, and `AdvanceTurnNow`; (3) ordinary C# list reverse iteration and Unity `Mathf` suffice; (4) no dependency needed; (5) a local decrement in the turn boundary is readable, but encode the owner/opponent boundary explicitly so placement does not immediately consume a turn; (6) only a small typed `GrounderDamagedEvent` is needed for visual/UI/test observation. Avoid a new generic status framework and avoid hidden HP in unrelated mine types.
+
+Known sediment: device HP currently hardcoded `45` while the approved numeric proposal is 45% of a level-30 maximum HP that has not been defined. Preserve a documented config default and mark balance provisional; do not claim it equals the future curve. Progression currently grants grounder zero core upgrades, so core scaling needs a catalog correction in the subsequent upgrade slice. Focus this work item on HP damage and two-turn base expiry first, then continue the same weapon.

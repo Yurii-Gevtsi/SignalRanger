@@ -1,0 +1,51 @@
+{
+    "name": "Game.Infrastructure.Ugs",
+    "rootNamespace": "Game.Infrastructure.Ugs",
+    "references": [
+        "Game.Core",
+        "Game.Data",
+        "Game.Infrastructure",
+        "Game.App",
+        "Google.Play.Games",
+        "Unity.Services.Core",
+        "Unity.Services.Core.Environments",
+        "Unity.Services.Authentication",
+        "Unity.Services.CloudSave",
+        "Unity.Services.RemoteConfig"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UGS_CORE",
+        "UGS_AUTH",
+        "UGS_CLOUDSAVE",
+        "UGS_REMOTE_CONFIG"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.services.core",
+            "expression": "1",
+            "define": "UGS_CORE"
+        },
+        {
+            "name": "com.unity.services.authentication",
+            "expression": "1",
+            "define": "UGS_AUTH"
+        },
+        {
+            "name": "com.unity.services.cloudsave",
+            "expression": "1",
+            "define": "UGS_CLOUDSAVE"
+        },
+        {
+            "name": "com.unity.remote-config",
+            "expression": "1",
+            "define": "UGS_REMOTE_CONFIG"
+        }
+    ],
+    "noEngineReferences": false
+}

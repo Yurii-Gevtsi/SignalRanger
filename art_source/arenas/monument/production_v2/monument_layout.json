@@ -1,0 +1,35 @@
+{
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "x": 0,
+      "y": 160,
+      "width": 844,
+      "height": 902,
+      "sorting_order": -8,
+      "reference": "monument_left_reference.png"
+    },
+    {
+      "id": "center",
+      "x": 496,
+      "y": 77,
+      "width": 1038,
+      "height": 981,
+      "sorting_order": -7,
+      "reference": "monument_center_reference.png"
+    },
+    {
+      "id": "right",
+      "x": 1186,
+      "y": 236,
+      "width": 862,
+      "height": 827,
+      "sorting_order": -6,
+      "reference": "monument_right_reference.png"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "source_opaque_pixels": 2857966,
+  "reconstructed_opaque_pixels": 2833800,
+  "missing_after_two_pixel_allowance": 8703,
+  "growth_after_two_pixel_allowance": 229,
+  "outer_contour_drift_percent": 0.3125,
+  "max_allowed_outer_contour_drift_percent": 3.5,
+  "status": "pass"
+}

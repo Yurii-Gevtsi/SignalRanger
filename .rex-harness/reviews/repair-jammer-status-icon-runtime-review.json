@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "rex.standards-spec-review.v1",
+  "workItem": "weapon-combat-repair-jammer-status-icon-runtime-v2",
+  "baseline": "HEAD",
+  "targetFiles": [
+    "Assets/_Game/Runtime/Gameplay/Battle/Runtime/BattleUnitView.cs",
+    "Assets/_Game/Runtime/Gameplay/Battle/Runtime/BattleUnitPresenter.cs",
+    "Assets/_Game/Runtime/Gameplay/Battle/Assembly/BattleSceneController.cs",
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulationEvents.cs",
+    "Assets/_Game/Tests/EditMode/Gameplay/BattleUnitViewTests.cs"
+  ],
+  "diffRef": "Scoped review of the repair-jammer status-icon additions and the minimal laser-fence event compatibility alias; unrelated existing changes in these already-dirty files are excluded.",
+  "specSources": [
+    "docs/design/weapon-combat-specification.md: repair_jammer",
+    "docs/design/weapon-catalog-canonical.md: repair_jammer",
+    "AGENTS.md"
+  ],
+  "standards": {
+    "findings": [],
+    "checked": {
+      "mysteriousName": "not found; icon resource, child, and public state names identify the repair-jammer behavior",
+      "duplicatedCode": "not found; existing status-overlay ownership is extended at the view boundary",
+      "featureEnvy": "not found; controller queries simulation, presenter forwards state, and view owns rendering",
+      "dataClumps": "not found",
+      "primitiveObsession": "not found",
+      "repeatedSwitches": "not found",
+      "shotgunSurgery": "not found; each changed layer has its established responsibility",
+      "divergentChange": "not found",
+      "speculativeGenerality": "not found; one explicit state is needed for one approved visual",
+      "messageChains": "not found",
+      "middleMan": "not found; BattleUnitPresenter is the existing state-to-view boundary",
+      "refusedBequest": "not applicable"
+    },
+    "verdict": "pass"
+  },
+  "spec": {
+    "findings": [
+      {
+        "severity": "medium",
+        "location": "docs/design/weapon-catalog-canonical.md: repair_jammer row",
+        "evidence": "The catalog still calls the repair jammer planned, while the runtime now has the attachment, 2→4-turn status, all-healing block, and no-repair-2 presentation slice.",
+        "recommendation": "Update the per-weapon implementation status during the later full 41-card audit rather than treating this focused runtime diff as the final weapon report."
+      }
+    ],
+    "verdict": "changes-required"
+  },
+  "finalVerdict": "changes-required",
+  "evidence": [
+    "receipt:a9c63a59-e557-4a4d-8a90-56ff7402d277",
+    "receipt:b2ba8b2d-483f-4c87-bbf5-3a24c67a4866"
+  ]
+}

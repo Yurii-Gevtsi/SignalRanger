@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "a32a8614-e822-4c0a-ba47-32f80f4cb392",
+  "command": {
+    "executable": "powershell",
+    "args": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "Captures/weapon12/run-tests.ps1",
+      "green",
+      "EditMode",
+      "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier;Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests;Game.Tests.EditMode.Gameplay.TerrainGridTests;Game.Tests.EditMode.Gameplay.BattleSimulationTests.CoverWeapon"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "833b9629098b3254bf52308da24cc6d84fd009ae1e196af42f26948709cce8bb",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-10-06T12:55:23.574Z"
+}

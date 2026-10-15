@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "64622ec3-1567-45dd-b7b0-95b718eaae58",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.GuardianDrone_UsesSmallMortarShotSprite"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "ff446f0f09149c2c300572b418d5183a59b360ad72b4bc227cc8125323b351d5",
+  "observedAt": "2026-09-23T09:47:37.623Z"
+}

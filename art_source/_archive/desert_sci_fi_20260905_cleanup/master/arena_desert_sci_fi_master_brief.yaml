@@ -1,0 +1,62 @@
+asset_id: arena_desert_sci_fi_master
+category: arena_master
+purpose: phase_1_concept_layout
+revision: 5
+canvas:
+  width_px: 2048
+  height_px: 1152
+  orientation: landscape
+  aspect_ratio: "16:9"
+  safe_padding_px: 32
+style:
+  visual_language: vibrant stylized 2d side_view game art combining clear collision silhouettes with selective decorative depth, natural erosion, varied desert materials, and restrained sci_fi machinery
+  camera: side_view
+  perspective_strength: none
+  lighting: bright dry daylight from upper left
+  mood: bright adventurous desert expedition
+palette:
+  dominant: [sunlit_sand, golden_ochre, warm_sandstone, burnt_orange, terracotta, deep_brown_shadow]
+  accent: [cyan, turquoise_blue, muted_steel, sparse_desert_green]
+  avoid: [muddy_brown, neon_overload]
+composition:
+  gameplay_axis: x_only
+  collision_readability: every floor_like edge must match an actual or post_destruction solid surface
+  decorative_depth: allowed_when_short_local_low_priority_and_non_traversable
+  false_platform_cues: forbidden_only_when_they_form_a_plausible_route_or_compete_with_collision_edges
+  bunker_entrances: side_facing_left_or_right_on_x_axis
+  entrance_balconies: forbidden_unless_real_collision_surface
+  subject_position: complete playable arena edge_to_edge
+  silhouette_priority: single_line side_profile walkable surfaces, hazardous gaps, bunker entrances, supported floating platforms
+  scale_in_frame: broad multi_turn arena with open upper airspace
+  background: separate_unity_layer
+  character_world_ratio: "2.5-4.5 percent of playable width; validate later in Unity"
+  tactical_zone_count: 5
+  vertical_levels: 4
+  alternate_routes: 3
+  movement_budget: several ordinary movement turns across the arena
+  default_zoom_goal: full route structure and height bands remain readable
+  gameplay_zoom_goal: local cover, ledges, bunker mouths, and firing positions remain distinct
+runtime:
+  output_format: png
+  alpha: none
+  mask: none
+  mask_convention: white_solid_black_empty
+  ppu: 256
+  filter: bilinear
+  mipmaps: off
+  compression: concept_source_not_runtime
+  atlas: forbidden
+typography:
+  runtime_text: forbidden
+  font: none
+  role: none
+negative_prompt: characters, UI, labels, logos, watermarks, projectiles, explosions, distant scenery, unsupported floating rock, full 3d rendering, decorative ledges that form plausible routes, front_facing bunker doors, receding door floors, depth routes, isometric view, three_quarter view, strong perspective foreshortening, uniform micro_cracks, uniform block grid, sterile single_color terrain, dense scratches, noisy rubble
+reference_files:
+  - Assets/_Game/Content/Art/Arenas/Background.png
+  - art_source/arenas/desert_sci_fi/master/arena_desert_sci_fi_master.png
+  - art_source/arenas/desert_sci_fi/master/arena_desert_sci_fi_master_v2.png
+  - art_source/arenas/desert_sci_fi/review/arena_desert_sci_fi_v2_collision_feedback.png
+  - art_source/arenas/desert_sci_fi/master/arena_desert_sci_fi_master_v3.png
+  - art_source/arenas/desert_sci_fi/review/arena_desert_sci_fi_v3_collision_feedback.png
+  - art_source/arenas/desert_sci_fi/master/arena_desert_sci_fi_master_v4.png
+  - art_source/arenas/desert_sci_fi/review/desert_reference_analysis.md

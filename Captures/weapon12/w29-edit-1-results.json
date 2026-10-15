@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "b93cea01c71544d9b9971f0a49ee4213",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791308452845,
+    "finished_unix_ms": 1791308463146,
+    "last_update_unix_ms": 1791308463146,
+    "progress": {
+      "completed": 247,
+      "total": 247,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791308462927,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+      "last_finished_unix_ms": 1791308462929,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.ForceField_AbsorbsHostileEnergyCarriersAtTheBoundaryAndLetsPhysicalOnesThrough(\"weapon.granata\",False)",
+          "message": "  the physical shot still lands\r\n  Expected: True\r\n  But was:  False\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

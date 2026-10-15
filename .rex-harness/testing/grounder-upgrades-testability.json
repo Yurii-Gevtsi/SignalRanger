@@ -1,0 +1,18 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/grounder-upgrades-testability.json",
+  "redCandidate": {
+    "publicEntry": "WeaponProgressionCatalog.TryGet",
+    "setup": "Query the canonical grounder progression definition.",
+    "command": {
+      "executable": "node",
+      "args": ["tools/run-unity-mcp-editmode-test.mjs", "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_AllowsFourCoreAndFourRadiusUpgrades"],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "CoreUpgradeLimit and RadiusUpgradeLimit both equal four.",
+    "observed": "Unity EditMode failure: CoreUpgradeLimit expected four, observed zero at WeaponProgressionCatalogTests.cs:50.",
+    "failureReason": "The canonical grounder catalog entry currently declares zero Core purchases.",
+    "receiptRef": "receipt:0c96da62-d760-42db-9714-ede62d785d26"
+  }
+}

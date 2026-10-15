@@ -1,0 +1,10 @@
+{
+  "test": "Assets/_Game/Tests/EditMode/Gameplay/BattleSimulationTests.cs::OrbitalRocket_DefersImpactUntilOpponentTurnEnds",
+  "review": [
+    "The test still requires a public target-marking action, so it cannot pass through a generic aim fallback.",
+    "It verifies no immediate damage at confirmation, a projectile in flight after the opponent turn, later damage, and preservation of the player turn.",
+    "Reflection is limited to completing the AI-owned opponent turn in this isolated simulation fixture; production callers do not depend on the private method.",
+    "The target was corrected to the opponent's actual fixture position so the assertion measures the intended marked impact rather than a miss outside the blast radius."
+  ],
+  "result": "No user behavior constraint was weakened."
+}

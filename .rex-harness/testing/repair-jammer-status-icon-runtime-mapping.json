@@ -1,0 +1,19 @@
+{
+  "acceptanceMapping": [
+    {
+      "behavior": "The approved status icon is visible beside a jammed droid HP.",
+      "observable": "A child named Repair Jammer Status Icon has an enabled SpriteRenderer using the real UI/Common/no-repair-2 texture and a local position offset from Health Label.",
+      "test": "BattleUnitViewTests.RepairJammerStatusIcon_TracksActiveState"
+    },
+    {
+      "behavior": "The icon disappears at status expiry.",
+      "observable": "The same renderer is disabled after the public state entry is called with false.",
+      "test": "BattleUnitViewTests.RepairJammerStatusIcon_TracksActiveState"
+    },
+    {
+      "behavior": "Combat presentation follows simulation state.",
+      "observable": "The scoped source diff calls presenter.SetRepairJammerActive with BattleSimulation.IsUnitRepairJammed from RefreshUnitViews.",
+      "test": "Scoped code review because controller setup is not isolated in the current EditMode harness."
+    }
+  ]
+}

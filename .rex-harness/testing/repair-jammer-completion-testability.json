@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/repair-jammer-completion-testability.json",
+  "decision": "behavior-delta",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire, Tick, and EndActiveTurn",
+    "setup": "Player uses evolved repair regeneration, receives damage, then is attached by an opponent repair jammer.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_BlocksTimedRegenerationUntilItsBaseDurationExpires"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "Health remains 60 during the jammer's two completed target turns, then restores to 80 after expiry.",
+    "observed": "Health was 80 at the first blocked regeneration check.",
+    "failureReason": "ProcessRepairEffectsForActiveTurn restores health without consulting the jammer status.",
+    "receiptRef": "receipt:9ef8b296-8402-48a6-bf48-dc93978be1f6"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "45a7f3725b984ee79afe848b6bf90384",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791311778491,
+    "finished_unix_ms": 1791311785912,
+    "last_update_unix_ms": 1791311785912,
+    "progress": {
+      "completed": 267,
+      "total": 267,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791311785732,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.WalkIntent_MovesPlayerUnit_AndUpdatesFacing",
+      "last_finished_unix_ms": 1791311785735,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_CrawlsAheadAttachesToTheEnemyAndBlastsAfterTheShortFuseWithoutHurtingAllies",
+          "message": "  it crawled about a second and attached\r\n  Expected: 0.699999988f +/- 0.200000003f\r\n  But was:  -1.0f\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_TheChosenElementRunsTheSharedTwoTurnCycleOfTheMatchingGrenade(\"spider-freeze\",1)",
+          "message": "  only the direct blast so far, no instant tick\r\n  Expected: 45\r\n  But was:  0\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_TheChosenElementRunsTheSharedTwoTurnCycleOfTheMatchingGrenade(\"spider-burn\",2)",
+          "message": "  only the direct blast so far, no instant tick\r\n  Expected: 45\r\n  But was:  0\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.SpiderMine_TheChosenElementRunsTheSharedTwoTurnCycleOfTheMatchingGrenade(\"spider-poison\",3)",
+          "message": "  only the direct blast so far, no instant tick\r\n  Expected: 45\r\n  But was:  0\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

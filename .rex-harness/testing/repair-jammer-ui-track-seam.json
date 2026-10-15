@@ -1,0 +1,8 @@
+{
+  "seams": [
+    "WeaponProgressionCatalog public definition lookup",
+    "BattleUnitView public visual state method",
+    "Existing BattleSceneController Update lifecycle and BattleSimulation public status query"
+  ],
+  "focusedCommand": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleUnitViewTests.RepairJammerStatusIcon_TracksActiveState"
+}

@@ -1,0 +1,5 @@
+{
+  "seam": "Existing EditMode BattleSimulation harness with public TryFire, EndActiveTurn, Health and IsUnitRepairJammed.",
+  "why": "It executes the real projectile attachment, turn advance, repair-effect lifecycle and public status contract without a scene-only dependency.",
+  "focusedCommand": "node tools/run-unity-mcp-editmode-test.mjs Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_BlocksTimedRegenerationForConfiguredDuration"
+}

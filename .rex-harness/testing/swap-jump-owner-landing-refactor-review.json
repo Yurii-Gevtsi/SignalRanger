@@ -1,0 +1,7 @@
+{
+  "scope": "Swap-jump landing and nearest-enemy exchange",
+  "review": "The test keeps its public TryFire/Tick path and exact sphere-impact assertion. It additionally moves the owner after firing to prove that the enemy receives the captured throw-time origin, and adds a second enemy to prove that the nearest candidate is selected. No assertion was removed, skipped, or relaxed. The implementation reuses the existing terrain-aware teleport landing rule and preserves the normal teleport exchange default.",
+  "test": "Assets/_Game/Tests/EditMode/Gameplay/BattleSimulationTests.cs:1077",
+  "implementation": "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs:2934",
+  "refactorCheckReceipt": "receipt:da9b78ad-cbd9-4ec1-8be1-60a65e62312d"
+}

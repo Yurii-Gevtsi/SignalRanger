@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "23e3e96b-5516-468f-a3f3-05f4b3398590",
+  "command": {
+    "executable": "node",
+    "args": [
+      "-e",
+      "const u=http://127.0.0.1:8080/mcp,n=Game.Tests.EditMode.Gameplay.BattleSimulationTests.PlasmaSword_HitsOneNearbyEnemyForConfiguredFixedDamage;async function q(s,id,m,p){const r=await fetch(u,{method:POST,headers:{content-type:application/json,accept:application/json,",
+      "text/event-stream,...(s?{mcp-session-id:s}:{})},body:JSON.stringify({jsonrpc:2.0,id,method:m,params:p})});const x=await r.text(),d=x.split(/\\r?\\n/).filter(v=>v.startsWith(data:",
+      ")).at(-1);return {h:r.headers,j:JSON.parse(d.slice(6))};} (async()=>{const a=await q(null,1,initialize,{protocolVersion:2025-03-26,capabilities:{},clientInfo:{name:codex-rex,version:1}}),s=a.h.get(mcp-session-id),b=await q(s,2,tools/call,{name:run_tests,arguments:{mode:EditMode,test_names:[n],include_failed_tests:true,include_details:true}}),id=JSON.parse(b.j.result.content[0].text).data.job_id;for(let i=0;i<12;i++){const z=await q(s,3+i,tools/call,{name:get_test_job,arguments:{job_id:id,include_failed_tests:true,include_details:true,wait_timeout:5}}),d=JSON.parse(z.j.result.content[0].text).data;if(d.status!==running){console.log(JSON.stringify(d));process.exit(d.status===succeeded?0:1);}}process.exit(1)})().catch(e=>{console.error(e);process.exit(1)})"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrSha256": "6a1bf747836068781e32a92cac799f32dc86317bbfaf0e6ed1b1db6964b71eef",
+  "observedAt": "2026-09-22T16:26:36.562Z"
+}

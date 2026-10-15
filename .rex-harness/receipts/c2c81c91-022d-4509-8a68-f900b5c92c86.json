@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "c2c81c91-022d-4509-8a68-f900b5c92c86",
+  "command": {
+    "executable": "node",
+    "args": [
+      "Temp/weapon-mcp-run.mjs",
+      "Temp/weapons-7-10-tests.json"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "b004b71260d83c6fc5963331095fe8fd93b98d5844cc6832dc9f79685aba8ada",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-28T07:45:54.238Z"
+}

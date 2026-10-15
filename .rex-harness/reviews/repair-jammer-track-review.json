@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "rex.standards-spec-review.v1",
+  "workItem": "weapon-combat-repair-jammer-ui-and-track",
+  "baseline": "HEAD",
+  "targetFiles": [
+    "Assets/_Game/Runtime/Data/Progression/WeaponProgressionCatalog.cs",
+    "Assets/_Game/Tests/EditMode/Progression/WeaponProgressionCatalogTests.cs"
+  ],
+  "diffRef": "git diff HEAD -- targetFiles (non-empty)",
+  "specSources": [
+    "docs/design/weapon-catalog-canonical.md:203",
+    "docs/design/weapon-combat-specification.md:121",
+    "AGENTS.md"
+  ],
+  "standards": {
+    "findings": [],
+    "checked": {
+      "mysteriousName": "not found",
+      "duplicatedCode": "not found",
+      "featureEnvy": "not found",
+      "dataClumps": "not found",
+      "primitiveObsession": "not found",
+      "repeatedSwitches": "not found",
+      "shotgunSurgery": "not found",
+      "divergentChange": "not found",
+      "speculativeGenerality": "not found",
+      "messageChains": "not found",
+      "middleMan": "not found",
+      "refusedBequest": "not found"
+    },
+    "verdict": "pass"
+  },
+  "spec": {
+    "findings": [
+      {
+        "severity": "hard",
+        "location": "Assets/_Game/Runtime/Gameplay/Battle/Assembly/BattleSceneController.cs",
+        "evidence": "weapon-combat-specification.md:121 requires the visible no-repair-2 icon beside target HP, which is outside the scoped diff and remains unimplemented.",
+        "recommendation": "Run the separate unit-view presentation slice using BattleSimulation.IsUnitRepairJammed."
+      }
+    ],
+    "verdict": "changes-required"
+  },
+  "finalVerdict": "changes-required",
+  "evidence": ["receipt:ea67654a-18f1-47af-90b9-bae70057692d", "receipt:2cb9d0e6-7b98-44c0-88e9-037c0a46e87f"]
+}

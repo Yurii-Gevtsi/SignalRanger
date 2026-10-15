@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "7ce924c8-c2b0-4e4b-9adb-5637e362063b",
+  "command": {
+    "executable": "node",
+    "args": [
+      "tools/run-unity-mcp-editmode-test.mjs",
+      "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.OrbitalRocket_TimerExpiryInvalidatesTheVisibleDraftMarker"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "c55da7d8f79aa12429fab5f1d37aa7e63e570aefc8e2afa853cd54f734c6a30d",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-23T07:48:55.842Z"
+}

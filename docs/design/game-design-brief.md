@@ -1,89 +1,89 @@
-# Game Design Brief
+# Короткий дизайн-документ гри
 
-## Working Concept
+## Робоча концепція
 
-An original mobile 2D turn-based tactical artillery game about small teams of expressive fighters battling on compact destructible arenas. The game should be easy to understand in the first minute, satisfying to replay in short sessions, and expandable through new weapons, arenas, events, and progression layers.
+Оригінальна мобільна 2D покрокова tactical artillery-гра про маленькі команди виразних бійців, які воюють на компактних інтерактивних аренах. Гра має бути зрозумілою за першу хвилину, приємною для коротких повторних сесій і здатною розростатися через нову зброю, арени, події та прогресію.
 
-Working genre description:
+Робочий опис жанру:
 
 ```text
-Short tactical artillery duels with fair physics, readable terrain, light progression, and gradual content growth.
+Короткі tactical artillery-дуелі з чесною фізикою, читабельним terrain, легкою прогресією і поступовим ростом контенту.
 ```
 
-This is an original project. Do not copy names, assets, balance, layouts, configs, weapons, maps, characters, or proprietary systems from existing games.
+Це оригінальний проєкт. Не копіювати назви, assets, balance, layouts, configs, weapons, maps, characters або proprietary systems з існуючих ігор. Приклади можна глибоко аналізувати для принципів і сильних практик.
 
-## Design North Star
+## Північна зірка дизайну
 
-The player should feel:
+Гравець має відчувати:
 
 ```text
-I understood the situation.
-I made a clever shot.
-The result was fair.
-I earned progress.
-I want one more match.
+Я зрозумів ситуацію.
+Я зробив розумний постріл.
+Результат був чесним.
+Я отримав прогрес.
+Я хочу ще один матч.
 ```
 
 ## Product Position
 
-The game should sit between two extremes:
+Гра має бути між двома крайнощами:
 
-- cleaner and easier to enter than heavy live-service tactical games;
-- deeper over time than a disposable one-session arcade game.
+- чистіша й доступніша, ніж важкі live-service tactical games;
+- глибша з часом, ніж одноразова arcade-гра.
 
-The first public version should feel like a polished battle game with a light campaign and progression, not like a crowded meta-system.
+Перша публічна версія має відчуватися як polished battle game з легкою кампанією та progression, а не як crowded meta-system.
 
-## Target Player Experience
+## Цільовий досвід гравця
 
-First session:
+Перша сесія:
 
-- the player starts quickly;
-- the first battle teaches aiming and power;
-- the player fires within the first minute;
-- the result is readable even if they miss;
-- the battle ends quickly;
-- the player receives a small reward;
-- the next mission or match is obvious.
+- гравець швидко стартує;
+- перший бій навчає aiming і power;
+- гравець стріляє протягом першої хвилини;
+- результат читається навіть при промаху;
+- бій швидко завершується;
+- гравець отримує маленьку нагороду;
+- наступна місія або матч очевидні.
 
-Longer-term:
+Довший термін:
 
-- unlock new weapons gradually;
-- discover different character archetypes;
-- learn arena hazards and terrain tricks;
-- improve weapon mastery;
-- return for events, new arenas, and short challenges.
+- поступово відкривається нова зброя;
+- гравець знаходить різні архетипи персонажів;
+- вивчає arena hazards і terrain tricks;
+- покращує weapon mastery;
+- повертається за подіями, аренами й короткими challenges.
 
 ## Core Loop
 
 ```text
-Choose mission or match
--> enter battle
--> move/aim/fire during turn
--> react to terrain and enemy turn
--> win or lose
--> receive rewards and mastery progress
--> unlock or improve options
--> play one more short match
+Обрати місію або матч
+-> увійти в бій
+-> рух/прицілювання/постріл під час ходу
+-> реакція на terrain і хід суперника
+-> перемога або поразка
+-> rewards і mastery progress
+-> unlock або покращення опцій
+-> ще один короткий матч
 ```
 
-## Battle Rules For MVP
+## Battle Rules для MVP
 
-Initial battle rules:
+Початкові правила:
 
 - 1 team versus 1 team;
-- 1-2 units per side during early prototypes;
+- 1-2 units per side на ранніх prototypes;
 - turn-based actions;
 - one active unit per turn;
 - limited move range;
 - one shot per turn;
 - simple health;
 - victory when all enemy units are defeated;
-- battle length target: 2-5 minutes.
+- цільова тривалість бою: 2-5 хвилин.
 
-Add later:
+Додати пізніше:
 
 - wind;
-- water or fall deaths;
+- water/fall deaths;
 - multi-unit teams;
 - arena hazards;
 - alternate objectives;
@@ -92,41 +92,41 @@ Add later:
 
 ## Controls
 
-Control quality is a top priority.
+Якість керування є top priority.
 
 Prototype control model:
 
-- drag or hold to aim;
-- visible aim direction;
-- visible power indicator;
+- drag або hold to aim;
+- видимий aim direction;
+- видимий power indicator;
 - explicit fire confirmation;
-- no accidental release-to-fire until playtests prove it feels good;
-- cancel aim button or gesture;
-- clear trajectory preview for tutorial and early weapons.
+- без accidental release-to-fire, доки playtests не доведуть, що це добре;
+- cancel aim button або gesture;
+- trajectory preview для tutorial і early weapons.
 
-The shot should feel fair before any progression or economy is added.
+Постріл має відчуватися чесним до додавання progression або economy.
 
-## First Prototype Scope
+## Scope першого прототипу
 
-The first Unity prototype should prove only the battle feel:
+Перший Unity prototype доводить тільки battle feel:
 
-- one battle scene;
-- two placeholder units;
+- одна battle scene;
+- два placeholder units;
 - turn switching;
 - aim and power control;
 - one projectile weapon;
 - projectile arc;
-- collision with unit or terrain;
+- collision with unit або terrain;
 - simple radial damage;
 - health display;
 - win/loss state;
 - restart button.
 
-No shop, no account level, no ads, no IAP, no login, no live services.
+Без shop, account level, ads, IAP, login, live services.
 
 ## MVP Scope
 
-After the first prototype feels good, MVP should include:
+Після того як перший прототип відчувається добре, MVP має включати:
 
 - boot flow;
 - main menu;
@@ -140,30 +140,30 @@ After the first prototype feels good, MVP should include:
 - basic loadout;
 - one soft currency;
 - simple reward screen;
-- settings for audio;
-- no-op interfaces for analytics, ads, IAP, remote config, and notifications.
+- audio settings;
+- no-op interfaces for analytics, ads, IAP, remote config, notifications.
 
-## First Public Version Scope
+## Scope першої публічної версії
 
-The first public version can grow to:
+Перша публічна версія може вирости до:
 
 - 12-16 original weapons;
 - 4-6 original character archetypes;
 - 4-6 arenas;
 - offline AI battles;
 - campaign progression;
-- early casual PvP or safe PvP-like equivalent if feasible;
+- early casual PvP або safe PvP-like equivalent, якщо feasible;
 - account level;
 - character growth;
 - weapon mastery;
 - one soft currency;
-- optional premium currency only for cosmetics, pass, or convenience later.
+- optional premium currency лише для cosmetics, pass або convenience later.
 
-## Original Character Archetypes
+## Оригінальні архетипи персонажів
 
-Start with archetypes defined by tactical role, not copied fantasy/species/classes.
+Починати з tactical role, а не копій fantasy/species/classes.
 
-Suggested early archetypes:
+Ранні archetypes:
 
 - `Striker`: balanced movement, reliable damage, easy for beginners.
 - `Tinker`: utility tools, terrain placement, indirect tactics.
@@ -172,11 +172,11 @@ Suggested early archetypes:
 - `Medic`: light support and recovery, limited damage.
 - `Saboteur`: status effects, traps, disruption.
 
-MVP should start with 2-3 of these. More archetypes only after the core rules are stable.
+MVP стартує з 2-3 архетипів. Більше лише після стабілізації core rules.
 
-## Original Weapon Roles
+## Оригінальні ролі зброї
 
-Start with role categories before inventing final names, visuals, and stats.
+Починати з role categories перед фінальними назвами, visuals і stats.
 
 MVP weapon set:
 
@@ -184,10 +184,10 @@ MVP weapon set:
 - arcing explosive;
 - short-range burst;
 - terrain placement tool;
-- defensive shield or cover tool;
+- defensive shield або cover tool;
 - movement/repositioning tool.
 
-First public version can expand with:
+First public version може розширитися:
 
 - delayed explosive;
 - bouncing projectile;
@@ -200,55 +200,55 @@ First public version can expand with:
 - status effect tool;
 - event-only experimental weapon.
 
-Rules:
+Правила:
 
-- every weapon needs a clear tactical purpose;
-- avoid weapons that decide the match before counterplay exists;
-- keep animations short;
-- allow problem weapons to be disabled in special modes or private matches later;
-- tune from playtests, not from reference games.
+- кожна зброя має мати чітку tactical purpose;
+- уникати зброї, яка вирішує матч до появи counterplay;
+- тримати animations короткими;
+- дозволити problematic weapons вимикати в special/private modes later;
+- tuning робити з playtests, а не з balance values прикладів.
 
-## Arena Direction
+## Напрям арен
 
-Arena goals:
+Цілі арен:
 
-- compact enough for short matches;
-- readable on mobile;
-- varied terrain shapes;
+- достатньо компактні для коротких матчів;
+- читабельні на mobile;
+- різні terrain shapes;
 - safe spawn positions;
 - no first-turn cheap deaths;
-- clear hazards only after the player understands basic movement and shooting.
+- clear hazards лише після розуміння базового movement і shooting.
 
-Early arena themes should be original and simple. For prototyping, use placeholder geometry only.
+Тематика арен має бути оригінальною. У прототипі використовувати placeholder geometry.
 
-## Progression Direction
+## Напрям прогресії
 
-Use three early progression layers:
+Три ранні progression layers:
 
 - account level;
 - character growth;
 - weapon mastery.
 
-Keep these legible:
+Вони мають бути читабельні:
 
-- account level unlocks broad access;
-- character growth gives small PvE-oriented improvements and cosmetic identity;
-- weapon mastery teaches commitment and unlocks variants/cosmetics before power creep.
+- account level відкриває broad access;
+- character growth дає невеликі PvE-oriented improvements і cosmetic identity;
+- weapon mastery підтримує commitment і unlocks variants/cosmetics перед power creep.
 
-Ranked PvP, if added, should normalize combat power so older accounts and paying players do not dominate new players through stats.
+Ranked PvP має normalizе combat power, щоб старі акаунти або paying players не домінували через stats.
 
-## Economy Direction
+## Напрям економіки
 
 Early economy:
 
 - one soft currency;
 - rewards from missions and battles;
-- currency used for unlocks, basic upgrades, or cosmetics depending on balance;
+- currency for unlocks/basic upgrades/cosmetics depending on balance;
 - no crafting resource web;
 - no VIP combat power;
 - no many-currency system.
 
-Premium currency, if added later:
+Premium currency, якщо буде later:
 
 - cosmetics;
 - season pass;
@@ -256,41 +256,41 @@ Premium currency, if added later:
 - non-ranked expression;
 - no ranked combat dominance.
 
-## PvP Direction
+## Напрям PvP
 
-PvP should appear early enough that players feel real tactical tension, but it must be protected.
+PvP має з’явитися достатньо рано, щоб гравець відчув tactical tension, але воно має бути захищене.
 
 Principles:
 
 - casual PvP before ranked PvP;
-- bot-assisted PvP-like mode is acceptable while backend is absent;
+- bot-assisted PvP-like mode acceptable без backend;
 - normalized stats in ranked;
 - matchmaking by skill and arsenal band;
 - reconnect plan before serious ranked launch;
-- server validation and anti-cheat before competitive stakes become meaningful.
+- server validation і anti-cheat до meaningful competitive stakes.
 
-## Monetization Direction
+## Напрям монетизації
 
 Monetization should not punish playing.
 
-Allowed later:
+Дозволено later:
 
 - optional rewarded ads;
 - cosmetics;
-- battle pass or event pass;
+- battle pass або event pass;
 - remove-ads purchase;
-- convenience purchases that do not dominate ranked combat.
+- convenience purchases без ranked dominance.
 
-Avoid:
+Уникати:
 
 - forced ad after every match;
 - two forced ads in a row;
 - paid/VIP combat advantage;
-- purchase flows without restore and account recovery planning.
+- purchase flows без restore and account recovery planning.
 
 ## Live-Ops Direction
 
-Prefer temporary freshness over permanent system bloat:
+Перевага тимчасовій свіжості замість permanent system bloat:
 
 - seasonal arenas;
 - weekly boss challenges;
@@ -300,11 +300,11 @@ Prefer temporary freshness over permanent system bloat:
 - cosmetic rewards;
 - limited-time casual PvP rules.
 
-Avoid adding a new permanent economy layer with every update.
+Не додавати новий permanent economy layer у кожному update.
 
-## What We Are Not Building First
+## Що не будуємо спочатку
 
-Not in first prototype:
+Не в першому прототипі:
 
 - campaign;
 - shop;
@@ -317,7 +317,7 @@ Not in first prototype:
 - complex destructible terrain;
 - many weapons.
 
-Not in MVP:
+Не в MVP:
 
 - clans;
 - real-money shop;
@@ -329,7 +329,7 @@ Not in MVP:
 - large live-ops system;
 - advanced anti-cheat.
 
-Avoid permanently:
+Уникати постійно:
 
 - copied content from existing games;
 - paid combat dominance;
@@ -338,21 +338,44 @@ Avoid permanently:
 - hidden formulas that make losses feel fake;
 - progression that buries the fun.
 
-## Immediate Implementation Target
+## Поточний implementation target
 
-Build `Milestone 1: Fair Shot Prototype`.
+MVP feature scope closed. The next active target is:
 
-Acceptance criteria:
+```text
+Iteration 1: Soft Launch Foundation
+```
 
-- the project opens in Unity;
-- a battle scene can be played in editor;
-- player can aim deliberately;
-- player can fire one projectile;
-- projectile arc is readable;
-- hit detection works;
-- damage updates health;
-- turns alternate;
-- match ends with win/loss;
-- restart works;
-- no external SDK is required.
+Goal:
 
+- make the first Android build;
+- move content toward definitions/catalogs/validation;
+- expand the first campaign slice;
+- improve onboarding and first 10 minutes;
+- add basic visual/audio feedback;
+- add analytics through service boundaries;
+- prepare a closed-test-ready build.
+
+Source of truth:
+
+- `docs/architecture/mvp-implementation-summary.md`
+- `docs/architecture/iteration-1-soft-launch-foundation.md`
+
+## Складність суперника (бот)
+
+Бот-суперник має три рівні, керовані data-driven профілями
+(`BotProfile`, підбираються через `BotProfileProvider` за `AiDifficulty`;
+дефолти в `BotProfileLibrary`, перевизначаються asset'ами в
+`Resources/Bot/`). Деталі й план — `docs/architecture/opponent-bot-ai.md`.
+
+| Рівень | Приціл | Перешкоди | Рух |
+|---|---|---|---|
+| **Легкий** | евристика + великий розкид цілі | ігнорує | стоїть |
+| **Середній** | оберн. балістика + перевірка траєкторії, помірний розкид | відбраковує заблоковані дуги | ходьба до кращої позиції, відхід від близького ворога |
+| **Важкий** | те саме, малий розкид + вибір зброї за очік. цінністю | шукає позицію з чистим шляхом | ходьба **+ стрибки** через ями, недоступні ходьбою |
+
+Принципи: чесність (ті самі правила/фізика, що в гравця; жодних читів),
+складність — контентна ручка (розкид, шанс ідеального пострілу, пул зброї,
+рух/стрибки), а не гілки в коді. Балансний прохід (hit-rate по місіях,
+дизайн арен зі стрибковими ямами) — окремий трек; див. заувагу про
+співвідношення ходьби/стрибків у архітектурному документі.

@@ -1,67 +1,79 @@
-# APK/XAPK Analysis Notes
+# Нотатки аналізу APK/XAPK
 
-These notes summarize only high-level technical observations from the unpacked examples in `Examples/`. They must not be used to copy code, assets, configs, balance, layouts, names, scenes, or proprietary gameplay logic.
+Ці нотатки підсумовують технічні спостереження з прикладів у `Examples/`. Приклади можна глибоко аналізувати для розуміння архітектури, систем, SDK, assets і gameplay-підходів. Не можна переносити 1:1 код, assets, names, configs, balance, layouts або proprietary logic.
 
-## Current Project Context
+## Поточний контекст проєкту
 
-- Unity project detected.
+- Виявлено Unity-проєкт.
 - Unity editor version: `6000.5.1f1`.
-- Installed packages include URP, Input System, UGUI, Visual Scripting, Test Framework, AI packages, Timeline, and common Unity modules.
+- Packages: URP, Input System, UGUI, Visual Scripting, Test Framework, AI packages, Timeline, common Unity modules.
 
-## Example A: XAPK-Style Split Package
+## Example A: XAPK-style split package
 
-Observed from `Examples/Warlings`:
+Спостереження з першого reference package:
 
-- Package is represented as a base APK plus many split APKs for languages and screen densities.
-- Manifest metadata indicates a modern Android target and billing/ad-related permissions.
-- File inventory suggests a 2D mobile game package with many bitmap assets, audio files, video files, Android resources, and Google mobile service libraries.
-- No obvious Unity, Unreal, or Cocos marker was visible from the base APK file listing checked during this pass.
-- Broad SDK categories observed: ads, billing, Google Play services, AndroidX, app measurement/identifier support.
-- Broad feature categories suggested by asset folder names: gameplay HUD, shop, rewards, weapons, maps, unit customization, menu screens, win/result screen, environment effects.
+- Package представлений як base APK плюс split APK для мов і screen densities.
+- Manifest metadata показує modern Android target і billing/ad-related permissions.
+- File inventory схожий на 2D mobile game package з багатьма bitmap assets, audio, video, Android resources і Google mobile service libraries.
+- Явних Unity, Unreal або Cocos markers у base APK listing під час першого проходу не видно.
+- Broad SDK categories: ads, billing, Google Play services, AndroidX, app measurement/identifier support.
+- Broad feature categories за asset folder names: gameplay HUD, shop, rewards, weapons, maps, unit customization, menu screens, win/result screen, environment effects.
 
-High-level takeaway for our game:
+Висновки для нашої гри:
 
-- Keep Android SDK dependencies isolated behind our own service interfaces.
-- Plan content categories separately from code modules.
-- Do not start with the full scope of shops, rewards, customization, and many weapons; introduce them gradually.
+- Android SDK dependencies ізолювати за власними service interfaces.
+- Content categories планувати окремо від code modules.
+- Не стартувати з повним scope shops, rewards, customization і many weapons; вводити поступово.
+- Для кожної схожої фічі можна дивитися, як вона присутня у структурі прикладу, але не копіювати файли, назви або значення.
 
-## Example B: Unpacked Adobe AIR/Flash-Style Package
+## Example B: unpacked Adobe AIR/Flash-style package
 
-Observed from `Examples/Wormix`:
+Спостереження з другого reference package:
 
-- The package has AIR/Flash indicators, including SWF content and AIR extension folders.
-- Native libraries are present under `lib/arm64-v8a`.
-- Multiple DEX files and many property/version files suggest a broad Android SDK integration layer.
-- Broad SDK categories observed: Firebase, Google Play services, billing, identity/auth, app update/review, notifications, push notifications, analytics/measurement, remote config/performance-related components.
-- Asset categories include layouts, maps, particles, sounds, UI, localization, sprites, and authored animation/content files.
-- Both mobile and desktop layout categories appear in the package, which suggests shared content across device profiles.
+- Package має AIR/Flash indicators, SWF content і AIR extension folders.
+- Native libraries присутні в `lib/arm64-v8a`.
+- Multiple DEX files і багато property/version files вказують на broad Android SDK integration layer.
+- Broad SDK categories: Firebase, Google Play services, billing, identity/auth, app update/review, notifications, push notifications, analytics/measurement, remote config/performance-related components.
+- Asset categories: layouts, maps, particles, sounds, UI, localization, sprites, authored animation/content files.
+- Є mobile і desktop layout categories, що натякає на shared content across device profiles.
 
-High-level takeaway for our game:
+Висновки для нашої гри:
 
-- A live game can accumulate many services, but the MVP should not depend on all of them.
-- Start offline-first with local saves and a small economy.
-- Add analytics, remote config, ads, IAP, and notifications as adapters after core gameplay is stable.
+- Live game може накопичити багато services, але MVP не має від них залежати.
+- Починати offline-first із local saves і small economy.
+- Analytics, remote config, ads, IAP, notifications додавати як adapters після стабілізації core gameplay.
+- Другий reference package корисний як приклад масштабу й пасток live-service growth.
+
+## Як використовувати приклади перед фічею
+
+Перед новою системою агент має:
+
+1. Знайти відповідники у двох reference packages в `Examples/`.
+2. Виписати system role, visible UX pattern, SDK/data/assets implications.
+3. Виписати ризики: overload, fairness, trust, monetization pressure, UI clutter.
+4. Спроєктувати власну простішу версію.
+5. Не переносити exact names, stats, configs, files або proprietary logic.
 
 ## Safe Inspiration
 
-Safe ideas to carry forward:
+Можна брати як принцип:
 
 - turn-based tactical combat;
 - short session structure;
 - simple weapon selection;
 - readable mobile HUD;
 - tutorialized first battle;
-- level or chapter progression;
-- optional rewards and shop layers;
-- clear separation between battle scene and meta screens;
-- SDK facade pattern for ads, analytics, IAP, notifications, and remote config.
+- level/chapter progression;
+- optional rewards/shop layers;
+- separation between battle scene and meta screens;
+- SDK facade pattern for ads, analytics, IAP, notifications, remote config.
 
-## Explicit Non-Goals
+## IP застереження
 
-- No asset reuse.
-- No balance reuse.
-- No reverse-engineered logic.
-- No cloned UI screens.
-- No recreated file structure from examples.
-- No copied names for classes, weapons, items, maps, modes, configs, or events.
-
+- Не використовувати чужі assets.
+- Не використовувати чужий balance.
+- Не відтворювати proprietary logic 1:1.
+- Не клонувати UI screens.
+- Не повторювати exact file structure.
+- Не копіювати names for classes, weapons, items, maps, modes, configs або events.
+- Дозволено аналізувати, порівнювати, вчитися і формувати власні рішення.

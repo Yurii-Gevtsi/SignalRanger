@@ -1,0 +1,110 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "f5817dca6dd04d01a54d59fb4e6f2c55",
+    "status": "failed",
+    "mode": "PlayMode",
+    "started_unix_ms": 1791303840140,
+    "finished_unix_ms": 1791303888332,
+    "last_update_unix_ms": 1791303888332,
+    "progress": {
+      "completed": 647,
+      "total": 29,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791303887962,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Tutorial.TutorialServiceTests.FindNext_WaitsForRequiredSteps",
+      "last_finished_unix_ms": 1791303887963,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.BattleHud_UsesCompactAlignedTopBarAndBottomWeaponControls",
+          "message": "  Expected: (500.00, 500.00)\r\n  But was:  (620.00, 500.00)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.BattleHudResources_UseArsenalAndWeaponIconsWithoutDedicatedFireArt",
+          "message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.CameraFrameBottoms_AlignWithTheirArenaCanvasBottoms",
+          "message": "System.Collections.Generic.KeyNotFoundException : The given key 'arena.bones' was not present in the dictionary."
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.DrillLaser_FiringShowsTheTransparentBeamSprite",
+          "message": "Expected log did not appear: [Error] Regex: Destroy may not be called from edit mode"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.DroidRig_PlatformAnimatesOnlyWhenPresentedPositionChanges",
+          "message": "  Expected: RGBA(0.060, 1.000, 0.100, 1.000)\r\n  But was:  RGBA(0.059, 1.000, 0.102, 1.000)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.Grounder_DeploymentShowsItsSkinAndRemovalClearsIt",
+          "message": "Expected log did not appear: [Error] Regex: Destroy may not be called from edit mode"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.LagunaTheme_LowersOnlyBattleContentByFiftyPixels",
+          "message": "  Expected: (0.00, -0.20)\r\n  But was:  (0.00, -0.59)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.LoadingScreenPreview_BuildsMissionTextSpinnerAndPercent",
+          "message": "  Expected: (-420.00, 245.00)\r\n  But was:  (-420.00, 270.00)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.MonumentTheme_LowersOnlyBattleContentByFiftyPixels",
+          "message": "  Expected: (0.00, -0.20)\r\n  But was:  (0.00, -0.78)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.OpponentHealth_IsShownAsUnscaledRedNumberOnly",
+          "message": "  Expected: RGBA(1.000, 0.050, 0.030, 1.000)\r\n  But was:  RGBA(1.000, 0.051, 0.031, 1.000)\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleVisualResourceTests.WeaponsScreen_ShowsShelfActionsAndDetailsWithoutPurchaseButtons",
+          "message": "  Settings Button must exist in the battle HUD.\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.ImpulseSalvoWeaponEffectTests.Resolver_MapsRepairBranchesToProtectionAndRegenerationDurations",
+          "message": "  Expected: 2\r\n  But was:  1\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.UnitMotorTests.SafeSpawn_RejectsOneCellEdgeWithNoWalkableExit",
+          "message": "  Expected: False\r\n  But was:  True\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Modes.CampaignArenaUnlockServiceTests.ClearingTheFirstShippedChapter_OpensTheDesertArena",
+          "message": "  Expected is <System.String[1]>, actual is <System.String[0]>\r\n  Values differ at index [0]\r\n  Missing:  < \"arena.desert-sci-fi\" >"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Modes.OpponentLoadoutBuilderTests.EveryCatalogWeaponHasAnAuthoredSlot",
+          "message": "  weapon.rope\r\n  Expected: True\r\n  But was:  False\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Modes.RaidSetupServiceTests.AfterTheFirstChapter_TheRaidRunsOnItsArena",
+          "message": "  Expected: True\r\n  But was:  False\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Modes.RaidSetupServiceTests.DifficultyDrivesTheProfileTheRewardTierAndTheRankCap",
+          "message": "  Expected: 3\r\n  But was:  0\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Modes.RaidSetupServiceTests.TheArenaIsAlwaysDrawnFromTheLiberatedPool",
+          "message": "  Expected: collection containing <string.Empty>\r\n  But was:  <empty>\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Progression.CampaignContentPlanTests.ReservedPlanetPlanContainsTwoOrderedFutureChapters",
+          "message": "System.ArgumentException : Property Count was not found\r\nParameter name: name"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Progression.DefaultGameContentCatalogTests.DefaultCatalog_HasValidCrossReferences",
+          "message": "  Campaign chapter 'chapter.basics' references missing featured weapon 'weapon.blaster-caset'.\nCampaign chapter 'chapter.city' references missing featured weapon 'weapon.blaster-caset'.\nEnemy loadout 'enemy.training.direct' references missing weapon 'weapon.blaster-caset'.\r\n  Expected: <empty>\r\n  But was:  < \"Campaign chapter 'chapter.basics' references missing featured weapon 'weapon.blaster-caset'.\", \"Campaign chapter 'chapter.city' references missing featured weapon 'weapon.blaster-caset'.\", \"Enemy loadout 'enemy.training.direct' references missing weapon 'weapon.blaster-caset'.\" >\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

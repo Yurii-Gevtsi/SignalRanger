@@ -1,0 +1,19 @@
+{
+  "workItem": "weapon-combat-repair-jammer-completion",
+  "implementation": [
+    "Timed repair regeneration checks IsUnitRepairJammed before restoring health.",
+    "BattleSimulation exposes IsUnitRepairJammed for the battle presentation layer.",
+    "Repair-jammer duration starts at two target turns and adds up to two duration upgrades from its evolution profile.",
+    "Saved radius-path purchases resolve to the bounded jammer duration bonus."
+  ],
+  "verification": [
+    {
+      "test": "RepairJammer_BlocksTimedRegenerationUntilItsBaseDurationExpires",
+      "receipt": "receipt:1a758a64-9498-49e5-b966-50523c213a93"
+    },
+    {
+      "test": "RepairJammer_TwoDurationUpgradesKeepTheTargetJammedForFourOwnTurns",
+      "receipt": "receipt:92368721-1792-4376-8892-01e408b2af6b"
+    }
+  ]
+}

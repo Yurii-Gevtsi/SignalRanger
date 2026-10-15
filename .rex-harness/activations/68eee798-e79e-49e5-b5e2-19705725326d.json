@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "68eee798-e79e-49e5-b5e2-19705725326d",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-swap-jump",
+  "profile": "default",
+  "request": {
+    "message": "Implement and verify swap-jump combat behavior: normal teleport trajectory, optional nearest-enemy position exchange using the throw-time origin, deterministic selection, turn/effect correctness, and projectile skin mapping.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 1,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "fa39226b-1684-46bc-8ce0-2c73f2cf4a6b",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-scope.json"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-mapping.json"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-seam.json"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:.rex-harness/testing/swap-jump-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:.rex-harness/testing/swap-jump-testability.json",
+    "reason": "The focused EditMode scenarios are observable through the public BattleSimulation seam, but the current Unity Editor instance is not connected to the MCP relay (mcpforunity://instances reports instance_count: 0). The wrapper invocation exits before dispatching a Unity test, so it cannot provide an honest RED receipt or compile/test evidence.",
+    "missingAcceptance": "Reconnect the existing Unity Editor MCP bridge to http://127.0.0.1:8080/mcp without restarting the Editor, then run the three focused commands in swap-jump-seam.json. The attempted wrapper receipt is receipt:f3aad8d9-04df-4f8a-bf8f-d4862105d7dc and only proves the dispatch failure."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-25T09:35:27.810Z",
+  "updatedAt": "2026-09-25T09:48:10.865Z"
+}

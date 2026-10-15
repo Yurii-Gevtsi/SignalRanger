@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/repair-jammer-ui-track-testability.json",
+  "redCandidate": {
+    "publicEntry": "WeaponProgressionCatalog.TryGet",
+    "setup": "Read the public progression definition for weapon.repair-jammer.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "RadiusUpgradeLimit is 2.",
+    "observed": "The focused test failed because the current limit is 4.",
+    "failureReason": "The progression catalog does not yet encode the approved two-purchase duration track.",
+    "receiptRef": "receipt:80359e9b-d432-4594-b32f-5c09f2a77624"
+  }
+}

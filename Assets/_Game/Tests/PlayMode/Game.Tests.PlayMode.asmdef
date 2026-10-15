@@ -1,0 +1,30 @@
+{
+    "name": "Game.Tests.PlayMode",
+    "rootNamespace": "Game.Tests.PlayMode",
+    "references": [
+        "Game.Core",
+        "Game.Data",
+        "Game.Gameplay",
+        "Game.App",
+        "Game.UI",
+        "Game.Infrastructure",
+        "Game.Progression",
+        "Game.Inventory",
+        "Game.Audio",
+        "Game.Economy",
+        "Game.Tutorial",
+        "UnityEngine.TestRunner",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

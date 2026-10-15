@@ -1,0 +1,45 @@
+{
+  "canvas": {
+    "width": 4013,
+    "height": 2258
+  },
+  "production_scale": 2.4,
+  "source_master": "arena-transparent.png",
+  "runtime_import": "single_reconstructed_surface",
+  "enhanced_reference": "source_layers/enhanced_renders/training_master_enhanced.png",
+  "sections": [
+    {
+      "id": "section_01",
+      "source_x": 0,
+      "source_width": 583,
+      "source_height": 941,
+      "source": "source_segments/training_section_01_source.png",
+      "generated": "source_layers/generated_fragments/01.png",
+      "enhanced": "source_layers/enhanced_renders/training_section_01_enhanced.png",
+      "output_x": 0,
+      "output_width": 1399
+    },
+    {
+      "id": "section_02",
+      "source_x": 551,
+      "source_width": 589,
+      "source_height": 941,
+      "source": "source_segments/training_section_02_source.png",
+      "generated": "source_layers/generated_fragments/training-section-02-crates-hq-transparent.png",
+      "enhanced": "source_layers/enhanced_renders/training_section_02_enhanced.png",
+      "output_x": 1322,
+      "output_width": 1414
+    },
+    {
+      "id": "section_03",
+      "source_x": 1108,
+      "source_width": 564,
+      "source_height": 941,
+      "source": "source_segments/training_section_03_source.png",
+      "generated": "source_layers/generated_fragments/training_section_03_generated.png",
+      "enhanced": "source_layers/enhanced_renders/training_section_03_enhanced.png",
+      "output_x": 2659,
+      "output_width": 1354
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "workItem": "weapon-combat-repair-jammer-status",
+  "stage": "refactor",
+  "decision": "No structural refactor was needed after the green test. The jammer status is isolated behind explicit duration helpers and one healing guard, while attachment resolution remains in the existing projectile lifecycle.",
+  "verification": {
+    "test": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_BlocksTheAffectedEnemyHealingForTwoOwnTurns",
+    "receipt": "receipt:f816d84c-272c-49cd-954c-18c151fedbb8"
+  },
+  "knownGaps": [
+    "Timed repair effects are not yet blocked by the repair-jammer status.",
+    "Upgrade-driven durations and player-facing status presentation require separate behavior and UI slices.",
+    "Status expiry remains to be covered by a dedicated test."
+  ]
+}

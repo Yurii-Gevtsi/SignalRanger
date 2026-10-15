@@ -1,0 +1,176 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "aff627ff5cd84d00b3e4a3bc3d1a371c",
+    "status": "succeeded",
+    "mode": "EditMode",
+    "started_unix_ms": 1791292482058,
+    "finished_unix_ms": 1791292491954,
+    "last_update_unix_ms": 1791292491954,
+    "progress": {
+      "completed": 15,
+      "total": 15,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791292491799,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)",
+      "last_finished_unix_ms": 1791292491846,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "EditMode",
+      "summary": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 1.9921895,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.2769263,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.1072782,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.080709,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0950497,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_FireUsesThePreviewCenter(0.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(0.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0885558,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_FireUsesThePreviewCenter(90.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(90.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0790022,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive",
+          "state": "Passed",
+          "durationSeconds": 0.0120336,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction",
+          "state": "Passed",
+          "durationSeconds": 0.277083,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.2621119,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.1784539,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)",
+          "state": "Passed",
+          "durationSeconds": 0.0395774,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)",
+          "state": "Passed",
+          "durationSeconds": 0.0380782,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)",
+          "state": "Passed",
+          "durationSeconds": 0.0444594,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)",
+          "state": "Passed",
+          "durationSeconds": 0.0500234,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)",
+          "state": "Passed",
+          "durationSeconds": 0.0449602,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "objective": "Complete technical and economic scan of the Unity game and persist evidence-backed knowledge for fast change localization and balancing.",
+  "status": "audited_with_open_gaps",
+  "domains": {
+    "technical": {"report": "docs/knowledge/technical-scan.md", "inventory": "docs/knowledge/technical-inventory.json", "owner": "technical_scan"},
+    "economic": {"report": "docs/knowledge/economy-scan.md", "balance": "docs/knowledge/economy-balance.json", "owner": "economy_scan"}
+  },
+  "repositorySnapshot": {
+    "unityProject": true,
+    "runtimeSourceRoot": "Assets/_Game/Runtime",
+    "runtimeSourceFileCountAtIndex": 250,
+    "runtimeAssetFileCountAtIndex": 1229,
+    "codeReviewGraph": {"nodes": 3111, "edges": 17865, "files": 321, "testGaps": 231, "risk": 0.85, "builtAt": "2026-08-13T18:55:22"}
+  },
+  "requiredEvidence": [
+    "exact file paths and symbols for every extracted value",
+    "implemented-versus-planned classification",
+    "known unknowns and confidence labels",
+    "machine-readable balance tables",
+    "targeted test or static-check command for each high-risk system",
+    "AIOS session/checkpoint/evidence manifest references"
+  ],
+  "verification": {
+    "commands": [
+      "node C:/Users/Yurii/.rexcil/aios/scripts/aios.mjs doctor",
+      "node C:/Users/Yurii/.rexcil/aios/scripts/aios.mjs harness status --session <session> --json",
+      "dotnet test Game.Tests.EditMode.csproj",
+      "dotnet test Game.Tests.PlayMode.csproj"
+    ],
+    "utf8Policy": "Read edited Cyrillic files as UTF-8 and scan for mojibake patterns before completion."
+  },
+  "artifacts": [
+    "docs/knowledge/README.md",
+    "docs/knowledge/technical-scan.md",
+    "docs/knowledge/technical-inventory.json",
+    "docs/knowledge/economy-scan.md",
+    "docs/knowledge/economy-balance.json",
+    "docs/knowledge/harness-scan-plan.md",
+    ".aios/evidence/game-scan/manifest.json",
+    "docs/design/campaign-content-canonical.md",
+    "docs/design/weapon-economy-canonical.md",
+    "docs/design/monetization-and-pvp-policy.md"
+  ],
+  "openHighRiskItems": [
+    "time-to-rank is a baseline target pending telemetry validation",
+    "historical PvP power score is a policy, not implemented matchmaking behavior",
+    "production monetization and receipt validation are not active",
+    "the harness dry-run session has no checkpoint or provider evidence yet"
+  ],
+  "lastUpdated": "2026-08-14"
+}

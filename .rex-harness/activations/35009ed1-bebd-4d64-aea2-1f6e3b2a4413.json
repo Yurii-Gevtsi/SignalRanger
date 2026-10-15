@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "35009ed1-bebd-4d64-aea2-1f6e3b2a4413",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-mechanics-41-audit-2026-09-19",
+  "profile": "default",
+  "request": {
+    "message": "Audit and correct battle mechanics for all 41 canonical weapons, including selection, aiming, firing motion, post-launch behavior, and purchased special effects; report each unit and any blocked requirements",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-19T18:55:25.494Z",
+  "updatedAt": "2026-09-19T18:55:25.494Z"
+}

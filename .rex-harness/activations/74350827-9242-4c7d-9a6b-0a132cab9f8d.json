@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "74350827-9242-4c7d-9a6b-0a132cab9f8d",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-repair-jammer-presentation",
+  "profile": "default",
+  "request": {
+    "message": "Finish the remaining repair-jammer specification findings: limit its duration upgrade track to two purchases, then render the existing no-repair-2 combat icon next to each affected unit's HP for the active jammer status. Verify the runtime and focused EditMode tests.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-23T05:16:16.602Z",
+  "updatedAt": "2026-09-23T05:16:16.602Z"
+}

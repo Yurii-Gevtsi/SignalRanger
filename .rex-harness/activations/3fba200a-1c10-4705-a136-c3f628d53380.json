@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "3fba200a-1c10-4705-a136-c3f628d53380",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-ui-catalog-synchronization",
+  "profile": "default",
+  "request": {
+    "message": "Update shop, workshop, and arsenal to use the canonical weapon roster: current skins, special-upgrade descriptions, core shop filtering, hide future arena/dungeon weapons in shop, workshop shows owned upgradeable weapons only, arsenal shows all owned weapons.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "blocked",
+  "stepIndex": 1,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "a32b4fdf-abe4-4546-a9fc-d5bcfd179225",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-ui-catalog-synchronization-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-ui-catalog-synchronization-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-ui-catalog-synchronization-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/weapon-ui-catalog-synchronization-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "blocked",
+    "decisionRef": "file:docs/architecture/weapon-ui-catalog-synchronization-testability.json",
+    "reason": "The focused Unity EditMode run could not enter compilation or execute the candidate test because Unity terminated before producing a test-result XML. The only real execution receipt is receipt:52544f38-139b-4d10-bf03-43c0b3e601b5 with exit code 1; Temp/weapon-evolution-icon-red.log ends immediately after project path setup. No honest RED observation exists yet.",
+    "missingAcceptance": "A Unity Test Runner session that can compile and run the focused EditMode test. The project should not be locked by another active Unity Editor process."
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design"
+    ]
+  },
+  "createdAt": "2026-09-16T15:44:02.684Z",
+  "updatedAt": "2026-09-16T15:47:31.105Z"
+}

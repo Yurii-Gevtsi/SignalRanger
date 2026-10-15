@@ -1,0 +1,325 @@
+using System.Collections;
+using System.Collections.Generic;
+using Game.Core;
+using Game.Core.Localization;
+using Game.Progression.Missions;
+using Game.UI;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+namespace Game.App
+{
+    public sealed class LoadingScreenController : MonoBehaviour
+    {
+        private const string LoaderResourceRoot = "UI/Loaders/";
+        private const int BackgroundCount = 5;
+        private const float ProgressFillSpeed = 1.35f;
+        private const float MinimumDisplaySeconds = 0.85f;
+
+        private static readonly Color TextShadowColor = new(0.02f, 0.03f, 0.05f, 0.92f);
+        // TMP wraps by rendered glyph width rather than by a language-specific
+        // character count, so every supported language uses the same card layout.
+        private static readonly Vector2 MissionDescriptionPosition = new(-420f, 270f);
+        private static readonly Vector2 MissionDescriptionSize = new(590f, 150f);
+        private static readonly Vector2 MissionCardPosition = new(-420f, 245f);
+        private static readonly Vector2 MissionCardSize = new(720f, 480f);
+        private static readonly Vector2 MissionRewardRowPosition = new(-640f, 160f);
+        private static readonly Vector2 MissionRewardIconSize = new(53f, 53f);
+        private static readonly Vector2 MissionRewardValueSize = new(86f, 53f);
+        private static readonly Vector2 LoaderPosition = new(0f, -400f);
+        private static readonly Vector2 LoaderSize = new(224f, 224f);
+        private static readonly Vector2 PercentSize = new(210f, 100f);
+
+
+        private readonly Dictionary<string, Sprite> _sprites = new();
+
+        private static LoadingScreenController _active;
+
+        private Sprite _whiteSprite;
+        private RectTransform _loaderRing;
+        private TMP_Text _percentText;
+        private float _targetProgress;
+        private float _displayProgress;
+
+        public static void LoadScene(string sceneName)
+        {
+            var controller = Create(sceneName);
+            controller.StartCoroutine(controller.LoadRoutine(sceneName));
+        }
+
+        public static IEnumerator LoadSceneAsync(string sceneName)
+        {
+            var controller = Create(sceneName);
+            yield return controller.StartCoroutine(controller.LoadRoutine(sceneName));
+        }
+
+        public void InitializeForPreview(string sceneName)
+        {
+            Build(sceneName);
+            SetProgress(0f);
+        }
+
+        private static LoadingScreenController Create(string sceneName)
+        {
+            if (_active != null)
+            {
+                Destroy(_active.gameObject);
+                _active = null;
+            }
+
+            var root = new GameObject("Loading Screen");
+            DontDestroyOnLoad(root);
+            _active = root.AddComponent<LoadingScreenController>();
+            _active.Build(sceneName);
+            return _active;
+        }
+
+        private void Awake()
+        {
+            _whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
+        }
+
+        private void Update()
+        {
+            _displayProgress = Mathf.MoveTowards(_displayProgress, _targetProgress, ProgressFillSpeed * Time.unscaledDeltaTime);
+            UpdatePercentText();
+        }
+
+        private void Build(string sceneName)
+        {
+            if (_whiteSprite == null)
+            {
+                _whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
+            }
+
+            var canvasObject = new GameObject("Loading Canvas");
+            canvasObject.transform.SetParent(transform, false);
+            var canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 5000;
+
+            var scaler = canvasObject.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 1f;
+
+            var root = canvasObject.transform;
+            var backgroundIndex = UnityEngine.Random.Range(1, BackgroundCount + 1);
+            CreateImage("Loading Background", root, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f),
+                Vector2.zero, Vector2.zero, backgroundIndex.ToString(), false);
+
+            var missionDescription = ResolveMissionDescription(sceneName);
+            CreateImage("Mission Description Card", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), MissionCardSize, MissionCardPosition, "UI/Common/card2", false);
+            var description = CreateText("Mission Description", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), MissionDescriptionSize, MissionDescriptionPosition, 27,
+                TextAlignmentOptions.TopLeft, missionDescription, GameTextRole.Body);
+            // Keep the intended 27 pt mission text. Longer localized copy wraps by
+            // its rendered width into the available lines instead of shrinking.
+            description.enableAutoSizing = false;
+            description.textWrappingMode = TextWrappingModes.Normal;
+            description.overflowMode = TextOverflowModes.Truncate;
+
+            if (sceneName == GameSceneNames.Battle && AppServices.IsInitialized && AppServices.Session?.SelectedMission != null)
+            {
+                CreateMissionRewardRow(root, AppServices.Session.SelectedMission);
+            }
+
+            _loaderRing = CreateImage("Loading Ring", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), LoaderSize, LoaderPosition, "loader3", true);
+            _percentText = CreateText("Loading Percent", root, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), PercentSize, LoaderPosition, 40,
+                TextAlignmentOptions.Center, "0%", GameTextRole.DisplayTitle);
+        }
+
+        private IEnumerator LoadRoutine(string sceneName)
+        {
+            SetProgress(0f);
+            var startTime = Time.unscaledTime;
+            var operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            if (operation == null)
+            {
+                SceneManager.LoadScene(sceneName);
+                DestroySelf();
+                yield break;
+            }
+
+            operation.allowSceneActivation = false;
+            while (operation.progress < 0.9f)
+            {
+                SetProgress(Mathf.Clamp01(operation.progress / 0.9f));
+                yield return null;
+            }
+
+            SetProgress(1f);
+            while (_displayProgress < 0.995f || Time.unscaledTime - startTime < MinimumDisplaySeconds)
+            {
+                yield return null;
+            }
+
+            UpdatePercentText(1f);
+            operation.allowSceneActivation = true;
+            while (!operation.isDone)
+            {
+                yield return null;
+            }
+
+            yield return null;
+            DestroySelf();
+        }
+
+        private void SetProgress(float progress)
+        {
+            _targetProgress = Mathf.Clamp01(progress);
+        }
+
+        private void UpdatePercentText(float? forcedProgress = null)
+        {
+            if (_percentText == null)
+            {
+                return;
+            }
+
+            var progress = forcedProgress ?? _displayProgress;
+            _percentText.text = $"{Mathf.RoundToInt(Mathf.Clamp01(progress) * 100f)}%";
+        }
+
+        private static string ResolveMissionDescription(string sceneName)
+        {
+            if (sceneName == GameSceneNames.Battle && AppServices.IsInitialized)
+            {
+                var mission = AppServices.Session?.SelectedMission;
+                if (mission != null)
+                {
+                    return GameText.Localized(mission.DescriptionKey, mission.Description);
+                }
+            }
+
+            if (sceneName == GameSceneNames.Battle)
+            {
+                return GameText.Tip("trainingMission", string.Empty);
+            }
+
+            if (sceneName == GameSceneNames.Menu)
+            {
+            return GameText.Tip("returnBaseDescription", string.Empty);
+            }
+
+            return GameText.Tip("loadingDescription", string.Empty);
+        }
+
+        private void CreateMissionRewardRow(Transform parent, MissionDefinition mission)
+        {
+            var reward = mission.Reward;
+            CreateMissionReward(parent, "Loading Mission Coins", "UI/Shop/coin", reward.softCurrency,
+                MissionRewardRowPosition, SciFiTextStyle.GoldText);
+            CreateMissionReward(parent, "Loading Mission Crystals", "UI/Menu/Rewards/Icons/reward_crystal", reward.blueprints,
+                MissionRewardRowPosition + new Vector2(195f, 0f), SciFiTextStyle.CyanText);
+
+            var experience = CreateText("Loading Mission Experience Label", parent, new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(72f, 53f),
+                MissionRewardRowPosition + new Vector2(355f, 0f), 36, TextAlignmentOptions.MidlineLeft,
+                GameText.CampaignExperienceAbbreviation(), GameTextRole.Body);
+            experience.fontWeight = FontWeight.Bold;
+            experience.color = new Color(1f, 0.25f, 0.2f, 1f);
+
+            var experienceAmount = CreateText("Loading Mission Experience Amount", parent, new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), MissionRewardValueSize,
+                MissionRewardRowPosition + new Vector2(425f, 0f), 24, TextAlignmentOptions.MidlineLeft,
+                reward.commanderExperience.ToString(), GameTextRole.Body);
+            experienceAmount.color = SciFiTextStyle.MainText;
+        }
+
+        private void CreateMissionReward(Transform parent, string name, string iconResource, int amount, Vector2 position, Color color)
+        {
+            var icon = CreateImage(name + " Icon", parent, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), MissionRewardIconSize, position, iconResource, true);
+            icon.GetComponent<Image>().color = color;
+
+            var value = CreateText(name + " Amount", parent, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f), MissionRewardValueSize, position + new Vector2(62f, 0f), 24,
+                TextAlignmentOptions.MidlineLeft, amount.ToString(), GameTextRole.Body);
+            value.color = SciFiTextStyle.MainText;
+        }
+
+        private RectTransform CreateImage(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
+            Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPosition, string resourceName, bool preserveAspect)
+        {
+            var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
+            var image = rect.gameObject.AddComponent<Image>();
+            image.sprite = LoadSprite(resourceName);
+            image.color = Color.white;
+            image.preserveAspect = preserveAspect;
+            image.raycastTarget = false;
+            return rect;
+        }
+
+        private TMP_Text CreateText(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
+            Vector2 sizeDelta, Vector2 anchoredPosition, int fontSize, TextAlignmentOptions alignment, string value,
+            GameTextRole role)
+        {
+            var rect = CreateRect(name, parent, anchorMin, anchorMax, pivot, sizeDelta, anchoredPosition);
+            var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
+            SciFiTextStyle.Apply(text, role, fontSize, alignment);
+            text.fontSizeMin = Mathf.Max(14, fontSize - 10);
+            text.textWrappingMode = TextWrappingModes.Normal;
+            text.overflowMode = TextOverflowModes.Truncate;
+            text.text = value;
+            text.raycastTarget = false;
+
+            var shadow = rect.gameObject.AddComponent<Shadow>();
+            shadow.effectColor = TextShadowColor;
+            shadow.effectDistance = new Vector2(0f, -2f);
+            return text;
+        }
+
+        private Sprite LoadSprite(string resourceName)
+        {
+            var resourcePath = resourceName.Contains("/")
+                ? resourceName
+                : LoaderResourceRoot + resourceName;
+            if (_sprites.TryGetValue(resourcePath, out var cached))
+            {
+                return cached;
+            }
+
+            var texture = Resources.Load<Texture2D>(resourcePath);
+            if (texture == null)
+            {
+                return _whiteSprite;
+            }
+
+            var sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f), 100f);
+            _sprites[resourcePath] = sprite;
+            return sprite;
+        }
+
+        private void DestroySelf()
+        {
+            if (_active == this)
+            {
+                _active = null;
+            }
+
+            Destroy(gameObject);
+        }
+
+        private static RectTransform CreateRect(string name, Component parent, Vector2 anchorMin, Vector2 anchorMax,
+            Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPosition)
+        {
+            var rectObject = new GameObject(name, typeof(RectTransform));
+            var rect = (RectTransform)rectObject.transform;
+            rect.SetParent(parent.transform, false);
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.pivot = pivot;
+            rect.sizeDelta = sizeDelta;
+            rect.anchoredPosition = anchoredPosition;
+            return rect;
+        }
+    }
+}

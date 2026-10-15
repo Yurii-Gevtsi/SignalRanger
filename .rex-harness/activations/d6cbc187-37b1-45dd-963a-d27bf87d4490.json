@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "d6cbc187-37b1-45dd-963a-d27bf87d4490",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-icon-visual-normalization",
+  "profile": "default",
+  "request": {
+    "message": "Normalize oversized weapon icons across shared UI surfaces and apply requested per-weapon workshop preview transform adjustments, including localized Lava Gun rename.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-19T13:05:43.986Z",
+  "updatedAt": "2026-09-19T13:05:43.986Z"
+}

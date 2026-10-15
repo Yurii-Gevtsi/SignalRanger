@@ -1,0 +1,18 @@
+{
+  "mode": "EditMode",
+  "total": 145,
+  "passed": 143,
+  "failures": [
+    {
+      "name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CoverWeapon_Fired_StampsTerrainMask",
+      "state": "Failed",
+      "message": "<message><![CDATA[  instant utility actions still spend the turn\r\n  Expected: Opponent\r\n  But was:  Player\r\n]]></message>"
+    },
+    {
+      "name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Mortar_FragmentEvolution_SpawnsConfiguredHalfStrengthFragments(4)",
+      "state": "Failed",
+      "message": "<message><![CDATA[  Expected: 4\r\n  But was:  5\r\n]]></message>"
+    }
+  ],
+  "job": "0adc1189436f45a1b7a584d93ab9c762"
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "f3d69d30-a92a-4f70-a328-b585ecd367bd",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-laser-fence-visual",
+  "profile": "default",
+  "request": {
+    "message": "Align laser-fence player-facing presentation with the approved combat specification: show links through 5.4 world units and render ground node bodies at half their current visible size; verify the shared link boundary.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-22T20:00:54.752Z",
+  "updatedAt": "2026-09-22T20:00:54.752Z"
+}

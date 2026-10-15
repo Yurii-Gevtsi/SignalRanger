@@ -1,0 +1,26 @@
+{
+  "workItem": "weapon-combat-repair-jammer-status-icon-runtime-v2",
+  "userGoal": "A repair-jammed droid shows the approved no-repair-2 status icon beside its HP while jammed and it disappears when the status ends.",
+  "inScope": [
+    "BattleUnitView owns a visible world-space repair-jammer sprite child.",
+    "BattleUnitPresenter exposes a narrow forwarding method.",
+    "BattleSceneController refreshes the visual from BattleSimulation.IsUnitRepairJammed during normal unit-view presentation.",
+    "A focused Unity EditMode test asserts active and inactive states with the real Resources texture."
+  ],
+  "outOfScope": [
+    "Repair-jammer timing and upgrade rules",
+    "Other status icons",
+    "HUD layout and input",
+    "Changing health or damage behavior"
+  ],
+  "completionCriteria": [
+    "Calling the view's public repair-jammer state entry renders the approved sprite beside the HP label.",
+    "Clearing the state hides the same sprite child.",
+    "Normal controller refresh provides the current simulation status through the presenter."
+  ],
+  "prohibitedTestWeakening": [
+    "Do not replace the real Resources texture with a test-only placeholder.",
+    "Do not assert only a private field or call count.",
+    "Do not remove the inactive-state assertion."
+  ]
+}

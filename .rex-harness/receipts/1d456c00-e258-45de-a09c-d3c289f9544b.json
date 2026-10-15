@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "1d456c00-e258-45de-a09c-d3c289f9544b",
+  "command": {
+    "executable": "cmd.exe",
+    "args": [
+      "/c",
+      "C:\\Projects\\Game\\Temp\\run-weapon-ui-catalog-tests.cmd"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 4294770688,
+  "stdoutSha256": "a759e0dfa252be28b89838671cb3973170e9b28f5e7063d474661b81edc3316f",
+  "stderrSha256": "163a4117975245cc0724f5d7648f1190b9fc72628106d711019e82a90ae27846",
+  "observedAt": "2026-09-16T16:25:22.774Z"
+}

@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "0dc84e84-c89d-4495-aa5f-ff87534163ea",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "workshop-base-stat-descriptions",
+  "profile": "default",
+  "request": {
+    "message": "Implement the user-specified localized base-stat card descriptions in the Workshop. Core, Aim, and Loadout have shared descriptions. Radius has a generic description plus weapon-specific overrides for the listed weapons. Update all localization dictionaries and verify exact key parity.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "active",
+  "stepIndex": 1,
+  "phaseId": "delivery",
+  "currentCapabilityId": "software.testing.tdd",
+  "completedCapabilities": [
+    "software.testing.design"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "ea2cb604-b7ff-4e14-9b4d-2f1427ad0b8c",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-base-stat-descriptions-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-base-stat-descriptions-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-base-stat-descriptions-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:docs/architecture/workshop-base-stat-descriptions-testability.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": {
+    "schemaVersion": 1,
+    "activationId": "83386cf0-07ce-4926-afa8-0cd447cfff14",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/workshop-base-stat-descriptions-testability.json",
+      "receipt:d6beac35-c39b-4fd8-8615-42ee2e27e9d6"
+    ],
+    "status": "active",
+    "stageIndex": 1,
+    "stageId": "green",
+    "completedStages": [
+      "red"
+    ],
+    "evidence": [
+      {
+        "kind": "failing-test-observed",
+        "refs": [
+          "receipt:d6beac35-c39b-4fd8-8615-42ee2e27e9d6"
+        ]
+      },
+      {
+        "kind": "red-failure-reason-recorded",
+        "refs": [
+          "file:docs/architecture/workshop-base-stat-descriptions-testability.json"
+        ]
+      }
+    ]
+  },
+  "currentCommand": {
+    "schemaVersion": 1,
+    "type": "provider.invoke",
+    "activationId": "83386cf0-07ce-4926-afa8-0cd447cfff14",
+    "capabilityId": "software.testing.tdd",
+    "recipeId": "software.testing.tdd.recipe",
+    "stageId": "green",
+    "reasonCode": "honest-red-candidate",
+    "triggerEvidenceRefs": [
+      "request:current",
+      "activation:software.testing.design:completed",
+      "file:docs/architecture/workshop-base-stat-descriptions-testability.json",
+      "receipt:d6beac35-c39b-4fd8-8615-42ee2e27e9d6"
+    ],
+    "provider": {
+      "kind": "skill",
+      "id": "rex-tdd",
+      "source": "bundled",
+      "instructionsRef": "skill-sources/rex-tdd/SKILL.md"
+    },
+    "objective": "实施使目标测试通过的最小代码变更，并记录有边界的实现差异。",
+    "expectedEvidence": [
+      "passing-test-observed",
+      "implementation-diff-recorded"
+    ],
+    "executionToken": "dec93586-28bf-4de5-8fcf-8f433390f6d5"
+  },
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:docs/architecture/workshop-base-stat-descriptions-testability.json",
+        "receipt:d6beac35-c39b-4fd8-8615-42ee2e27e9d6"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:docs/architecture/workshop-base-stat-descriptions-testability.json",
+    "redCandidate": {
+      "publicEntry": "Unity EditMode test Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests",
+      "setup": "Run the focused test after adding shared-path and Radius-override assertions to the project.",
+      "command": {
+        "executable": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Unity.exe",
+        "args": [
+          "-batchmode",
+          "-nographics",
+          "-quit",
+          "-projectPath",
+          "C:\\Projects\\Game",
+          "-runTests",
+          "-testPlatform",
+          "EditMode",
+          "-testFilter",
+          "Game.Tests.EditMode.App.WorkshopBaseStatDescriptionKeyResolverTests",
+          "-testResults",
+          "Temp\\workshop-base-stat-description-red.xml",
+          "-logFile",
+          "Temp\\workshop-base-stat-description-red.log"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "The resolver returns a shared key for Core, Aim, and Loadout; each configured weapon receives its Radius override; unconfigured weapons receive the generic Radius key.",
+      "observed": "Compilation fails because WorkshopBaseStatDescriptionKeyResolver does not exist.",
+      "receiptRef": "receipt:d6beac35-c39b-4fd8-8615-42ee2e27e9d6",
+      "failureReason": "The requested Radius override lookup has no implementation."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design",
+      "software.testing.tdd"
+    ]
+  },
+  "createdAt": "2026-09-19T13:52:34.968Z",
+  "updatedAt": "2026-09-19T13:55:50.138Z"
+}

@@ -1,0 +1,28 @@
+{
+  "scope": [
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/BattleSimulation.cs",
+    "Assets/_Game/Runtime/Gameplay/Battle/Simulation/SimProjectile.cs",
+    "Assets/_Game/Tests/EditMode/Gameplay/BattleSimulationTests.cs"
+  ],
+  "checks": {
+    "ownership": "Pending targeting and turn lifecycle remain in BattleSimulation; scene code is not coupled to simulation internals.",
+    "compatibility": "SimProjectile constructor added an optional trailing parameter, preserving all existing call sites.",
+    "turnSafety": "The deferred projectile is explicitly prevented from advancing the freshly opened player turn.",
+    "verification": "Focused EditMode Unity test passed with receipt:69da7d1d-d02f-4ae0-b9fe-96a15bcd6b3f."
+  },
+  "findings": [
+    {
+      "severity": "P1",
+      "title": "Scene still cannot create or show the required orbital marker",
+      "evidence": "BattleSceneController has no double-tap routing to TrySetOrbitalTarget, no red-cross marker visual, and no cleared-marker handling when another weapon is selected.",
+      "requiredAction": "Add scene input and marker presentation before the orbital rocket can be considered complete."
+    },
+    {
+      "severity": "P1",
+      "title": "Orbital projectile has no explicit flight sprite mapping",
+      "evidence": "ResolveProjectileSprite contains no weapon.orbital-rocket branch, so the generic fallback circle will render instead of the approved missile skin.",
+      "requiredAction": "Map the orbital rocket to the missile asset and tune its falling presentation."
+    }
+  ],
+  "verdict": "change-required"
+}

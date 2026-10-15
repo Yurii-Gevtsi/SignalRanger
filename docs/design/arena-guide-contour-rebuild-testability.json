@@ -1,0 +1,29 @@
+{
+  "decisionRef": "file:docs/design/arena-guide-contour-rebuild-testability.json",
+  "kind": "behavior-delta",
+  "publicEntry": "python tools/arena-assets/rebuild_guide_contour_arenas.py --arenas city --prepare",
+  "scenario": "City contains only its transparent original, the artist's marked layout, and an optional separate background at art_source/arenas/city.",
+  "expected": "The pipeline validates the true alpha original and emits deterministic source segments/layout without looking for retired production_source inputs or creating coloured QA composites.",
+  "actual": "The current public entry exits with code 1 before preparation because it reads art_source/arenas/city/production_source/layout_master.png.",
+  "failureReason": "The current entry-point contract is incompatible with the user's canonical City source layout and minimal-output acceptance boundary.",
+  "redCandidate": {
+    "publicEntry": "python tools/arena-assets/rebuild_guide_contour_arenas.py --arenas city --prepare",
+    "setup": "City contains only its transparent original, the artist's marked layout, and an optional separate background at art_source/arenas/city.",
+    "expected": "The pipeline validates the transparent original and writes the minimal canonical source package without retired production_source inputs.",
+    "actual": "The entry exits before preparing City because the retired production_source/layout_master.png input is missing.",
+    "observed": "The real public command returned exit code 1, recorded by receipt:9cfde294-f5fe-4135-bc6e-1fc8d71f7c5c.",
+    "failureReason": "The current public entry-point contract still depends on retired production_source inputs.",
+    "command": {
+      "executable": "python",
+      "args": [
+        "tools/arena-assets/rebuild_guide_contour_arenas.py",
+        "--arenas",
+        "city",
+        "--prepare"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "receiptRef": "receipt:9cfde294-f5fe-4135-bc6e-1fc8d71f7c5c",
+    "exitCode": 1
+  }
+}

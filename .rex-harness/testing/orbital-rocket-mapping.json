@@ -1,0 +1,19 @@
+{
+  "acceptanceMapping": [
+    {
+      "behavior": "Confirming a marked orbital strike ends the player turn without immediate damage.",
+      "observable": "TryFire returns a committed deferred action, player health/opponent health remain unchanged, and active team becomes opponent.",
+      "test": "BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds"
+    },
+    {
+      "behavior": "The marked position is hit after the opponent turn ends.",
+      "observable": "After ending the opponent turn and resolving the deferred action, a target inside configured radius loses configured direct damage and the effect is consumed.",
+      "test": "BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds"
+    },
+    {
+      "behavior": "The marker is a UI draft before confirmation.",
+      "observable": "Controller-level marker lifecycle is reviewed from its scoped source diff because double-tap input is not isolated in the current EditMode simulation harness.",
+      "test": "Scoped presentation review."
+    }
+  ]
+}

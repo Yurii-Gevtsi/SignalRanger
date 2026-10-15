@@ -1,0 +1,42 @@
+{
+  "workItem": "weapon-combat-repair-jammer-status-icon",
+  "reuseLadder": [
+    {
+      "level": 1,
+      "option": "Remove the icon requirement",
+      "decision": "rejected",
+      "evidence": "docs/design/weapon-combat-specification.md:121 makes no-repair-2 a required combat-state indicator."
+    },
+    {
+      "level": 2,
+      "option": "Reuse BattleSimulation.IsUnitRepairJammed and BattleUnitView health-label ownership",
+      "decision": "selected",
+      "evidence": "BattleSimulation.cs provides the state query; BattleUnitView.cs owns the world-space HP label and child SpriteRenderers."
+    },
+    {
+      "level": 3,
+      "option": "Use Resources.Load and SpriteRenderer",
+      "decision": "selected",
+      "evidence": "Existing battle view code uses both APIs; the owner-provided 512×512 PNG is RGBA with alpha range 0..255 and 139133 fully transparent pixels."
+    },
+    {
+      "level": 4,
+      "option": "Add a UI package or generic status-system framework",
+      "decision": "rejected",
+      "evidence": "One status needs no new dependency or speculative abstraction."
+    },
+    {
+      "level": 5,
+      "option": "Poll and create an icon in BattleSceneController",
+      "decision": "rejected",
+      "evidence": "It duplicates local positioning that belongs to the droid view."
+    },
+    {
+      "level": 6,
+      "option": "One lazy BattleUnitView SpriteRenderer child toggled by the controller's existing presentation loop",
+      "decision": "selected",
+      "evidence": "It follows the unit automatically, preserves health-label ownership, and gives one clear lifecycle seam."
+    }
+  ],
+  "assetProfile": "Copy only the validated owner-provided PNG into Assets/_Game/Content/Resources/UI/Common/no-repair-2.png. Keep the existing UI family Default Texture2D profile; runtime will create its Sprite as other UI resources do."
+}

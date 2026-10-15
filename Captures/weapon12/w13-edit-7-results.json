@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "ad6fc418bd484d7cacd0f54d01adc0bf",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791298832765,
+    "finished_unix_ms": 1791298838236,
+    "last_update_unix_ms": 1791298838236,
+    "progress": {
+      "completed": 1,
+      "total": 1,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791298837846,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_HostileSequentialShardsAreInterceptedByTheMagnetAndTheQueueClears",
+      "last_finished_unix_ms": 1791298838107,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalMortar_HostileSequentialShardsAreInterceptedByTheMagnetAndTheQueueClears",
+          "message": "  paid shards must still resolve near the magnet; trace=spawn:projectile.weapon.mortira | impact:weapon.mortira@(-2.24, -0.77) | spawn:projectile.weapon.mortira.cascade.1 | spawn:projectile.weapon.mortira.cascade.2 | spawn:projectile.weapon.mortira.cascade.3 | spawn:projectile.weapon.mortira.cascade.4 grounder=(-2.54, -0.94)\r\n  Expected: not <empty>\r\n  But was:  <empty>\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

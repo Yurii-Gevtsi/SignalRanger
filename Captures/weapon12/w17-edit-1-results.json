@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "ac4aa5640c3841a5a5c7c4435a2f7858",
+    "status": "failed",
+    "mode": "EditMode",
+    "started_unix_ms": 1791302792724,
+    "finished_unix_ms": 1791302802334,
+    "last_update_unix_ms": 1791302802334,
+    "progress": {
+      "completed": 191,
+      "total": 191,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791302802194,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers",
+      "last_finished_unix_ms": 1791302802195,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CryoGrenade_FreezesUnitsInsideItsBlastForOneTurn",
+          "message": "  Expected: True\r\n  But was:  False\r\n"
+        },
+        {
+          "full_name": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CryoGrenade_RepeatHitRefreshesToTwoTurnsAndOnlyBoostsItsOwnDirectDamage",
+          "message": "  Expected: Player\r\n  But was:  Opponent\r\n"
+        }
+      ],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}

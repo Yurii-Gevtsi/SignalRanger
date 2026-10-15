@@ -1,0 +1,24 @@
+{
+  "acceptanceMapping": [
+    {
+      "behavior": "Orbital projectile uses the approved missile visual.",
+      "observable": "BattleSceneController's projectile resolver maps weapon.orbital-rocket to the missile-flight resource and its scale is explicit.",
+      "test": "BattleVisualResourceTests.OrbitalRocket_UsesMissileFlightResource"
+    },
+    {
+      "behavior": "Orbital rocket is not shown as an item held by the droid.",
+      "observable": "RefreshPlayerWeaponVisual excludes weapon.orbital-rocket.",
+      "test": "Scoped controller review backed by its narrow helper contract."
+    },
+    {
+      "behavior": "A double tap creates and clears an actual pending simulation marker.",
+      "observable": "UpdateOrbitalTargetInput calls TrySetOrbitalTarget only after a close second tap, and marker cleanup shares all local cancellation paths.",
+      "test": "Scoped controller review; input-device synthesis is not isolated by the existing EditMode harness."
+    },
+    {
+      "behavior": "The whole combat lifecycle remains intact.",
+      "observable": "The previous focused deferred-impact simulation test remains green.",
+      "test": "BattleSimulationTests.OrbitalRocket_DefersImpactUntilOpponentTurnEnds"
+    }
+  ]
+}

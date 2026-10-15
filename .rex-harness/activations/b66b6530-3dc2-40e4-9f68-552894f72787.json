@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "b66b6530-3dc2-40e4-9f68-552894f72787",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-combat-laser-fence",
+  "profile": "default",
+  "request": {
+    "message": "Implement and verify laser fence combat behavior from the canonical weapon specification: placement without a generic fallback, two ground nodes, an enemy-only damaging beam that consumes itself and ends the victim turn, own-team safety, persistent nodes and correct combat availability.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 3,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [
+    "software.testing.design",
+    "software.testing.tdd",
+    "software.review.standards-spec"
+  ],
+  "activationHistory": [
+    {
+      "schemaVersion": 1,
+      "activationId": "a4ae89bb-a794-487a-963b-509f80c72769",
+      "capabilityId": "software.testing.design",
+      "recipeId": "software.testing.design.recipe",
+      "reasonCode": "behavior-change",
+      "triggerEvidenceRefs": [
+        "request:current"
+      ],
+      "status": "completed",
+      "stageIndex": 2,
+      "stageId": "",
+      "completedStages": [
+        "design-tests",
+        "decide-testability"
+      ],
+      "evidence": [
+        {
+          "kind": "test-scope-contract-recorded",
+          "refs": [
+            "doc:docs/architecture/laser-fence-combat-test-scope.md"
+          ]
+        },
+        {
+          "kind": "acceptance-test-mapping-recorded",
+          "refs": [
+            "doc:docs/architecture/laser-fence-combat-test-scope.md"
+          ]
+        },
+        {
+          "kind": "test-seam-recorded",
+          "refs": [
+            "doc:docs/architecture/laser-fence-combat-test-scope.md"
+          ]
+        },
+        {
+          "kind": "testability-decision-recorded",
+          "refs": [
+            "file:.rex-harness/testing/laser-fence-testability.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "3783f8c2-3f36-4597-8258-6e3ee1fa6e5d",
+      "capabilityId": "software.testing.tdd",
+      "recipeId": "software.testing.tdd.recipe",
+      "reasonCode": "honest-red-candidate",
+      "triggerEvidenceRefs": [
+        "request:current",
+        "activation:software.testing.design:completed",
+        "file:.rex-harness/testing/laser-fence-testability.json",
+        "receipt:33c500ec-0bb9-45a3-b036-1698d886bd88"
+      ],
+      "status": "completed",
+      "stageIndex": 3,
+      "stageId": "",
+      "completedStages": [
+        "red",
+        "green",
+        "refactor"
+      ],
+      "evidence": [
+        {
+          "kind": "failing-test-observed",
+          "refs": [
+            "receipt:33c500ec-0bb9-45a3-b036-1698d886bd88"
+          ]
+        },
+        {
+          "kind": "red-failure-reason-recorded",
+          "refs": [
+            "file:.rex-harness/testing/laser-fence-red.json"
+          ]
+        },
+        {
+          "kind": "passing-test-observed",
+          "refs": [
+            "receipt:414df41f-5944-494a-9219-798b79d3f8e7"
+          ]
+        },
+        {
+          "kind": "implementation-diff-recorded",
+          "refs": [
+            "file:.rex-harness/testing/laser-fence-green.json"
+          ]
+        },
+        {
+          "kind": "refactor-check-recorded",
+          "refs": [
+            "receipt:363ad5ec-9a30-46b5-86ac-bcff4911814a"
+          ]
+        },
+        {
+          "kind": "test-diff-review-recorded",
+          "refs": [
+            "file:.rex-harness/testing/laser-fence-refactor.json"
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "activationId": "4e6c3157-b570-4b20-a22b-df8c34fbaae8",
+      "capabilityId": "software.review.standards-spec",
+      "recipeId": "software.review.standards-spec.recipe",
+      "reasonCode": "diff-ready",
+      "triggerEvidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ],
+      "status": "completed",
+      "stageIndex": 1,
+      "stageId": "",
+      "completedStages": [
+        "review"
+      ],
+      "evidence": [
+        {
+          "kind": "standards-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/laser-fence-review.json"
+          ]
+        },
+        {
+          "kind": "spec-review-recorded",
+          "refs": [
+            "file:.rex-harness/reviews/laser-fence-review.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [
+    {
+      "kind": "behavior-change",
+      "evidenceRefs": [
+        "request:current"
+      ]
+    },
+    {
+      "kind": "test-scope-confirmed",
+      "evidenceRefs": [
+        "activation:software.testing.design:completed"
+      ]
+    },
+    {
+      "kind": "honest-red-candidate",
+      "evidenceRefs": [
+        "file:.rex-harness/testing/laser-fence-testability.json",
+        "receipt:33c500ec-0bb9-45a3-b036-1698d886bd88"
+      ]
+    },
+    {
+      "kind": "diff-ready",
+      "evidenceRefs": [
+        "activation:software.implementation.execute:completed"
+      ]
+    }
+  ],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": {
+    "kind": "behavior-delta",
+    "decisionRef": "file:.rex-harness/testing/laser-fence-testability.json",
+    "redCandidate": {
+      "publicEntry": "BattleSimulation.TryFire followed by Tick through the Unity EditMode battle harness",
+      "setup": "A player owns weapon.laser-fence with four rounds. The test fires two aimed deployment projectiles at terrain and observes LaserFenceNodeDeployed events.",
+      "command": {
+        "executable": "node",
+        "args": [
+          "tools/run-unity-mcp-editmode-test.mjs",
+          "Game.Tests.EditMode.Gameplay.BattleSimulationTests.LaserFence_DeploysTwoGroundNodesFromRealCombatShots"
+        ],
+        "cwd": "C:\\Projects\\Game"
+      },
+      "expected": "Both real shots return Fired and result in two grounded nodes no farther than 5.4 world units apart.",
+      "observed": "The first public TryFire result is Blocked.",
+      "receiptRef": "receipt:33c500ec-0bb9-45a3-b036-1698d886bd88",
+      "failureReason": "BattleSimulation.IsBattleMechanicAvailable explicitly blocks weapon.laser-fence before its existing deployment path can execute."
+    }
+  },
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "balanced",
+    "capabilityIds": [
+      "software.testing.design",
+      "software.testing.tdd",
+      "software.review.standards-spec"
+    ]
+  },
+  "createdAt": "2026-09-22T17:06:28.364Z",
+  "updatedAt": "2026-09-22T17:21:01.269Z"
+}

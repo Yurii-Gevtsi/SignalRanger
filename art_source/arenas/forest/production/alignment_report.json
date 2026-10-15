@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "tolerance_px": 2,
+  "original_alpha_pixels": 2047075,
+  "exterior_drift_budget_ratio": 0.035,
+  "exterior_drift_budget_pixels": 71647,
+  "missing_pixels": 41418,
+  "out_of_bounds_pixels": 53302,
+  "seam_gap_pixels": 0,
+  "max_seam_gap_component_pixels": 0,
+  "seam_gap_budget_pixels": 64,
+  "seam_gap_component_budget_pixels": 32,
+  "overlap_pixels": 10329,
+  "source_overlap_pixels": 4152,
+  "max_piece_overlap": 2
+}

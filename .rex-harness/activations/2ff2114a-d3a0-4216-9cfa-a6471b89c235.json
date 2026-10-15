@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "2ff2114a-d3a0-4216-9cfa-a6471b89c235",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "grounder-core-workshop-description-20260926",
+  "profile": "default",
+  "request": {
+    "message": "Show weapon-specific localized Core upgrade description for grounder duration instead of generic damage wording",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-26T14:25:49.447Z",
+  "updatedAt": "2026-09-26T14:25:49.447Z"
+}

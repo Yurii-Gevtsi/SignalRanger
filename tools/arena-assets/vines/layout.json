@@ -1,0 +1,49 @@
+{
+  "arena_id": "arena.vines",
+  "master": [
+    2048,
+    1152
+  ],
+  "pieces": [
+    {
+      "id": "left",
+      "crop": [
+        0,
+        109,
+        684,
+        985
+      ],
+      "sorting_order": -8
+    },
+    {
+      "id": "center",
+      "crop": [
+        446,
+        165,
+        1254,
+        990
+      ],
+      "sorting_order": -7
+    },
+    {
+      "id": "right",
+      "crop": [
+        976,
+        165,
+        1824,
+        990
+      ],
+      "sorting_order": -6
+    },
+    {
+      "id": "far_right",
+      "crop": [
+        1436,
+        194,
+        2048,
+        956
+      ],
+      "sorting_order": -5
+    }
+  ]
+}

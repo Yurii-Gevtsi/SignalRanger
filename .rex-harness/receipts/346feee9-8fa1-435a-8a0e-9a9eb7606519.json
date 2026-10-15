@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "346feee9-8fa1-435a-8a0e-9a9eb7606519",
+  "command": {
+    "executable": "node",
+    "args": [
+      "Captures/weapon12/run-mcp-tests.mjs",
+      "play-final",
+      "PlayMode",
+      "Game.Tests.PlayMode.StarterWeaponsBattleSmokeTests.TitaniumBarrier"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 1,
+  "stdoutSha256": "ac10ab6dbb168f66008bb395ff558ad1a4253c09c320cd67be38bcef6c39a72b",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-10-06T13:10:15.840Z"
+}

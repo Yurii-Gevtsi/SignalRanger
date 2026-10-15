@@ -1,0 +1,6 @@
+{
+  "scope": ["BattleSceneController orbital marker routing and projectile presentation"],
+  "checks": ["simulation API ownership", "explicit sprite mapping", "held-weapon suppression", "marker lifecycle"],
+  "findings": [{"severity":"P1","title":"Timer expiry leaves the scene marker visible","evidence":"BattleSimulation.EndPlayerTurnFromTimer clears its pending marker, but BattleSceneController.OnSimulationTurnAdvanced does not clear _orbitalTargetMarkerVisual for PlayerTimerExpired.","requiredAction":"Clear the scene marker at the turn boundary whenever the player draft is invalidated."}],
+  "verdict":"change-required"
+}

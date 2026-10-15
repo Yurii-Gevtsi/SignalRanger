@@ -1,0 +1,78 @@
+{
+  "rule": "Every runtime fragment must be individually image-to-image enhanced after cropping; plain master resizing is input-only and can never be promoted.",
+  "alpha_policy": "The accepted reference crop alpha is reapplied after enhancement to preserve crop alignment, transparent padding and the paired mask.",
+  "pieces": [
+    {
+      "asset_id": "arena_desert_sci_fi_upper_left_01",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_file": "arena_desert_sci_fi_upper_left_01_reference.png",
+      "reference_sha256": "0be48568e174f3780d4626345cc0aecf1d199b9ab9507a0818a45faa0758895f",
+      "enhanced_file": "arena_desert_sci_fi_upper_left_01_enhanced.png",
+      "enhanced_sha256": "396861bee3f44aa46df7321ef168d91a1788d4027e44cf71d618e8f5343b3bf1",
+      "final_visual_sha256": "ca8a9c67f0b2a2b470cc8301f6f2dd05d3a95f6610b9ae063694f78dc199c999",
+      "canvas_width": 1536,
+      "canvas_height": 1458,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "asset_id": "arena_desert_sci_fi_floating_large_01",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_file": "arena_desert_sci_fi_floating_large_01_reference.png",
+      "reference_sha256": "9a856f2e89b1d0f161e80fd941b6026b2bcd53c75351e796ac7f62acd08ffb21",
+      "enhanced_file": "arena_desert_sci_fi_floating_large_01_enhanced.png",
+      "enhanced_sha256": "356ce8d960e9d44af385b1cd6bca3b75b4e6e99aab4320a180ac68f4c6a613fa",
+      "final_visual_sha256": "9dcb6e0eb00fde643e2a21cbfa13ac3bbd8b00b82db846482cebc57a46a39204",
+      "canvas_width": 676,
+      "canvas_height": 426,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "asset_id": "arena_desert_sci_fi_upper_right_01",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_file": "arena_desert_sci_fi_upper_right_01_reference.png",
+      "reference_sha256": "de673f8d39e7ae4c9a99aace240fc42aa996db75514ffcd789d1ae16ddf841d3",
+      "enhanced_file": "arena_desert_sci_fi_upper_right_01_enhanced.png",
+      "enhanced_sha256": "10d89cd0d587ae7594147a79c50174a3f89b0f521d3e567f80a60a7ecd7c88d0",
+      "final_visual_sha256": "fe72c1cf09fce41ea721dfbd5b6a85c7c27d59f731f3ebefe2ce5b1b500d2260",
+      "canvas_width": 964,
+      "canvas_height": 1210,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "asset_id": "arena_desert_sci_fi_lower_left_01",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_file": "arena_desert_sci_fi_lower_left_01_reference.png",
+      "reference_sha256": "b25eeed609fb8d0a5ec885f1a7b045aaa97486a21aae7ddc76568da803db2131",
+      "enhanced_file": "arena_desert_sci_fi_lower_left_01_enhanced.png",
+      "enhanced_sha256": "2c769498a813cfa64296c068851163d9b596ff75631fdf4eee42f45a771ecbdc",
+      "final_visual_sha256": "63ec3c2e910c8c16158d266eced7089d0f06a05ee992634d55a6d6db4fb3246c",
+      "canvas_width": 1536,
+      "canvas_height": 812,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "asset_id": "arena_desert_sci_fi_center_01",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_file": "arena_desert_sci_fi_center_01_reference.png",
+      "reference_sha256": "c064a5f9c4a211e610da6f54c214ab134cf4c0edd248eed8b6c42cf5b6e06efd",
+      "enhanced_file": "arena_desert_sci_fi_center_01_enhanced.png",
+      "enhanced_sha256": "a46ea9e575464e7b495d619f72cfeba1849afa869a893cb2ede1a616ff9baf6a",
+      "final_visual_sha256": "793f478a990dde640aa41e89fe35b7e62dea589a467e24fd0dd0d26ffb272c87",
+      "canvas_width": 1194,
+      "canvas_height": 1290,
+      "alpha_source": "reference_crop"
+    },
+    {
+      "asset_id": "arena_desert_sci_fi_lower_right_01",
+      "quality_pass": "individual_image_to_image_enhancement",
+      "reference_file": "arena_desert_sci_fi_lower_right_01_reference.png",
+      "reference_sha256": "0271156021d26436263acd0fabce3e123b37edd0e4f3236dee0c15c5f8e7f513",
+      "enhanced_file": "arena_desert_sci_fi_lower_right_01_enhanced.png",
+      "enhanced_sha256": "c7026090208819a845866be944589676bf5fbacc14895069842ab502aa780361",
+      "final_visual_sha256": "e85d3b9a3d390cfb3d834760430feb5734adb564e71d47e6352bc170e7184ff5",
+      "canvas_width": 1388,
+      "canvas_height": 988,
+      "alpha_source": "reference_crop"
+    }
+  ]
+}

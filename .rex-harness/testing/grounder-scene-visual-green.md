@@ -1,0 +1,3 @@
+# Grounder scene visual GREEN
+
+`BattleSceneController` now subscribes to `GrounderDeployed` and `GrounderRemoved`, creates a visible SpriteRenderer with the existing grounder weapon texture at the deployment point, tracks the GameObject by device ID, and removes it on expiry or destruction. Battle cleanup clears the dictionary. The Unity EditMode test verifies texture, visibility, point, and keyed cleanup. Test uses `LogAssert.Expect` for Unity's expected EditMode warning from `Destroy`; runtime PlayMode uses ordinary deferred destruction. Focused passing receipt: `receipt:4faa155e-f02c-4d54-8062-99d4fda836a7`.

@@ -1,0 +1,11 @@
+{
+  "workItem": "weapon-combat-guardian-drone",
+  "stage": "refactor",
+  "decision": "no further refactor",
+  "review": [
+    "The target-bound projectile is a narrow extension of SimProjectile because it has one concrete caller and carries the behavioral invariant that the guardian does not retarget.",
+    "Guardian state reuses ActiveMine ground-placement and observer events; the distinct shot path remains in BattleSimulation so terrain damage and radial mine damage cannot leak into the guardian round.",
+    "The acceptance test still asserts deploy, trigger, shot, direct damage, and target-turn termination through public BattleSimulation entry points. No assertion was relaxed or removed.",
+    "The repository had substantial pre-existing edits in these shared files; review was limited to guardian-specific hunks. git diff --check reported no whitespace errors."
+  ]
+}

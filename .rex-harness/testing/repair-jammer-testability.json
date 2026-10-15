@@ -1,0 +1,21 @@
+{
+  "kind": "behavior-delta",
+  "decision": "behavior-delta",
+  "decisionRef": "file:.rex-harness/testing/repair-jammer-testability.json",
+  "redCandidate": {
+    "publicEntry": "BattleSimulation.TryFire and Tick through the Unity EditMode battle harness",
+    "setup": "A player equips weapon.repair-jammer and a hostile droid is placed 1.6 world units away.",
+    "command": {
+      "executable": "node",
+      "args": [
+        "tools/run-unity-mcp-editmode-test.mjs",
+        "Game.Tests.EditMode.Gameplay.BattleSimulationTests.RepairJammer_NearbyEnemyIsAttachedWithoutDirectDamage"
+      ],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "The combat action returns Fired and then applies a non-damaging attachment behavior.",
+    "observed": "TryFire returned Blocked before the dedicated attachment code could execute.",
+    "failureReason": "IsBattleMechanicAvailable explicitly rejects weapon.repair-jammer.",
+    "receiptRef": "receipt:ef851c0c-2c8a-42c4-bcbe-0df37cf151df"
+  }
+}

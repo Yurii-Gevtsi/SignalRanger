@@ -1,0 +1,5 @@
+piece_id,resource_path,source_visual,source_mask,sorting_order,position_x,position_y,scale_x,scale_y,destructible
+ground,Visuals/Arenas/Training/ground,source/ground.png,,-8,-0.09862,-4.93959,3.47552,3.91558,true
+ship,Visuals/Arenas/Training/ship,source/ship.png,,-7,-9.66498,-0.53610,2.05578,1.88287,true
+boxes,Visuals/Arenas/Training/boxes,source/boxes.png,,-7,0.83379,-2.39658,0.97620,1.00449,true
+rock,Visuals/Arenas/Training/rock,source/rock.png,,-7,9.56094,-2.18896,1.85961,1.80162,true

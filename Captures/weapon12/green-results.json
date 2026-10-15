@@ -1,0 +1,401 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "9a900639e64041fd8004dc7f78db5c74",
+    "status": "succeeded",
+    "mode": "EditMode",
+    "started_unix_ms": 1791291956787,
+    "finished_unix_ms": 1791291971465,
+    "last_update_unix_ms": 1791291971465,
+    "progress": {
+      "completed": 40,
+      "total": 40,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": 1791291971329,
+      "last_finished_test_full_name": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers",
+      "last_finished_unix_ms": 1791291971331,
+      "stuck_suspected": false,
+      "editor_is_focused": true,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "EditMode",
+      "summary": {
+        "total": 40,
+        "passed": 40,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 1.961881,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(0.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.1969588,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(45.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0744411,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(90.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0824357,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_CollisionFollowsSpriteAndCarvingSurvivesRefresh(180.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0782717,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_FireUsesThePreviewCenter(0.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(0.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0709384,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_FireUsesThePreviewCenter(90.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_FireUsesThePreviewCenter(90.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0623202,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_HasOnePurchasedSizeFeatureAtRankFive",
+          "state": "Passed",
+          "durationSeconds": 0.0076318,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_InvalidPlacementDoesNotConsumeAmmoOrAction",
+          "state": "Passed",
+          "durationSeconds": 0.2401175,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,0,1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.2570698,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(False,4,1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.1688384,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,0,1.1f)",
+          "state": "Passed",
+          "durationSeconds": 0.0461945,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,1,1.2f)",
+          "state": "Passed",
+          "durationSeconds": 0.0483774,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,2,1.3f)",
+          "state": "Passed",
+          "durationSeconds": 0.0531245,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,3,1.4f)",
+          "state": "Passed",
+          "durationSeconds": 0.0475597,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CanonicalBarrier_SizeLimitRequiresPurchaseAndEachRadiusStep(True,4,1.5f)",
+          "state": "Passed",
+          "durationSeconds": 0.0519874,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CoverWeapon_Fired_StampsTerrainMask",
+          "fullName": "Game.Tests.EditMode.Gameplay.BattleSimulationTests.CoverWeapon_Fired_StampsTerrainMask",
+          "state": "Passed",
+          "durationSeconds": 0.0349971,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CarveCircle_OnEmptyArea_ReportsNoChange",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.CarveCircle_OnEmptyArea_ReportsNoChange",
+          "state": "Passed",
+          "durationSeconds": 0.0028571,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CarveCircle_RemovesGroundAndReportsDirtyRegion",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.CarveCircle_RemovesGroundAndReportsDirtyRegion",
+          "state": "Passed",
+          "durationSeconds": 0.005026,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CarveCircle_RespectsMaterialPenetration",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.CarveCircle_RespectsMaterialPenetration",
+          "state": "Passed",
+          "durationSeconds": 0.0013778,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "IsSolidWorld_OutsideBounds_IsNotSolid",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.IsSolidWorld_OutsideBounds_IsNotSolid",
+          "state": "Passed",
+          "durationSeconds": 0.0024107,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MaskBackedTerrain_UsesExactMaskWithoutFillingEmptySpaceBelowPlatform",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.MaskBackedTerrain_UsesExactMaskWithoutFillingEmptySpaceBelowPlatform",
+          "state": "Passed",
+          "durationSeconds": 0.0324622,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MultiSpriteTerrain_CarvesEverySurfaceCrossedByOneCrater",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.MultiSpriteTerrain_CarvesEverySurfaceCrossedByOneCrater",
+          "state": "Passed",
+          "durationSeconds": 0.0112403,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Raycast_DoesNotTunnelThroughThinWall",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.Raycast_DoesNotTunnelThroughThinWall",
+          "state": "Passed",
+          "durationSeconds": 0.0059693,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Raycast_HitsGroundBetweenPoints",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.Raycast_HitsGroundBetweenPoints",
+          "state": "Passed",
+          "durationSeconds": 0.0057395,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RefreshMovingSpriteSurfaces_RebuildsCollisionAtTheNewPosition",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.RefreshMovingSpriteSurfaces_RebuildsCollisionAtTheNewPosition",
+          "state": "Passed",
+          "durationSeconds": 0.0070496,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ReusedMaskedAsset_CreatesIndependentRuntimeVisuals",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.ReusedMaskedAsset_CreatesIndependentRuntimeVisuals",
+          "state": "Passed",
+          "durationSeconds": 0.0073397,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SpriteTerrain_FillsSolidBelowVisibleSurface",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.SpriteTerrain_FillsSolidBelowVisibleSurface",
+          "state": "Passed",
+          "durationSeconds": 0.005524,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SpriteTerrain_UsesStableCollisionDensityAndClearsCraterFringe",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.SpriteTerrain_UsesStableCollisionDensityAndClearsCraterFringe",
+          "state": "Passed",
+          "durationSeconds": 0.0125595,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StampRect_MarksCellsSolid",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.StampRect_MarksCellsSolid",
+          "state": "Passed",
+          "durationSeconds": 0.0027311,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TryFindSurfaceBelow_FindsCraterFloor_UnderOverhang",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.TryFindSurfaceBelow_FindsCraterFloor_UnderOverhang",
+          "state": "Passed",
+          "durationSeconds": 0.0032116,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TryFindSurfaceBelow_FindsGroundTop",
+          "fullName": "Game.Tests.EditMode.Gameplay.TerrainGridTests.TryFindSurfaceBelow_FindsGroundTop",
+          "state": "Passed",
+          "durationSeconds": 0.0055511,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "BaseTthCannotBePurchasedBeyondItsCanonicalLimit",
+          "fullName": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.BaseTthCannotBePurchasedBeyondItsCanonicalLimit",
+          "state": "Passed",
+          "durationSeconds": 0.0135524,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps",
+          "fullName": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.CatalogContainsTheCanonicalFortyOneWeaponsWithPerWeaponCaps",
+          "state": "Passed",
+          "durationSeconds": 0.0078137,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_AllowsFourCoreAndFourRadiusUpgrades",
+          "fullName": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_AllowsFourCoreAndFourRadiusUpgrades",
+          "state": "Passed",
+          "durationSeconds": 0.00036,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange",
+          "fullName": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.Grounder_FourRadiusPurchasesAddFortyPercentToDetectionRange",
+          "state": "Passed",
+          "durationSeconds": 0.0012238,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RepairJammer_AllowsExactlyTwoDurationUpgrades",
+          "fullName": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.RepairJammer_AllowsExactlyTwoDurationUpgrades",
+          "state": "Passed",
+          "durationSeconds": 0.0004373,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ResetClearsBothBaseAndSpecialPurchaseHistory",
+          "fullName": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.ResetClearsBothBaseAndSpecialPurchaseHistory",
+          "state": "Passed",
+          "durationSeconds": 0.005239,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SelectedMortarSpecialCanBePurchasedFourTimesAndThenStops",
+          "fullName": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.SelectedMortarSpecialCanBePurchasedFourTimesAndThenStops",
+          "state": "Passed",
+          "durationSeconds": 0.0056396,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService",
+          "fullName": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.TitaniumBarrier_SizeFeatureAndFourLaterRadiusPurchasesUseThePaidService",
+          "state": "Passed",
+          "durationSeconds": 0.0036621,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers",
+          "fullName": "Game.Tests.EditMode.Progression.WeaponProgressionCatalogTests.UpgradeEconomyUsesTheRankCurveAndSpecialChoiceMultipliers",
+          "state": "Passed",
+          "durationSeconds": 0.0009309,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}

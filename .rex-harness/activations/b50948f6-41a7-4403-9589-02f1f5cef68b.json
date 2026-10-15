@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.software-workflow-activation.v1",
+  "workflowActivationId": "b50948f6-41a7-4403-9589-02f1f5cef68b",
+  "workflowId": "adaptive-software-delivery",
+  "workItemKey": "weapon-lifecycle-and-control-resumed",
+  "profile": "default",
+  "request": {
+    "message": "Попередній work item залишився у статусі blocked після тестового рішення, хоча користувач уже закрив Unity. Створено продовження того ж запиту: виконуємо локальні кодові виправлення та перевірку компіляцією; Unity test runner може бути недоступний через ліцензування.",
+    "explicitIntent": null,
+    "observations": []
+  },
+  "status": "completed",
+  "stepIndex": 0,
+  "phaseId": "completed",
+  "currentCapabilityId": "",
+  "completedCapabilities": [],
+  "activationHistory": [],
+  "currentActivation": null,
+  "currentCommand": null,
+  "facts": [],
+  "promotion": null,
+  "blockedReason": "",
+  "testabilityDecision": null,
+  "requirementsDecision": null,
+  "executionProfile": {
+    "label": "fast",
+    "capabilityIds": []
+  },
+  "createdAt": "2026-09-18T10:42:41.935Z",
+  "updatedAt": "2026-09-18T10:42:41.935Z"
+}

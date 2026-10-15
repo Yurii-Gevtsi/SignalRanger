@@ -1,0 +1,6 @@
+{
+  "workItem": "weapon-combat-repair-jammer-completion",
+  "decision": "No extraction is warranted: one public status query centralizes the policy for direct and timed healing, and duration resolution remains with the weapon evolution profile.",
+  "testDiffReview": "The tests use only TryFire, Tick, EndActiveTurn, unit health, active team, and IsUnitRepairJammed. They assert exact target-turn duration and health outcomes rather than private data or helper calls.",
+  "testReceiptRef": "receipt:3cf676bf-1cf9-430a-b2ab-0489944fa844"
+}

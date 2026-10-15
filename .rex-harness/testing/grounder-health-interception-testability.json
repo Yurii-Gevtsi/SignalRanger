@@ -1,0 +1,17 @@
+{
+  "kind": "behavior-preserving-hardening",
+  "decision": "behavior-preserving-hardening",
+  "decisionRef": "file:.rex-harness/testing/grounder-health-interception-testability.json",
+  "baseline": {
+    "publicEntry": "BattleSimulation.TryFire, Spawn, Tick, GrounderRemoved, ProjectileExploded",
+    "setup": "Place a grounder away from its owner and spawn two hostile physical 24-damage projectiles sequentially toward it.",
+    "command": {
+      "executable": "node",
+      "args": ["tools/run-unity-mcp-editmode-test.mjs", "Game.Tests.EditMode.Gameplay.BattleSimulationTests.Grounder_TwoPhysicalImpactsDestroyDeviceAndBothExplode"],
+      "cwd": "C:\\Projects\\Game"
+    },
+    "expected": "First explosion leaves the device intact; second explosion removes it exactly once.",
+    "observed": "Focused Unity EditMode test passed with both explosions and expected removal sequence.",
+    "receiptRef": "receipt:76ddd1c5-c145-4d61-bffc-96aced7c1bc6"
+  }
+}

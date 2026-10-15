@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "rex.execution-receipt.v1",
+  "receiptId": "110e6cde-5376-40ed-9ac5-5d8b09df2097",
+  "command": {
+    "executable": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\DotNetSdk\\dotnet.exe",
+    "args": [
+      "C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\DotNetSdk\\sdk\\8.0.318\\Roslyn\\bincore\\csc.dll",
+      "/noconfig",
+      "/nostdlib",
+      "/target:library",
+      "/out:Temp\\WorkshopSpecialCardStateResolverTests.green.dll",
+      "/reference:C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\MonoBleedingEdge\\lib\\mono\\4.7.1-api\\mscorlib.dll",
+      "/reference:C:\\Program Files\\Unity\\Hub\\Editor\\6000.5.1f1\\Editor\\Data\\Resources\\PackageManager\\BuiltInPackages\\com.unity.ext.nunit\\net472\\unity-custom\\nunit.framework.dll",
+      "Assets\\_Game\\Runtime\\App\\WorkshopSpecialCardStateResolver.cs",
+      "Assets\\_Game\\Tests\\EditMode\\App\\WorkshopSpecialCardStateResolverTests.cs"
+    ],
+    "cwd": "C:\\Projects\\Game"
+  },
+  "exitCode": 0,
+  "stdoutSha256": "fb628fd4bb827a2fc54ef1221744fd3e1122b41a4674b8cb933c6cb7cf85e402",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "observedAt": "2026-09-19T14:36:55.551Z"
+}
