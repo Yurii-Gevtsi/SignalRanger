@@ -63,16 +63,19 @@ namespace Game.App
         private static readonly Vector2 TitlePanelPosition = new(128f, 0f);
         private static readonly Vector2 SettingsButtonSize = new(104f, 104f);
         private static readonly Vector2 SettingsButtonPosition = new(-26f, -10f);
+        // The central section (tabs, quest list, login card) sits low enough to
+        // clear the top bar with the player level and balances on wide screens.
+        private const float CentralSectionY = -65f;
         private static readonly Vector2 MainPanelSize = new(1440f, 750f);
-        private static readonly Vector2 MainPanelPosition = new(-200f, -25f);
+        private static readonly Vector2 MainPanelPosition = new(-200f, CentralSectionY);
         private static readonly Vector2 LongCardSize = new(500f, 750f);
-        private static readonly Vector2 LongCardPosition = new(720f, -25f);
+        private static readonly Vector2 LongCardPosition = new(720f, CentralSectionY);
         private static readonly Vector2 RewardRowSize = new(1320f, 110f);
         private static readonly Vector2 RewardViewportSize = new(1340f, VisibleRewardRowCount * RewardRowStep - 2f);
         private static readonly Vector2 RewardViewportPosition = new(0f, -15f);
         private static readonly Vector2 RewardTabSize = new(300f, 92f);
-        private static readonly Vector2 DailyTabPosition = new(-160f, 350f);
-        private static readonly Vector2 WeeklyTabPosition = new(145f, 350f);
+        private static readonly Vector2 DailyTabPosition = new(-160f, CentralSectionY + 375f);
+        private static readonly Vector2 WeeklyTabPosition = new(145f, CentralSectionY + 375f);
 
         private readonly Dictionary<string, Sprite> _sprites = new(StringComparer.Ordinal);
         private readonly List<QuestRowView> _questRows = new();

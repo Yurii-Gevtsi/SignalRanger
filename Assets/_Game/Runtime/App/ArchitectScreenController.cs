@@ -592,7 +592,7 @@ namespace Game.App
             _workshopNextStatValue.richText = true;
             _workshopNextRequiredChipsLabel = CreateText("Architect Required Chips Label", rightPanel,
                 new Vector2(0.10f, 0.50f), new Vector2(0.45f, 0.50f), new Vector2(0f, 0.5f),
-                new Vector2(0f, 40f), new Vector2(-20f, -70f), 20, TextAlignmentOptions.MidlineLeft,
+                new Vector2(0f, 40f), new Vector2(8f, -70f), 20, TextAlignmentOptions.MidlineLeft,
                 GameText.Localized("architect.requiredChips", string.Empty), GameTextRole.Body);
             _workshopNextRequiredChipsLabel.enableAutoSizing = true;
             _workshopNextRequiredChipsLabel.fontSizeMin = 16f;
@@ -603,7 +603,7 @@ namespace Game.App
             _resourceInfoPopup.BindResourceIcon(_workshopNextChipIcon, ResourceInfoKind.Chips);
             _workshopNextChips = CreateText("Architect Required Chips Value", rightPanel,
                 new Vector2(0.45f, 0.50f), new Vector2(0.75f, 0.50f), new Vector2(0f, 0.5f),
-                new Vector2(0f, 40f), new Vector2(-20f, -70f), 23, TextAlignmentOptions.MidlineLeft, string.Empty, GameTextRole.Numeric);
+                new Vector2(0f, 40f), new Vector2(14f, -70f), 23, TextAlignmentOptions.MidlineLeft, string.Empty, GameTextRole.Numeric);
             _workshopNextCostLabel = CreateText("Architect Upgrade Cost Label", rightPanel,
                 new Vector2(0.10f, 0.20f), new Vector2(0.90f, 0.25f), new Vector2(0.5f, 0.5f),
                 Vector2.zero, new Vector2(-20f, 50f), 20, TextAlignmentOptions.Center,

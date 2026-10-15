@@ -107,7 +107,7 @@ namespace Game.App
             _icon.sprite = icon ?? _whiteSprite;
             _icon.enabled = icon != null;
             _card.sizeDelta = new Vector2(CardSize.x, icon != null ? CardSize.y : CardSize.y * 0.5f);
-            ApplyTextOnlyLayout(icon == null);
+            ApplyTextOnlyLayout(icon == null, !string.IsNullOrWhiteSpace(_title.text));
             _overlay.transform.SetAsLastSibling();
             _overlay.SetActive(true);
         }
@@ -185,7 +185,7 @@ namespace Game.App
             _overlay.SetActive(false);
         }
 
-        private void ApplyTextOnlyLayout(bool isTextOnly)
+        private void ApplyTextOnlyLayout(bool isTextOnly, bool hasTitle)
         {
             if (_titleRect == null || _descriptionRect == null || _closeRect == null)
             {
@@ -197,17 +197,22 @@ namespace Game.App
                 _titleRect.anchorMin = new Vector2(0.12f, 1f);
                 _titleRect.anchorMax = new Vector2(0.88f, 1f);
                 _titleRect.pivot = new Vector2(0.5f, 1f);
-                _titleRect.sizeDelta = new Vector2(0f, 40f);
-                _titleRect.anchoredPosition = Vector2.zero;
+                _titleRect.sizeDelta = new Vector2(0f, 56f);
+                _titleRect.anchoredPosition = new Vector2(0f, -36f);
 
-                _descriptionRect.anchorMin = new Vector2(0.18f, 1f);
-                _descriptionRect.anchorMax = new Vector2(0.82f, 1f);
-                _descriptionRect.pivot = new Vector2(0.5f, 1f);
-                _descriptionRect.sizeDelta = new Vector2(0f, 220f);
-                _descriptionRect.anchoredPosition = new Vector2(0f, -40f);
+                // The description fills the card below the title and sits in its
+                // middle, so a short message is centred instead of hugging the top.
+                _descriptionRect.anchorMin = new Vector2(0.14f, 0f);
+                _descriptionRect.anchorMax = new Vector2(0.86f, 1f);
+                _descriptionRect.pivot = new Vector2(0.5f, 0.5f);
+                _descriptionRect.offsetMin = new Vector2(0f, 40f);
+                _descriptionRect.offsetMax = new Vector2(0f, hasTitle ? -96f : -40f);
+                _description.alignment = TextAlignmentOptions.Center;
                 _closeRect.anchoredPosition = new Vector2(-170f, -70f);
                 return;
             }
+
+            _description.alignment = TextAlignmentOptions.Top;
 
             _titleRect.anchorMin = new Vector2(0.12f, 0.78f);
             _titleRect.anchorMax = new Vector2(0.88f, 0.90f);
